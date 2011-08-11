@@ -67,7 +67,7 @@ taxglom.internal <- function(object, tax){
 	
 	# successively merge taxa in object.
 	for( i in names(spCliques)){
-		print(i)
+		# print(i)
 		object <- mergespecies(object, eqspecies=spCliques[[i]])
 	}
 	return(object)
