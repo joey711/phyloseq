@@ -1,0 +1,11 @@
+phyloseq 0.1
+===========
+
+* basic data structure in place.
+* some support for phylo4 objects
+* readQiime Qiime input wrapper
+
+To Do:
+* Function-level documentation
+* Vignette-level documentation (beyond psb manuscript)
+* implement Mothur and other input wrappers

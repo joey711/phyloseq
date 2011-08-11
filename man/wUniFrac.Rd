@@ -1,0 +1,36 @@
+\name{wUniFrac}
+\alias{wUniFrac}
+\title{Calculate weighted UniFrac for all samples in an OTU table.}
+\usage{
+  wUniFrac(OTU, tree, normalized = TRUE)
+}
+\arguments{
+  \item{OTU}{otuTable in samples-by-species orientation.}
+
+  \item{tree}{object of class \code{phylo}}
+
+  \item{normalized}{Logical. Should the output be
+  normalized such that values range from 0 to 1 independent
+  of branch length values? Default is \code{TRUE}.}
+}
+\value{
+  a sample-by-sample distance matrix, suitable for NMDS,
+  etc.
+}
+\description{
+  This function calculates the weighted-UniFrac distance
+  for all sample-pairs in a species-abundance table using
+  the abundances and a phylogenetic tree. If \code{OTU} is
+  a more complex object that already contains a
+  phylogenetic tree and abundance table, then the argument
+  \code{tree} is not necessary and will be ignored.
+}
+\examples{
+#
+}
+\seealso{
+  UniFrac unifrac vegdist
+}
+\keyword{UniFrac}
+\keyword{weighted-unifrac}
+

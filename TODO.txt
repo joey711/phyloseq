@@ -1,0 +1,4 @@
+Assignments and Tests to add:
+
+(5) Decide on Dependencies
+import versus depends. Also, decide what to export.
