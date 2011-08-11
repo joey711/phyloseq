@@ -40,6 +40,8 @@
 #' what is contained in the tree. If this an issue, the tree component should
 #' be ommitted from the argument list.
 #'
+#' @export
+#'
 #' @examples #
 #' ## OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
 #' ## tax1 <- taxTab(matrix("abc", 30, 8))
@@ -223,6 +225,7 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' phyloseq objects (objects containing more than 1 phyloseq data object).
 #' @seealso merge_phyloseq
 #' @keywords internal
+#' @export
 #' @examples #
 #' #get.component.classes()
 get.component.classes <- function(){
@@ -266,6 +269,7 @@ splat.phyloseq.objects <- function(x){
 #' then a vector of length (1) is returned, named according to its slot name in
 #' the higher-order objects.
 #' @seealso merge_phyloseq
+#' @export
 #' @keywords internal
 #' @examples #
 getslots.phyloseq <- function(x){

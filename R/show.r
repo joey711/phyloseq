@@ -18,7 +18,7 @@ dimsum = function(z){
 		sep="",collapse="")
 	}
 }
-############################################################################	
+############################################################################
 tableprint = function(y, 
 	typelabel="table", dim1label="rownames", dim2label="colnames"){
 	### Print OTU table features.
@@ -38,6 +38,7 @@ tableprint = function(y,
 		}
 	}			
 }
+#' @exportMethod print
 setMethod("print", "otuTable", function(x){
 	# Prevent infinite subsetting loops by specifying .Data
 	y = x@.Data		
@@ -47,6 +48,7 @@ setMethod("print", "otuTable", function(x){
 		tableprint(y,"OTU Table","Samples","Species")
 	}			 
 })
+#' @exportMethod show
 setMethod("show", "otuTable", function(object){print(object)})
 setMethod("print", "sampleMap", function(x){
 	tableprint(data.frame(x),"Sample Map","Samples","Variables")
