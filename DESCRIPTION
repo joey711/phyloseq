@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.2.3
+Version: 0.2.4
 Date: 2011-08-11
 Title: Analyze pre-processed phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -31,6 +31,7 @@ Collate:
     'assignment_functions.R'
     'show.r'
     'plot.r'
+    'calcplot.r'
     'taxaplot.r'
     'prune_species.r'
     'readQiime.r'

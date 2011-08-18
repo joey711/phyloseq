@@ -1,9 +1,24 @@
+phyloseq 0.3
+===========
+
+* Some improvements to the class inheritance structure to simplify method extension and future development.
+
+phyloseq 0.2.4
+===========
+
+* Added ordination and plotting pipeline, calcplot() and plot.ordination.phyloseq()
+
+phyloseq 0.2
+===========
+
+* Modifications for proper build, and bug tests.
+
 phyloseq 0.1
 ===========
 
 * basic data structure in place.
 * some support for phylo4 objects
-* readQiime Qiime input wrapper
+* readQiime() A Qiime input wrapper
 
 To Do:
 * Function-level documentation

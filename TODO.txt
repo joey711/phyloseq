@@ -15,9 +15,9 @@ code directly and removing the dependence).
 
 (3) Additional multiple testing features building on multtest, applied to phylogenetic sequencing data.
 
-(4)a Pipeline for certain common ordination methods applied to phyloseq data. That is, the rda.phyloseq or cca.phyloseq methods, plus their graphic representation based on 
+DONE v0.2.4+: (4)a Pipeline for certain common ordination methods applied to phyloseq data. That is, the rda.phyloseq or cca.phyloseq methods, plus their graphic representation based on 
 the arguments and possibly extra parameters or features in the object.
 
-(4)b Default graphics for plot-method resulting from ordination methods.
+DONE v0.2.4+: (4)b Default graphics for plot-method resulting from ordination methods.
 
 (5) Species-network and sample-network plotting tools.
