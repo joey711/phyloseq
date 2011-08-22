@@ -39,8 +39,4 @@
 \examples{
 #
 }
-\keyword{agglomerate}
-\keyword{cluster}
-\keyword{OTU}
-\keyword{tree}
 

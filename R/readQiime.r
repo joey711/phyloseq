@@ -37,7 +37,6 @@
 #'
 #' @seealso phyloseq_merge phyloseq read.table read.nexus readNexus
 #'
-#' @importFrom ape read.nexus
 #' @export
 #' @examples #
 readQiime = function(otufilename=NULL, mapfilename=NULL,

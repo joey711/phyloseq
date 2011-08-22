@@ -23,14 +23,13 @@
 #' @return same output as \code{\link{rda}}
 #' @keywords redundancy analysis RDA rda
 #' @seealso cca.phyloseq
-#' @import vegan
 #' @export
 #' @examples #
 #' ## data(ex1)
 #' ## rda.phyloseq(ex1 ~ Diet + Gender)
 setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
 setMethod("rda.phyloseq", "formula", function(X, data=NULL){
-	require(vegan)
+	#require(vegan)
 	phylobject <- get( as.character(X)[2] )
 	OTU        <- otuTable( phylobject )
 	if( speciesAreRows(OTU) ){

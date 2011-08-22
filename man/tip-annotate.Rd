@@ -1,8 +1,11 @@
 \name{tipsymbols}
 \alias{tipsymbols}
+\alias{tiptext}
 \title{Annotate tips on a tree.}
 \usage{
   tipsymbols(tip, adj = c(0.5, 0.5), ...)
+
+  tiptext(tip, adj = c(0.5, 0.5), ...)
 }
 \arguments{
   \item{tip}{An integer specifying the tip ID in a tree
@@ -27,11 +30,20 @@
   \code{points()} or \code{text()} functions, respectively,
   but where the tip coordinates are specified by giving the
   tip ID (integer) as input.
+
+  Do not forget to include a \code{labels} argument.
 }
 \examples{
 #
-## tipsymbols(1, pch=19)
-## tiptext(1, labels="my.label")
+## data(ex1)
+## ex2 <- ex1
+## # for reproducibility
+## set.seed(711)
+## species.names(ex2) <- sample(species.names(ex1), 50)
+## plot(tre(ex2))
+## tipsymbols(pch=19)
+## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
+## tiptext(2, labels="my.label")
 }
 \seealso{
   tiplabels points text

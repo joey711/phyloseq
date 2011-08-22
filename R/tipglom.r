@@ -24,8 +24,6 @@
 #' the class of \code{tree}, unless it is a \code{phylo}/\code{phylo4} object, in
 #' which case \code{tipglom} returns an \code{otuTree} object.
 #'
-#' @keywords agglomerate OTU cluster tree
-#' @import ape picante igraph
 #' @export
 #' @examples #
 setGeneric("tipglom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tipglom"))
@@ -72,15 +70,10 @@ setMethod("tipglom", signature("phylo4"), function(tree, speciationMinLength=0.0
 #' or its superclasses. Output class matches the class of \code{tree}.
 #'
 #' @seealso tipglom
-#' @keywords internal
-#' @import ape picante igraph
+#' @import igraph
 #'
 #' @examples #
 tipglom.internal = function(tree, speciationMinLength){
-	# require("ape")
-	# require("picante")
-	# require("igraph")
-	#
 	# Create adjacency matrix, where tips are adjacent
 	# if their distance is below the threshold speciationMinLength
 	tipAdjacent <- (getTipDistMatrix( tree ) < speciationMinLength)
@@ -114,7 +107,6 @@ tipglom.internal = function(tree, speciationMinLength){
 #' @seealso tipglom
 #' @keywords internal
 #' @aliases gettipdistmatrix getTipDistMatrix
-#' @import picante ape
 #' @examples #
 setGeneric("getTipDistMatrix", function(tree, byRootFraction=FALSE) standardGeneric("getTipDistMatrix"))
 setMethod("getTipDistMatrix", signature("phylo"), function(tree, byRootFraction=FALSE){

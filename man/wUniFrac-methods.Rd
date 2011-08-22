@@ -1,11 +1,12 @@
+\docType{methods}
 \name{wUniFrac}
+\alias{"wUniFrac,otuTable,phylo-method"}
+\alias{"wUniFrac,otuTree,ANY-method"}
 \alias{wUniFrac}
 \title{Calculate weighted UniFrac for all samples in an OTU table.}
-\usage{
-  wUniFrac(OTU, tree, normalized = TRUE)
-}
 \arguments{
-  \item{OTU}{otuTable in samples-by-species orientation.}
+  \item{OTU}{otuTable, or a more-complex object that
+  contains an otuTable.}
 
   \item{tree}{object of class \code{phylo}}
 
@@ -24,6 +25,12 @@
   a more complex object that already contains a
   phylogenetic tree and abundance table, then the argument
   \code{tree} is not necessary and will be ignored.
+
+  Calculate weighted UniFrac from an abundance matrix and a
+  tree.
+
+  Calculate weighted UniFrac from an abundance matrix and a
+  tree.
 }
 \examples{
 #
@@ -31,6 +38,4 @@
 \seealso{
   UniFrac unifrac vegdist
 }
-\keyword{UniFrac}
-\keyword{weighted-unifrac}
 

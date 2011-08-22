@@ -1,7 +1,7 @@
 \name{otuTree}
 \alias{otutree}
 \alias{otuTree}
-\title{Define the otuTree class.}
+\title{Subset just the "otuTree" portion of a H.O. object.}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain both a phylogenetic
@@ -11,8 +11,6 @@
   A phyloseq-package object of class \code{otuTree}.
 }
 \description{
-  Contains otuTable, phylo (tre) slots.
-
   Subset just the "otuTree" portion of a H.O. object.
 }
 \examples{

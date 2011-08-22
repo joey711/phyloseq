@@ -1,7 +1,7 @@
 \name{sampleMap}
 \alias{samplemap}
 \alias{sampleMap}
-\title{The S4 object in the phyloseq package that holds sample data as a data.frame.}
+\title{Build or access sampleMap objects.}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain sampleMap.}
@@ -13,12 +13,6 @@
   covariates of an experiment.
 }
 \description{
-  at-slot: nsamples A single positive integer specifying
-  the number of distinct samples. \code{nsamples} should
-  not be assigned directly by user, but is assessed
-  internally during initialization of \code{sampleMap}
-  objects.
-
   \code{sampleMap()} is both a constructor and accessor
   method. When the argument is a data.frame, sampleMap()
   will attempt to create and return an sampleMap-class
@@ -30,20 +24,6 @@
   is returned, as-is.
 }
 \details{
-  at-slot: .Data data-frame data, inherited from the
-  data.frame class.
-
-  at-slot: row.names Also inherited from the data.frame
-  class; it should contain the sample names.
-
-  at-slot: names Inherited from the data.frame class.
-
-  at-slot: nsamples A single positive integer, indicating
-  the number of samples (rows) represented by an object.
-  Consistent with otuTable objects. should not be assigned
-  directly by user, but is assessed internally during
-  instantiation of \code{sampleMap} objects.
-
   This is the main method suggested for constructing
   sampleMap objects from a data.frame of sample covariates.
   Each row represents a different sample. It is also the

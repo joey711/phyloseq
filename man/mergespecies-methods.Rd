@@ -1,4 +1,13 @@
+\docType{methods}
 \name{mergespecies}
+\alias{"mergespecies,otuTable-method"}
+\alias{"mergespecies,otuTree-method"}
+\alias{"mergespecies,otuTree4-method"}
+\alias{"mergespecies,phylo-method"}
+\alias{"mergespecies,phylo4-method"}
+\alias{"mergespecies,phyloseq-method"}
+\alias{"mergespecies,phyloseqTaxTree-method"}
+\alias{"mergespecies,phyloseqTree-method"}
 \alias{mergespecies}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \arguments{
@@ -30,13 +39,35 @@
   a low-level such that related methods, such as tipglom
   and taxglom can both reliably call mergespecies for their
   respective purposes.
+
+  Merge a subset of the taxa in an otuTable.
+
+  Merge a subset of the taxa in a phylo-class tree object.
+
+  Merge a subset of the taxa in a phylo4-class tree object.
+
+  Note to developers: The class name otuTree4 is a
+  placeholder. plan would be to migrate all ape-derived
+  "phylo" classes to \code{phylo4} of phylobase package
+  (which has a namespace). Lots more potential with phylo4,
+  phylo4d, etc. E.g. merge could store the "lost" tips as
+  data (phylo4d) associated with each tip. More effective
+  than making separate list object to keep track.
+
+  Merge a subset of the taxa in an otuTree object.
+
+  Merge a subset of the taxa in an phyloseq object.
+
+  Merge a subset of the taxa in an phyloseqTree object.
+
+  Merge a subset of the taxa in an phyloseqTaxTree object.
 }
 \examples{
 #
+## data(ex1)
+## makenetwork(otuTable(ex1), TRUE)
 }
 \seealso{
   tipglom taxglom merge_phyloseq
 }
-\keyword{merge}
-\keyword{species}
 

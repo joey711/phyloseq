@@ -139,7 +139,6 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  \code{facet_grid} could be \code{sample ~ TaxaGroup}.
 #'
 #' @seealso otu2df qplot ggplot
-#' @import ggplot2
 #' @export
 #' @examples #
 #' # data(ex1)

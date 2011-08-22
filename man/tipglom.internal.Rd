@@ -37,5 +37,4 @@
 \seealso{
   tipglom
 }
-\keyword{internal}
 

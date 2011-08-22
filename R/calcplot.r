@@ -79,7 +79,6 @@
 #' @return A ggplot2 plot object.
 #'
 #' @seealso plot.cca cca.object
-#' @import vegan
 #' @export
 plot_ordination_phyloseq <- function(mod, object,
 	plot_title = as(mod$call, "character")[1],
@@ -94,12 +93,13 @@ plot_ordination_phyloseq <- function(mod, object,
 	add_sites_data = NULL,
 	add_taxa_data = NULL
 			){
-	require("vegan")
+	#require("vegan")
+	#require("ggplot2")
 
 	########################################
 	# Create sites and species (taxa) data.frames
 	########################################
-	pmod      <- scores(mod, display=c("biplot","cn","sites","species"), scaling=1)
+	pmod      <- vegan::scores(mod, display=c("biplot","cn","sites","species"), scaling=1)
 	sitesdata <- data.frame(axis1 = pmod$sites[, 1],   axis2 = pmod$sites[, 2]   )
 	specidata <- data.frame(axis1 = pmod$species[, 1], axis2 = pmod$species[, 2] )
 
@@ -146,21 +146,21 @@ plot_ordination_phyloseq <- function(mod, object,
 	sites_arglist <- arglist
 
 	# Finally, initalize ggplot object as "p"
-	p <- ggplot(data=sitesdata)
+	p <- ggplot2::ggplot(data=sitesdata)
 	# Start plot with dummy layer, invisible sites
-	p <- p + geom_point( do.call("aes", sites_arglist), alpha=0)
+	p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), alpha=0)
 
 	########################################
 	# Add manual values for color, size, and shape.
 	########################################
 	if( !is.null(man.colors) ){
-		p <- p + scale_color_manual(value = man.colors)
+		p <- p + ggplot2::scale_color_manual(value = man.colors)
 	}
 	if( !is.null(man.shapes) ){
-		p <- p + scale_shape_manual(values = man.shapes)
+		p <- p + ggplot2::scale_shape_manual(values = man.shapes)
 	}
 	if( !is.null(man.sizes) ){
-		p <- p + scale_size_manual(values = man.sizes)
+		p <- p + ggplot2::scale_size_manual(values = man.sizes)
 	}
 	
 	########################################
@@ -177,30 +177,30 @@ plot_ordination_phyloseq <- function(mod, object,
 	if( !is.null(species_size_category) ){
 		arglist <- c(arglist, list(size  =as.name(species_size_category)))
 	}
-	p <- p + geom_point(data=specidata, do.call("aes", arglist), alpha=species_alpha)
+	p <- p + ggplot2::geom_point(data=specidata, do.call("aes", arglist), alpha=species_alpha)
 
 	########################################
 	## Re-Add the sites-layer after the species, 
 	## since there will normally be many fewer of them than species.
 	########################################
 	if( is.null(site_size_category) ){
-		p <- p + geom_point( do.call("aes", sites_arglist), size=7, alpha=sites_alpha)		
+		p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), size=7, alpha=sites_alpha)		
 	} else {
-		p <- p + geom_point( do.call("aes", sites_arglist), alpha=sites_alpha)		
+		p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), alpha=sites_alpha)		
 	}
 
 	########################################
 	# Adjust the background grey slightly so that it is more
 	# easily visible on electronic displays
 	########################################
-	p <- p + opts(panel.background = theme_rect(fill = "grey76", colour = NA),
-		strip.background = theme_rect(fill = "grey76", colour = NA)
+	p <- p + ggplot2::opts(panel.background = ggplot2::theme_rect(fill = "grey76", colour = NA),
+		strip.background = ggplot2::theme_rect(fill = "grey76", colour = NA)
 	)	
 	
 	########################################
 	# Add a plot title based on the ordination type in mod
 	########################################
-	p <- p + opts(title = plot_title)
+	p <- p + ggplot2::opts(title = plot_title)
 	
 	########################################
 	# Adjust the legend title for color.
@@ -208,7 +208,7 @@ plot_ordination_phyloseq <- function(mod, object,
 	# which won't make sense. Rename it.
 	########################################
 	if( !is.null(species_color_category) & !is.null(site_color_category) ){
-		p <- p + labs(colour = "Sites, Species Colors")
+		p <- p + ggplot2::labs(colour = "Sites, Species Colors")
 	}
 	
 	return(p)

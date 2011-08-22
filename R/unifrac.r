@@ -4,8 +4,8 @@
 #' A modified version of the \code{\link{internal2tips}} function, 
 #' such that when a
 #' tip is provided as int.node, that tip is returned. This is a more intuitive
-#' behavior than the picante version, which returns NULL, and currently used
-#' in the \code{\link{wUniFrac}}.
+#' behavior than the original picante version, which returns NULL.
+#' This is currently used in \code{\link{wUniFrac}}.
 #'
 #' @param phy object of class \code{phylo}.
 #'
@@ -17,7 +17,7 @@
 #' 
 #' @examples #
 internal2tips.self = function (phy, int.node, return.names = FALSE){
-	require(picante); require(ape)	
+	#require(picante); require(ape)	
     Ntaxa = length(phy$tip.label)
     Nnode = phy$Nnode
     if ((Ntaxa + Nnode - 1) != nrow(phy$edge)) {
@@ -41,7 +41,7 @@ internal2tips.self = function (phy, int.node, return.names = FALSE){
     }
     # Remove any internal nodes. They have larger indices than the number of taxa (tips)
     tips = tips[tips <= Ntaxa]
-    # JOEY ADD: If int.node was already a tip, then return itself, not NULL 
+    ### pjm2 add: If int.node was already a tip, then return itself, not NULL 
     if( int.node <= Ntaxa & length(tips) == 0 ){
     	tips = int.node
     }
@@ -64,7 +64,7 @@ internal2tips.self = function (phy, int.node, return.names = FALSE){
 #'
 #' @param tree object of class \code{phylo}
 #'
-#' @keywords internal internal2tips
+#' @keywords internal
 #' @return character vector
 #' @seealso wUniFrac
 #' 
@@ -104,7 +104,7 @@ UFwi = function(edge,samples,OTU,tree,AT=sum(OTU[samples[1],]),BT=sum(OTU[sample
 #' @export
 #' @examples #
 wUniFracPair = function(OTU, tree, A, B, UFwi=UFwi, normalized=TRUE){
-	require(picante); require(ape)
+	#require(picante); require(ape)
 	# outer loop
 	# Get the OTUs per sample. This should be calculated early so not needlessly repeated.
 	AT = sum(OTU[A,]); BT = sum(OTU[B,])
@@ -121,7 +121,7 @@ wUniFracPair = function(OTU, tree, A, B, UFwi=UFwi, normalized=TRUE){
 	if(normalized){
 		# For denominator, we need the age of each tip
 		# Get the tip ages from their associated edges (node.age gives the age of edges, ironically)
-		tipAges = node.age(tree)$ages[which(tree$edge[,2] %in% 1:length(tree$tip.label))]
+		tipAges = picante::node.age(tree)$ages[which(tree$edge[,2] %in% 1:length(tree$tip.label))]
 		names(tipAges) = tree$tip.label
 		# denominator
 		denominator = sum( tipAges * (OTU[A,]/AT + OTU[B,]/BT) )
@@ -138,22 +138,30 @@ wUniFracPair = function(OTU, tree, A, B, UFwi=UFwi, normalized=TRUE){
 #' tree and abundance table, then the argument \code{tree} is not necessary
 #' and will be ignored.  
 #'
-#' @param OTU otuTable in samples-by-species orientation.
+#' @param OTU otuTable, or a more-complex object that contains an otuTable.
 #'
 #' @param tree object of class \code{phylo}
 #'
 #' @param normalized Logical. Should the output be normalized such that values 
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}.
 #' 
-#' @keywords UniFrac weighted-unifrac
-#' 
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' @seealso UniFrac unifrac vegdist
 #' 
-#' @import picante ape
 #' @export
+#' @rdname wUniFrac-methods
 #' @examples #
-wUniFrac = function(OTU, tree, normalized=TRUE){
+setGeneric("wUniFrac", function(OTU, tree, normalized=TRUE) standardGeneric("wUniFrac"))
+################################################################################
+#' Calculate weighted UniFrac from an abundance matrix and a tree.
+#'
+#' @exportMethod wUniFrac
+#'
+#' @aliases wUniFrac,otuTable,phylo-method
+#' @docType methods
+#' @rdname wUniFrac-methods
+setMethod("wUniFrac", signature("otuTable", "phylo"),
+										function(OTU, tree, normalized=TRUE){
 	#require(picante); require(ape)
     if (is.null(tree$edge.length)) {
         stop("Tree has no branch lengths, cannot compute UniFrac")
@@ -179,22 +187,52 @@ wUniFrac = function(OTU, tree, normalized=TRUE){
     	UniFrac[B,A] = wUniFracPair(OTU,tree,A,B,UFwi,normalized)
     }
     return(as.dist(UniFrac))
-}
+})
+################################################################################
+#' Calculate weighted UniFrac from an abundance matrix and a tree.
+#'
+#' @exportMethod wUniFrac
+#'
+#' @aliases wUniFrac,otuTree,ANY-method
+#' @docType methods
+#' @rdname wUniFrac-methods
+setMethod("wUniFrac", signature("otuTree"), 
+								function(OTU, tree=NULL, normalized=TRUE){
+				
+	if ( speciesAreRows(OTU) ){
+		otu <- t( otuTable(OTU) )
+	} else { 
+		otu <- otuTable(OTU)
+	}
+	wUniFrac(otu, tre(OTU), normalized)
+})
 ##############################################################################
-#' Alternative 'vectorized' implementation of the (unweighted) UniFrac calculation
+##############################################################################
+#' Calculate unweighted UniFrac from an abundance matrix and a tree.
 #'
-#' @param OTU otuTable in samples-by-species orientation
+#' These methods depend on the picante and ape packages, as currently implemented.
 #'
-#' @param tree object of class \code{phylo}
+#' @param OTU otuTable, or a more-complex object that contains an otuTable.
 #'
-#' @keywords UniFrac
+#' @param tree object of class \code{phylo}, defined by ape package.
+#'
 #' @return a distance matrix
 #' @seealso wUniFrac unifrac
 #' 
+#' @rdname UniFrac-methods
 #' @export
 #' @examples #
-UniFrac = function(OTU, tree){
-	require(picante)
+setGeneric("UniFrac", function(OTU, tree) standardGeneric("UniFrac"))
+###############################################################################
+#' Calculate unweighted UniFrac from an abundance matrix and a tree.
+#'
+#' @exportMethod UniFrac
+#'
+#' @aliases UniFrac,otuTable,phylo-method
+#' @docType methods
+#' @rdname UniFrac-methods
+setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
+	#require(picante)
     if (is.null(tree$edge.length)) {
         stop("Tree has no branch lengths, cannot compute UniFrac")
     }
@@ -204,54 +242,38 @@ UniFrac = function(OTU, tree){
     # ensure that OTU is a matrix class OTU table
     OTU <- as.matrix(OTU)
     # s is the number of samples. In Picante, the OTU-table is samples x species instead of species x samples
-    s <- nrow(OTU)
+    s   <- nrow(OTU)
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn = combn(rownames(OTU), 2)
+    spn <- combn(rownames(OTU), 2)
     # OTU_comb sums the species abundances of all pair-wise combinations of samples from OTU
 	# This is a way of combining presence/absence. Effictively "OR" logic for unweighted UniFrac
-	OTU_comb = t(apply(spn,2,function(i,OTU){ OTU[i[1],] + OTU[i[2],] },OTU))
-    rownames(OTU_comb) = apply(spn,2,paste,sep="",collapse="_") 	
+	OTU_comb <- t(apply(spn,2,function(i,OTU){ OTU[i[1],] + OTU[i[2],] },OTU))
+    rownames(OTU_comb) <- apply(spn, 2, paste, sep="", collapse="_") 	
 	# pdOTU is the total branch lengths of each sample
-	pdOTU <- pd(OTU, tree)
+	pdOTU <- picante::pd(OTU, tree)
     # define pdOTU_comb, the total branch lengths for all combined sample pairs.
-    pdOTU_comb <- pd(OTU_comb, tree)
+    pdOTU_comb <- picante::pd(OTU_comb, tree)
     # initialize UniFrac with NAs, a symmetric distance matrix
-    UniFrac <- matrix(NA, s, s)
+    UniFracMat <- matrix(NA, s, s)
     # define the rows/cols of UniFrac with the sample names (rownames)    
     rownames(UniFrac) <- rownames(OTU)
     colnames(UniFrac) <- rownames(OTU)  
 	# Calculate unifrac at each index.
     for(i in 1:ncol(spn)){
-    	UniFrac[spn[2,i], spn[1,i]] <- 2 - ( pdOTU[spn[1, i], "PD"] + 
-        pdOTU[spn[2,i],"PD"] ) / pdOTU_comb[i, "PD"]
+		UniFracMat[spn[2,i], spn[1,i]] <- 2 - ( pdOTU[spn[1, i], "PD"] + 
+			pdOTU[spn[2,i],"PD"] ) / pdOTU_comb[i, "PD"]
     }
-    return(as.dist(UniFrac))
-}
-################################################################################
-# Extend UniFrac methods to handle phyloseq classes. 
-################################################################################
-setGeneric("UniFrac", function(OTU, tree) standardGeneric("UniFrac"))
-setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
-  # not yet re-written. Needs to be parallelized.
-  # Just borrow regular unifrac for now.
-  require("picante")
-  if ( speciesAreRows(OTU) ){
-		OTU = t( OTU )
-	}
-	unifrac(OTU@.Data, tree)  
+    return(as.dist(UniFracMat))
 })
+###############################################################################
+#' Calculate unweighted UniFrac from an abundance matrix and a tree.
+#'
+#' @exportMethod UniFrac
+#'
+#' @aliases UniFrac,otuTree,ANY-method
+#' @docType methods
+#' @rdname UniFrac-methods
 setMethod("UniFrac", signature("otuTree"), function(OTU, tree=NULL){
 	UniFrac(otuTable(OTU), tre(OTU))
-})
-################################################################################
-# Extend wUniFrac methods to handle phyloseq class. 
-################################################################################
-setGeneric("wUniFrac")
-setMethod("wUniFrac", signature("otuTree"),
-  function(OTU, tree=NULL, normalized=TRUE){
-	if ( speciesAreRows(OTU) ){
-		otu <- t( otuTable(OTU) )
-	} else { otu <- otuTable(OTU) }
-	wUniFrac(otu, tre(OTU), normalized)
 })
 ################################################################################

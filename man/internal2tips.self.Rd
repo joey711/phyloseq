@@ -17,8 +17,8 @@
   A modified version of the \code{\link{internal2tips}}
   function, such that when a tip is provided as int.node,
   that tip is returned. This is a more intuitive behavior
-  than the picante version, which returns NULL, and
-  currently used in the \code{\link{wUniFrac}}.
+  than the original picante version, which returns NULL.
+  This is currently used in \code{\link{wUniFrac}}.
 }
 \examples{
 #

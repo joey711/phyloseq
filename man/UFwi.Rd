@@ -31,5 +31,4 @@
   wUniFrac
 }
 \keyword{internal}
-\keyword{internal2tips}
 

@@ -24,12 +24,22 @@
 #' @return The object, \code{x}, in its original class, but with the specified
 #'   species merged into one entry in all relevant components.
 #'
-#' @import ape phylobase
-#' @export
-#' @keywords merge species
 #' @seealso tipglom taxglom merge_phyloseq
+#'
+#' @export
+#' @rdname mergespecies-methods
 #' @examples #
+#' ## data(ex1)
+#' ## makenetwork(otuTable(ex1), TRUE)
 setGeneric("mergespecies", function(x, eqspecies, archetype=1) standardGeneric("mergespecies"))
+###############################################################################
+#' Merge a subset of the taxa in an otuTable.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,otuTable-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
@@ -55,6 +65,14 @@ setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
 	species.names(x) <- species.names(x)[-removeIndex]	
 	return(x)
 })
+###############################################################################
+#' Merge a subset of the taxa in a phylo-class tree object.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,phylo-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
@@ -67,10 +85,20 @@ setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- drop.tip(x, removeIndex)
+	x           <- ape::drop.tip(x, removeIndex)
 	return(x)
 })
-# phylo4 version:
+###############################################################################
+#' Merge a subset of the taxa in a phylo4-class tree object.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,phylo4-method
+#' @docType methods
+#' @rdname mergespecies-methods
+#'
+#' @import phylobase
+#'
 setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
@@ -86,11 +114,21 @@ setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
 	x           <- subset(x, tips.exclude=removeIndex)# drop.tip(x, removeIndex)
 	return(x)
 })
-# The method name otuTree4 is a placeholder while migrate "phylo"
-# slot to "phylo4" slot of phylobase package. Lots more potential
-# with phylo4, phylo4d, etc. E.g. merge could store the "lost"
-# tips as data (phylo4d) associated with each tip. More effective
-# than making separate list object to keep track
+###############################################################################
+#' Merge a subset of the taxa in an otuTree4 object.
+#'
+#' Note to developers: The class name otuTree4 is a placeholder.
+#' plan would be to migrate all ape-derived "phylo" classes to
+#' \code{phylo4} of phylobase package (which has a namespace). Lots more potential
+#' with phylo4, phylo4d, etc. E.g. merge could store the "lost"
+#' tips as data (phylo4d) associated with each tip. More effective
+#' than making separate list object to keep track.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,otuTree4-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "otuTree4", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
@@ -103,6 +141,14 @@ setMethod("mergespecies", "otuTree4", function(x, eqspecies, archetype=1){
 	newtre <- mergespecies(tre(x), eqspecies, archetype)
 	phyloseq(newOTU, newtre)
 })
+###############################################################################
+#' Merge a subset of the taxa in an otuTree object.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,otuTree-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "otuTree", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
@@ -115,12 +161,28 @@ setMethod("mergespecies", "otuTree", function(x, eqspecies, archetype=1){
 	newtre <- mergespecies(tre(x), eqspecies, archetype)
 	phyloseq(newOTU, newtre)
 })
+###############################################################################
+#' Merge a subset of the taxa in an phyloseq object.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,phyloseq-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "phyloseq", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	otuTable(x) <- mergespecies(otuTable(x), eqspecies, archetype)
 	return(x)
 })
+###############################################################################
+#' Merge a subset of the taxa in an phyloseqTree object.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,phyloseqTree-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "phyloseqTree", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
@@ -128,6 +190,14 @@ setMethod("mergespecies", "phyloseqTree", function(x, eqspecies, archetype=1){
 	x <- phyloseq(otuTable(y), tre(y), sampleMap(x))
 	return(x)
 })
+###############################################################################
+#' Merge a subset of the taxa in an phyloseqTaxTree object.
+#'
+#' @exportMethod mergespecies
+#'
+#' @aliases mergespecies,phyloseqTaxTree-method
+#' @docType methods
+#' @rdname mergespecies-methods
 setMethod("mergespecies", "phyloseqTaxTree", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 

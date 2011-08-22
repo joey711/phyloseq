@@ -1,6 +1,6 @@
 \name{phyloseq}
 \alias{phyloseq}
-\title{Define the phyloseq class.}
+\title{Build objects for the phyloseq package.}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package, as well as \code{phylo} and
@@ -28,8 +28,6 @@
   and an object of class \code{phyloseq} is returned.
 }
 \description{
-  Contains otuTable and sampleMap slots.
-
   \code{phyloseq()} is both a constructor and accessor
   method, on account of the ambiguation of `phyloseq' being
   both the package name and a class name (the

@@ -24,14 +24,13 @@
 #' @return same output as \code{vegan::cca}.
 #' @keywords constraind correspondence analysis CCA cca
 #' @seealso rda.phyloseq
-#' @import vegan
 #' @export
 #' @examples #
 #' ## data(ex1)
 #' ## cca.phyloseq(ex1 ~ Diet + Gender)
 setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
 setMethod("cca.phyloseq", "formula", function(X, data=NULL){
-	require(vegan)
+	#require(vegan)
 	phylobject <- get( as.character(X)[2] )
 	OTU        <- otuTable( phylobject )
 	if( speciesAreRows(OTU) ){

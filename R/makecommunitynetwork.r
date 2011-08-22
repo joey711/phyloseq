@@ -29,11 +29,29 @@
 #' @return Creates a plot of the adjacency graph and optionally returns the
 #'  community groups.
 #' 
-#' @import vegan igraph
 #' @author Susan Holmes
 #' @export
+#' @rdname makenetwork-methods
 #' @examples #
-makenetwork=function(abund,plotgraph=TRUE,community=TRUE,threshold=0,incommon=0.4,method="jaccard"){
+#' ## data(ex1)
+#' ## makenetwork(otuTable(ex1), TRUE)
+setGeneric("makenetwork", function(abund, plotgraph=TRUE, 
+			community=TRUE, threshold=0, incommon=0.4, method="jaccard")
+	standardGeneric("makenetwork")
+)
+###############################################################################
+#' Creates a taxa network from an otuTable.
+#'
+#' @import igraph 
+#' @author Susan Holmes
+#' @exportMethod makenetwork
+#' @examples #
+#'
+#' @aliases makenetwork,otuTable-method
+#' @docType methods
+#' @rdname makenetwork-methods
+setMethod("makenetwork", "otuTable", function(abund, plotgraph=TRUE, 
+	community=TRUE, threshold=0, incommon=0.4, method="jaccard"){
 	# abundance is the abundance table with no rows that are all zero
 	# plotgraph is a toggle for whether a plotted network is requested
 	# if commun=TRUE the function will also output the community groups	
@@ -45,22 +63,22 @@ makenetwork=function(abund,plotgraph=TRUE,community=TRUE,threshold=0,incommon=0.
 	### this is for the later analysis of groups
 	if (is.na(dimnames(abund)[[1]][1])) dimnames(abund)=list(1:nrow(abund),1:ncol(abund))
 	### Only take the rows where there are at least one value over threshold
-	abundance = abund[rowSums(abund)>threshold,]
-	n=nrow(abundance)
+	abundance <- abund[rowSums(abund)>threshold,]
+	n         <- nrow(abundance)
 
 	# Convert to 1,0 binary matrix for input to vegdist. -0 converts to numeric
-	presenceAbsence = (abundance > threshold) - 0
+	presenceAbsence <- (abundance > threshold) - 0
 
 	##Compute the Jaccard distance between the rows, this will only make points
 	##closer if they are actually present together	
 	##You could use any of the other distances in vegan or elsewhere
-	jaccpa=vegdist(presenceAbsence, method)
+	jaccpa <- vegan::vegdist(presenceAbsence, method)
 	###Distances in R are vectors by default, we make them into matrices	
-	jaacm=as.matrix(jaccpa)
-	coinc=matrix(0,n,n)
-	ind1=which((jaacm>0 & jaacm<(1-incommon)),arr.ind=TRUE)
-	coinc[ind1]=1
-	dimnames(coinc)=list(dimnames(abundance)[[1]],dimnames(abundance)[[1]])	
+	jaacm <- as.matrix(jaccpa)
+	coinc <- matrix(0,n,n)
+	ind1  <- which((jaacm>0 & jaacm<(1-incommon)),arr.ind=TRUE)
+	coinc[ind1] <- 1
+	dimnames(coinc) <- list(dimnames(abundance)[[1]],dimnames(abundance)[[1]])	
 	###If using the network package create the graph with	
 	###	g<-as.network.matrix(coinc,matrix.type="adjacency")
 	####Here I use the igraph adjacency command
@@ -86,15 +104,33 @@ makenetwork=function(abund,plotgraph=TRUE,community=TRUE,threshold=0,incommon=0.
 		groups=list(group0,group1)
 		return(groups)
 	}
-}
+})
 ###############################################################################
 # Extend for PhyloSeq data class
 ###############################################################################
-setGeneric("makenetwork")
+#' Creates a taxa network from an otuTable.
+#'
+#' @author Susan Holmes
+#' @exportMethod makenetwork
+#' @examples #
+#'
+#' @aliases makenetwork,phyloseq-method
+#' @docType methods
+#' @rdname makenetwork-methods
 setMethod("makenetwork", signature("phyloseq"),
 	function(abund,plotgraph=TRUE,community=TRUE,threshold=0,incommon=0.4,method="jaccard"){
 		callNextMethod(t(otuTable(abund)),plotgraph,community,threshold,incommon,method)
 })
+###############################################################################
+#' Creates a taxa network from an otuTable.
+#'
+#' @author Susan Holmes
+#' @exportMethod makenetwork
+#' @examples #
+#'
+#' @aliases makenetwork,otuTree-method
+#' @docType methods
+#' @rdname makenetwork-methods
 setMethod("makenetwork", signature("otuTree"),
 	function(abund,plotgraph=TRUE,community=TRUE,threshold=0,incommon=0.4,method="jaccard"){
 		callNextMethod(t(otuTable(abund)),plotgraph,community,threshold,incommon,method)
