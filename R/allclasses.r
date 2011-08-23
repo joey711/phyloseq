@@ -116,14 +116,28 @@ setClass("phyloseq", representation(otuTable="otuTable", sampleMap="sampleMap"))
 #' Contains otuTable, phylo (tre) slots.
 #' 
 #' \describe{
-#'    \item{otuTable}{a single object of class otuTable}
-#'    \item{tre}{a single object of class phylo, from the package ape}
+#'    \item{otuTable}{a single object of class otuTable.}
+#'    \item{tre}{a single object of class phylo, from the package ape.}
 #'   }
 #'
 #' @name otuTree-class
 #' @rdname otuTree-class
 #' @exportClass otuTree
-setClass("otuTree",  representation(otuTable="otuTable", tre="phylo"))				
+setClass("otuTree",  representation(otuTable="otuTable", tre="phylo"))
+########################################
+#' Define the otuTax class.
+#'
+#' Contains otuTable, phylo (tre) slots.
+#' 
+#' \describe{
+#'    \item{otuTable}{a single object of class otuTable.}
+#'    \item{taxTab}{a single object of class taxonomyTable.}
+#'   }
+#'
+#' @name otuTax-class
+#' @rdname otuTax-class
+#' @exportClass otuTax
+setClass(Class="otuTax", representation=representation(otuTable="otuTable", taxTab="taxonomyTable"))
 ########################################
 #' Define the phyloseqTree class.
 #'

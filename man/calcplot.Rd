@@ -38,6 +38,7 @@
   plotting.
 }
 \seealso{
-  rda.phyloseq cca.phyloseq rda cca
+  \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
+  \code{\link{rda}}, \code{\link{cca}}
 }
 

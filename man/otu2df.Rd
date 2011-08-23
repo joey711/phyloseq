@@ -37,7 +37,4 @@ in the ggplot2 framework.}
 \seealso{
   taxaplot
 }
-\keyword{graphic}
-\keyword{internal}
-\keyword{taxonomy}
 

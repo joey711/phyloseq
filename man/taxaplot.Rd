@@ -77,6 +77,7 @@
 # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
 }
 \seealso{
-  otu2df qplot ggplot
+  \code{\link{otu2df}}, \code{\link{qplot}},
+  \code{\link{ggplot}}
 }
 

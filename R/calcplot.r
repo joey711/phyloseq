@@ -240,7 +240,9 @@ plot_ordination_phyloseq <- function(mod, object,
 #' @return A ggplot2 graphics object. If not stored as a variable, a graphic
 #'  object will be produced on the default device. 
 #'
-#' @seealso rda.phyloseq cca.phyloseq rda cca 
+#' @export
+#' @seealso \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
+#'  \code{\link{rda}}, \code{\link{cca}}
 calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 	if( substr(RDA_or_CCA, 1, 1) %in% c("R", "r") ){
 		mod <- rda.phyloseq(X)		

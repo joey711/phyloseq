@@ -19,7 +19,6 @@
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
-#' @keywords internal taxonomy graphic
 #' @seealso taxaplot
 #' @export
 #' @examples #
@@ -138,7 +137,7 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An alternative
 #'  \code{facet_grid} could be \code{sample ~ TaxaGroup}.
 #'
-#' @seealso otu2df qplot ggplot
+#' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
 #' @export
 #' @examples #
 #' # data(ex1)

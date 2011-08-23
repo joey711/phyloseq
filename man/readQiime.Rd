@@ -3,7 +3,7 @@
 \title{Import function to read output from the QIIME pipeline.}
 \usage{
   readQiime(otufilename = NULL, mapfilename = NULL,
-  treefilename = NULL, biotaxonomy = NULL)
+  treefilename = NULL, biotaxonomy = NULL, ...)
 }
 \arguments{
   \item{otufilename}{A character string indicating the file
@@ -29,6 +29,11 @@
   of each taxonomic level in the taxonomy-portion of the
   otu-file, which may not specify these levels explicitly.
   Default value is \code{NULL}.}
+
+  \item{...}{Additional arguments passed to
+  \code{\link{read.tree}}, as necessary. Make sure that
+  your phylogenetic tree file is readable by
+  \code{\link{read.tree}} prior to calling this function.}
 }
 \value{
   The class of the object returned by \code{readQiime}
@@ -53,6 +58,8 @@
 #
 }
 \seealso{
-  phyloseq_merge phyloseq read.table read.nexus readNexus
+  \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
+  \code{\link{read.table}}, \code{\link{read.nexus}},
+  \code{\link{readNexus}}
 }
 

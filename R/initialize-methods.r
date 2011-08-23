@@ -110,6 +110,13 @@ setMethod("initialize", "otuTree", function(.Object, ...) {
 	species.names(.Object@otuTable) <- species
 	.Object
 })
+setMethod("initialize", "otuTax", function(.Object, ...) {
+	.Object <- callNextMethod()
+	species <- intersect(rownames(.Object@taxTab), species.names(.Object))
+	.Object@taxTab    <- taxTab(.Object)[species, ]
+	species.names(.Object@otuTable) <- species
+	.Object
+})
 setMethod("initialize", "phyloseq", function(.Object, ...) {
 	.Object <- callNextMethod()
 	samples <- intersect(rownames(.Object@sampleMap), sample.names(.Object))

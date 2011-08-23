@@ -6,7 +6,7 @@
 }
 \details{
   \describe{ \item{otuTable}{a single object of class
-  otuTable} \item{tre}{a single object of class phylo, from
-  the package ape} }
+  otuTable.} \item{tre}{a single object of class phylo,
+  from the package ape.} }
 }
 

@@ -40,6 +40,7 @@
 setGeneric("otuTable", function(object, ...) standardGeneric("otuTable"))
 setMethod("otuTable", "otuTable", function(object) object)
 setMethod("otuTable", "phyloseq", function(object) object@otuTable)
+setMethod("otuTable", "otuTax", function(object) object@otuTable)
 setMethod("otuTable", "otuTree", function(object) object@otuTable)
 setMethod("otuTable", "otuTree4", function(object) object@otuTable)
 # The following is for creating otuTables from a raw abundance matrix.
@@ -135,6 +136,7 @@ samplemap <- sampleMap
 #' # taxTab(ex1)
 #' # tax1
 setGeneric("taxTab", function(object) standardGeneric("taxTab"))
+setMethod("taxTab", "otuTax", function(object) object@taxTab)
 setMethod("taxTab", "phyloseqTax", function(object) object@taxTab)
 # The following is for creating sampleMap from a data.frame
 setMethod("taxTab", "matrix", function(object){

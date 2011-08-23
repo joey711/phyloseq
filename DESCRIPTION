@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.2.5
-Date: 2011-08-21
+Version: 0.2.5.1
+Date: 2011-08-23
 Title: Analyze pre-processed phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
