@@ -13,9 +13,16 @@
 #' each sample in \code{x} for species \code{i}
 #' 
 #' @seealso getSpecies species.names sample.names
+#'
+#' @rdname getSamples-methods
+#' @docType methods
 #' @export
+#'
 #' @examples #
 setGeneric("getSamples", function(x, i) standardGeneric("getSamples"))
+################################################################################
+#' @aliases getSamples,otuTable-method
+#' @rdname getSamples-methods
 setMethod("getSamples", "otuTable", function(x, i){
 	if( speciesAreRows(x) ){
 		as(x, "matrix")[i, ]
@@ -23,10 +30,10 @@ setMethod("getSamples", "otuTable", function(x, i){
 		as(x, "matrix")[, i]
 	}
 })
-setMethod("getSamples", "otuTree", function(x, i){
-	getSamples(otuTable(x), i)
-})
-setMethod("getSamples", "phyloseq", function(x, i){
+################################################################################
+#' @aliases getSamples,phyloseqFather-method
+#' @rdname getSamples-methods
+setMethod("getSamples", "phyloseqFather", function(x, i){
 	getSamples(otuTable(x), i)
 })
 ################################################################################
@@ -44,9 +51,15 @@ setMethod("getSamples", "phyloseq", function(x, i){
 #' each species in \code{x} for sample \code{i}
 #' 
 #' @seealso getSpecies species.names sample.names
+#'
+#' @rdname getSpecies-methods
+#' @docType methods
 #' @export
+#'
 #' @examples #
 setGeneric("getSpecies", function(x, i) standardGeneric("getSpecies"))
+#' @aliases getSpecies,otuTable-method
+#' @rdname getSpecies-methods
 setMethod("getSpecies", "otuTable", function(x, i){
 	if( speciesAreRows(x) ){
 		as(x, "matrix")[, i]
@@ -54,10 +67,9 @@ setMethod("getSpecies", "otuTable", function(x, i){
 		as(x, "matrix")[i, ]
 	}
 })
-setMethod("getSpecies", "otuTree", function(x, i){
-	getSpecies(otuTable(x), i)
-})
-setMethod("getSpecies", "phyloseq", function(x, i){
+#' @aliases getSpecies,phyloseqFather-method
+#' @rdname getSpecies-methods
+setMethod("getSpecies", "phyloseqFather", function(x, i){
 	getSpecies(otuTable(x), i)
 })
 ################################################################################

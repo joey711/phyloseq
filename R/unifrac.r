@@ -148,17 +148,13 @@ wUniFracPair = function(OTU, tree, A, B, UFwi=UFwi, normalized=TRUE){
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' @seealso UniFrac unifrac vegdist
 #' 
+#' @docType methods
 #' @export
 #' @rdname wUniFrac-methods
 #' @examples #
 setGeneric("wUniFrac", function(OTU, tree, normalized=TRUE) standardGeneric("wUniFrac"))
 ################################################################################
-#' Calculate weighted UniFrac from an abundance matrix and a tree.
-#'
-#' @exportMethod wUniFrac
-#'
 #' @aliases wUniFrac,otuTable,phylo-method
-#' @docType methods
 #' @rdname wUniFrac-methods
 setMethod("wUniFrac", signature("otuTable", "phylo"),
 										function(OTU, tree, normalized=TRUE){
@@ -189,22 +185,18 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
     return(as.dist(UniFrac))
 })
 ################################################################################
-#' Calculate weighted UniFrac from an abundance matrix and a tree.
-#'
-#' @exportMethod wUniFrac
-#'
 #' @aliases wUniFrac,otuTree,ANY-method
-#' @docType methods
 #' @rdname wUniFrac-methods
+#' @import phylobase
 setMethod("wUniFrac", signature("otuTree"), 
-								function(OTU, tree=NULL, normalized=TRUE){
+		function(OTU, tree=NULL, normalized=TRUE){
 				
 	if ( speciesAreRows(OTU) ){
 		otu <- t( otuTable(OTU) )
 	} else { 
 		otu <- otuTable(OTU)
 	}
-	wUniFrac(otu, tre(OTU), normalized)
+	wUniFrac(otu, as(tre(OTU), "phylo"), normalized)
 })
 ##############################################################################
 ##############################################################################
@@ -219,17 +211,13 @@ setMethod("wUniFrac", signature("otuTree"),
 #' @return a distance matrix
 #' @seealso wUniFrac unifrac
 #' 
+#' @docType methods
 #' @rdname UniFrac-methods
 #' @export
 #' @examples #
 setGeneric("UniFrac", function(OTU, tree) standardGeneric("UniFrac"))
 ###############################################################################
-#' Calculate unweighted UniFrac from an abundance matrix and a tree.
-#'
-#' @exportMethod UniFrac
-#'
 #' @aliases UniFrac,otuTable,phylo-method
-#' @docType methods
 #' @rdname UniFrac-methods
 setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
 	#require(picante)
@@ -266,14 +254,9 @@ setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
     return(as.dist(UniFracMat))
 })
 ###############################################################################
-#' Calculate unweighted UniFrac from an abundance matrix and a tree.
-#'
-#' @exportMethod UniFrac
-#'
 #' @aliases UniFrac,otuTree,ANY-method
-#' @docType methods
 #' @rdname UniFrac-methods
 setMethod("UniFrac", signature("otuTree"), function(OTU, tree=NULL){
-	UniFrac(otuTable(OTU), tre(OTU))
+	UniFrac(otuTable(OTU), as(tre(OTU), "phylo") )
 })
 ################################################################################

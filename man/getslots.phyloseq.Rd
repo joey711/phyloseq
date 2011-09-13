@@ -1,8 +1,13 @@
 \name{getslots.phyloseq}
 \alias{getslots.phyloseq}
-\title{Like getSlots, but returns the class name if argument is component data object.}
+\title{return the slot names of phyloseq objects.}
 \usage{
   getslots.phyloseq(x)
+}
+\arguments{
+  \item{x}{An object of a class defined by the
+  phyloseq-package. Component data and complex classes are
+  both acceptable.}
 }
 \value{
   identical to getSlots. A named character vector of the
@@ -22,5 +27,4 @@
 \seealso{
   merge_phyloseq
 }
-\keyword{internal}
 

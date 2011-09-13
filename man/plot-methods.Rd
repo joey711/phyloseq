@@ -1,15 +1,24 @@
 \docType{methods}
 \name{plot}
-\alias{"plot,otuTree-method"}
-\alias{"plot,phyloseq-method"}
-\alias{"plot,phyloseqTree-method"}
 \alias{plot}
-\title{Plot an otuTree object as a simple phylogenetic tree.}
+\alias{plot,otuSamTax,ANY-method}
+\alias{plot,otuSamTree,ANY-method}
+\alias{plot,otuTree,ANY-method}
+\title{# #  Plot an otuTree object as a simple phylogenetic tree.
+# #
+# #}
+\arguments{
+  \item{x}{an \code{otuTree} object. # #}
+
+  \item{...}{Additional plotting parameters, providede to
+  \code{ape::plot.phylo()}}
+}
 \description{
-  Plot an otuTree object as a simple phylogenetic tree.
+  # # Plot an otuTree object as a simple phylogenetic tree.
+  # # # #
 
-  Plot a phyloseq object as a taxaplot style barplot.
+  Plot a otuSam object as a taxaplot style barplot.
 
-  Plot a phyloseqTree object as an annotated phylogenetic
+  Plot a otuSamTree object as an annotated phylogenetic
 }
 

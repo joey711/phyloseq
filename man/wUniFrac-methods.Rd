@@ -1,8 +1,8 @@
 \docType{methods}
 \name{wUniFrac}
-\alias{"wUniFrac,otuTable,phylo-method"}
-\alias{"wUniFrac,otuTree,ANY-method"}
 \alias{wUniFrac}
+\alias{wUniFrac,otuTable,phylo-method}
+\alias{wUniFrac,otuTree,ANY-method}
 \title{Calculate weighted UniFrac for all samples in an OTU table.}
 \arguments{
   \item{OTU}{otuTable, or a more-complex object that

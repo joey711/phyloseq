@@ -1,4 +1,4 @@
-####################################################################################
+################################################################################
 # vegan::cca "extension".
 # formula is main input to this function. This complicates signature handling.
 # A new method with a separate name is defined instead.
@@ -6,7 +6,7 @@
 # Must transpose the phyloseq otuTable to fit the vegan::cca convention
 # Whether-or-not to transpose needs to be a check, based on the 
 #   "SpeciesAreRows" slot value
-####################################################################################
+################################################################################
 #' phyloseq package extension for \code{vegan::cca}.
 #'
 #' A formula is main input to \code{vegan::cca}. This complicates dispatch based
@@ -22,15 +22,22 @@
 #'  separate for some reason.
 #'
 #' @return same output as \code{vegan::cca}.
-#' @keywords constraind correspondence analysis CCA cca
-#' @seealso rda.phyloseq
+#'
+#' @seealso \code{\link{rda.phyloseq}}
+#'
+#' @rdname cca.phyloseq-methods
+#' @docType methods
+#'
 #' @export
+#' @import vegan
 #' @examples #
 #' ## data(ex1)
 #' ## cca.phyloseq(ex1 ~ Diet + Gender)
 setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
+################################################################################
+#' @aliases cca.phyloseq,formula-method
+#' @rdname cca.phyloseq-methods
 setMethod("cca.phyloseq", "formula", function(X, data=NULL){
-	#require(vegan)
 	phylobject <- get( as.character(X)[2] )
 	OTU        <- otuTable( phylobject )
 	if( speciesAreRows(OTU) ){
@@ -46,6 +53,7 @@ setMethod("cca.phyloseq", "formula", function(X, data=NULL){
 	}
 	vegan::cca(newFormula, data=data)	
 })
+################################################################################
 ####################################################################################
 # Have not implemented cca.phyloseq for the (X, Y, Z, ...) variant of cca inputs. yet.
 ####################################################################################

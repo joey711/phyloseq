@@ -99,18 +99,39 @@ setClass("taxonomyTable", representation(nspecies="integer"), contains = "matrix
 # 
 # 
 ############################################################################
-#' Define the phyloseq class.
+#' Keystone S4 virtual class inherited by all other complex phyloseq classes.
+#'
+#' All other complex classes inherit by virtue of the fact that they 
+#' contain an otuTable as one of their data components.
+#' 
+#' Slots:
+#' \describe{
+#'    \item{otuTable}{ Contains an otu abundance table object. See otuTable class.}
+#'  }
+#' @name phyloseqFather-class
+#' @rdname phyloseqFather-class
+#' @exportClass phyloseqFather
+setClass(Class="phyloseqFather", 
+	representation=representation(otuTable="otuTable", "VIRTUAL")
+)
+################################################################################
+#' Define the otuSam class.
 #'
 #' Contains otuTable and sampleMap slots.
 #' \describe{
 #'    \item{otuTable}{a single object of class otuTable.}
 #'    \item{sampleMap}{a single object of class sampleMap.}
 #' }
-#' @name phyloseq-class
-#' @rdname phyloseq-class
-#' @exportClass phyloseq
-setClass("phyloseq", representation(otuTable="otuTable", sampleMap="sampleMap"))
-########################################
+#' @name otuSam-class
+#' @rdname otuSam-class
+#' @exportClass otuSam
+setClass(Class="otuSam", 
+	representation=representation(sampleMap="sampleMap"),
+	contains="phyloseqFather"
+) 
+# OLD
+#setClass("phyloseq", representation(otuTable="otuTable", sampleMap="sampleMap"))
+################################################################################
 #' Define the otuTree class.
 #'
 #' Contains otuTable, phylo (tre) slots.
@@ -123,8 +144,10 @@ setClass("phyloseq", representation(otuTable="otuTable", sampleMap="sampleMap"))
 #' @name otuTree-class
 #' @rdname otuTree-class
 #' @exportClass otuTree
-setClass("otuTree",  representation(otuTable="otuTable", tre="phylo"))
-########################################
+setClass(Class="otuTree", representation=representation(tre="phylo4"), contains="phyloseqFather")
+# OLD
+#setClass("otuTree",  representation(otuTable="otuTable", tre="phylo"))
+################################################################################
 #' Define the otuTax class.
 #'
 #' Contains otuTable, phylo (tre) slots.
@@ -137,40 +160,44 @@ setClass("otuTree",  representation(otuTable="otuTable", tre="phylo"))
 #' @name otuTax-class
 #' @rdname otuTax-class
 #' @exportClass otuTax
-setClass(Class="otuTax", representation=representation(otuTable="otuTable", taxTab="taxonomyTable"))
-########################################
-#' Define the phyloseqTree class.
+setClass(Class="otuTax", representation=representation(taxTab="taxonomyTable"), contains="phyloseqFather")
+# OLD
+#setClass(Class="otuTax", representation=representation(otuTable="otuTable", taxTab="taxonomyTable"))
+################################################################################
+#' Define the otuSamTree class.
 #'
-#' Contains otuTable, sampleMap, phylo (tre) slots. Inherits the phyloseq and
+#' Contains otuTable, sampleMap, phylo (tre) slots. Inherits the otuSam and
 #' otuTree classes.
 #' \describe{
 #'    \item{otuTable}{a single object of class otuTable}
 #'    \item{sampleMap}{a single object of class sampleMap.}
 #'    \item{tre}{a single object of class phylo, from the package ape}
 #' }
-#' @name phyloseqTree-class
-#' @rdname phyloseqTree-class
-#' @exportClass phyloseqTree
-setClass("phyloseqTree", contains=c("phyloseq", "otuTree"))
-########################################
-#' Define the phyloseqTax class.
+#' @name otuSamTree-class
+#' @rdname otuSamTree-class
+#' @exportClass otuSamTree
+setClass("otuSamTree", contains=c("otuSam", "otuTree"))
+################################################################################
+#' Define the otuSamTax class.
 #'
-#' Inherits the phyloseq class.
+#' Inherits the otuSam class.
 #' \describe{
 #'    \item{otuTable}{a single object of class otuTable.}
 #'    \item{sampleMap}{a single object of class sampleMap.}
 #'    \item{taxTab}{a single object of class taxonomyTable.}
 #' }
-#' @name phyloseqTax-class
-#' @rdname phyloseqTax-class
-#' @exportClass phyloseqTax
-setClass("phyloseqTax", representation(taxTab="taxonomyTable"), contains="phyloseq")	
-########################################
-#' Define the phyloseqTaxTree class.
+#' @name otuSamTax-class
+#' @rdname otuSamTax-class
+#' @exportClass otuSamTax
+setClass("otuSamTax",  contains=c("otuSam", "otuTax"))
+# OLD
+#setClass("otuSamTax", representation(taxTab="taxonomyTable"), contains="otuSam")	
+################################################################################
+#' Define the otuSamTaxTree class.
 #'
 #' Contains all (current) component classes: otuTable, sampleMap,
 #' taxonomyTable (taxTab), and phylo (tre). 
-#' Inherits phyloseqTax and phyloseqTree.
+#' Inherits otuSamTax and otuSamTree.
 #' 
 #' \describe{
 #'    \item{otuTable}{a single object of class otuTable.}
@@ -178,23 +205,7 @@ setClass("phyloseqTax", representation(taxTab="taxonomyTable"), contains="phylos
 #'    \item{taxTab}{ a single object of class taxonomyTable.}
 #'    \item{tre}{ a single object of class phylo, from the package ape}
 #' }
-#' @name phyloseqTaxTree-class
-#' @rdname phyloseqTaxTree-class
-#' @exportClass phyloseqTaxTree
-setClass("phyloseqTaxTree", contains=c("phyloseqTax", "phyloseqTree"))	
-########################################
-#' Define the otuTree4 class.
-#'
-#' Identical to otuTree class, but uses \code{phylo4} class for tree slot
-#' instead of \code{phylo}.
-#' \describe{
-#'    \item{otuTable}{ a single object of class otuTable}
-#'    \item{tre}{ a single object of class phylo4, imported from phylobase.}
-#' }
-#' @exportClass otuTree4
-#'
-#' @name otuTree4-class
-#' @rdname otuTree4-class
-setClass("otuTree4",  representation(otuTable="otuTable", tre="phylo4"))
-### # # @importClassesFrom phylobase phylo4
-
+#' @name otuSamTaxTree-class
+#' @rdname otuSamTaxTree-class
+#' @exportClass otuSamTaxTree
+setClass("otuSamTaxTree", contains=c("otuSamTax", "otuSamTree"))	

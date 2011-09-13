@@ -1,8 +1,8 @@
 \docType{methods}
 \name{UniFrac}
-\alias{"UniFrac,otuTable,phylo-method"}
-\alias{"UniFrac,otuTree,ANY-method"}
 \alias{UniFrac}
+\alias{UniFrac,otuTable,phylo-method}
+\alias{UniFrac,otuTree,ANY-method}
 \title{Calculate unweighted UniFrac from an abundance matrix and a tree.}
 \arguments{
   \item{OTU}{otuTable, or a more-complex object that

@@ -20,14 +20,20 @@
 #'  does not already contain \code{sampleMap} or you are keeping the data 
 #'  separate for some reason.
 #'
-#' @return same output as \code{\link{rda}}
-#' @keywords redundancy analysis RDA rda
-#' @seealso cca.phyloseq
+#' @return same output as \code{vegan::\link{rda}}
+#'
+#' @rdname rda.phyloseq-methods
+#' @docType methods
+#'
+#' @seealso \code{\link{cca.phyloseq}}
 #' @export
+#' @import vegan
 #' @examples #
 #' ## data(ex1)
 #' ## rda.phyloseq(ex1 ~ Diet + Gender)
 setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
+#' @aliases rda.phyloseq,formula-method
+#' @rdname rda.phyloseq-methods
 setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	#require(vegan)
 	phylobject <- get( as.character(X)[2] )

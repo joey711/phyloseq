@@ -36,11 +36,10 @@
 \examples{
 #
 ## data(ex1)
-## ex2 <- ex1
 ## # for reproducibility
 ## set.seed(711)
-## species.names(ex2) <- sample(species.names(ex1), 50)
-## plot(tre(ex2))
+## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
+## plot(as(tre(ex2), "phylo"))
 ## tipsymbols(pch=19)
 ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
 ## tiptext(2, labels="my.label")

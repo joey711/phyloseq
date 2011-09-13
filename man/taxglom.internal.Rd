@@ -9,17 +9,17 @@
   take place.}
 
   \item{tax}{for this internal function, tax must be a
-  character vector.}
+  character vector. \code{tax} is a vector in the core
+  internal function.}
 }
 \value{
   the agglomerated object. Class matches argument
   \code{object}.
 }
 \description{
-  tax is a vector in the core internal function
   taxglom.internal makes all the glomming happen, and
   delegates the object-handling issues to
   \code{mergespecies()}.
 }
-\keyword{internal.}
+\keyword{internal}
 

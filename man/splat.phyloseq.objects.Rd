@@ -4,6 +4,11 @@
 \usage{
   splat.phyloseq.objects(x)
 }
+\arguments{
+  \item{x}{An object of a class defined by the
+  phyloseq-package. Component data and complex classes are
+  both acceptable.}
+}
 \value{
   A named list, where each element is a component object
   that was contained in the argument, \code{x}. Each
@@ -21,5 +26,4 @@
 \seealso{
   merge_phyloseq
 }
-\keyword{internal}
 

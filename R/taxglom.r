@@ -29,16 +29,28 @@
 #' @return A taxonomically-agglomerated object with class matching
 #' the class of \code{object}.
 #'
+#' @rdname taxglom-methods
+#' @docType methods
+#' @export
+#'
+#' @examples
+#' ##
 setGeneric("taxglom", function(object, tax=NULL, taxlevel="Phylum") standardGeneric("taxglom"))
+#' @rdname taxglom-methods
+#' @aliases taxglom,otuTable,taxonomyTable-method
 setMethod("taxglom", c("otuTable", "taxonomyTable"), function(object, tax=NULL, taxlevel="Phylum"){
 	# vectorize the taxonomy table.
 	tax <- as(tax, "matrix")[, taxlevel]
 	taxglom.internal(object, tax)
 })
+#' @rdname taxglom-methods
+#' @aliases taxglom,otuTable,character-method
 setMethod("taxglom", c("otuTable", "character"), function(object, tax=NULL, taxlevel="Phylum"){
 	taxglom.internal(object, tax)
 })
-setMethod("taxglom", "phyloseqTax", function(object, tax=NULL, taxlevel="Phylum"){
+#' @rdname taxglom-methods
+#' @aliases taxglom,otuTax,ANY-method
+setMethod("taxglom", "otuTax", function(object, tax=NULL, taxlevel="Phylum"){
 	# vectorize the taxonomy table.
 	tax <- as(taxTab(object), "matrix")[, taxlevel]
 	taxglom.internal(object, tax)
@@ -46,17 +58,17 @@ setMethod("taxglom", "phyloseqTax", function(object, tax=NULL, taxlevel="Phylum"
 ################################################################################
 #' taxglom core internal function.
 #'
-#' tax is a vector in the core internal function
 #' taxglom.internal makes all the glomming happen, and delegates the
 #' object-handling issues to \code{mergespecies()}.
 #'
 #' @param object the object on which agglomeration is to take place.
 #'
 #' @param tax for this internal function, tax must be a character vector.
+#' \code{tax} is a vector in the core internal function.
 #' 
 #' @return the agglomerated object. Class matches argument \code{object}.
 #'
-#' @keywords internal.
+#' @keywords internal
 taxglom.internal <- function(object, tax){
 	# Remove NAs and useless
 	tax <- tax[ !tax %in% c("", " ", "\t") ]

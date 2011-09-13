@@ -21,9 +21,9 @@
 \description{
   Internal function, users should use the S4 method
   \code{\link{tipglom}}. Tree can be higher-order object
-  that contains a phylogenetic tree, e.g. otuTree,
-  otuTree4, etc. This is because \code{\link{mergespecies}}
-  can handle all the relevant objects, as can
+  that contains a phylogenetic tree, e.g. otuTree, etc.
+  This is because \code{\link{mergespecies}} can handle all
+  the relevant objects, as can
   \code{\link{getTipDistMatrix}}. Create Non-trivial OTU
   table, by agglomerating nearby tips. tipglom.internal is
   called by the S4 \code{tipglom} methods. It is useful if

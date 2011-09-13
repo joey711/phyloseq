@@ -2,36 +2,41 @@
 # extension of plot methods for different classes of objects in phyloseq package.
 # 
 ################################################################################
-#' Plot an otuTree object as a simple phylogenetic tree.
-#'
+# # #' Plot an otuTree object as a simple phylogenetic tree.
+# # #'
+# # #' @param x an \code{otuTree} object.
+# # #' @param ... Additional plotting parameters, providede to \code{ape::plot.phylo()}
+#' @export
 #' @name plot
-#' @aliases plot,otuTree-method
+#' @aliases plot,otuTree,ANY-method
 #' @docType methods
 #' @rdname plot-methods
 setMethod("plot", "otuTree", function(x, ...){
-	tree = tre(x)
-	plot(tree, ...)	
+	tree <- as(tre(x), "phylo")
+	ape::plot.phylo(tree, ...)	
 	nodelabels(as.character(1:max(tree$edge)),node=1:max(tree$edge))
 	edgelabels(as.character(1:nrow(tree$edge)),edge=1:nrow(tree$edge))
 })
 ################################################################################
-#' Plot a phyloseq object as a taxaplot style barplot.
+#' Plot a otuSam object as a taxaplot style barplot.
 #'
+#' @export
 #' @name plot
-#' @aliases plot,phyloseq-method
+#' @aliases plot,otuSamTax,ANY-method
 #' @docType methods
 #' @rdname plot-methods
-setMethod("plot", "phyloseq", function(x, ...){
+setMethod("plot", "otuSamTax", function(x, ...){
 	taxaplot(otu=x, ...)
 })
 ################################################################################
-#' Plot a phyloseqTree object as an annotated phylogenetic
+#' Plot a otuSamTree object as an annotated phylogenetic
 #'
+#' @export
 #' @name plot
-#' @aliases plot,phyloseqTree-method
+#' @aliases plot,otuSamTree,ANY-method
 #' @docType methods
 #' @rdname plot-methods
-setMethod("plot", "phyloseqTree", function(x, ...){
+setMethod("plot", "otuSamTree", function(x, ...){
 	plot_tree_phyloseq(x, ...)
 })
 ################################################################################

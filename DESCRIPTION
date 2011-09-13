@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.2.5.2
-Date: 2011-08-23
+Version: 0.3.7
+Date: 2011-09-13
 Title: Analyze pre-processed phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -9,15 +9,15 @@ Description: phyloseq is a set of classes, wrappers, and
     phylogenetic sequencing data.
 License: AGPL-3
 Imports:
-    igraph (>= 0.5),
     phylobase (>= 0.6.3),
-    multtest (>= 2.8)
+    igraph (>= 0.5),
+    multtest (>= 2.8),
+    vegan (>= 2.0)
 Depends:
-    R (>= 2.11.0),
+    R (>= 2.13.0),
     methods,
     picante (>= 1.3),
     ape (>= 2.7),
-    vegan (>= 1.17),
     ggplot2 (>= 0.8)
 Suggests:
     adephylo,
@@ -32,19 +32,16 @@ Collate:
     'phyloseq.r'
     'merge_phyloseq.r'
     'transpose-methods.r'
-    'subset.r'
-    'assignment_functions.R'
+    'replacement-methods.r'
     'show-methods.r'
     'plot-methods.r'
     'calcplot.r'
     'taxaplot.r'
     'prune_species.r'
     'readQiime.r'
-    'speciesSums.r'
-    'sampleSums.r'
     'mergespecies.r'
     'edgelist2clique.r'
-    'tipglom.r'
+    'tipGlom.R'
     'taxglom.r'
     'getvalues.r'
     'tip.annotate.r'
@@ -56,5 +53,9 @@ Collate:
     'cca.phyloseq.r'
     'rda.phyloseq.r'
     'mt.r'
-    'makecommunitynetwork.r'
     'envhash2otutable.r'
+    'sums.r'
+    'makenetwork.r'
+    'prune_samples.r'
+    'reconcile.r'
+    'subset-methods.r'

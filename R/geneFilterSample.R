@@ -26,9 +26,13 @@
 #'
 #' @return A logical vector with names equal to species.names (or rownames, if matrix).
 #'
-#' @seealso prune_species
+#' @seealso \code{\link{prune_species}}
 #' @keywords agglomerate OTU cluster tree
+#'
+#' @rdname genefilterSample-methods
+#' @docType methods
 #' @export
+#'
 #' @examples #
 #' ## testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
 #' ## f1  <- filterfunSample(topk(2))
@@ -41,10 +45,14 @@
 #' ## prune_species(wh1, taxtab1)
 #' ## prune_species(wh2, taxtab1)
 setGeneric("genefilterSample", function(X, flist, A=1) standardGeneric("genefilterSample"))
+#' @rdname genefilterSample-methods
+#' @aliases genefilterSample,matrix-method
 setMethod("genefilterSample", signature("matrix"), function(X, flist, A=1){
 	TFmat = apply(X, 2, flist)
 	apply(TFmat, 1, function(x, A){sum(x)>A}, A)
 })
+#' @rdname genefilterSample-methods
+#' @aliases genefilterSample,otuTable-method
 setMethod("genefilterSample", signature("otuTable"), function(X, flist, A=1){
 	if( speciesAreRows(X) ){
 		genefilterSample(   as(X, "matrix"), flist, A)
@@ -52,10 +60,9 @@ setMethod("genefilterSample", signature("otuTable"), function(X, flist, A=1){
 		genefilterSample( t(as(X, "matrix")), flist, A)
 	}
 })
-setMethod("genefilterSample", signature("otuTree"), function(X, flist, A=1){
-	genefilterSample(otuTable(X), flist, A)
-})
-setMethod("genefilterSample", signature("phyloseq"), function(X, flist, A=1){
+#' @rdname genefilterSample-methods
+#' @aliases genefilterSample,phyloseqFather-method
+setMethod("genefilterSample", signature("phyloseqFather"), function(X, flist, A=1){
 	genefilterSample(otuTable(X), flist, A)
 })
 ################################################################################
@@ -124,6 +131,6 @@ topp = function(p, na.rm=TRUE){
 # #' @importFrom genefilter genefilter
 # #' @examples #
 # setGeneric("genefilter")
-# setMethod("genefilter", signature("phyloseq"),function(expr, flist){
+# setMethod("genefilter", signature("phyloseqFather"),function(expr, flist){
 	# genefilter(otuTable(expr), flist)
 # })

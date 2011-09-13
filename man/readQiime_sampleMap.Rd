@@ -10,7 +10,7 @@
   of the post-clustering analysis. This is a required input
   file for running QIIME. Its strict formatting
   specification should be followed for correct parsing by
-  this function. Default value is \code{NULL}.}
+  this function.}
 }
 \value{
   A \code{sampleMap} object.
@@ -30,8 +30,7 @@
 #
 }
 \seealso{
-  \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-  \code{\link{read.table}}, \code{\link{read.nexus}},
-  \code{\link{readNexus}}
+  \code{\link{readQiime}}, \code{\link{merge_phyloseq}},
+  \code{\link{phyloseq}}, \code{\link{readQiime_otu_tax}}
 }
 

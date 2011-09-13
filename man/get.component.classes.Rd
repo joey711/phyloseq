@@ -1,6 +1,6 @@
 \name{get.component.classes}
 \alias{get.component.classes}
-\title{Get the component objects classes and slot names.}
+\title{Show the component objects classes and slot names.}
 \value{
   a character vector of the component objects classes,
   where each element is named by the corresponding slot
@@ -8,14 +8,12 @@
   containing more than 1 phyloseq data object).
 }
 \description{
-  Get the component objects classes and slot names.
+  There are no arguments to this function. It returns a
+  named character when called, which can then be used for
+  tests of component data types, etc.
 }
 \examples{
 #
 #get.component.classes()
 }
-\seealso{
-  merge_phyloseq
-}
-\keyword{internal}
 

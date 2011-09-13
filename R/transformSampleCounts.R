@@ -17,31 +17,34 @@
 #'  method, so it is suggested that the user provide only functions that return
 #'  a full-length vector.
 #'
-#' @seealso otuTable
-#'
+#' @name transformsamplecounts
+#' @docType methods
+#' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
+#' @rdname transformcounts
 #' @export
+#'
 #' @examples #
-#' #data(ex1)
-#' #ex1r <- transformsamplecounts(otuTable(ex1), rank)
-setGeneric("transformsamplecounts", function(x, flist){
-	standardGeneric("transformsamplecounts")})
-setMethod("transformsamplecounts", "otuTable", function(x, flist){
+#' ## data(ex1)
+#' ## ex1r <- transformsamplecounts(ex1, rank)
+transformsamplecounts <- function(x, flist){
 	if( speciesarerows(x) ){
-		newx <- apply(as(x, "matrix"), 2, flist)
+		newx <- apply(as(otuTable(x), "matrix"), 2, flist)
 	} else {
-		newx <- apply(as(x, "matrix"), 1, flist)
+		newx <- apply(as(otuTable(x), "matrix"), 1, flist)
 	}
-	new("otuTable", speciesarerows(x), newx)
-})
-setMethod("transformsamplecounts","otuTree",function(x, flist){
-	otuTable(x) <- transformsamplecounts(otuTable(x), flist)
+	otuTable(x) <- otuTable(newx, speciesAreRows=speciesarerows(x))
 	return(x)
-})
-setMethod("transformsamplecounts","phyloseq",function(x, flist){
-	otuTable(x) <- transformsamplecounts(otuTable(x), flist)
-	return(x)
-})
+}
+#' @name transformsamplecounts
+#' @docType methods
+#' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
+#' @rdname transformcounts
+#' @export
 TransformSampleCounts <- transformsamplecounts
+#' @name transformsamplecounts
+#' @docType methods
+#' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
+#' @rdname transformcounts
+#' @export
 transformSampleCounts <- transformsamplecounts
-####################################################################################
 ####################################################################################

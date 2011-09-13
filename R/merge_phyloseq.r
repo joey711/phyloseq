@@ -103,7 +103,7 @@ merge_phyloseq <- function(...){
 #'
 #' The \code{\link{merge_phyloseq}} function is recommended in general.
 #' 
-#' Special note: phylo-class trees are merged using \code{\link{consensus}}.
+#' Special note: trees are merged using \code{ape::\link{consensus}}.
 #'
 #' @param x A character vector of the species in object x that you want to
 #' keep -- OR alternatively -- a logical vector where the kept species are TRUE, and length
@@ -121,9 +121,12 @@ merge_phyloseq <- function(...){
 #' for those elements that describe the same species and sample in \code{x}
 #' and \code{y}. 
 #'
-#' @seealso merge_phyloseq mergespecies
-#' @keywords internal merge
+#' @seealso \code{\link{merge_phyloseq}} \code{\link{mergespecies}}
+#'
+#' @rdname merge_phyloseq_pair-methods
+#' @docType methods
 #' @export
+#'
 #' @examples #
 #' ## # merge two simulated otuTable objects.
 #' ## x  <- otuTable(matrix(sample(0:5,200,TRUE),20,10), speciesAreRows=TRUE)
@@ -146,8 +149,8 @@ merge_phyloseq <- function(...){
 #' ## data.frame(merge_phyloseq_pair(y, x))
 setGeneric("merge_phyloseq_pair", function(x, y) standardGeneric("merge_phyloseq_pair"))
 ################################################################################
-# Merge pair of component objects of the same class
-################################################################################
+#' @aliases merge_phyloseq_pair,otuTable,otuTable-method
+#' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("otuTable", "otuTable"), function(x, y){
 	specRrowsx   <- speciesAreRows(x)
 	new.sp.names <- union(species.names(x), species.names(y))
@@ -172,6 +175,9 @@ setMethod("merge_phyloseq_pair", signature("otuTable", "otuTable"), function(x, 
 	if( !specRrowsx ){ newx <- t(newx) }
 	return(newx)
 })
+################################################################################
+#' @aliases merge_phyloseq_pair,taxonomyTable,taxonomyTable-method
+#' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("taxonomyTable", "taxonomyTable"), function(x, y){
 	new.sp.names <- union(rownames(x), rownames(y))
 	new.ta.names <- union(colnames(x), colnames(y))
@@ -189,6 +195,9 @@ setMethod("merge_phyloseq_pair", signature("taxonomyTable", "taxonomyTable"), fu
 
 	return(newx)
 })
+################################################################################
+#' @aliases merge_phyloseq_pair,sampleMap,sampleMap-method
+#' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("sampleMap", "sampleMap"), function(x, y){
 	new.sa.names <- union(rownames(x), rownames(y))
 	new.va.names <- union(colnames(x), colnames(y))
@@ -214,73 +223,21 @@ setMethod("merge_phyloseq_pair", signature("sampleMap", "sampleMap"), function(x
 	newx <- sampleMap(newx)
 	return(newx)	
 })
+################################################################################
+#' @aliases merge_phyloseq_pair,phylo,phylo-method
+#' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 	consensus(x, y)
 })
 ################################################################################
-#' Get the component objects classes and slot names.
-#'
-#' @return a character vector of the component objects classes, where each 
-#' element is named by the corresponding slot name in the higher-order 
-#' phyloseq objects (objects containing more than 1 phyloseq data object).
-#' @seealso merge_phyloseq
-#' @keywords internal
-#' @export
-#' @examples #
-#' #get.component.classes()
-get.component.classes <- function(){
-	# define classes vector
-	component.classes <- c("otuTable", "sampleMap", "phylo", "phylo4", "taxonomyTable")
-	# the names of component.classes needs to be the slot names to match getSlots / splat
-	names(component.classes) <- c("otuTable", "sampleMap", "tre", "tre", "taxTab")	
-	return(component.classes)
-}
-################################################################################
-#' Convert phyloseq objects into a named list of the component type (class)
-#' 
-#' @return A named list, where each element is a component object that was contained 
-#' in the argument, \code{x}. Each element is named for the object class it contains
-#' If \code{x} is already a component data object,
-#' then a list of length (1) is returned, also named.
-#' @seealso merge_phyloseq
-#' @keywords internal
-#' @export
-#' @examples #
-splat.phyloseq.objects <- function(x){
-	component.classes <- get.component.classes()
-	# Check if class of x is among the component classes (not H.O.)
-	if( class(x) %in% component.classes ){
-		splatx <- list(x)
-		names(splatx) <- names(component.classes)[component.classes==class(x)]
-	} else {
-		slotsx <- getSlots(class(x))
-		splatx <- lapply(slotsx, function(iclass, slotsx, x){
-			do.call(names(slotsx)[slotsx==iclass], list(x))
-		}, slotsx, x)
-	}
-	return(splatx)
-}
-################################################################################
-#' Like getSlots, but returns the class name if argument is component data object.
-#' 
-#' @return identical to getSlots. A named character vector of the slot classes
-#' of a particular S4 class, where each element is named by the slot name it
-#' represents. If \code{x} is a component data object,
-#' then a vector of length (1) is returned, named according to its slot name in
-#' the higher-order objects.
-#' @seealso merge_phyloseq
-#' @export
-#' @keywords internal
-#' @examples #
-getslots.phyloseq <- function(x){
-	# Check if class of x is among the component classes (not H.O.)
-	component.classes <- get.component.classes()	
-	if( class(x) %in% component.classes ){
-		slotsx        <- as.character(class(x))
-		names(slotsx) <- names(component.classes)[component.classes==class(x)]
-	} else {
-		slotsx <- getSlots(class(x))
-	}
-	return(slotsx)
-}
+#' @aliases merge_phyloseq_pair,phylo4,phylo4-method
+#' @rdname merge_phyloseq_pair-methods
+setMethod("merge_phyloseq_pair", signature("phylo4", "phylo4"), function(x, y){
+	x <- as(x, "phylo")
+	y <- as(y, "phylo")
+	# dispatch to the method for "phylo" trees.
+	phylo_tree <- merge_phyloseq_pair(x, y)
+	# convert back to phylo4 and return.
+	return( as(phylo_tree, "phylo4") )
+})
 ################################################################################

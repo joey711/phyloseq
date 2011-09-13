@@ -33,7 +33,6 @@
 }
 \seealso{
   \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-  \code{\link{read.table}}, \code{\link{read.nexus}},
-  \code{\link{readNexus}}
+  \code{\link{readQiime_sampleMap}}
 }
 

@@ -1,21 +1,28 @@
 \name{tre}
 \alias{tre}
-\title{Access phylo-class objects.}
+\title{Access tre slot.}
+\usage{
+  tre(object)
+}
 \arguments{
   \item{object}{An object among the set of classes defined
-  by the phyloseq package that contain a phylogenetic
-  tree.}
+  by the phyloseq package that contain a phylogenetic tree.
+  If object already is a phylogenetic tree (a component
+  data class), then it is returned as-is.}
 }
 \value{
-  A phylo object. It is grabbed from the tre slot
+  A phylo object. It is grabbed from the tre-slot. If
+  object does not contain a tre-slot, then NULL is
+  returned. This is a convenience wrapper of the
+  \code{\link{access}} function.
 }
 \description{
   \code{tre()} is an accessor method. This is the main
   method suggested for accessing/subsetting the
-  phylogenetic tree (phylo class) from a more complex
-  object. \code{tre} is the slot name that holds the
-  phylo-class object in a multi-component phyloseq-package
-  object.
+  phylogenetic tree (phylo4 class) from a more complex
+  object. \code{tre} is the slot name for trees. that holds
+  the phylo4-class object in a multi-component
+  phyloseq-package object.
 }
 \details{
   Note that the tip.labels should be named to match the
@@ -31,8 +38,4 @@
 \seealso{
   otuTable sampleMap taxTab phyloseq
 }
-\keyword{OTU}
-\keyword{phylo}
-\keyword{tre}
-\keyword{tree}
 

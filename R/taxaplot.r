@@ -1,5 +1,5 @@
 ################################################################################
-#' Convert an otuTable object into a redundant data.frame useful for plotting
+#' Convert an otuTable object into a data.frame useful for plotting
 #' in the ggplot2 framework.
 #'
 #' @param otu An \code{otuTable} object.
@@ -97,7 +97,11 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' \code{otu} is a simple \code{otuTable}.
 #'
 #' @param otu An \code{otuTable} object, or higher-order object that contains
-#'  an otuTable and sampleMap (e.g. ``phyloseq'' class and its superclasses.)
+#'  an otuTable and sampleMap (e.g. ``otuSam'' class and its superclasses.).
+#'  If \code{otu} does not contain a taxTab slot (is a class that does not
+#'  have ``Tax'' in its title), then the second argument, \code{taxavec}, is
+#'  required and should have length equal to the number of species/taxa in
+#'  \code{otu}.
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
 #'  categorize each species in \code{otu}. If \code{otu} is a higher-order
@@ -119,34 +123,44 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
-#' @param \code{x_category} A character string indicating which map column should be
+#' @param x_category A character string indicating which map column should be
 #'  used to define the horizontal axis categories. Default is \code{"sample"}. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
 #' 
-#' @param \code{fill_category} A character string indicating which map column
+#' @param fill_category A character string indicating which map column
 #'  should be used to define the fill color of the bars. This does not have to 
 #'  match \code{x_category}, but does so by default. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
 #' 
-#' @param \code{facet_formula} A formula object as used by
+#' @param facet_formula A formula object as used by
 #'  \code{\link{facet_grid}} in \code{\link{ggplot}} or \code{\link{qplot}}
 #'  commands The default is: \code{. ~ TaxaGroup}. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An alternative
 #'  \code{facet_grid} could be \code{sample ~ TaxaGroup}.
 #'
+#' @return A ggplot2 graphic object.
+#'
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
+#'
 #' @export
+#' @docType methods
+#' @rdname taxaplot-methods
+#'
 #' @examples #
 #' # data(ex1)
 #' # taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
 #' # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
 setGeneric("taxaplot", function(otu, taxavec="Domain", map,
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
-	facet_formula = . ~ TaxaGroup) standardGeneric("taxaplot"))
-# The main method.
+	facet_formula = . ~ TaxaGroup){
+		standardGeneric("taxaplot")
+})
+################################################################################
+#' @rdname taxaplot-methods
+#' @aliases taxaplot,otuTable-method
 setMethod("taxaplot", "otuTable", function(otu, taxavec="Domain", map,
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula = . ~ TaxaGroup){
@@ -201,7 +215,8 @@ setMethod("taxaplot", "otuTable", function(otu, taxavec="Domain", map,
 
 	p <- p + 
 			# geom_bar(
-			# data=df, eval(call("aes", x=as.name(x_category), y=quote(Abundance), fill=as.name(fill_category) )),
+			# data=df, eval(call("aes", x=as.name(x_category), 
+				# y=quote(Abundance), fill=as.name(fill_category) )),
 			#	 position="stack", stat="identity"
 			# ) +
 		# The full stack
@@ -243,16 +258,21 @@ setMethod("taxaplot", "otuTable", function(otu, taxavec="Domain", map,
 	# Return the ggplot object so the user can 
 	# additionally manipulate it.
 	return(p)
-# Close otuTable taxaplot method.
 })
-setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
+################################################################################
+#' @rdname taxaplot-methods
+#' @aliases taxaplot,otuSam-method
+setMethod("taxaplot", "otuSam", function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula= . ~ TaxaGroup){
 
 	taxaplot(otuTable(otu), taxavec, map=sampleMap(otu),
 		showOnlyTheseTaxa, threshold,  x_category, fill_category, facet_formula)
 })
-setMethod("taxaplot", "phyloseqTax", function(otu, taxavec="Domain",
+################################################################################
+#' @rdname taxaplot-methods
+#' @aliases taxaplot,otuSamTax-method
+setMethod("taxaplot", "otuSamTax", function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula= . ~ TaxaGroup){
 
@@ -260,7 +280,7 @@ setMethod("taxaplot", "phyloseqTax", function(otu, taxavec="Domain",
 		taxavec <- as(taxTab(otu), "matrix")[, taxavec, drop=TRUE]
 	}
 
-	taxaplot(phyloseq(otu), taxavec=taxavec, showOnlyTheseTaxa=showOnlyTheseTaxa,
+	taxaplot(otuSam(otu), taxavec=taxavec, showOnlyTheseTaxa=showOnlyTheseTaxa,
 		threshold=threshold, x_category=x_category, fill_category=fill_category,
 		facet_formula=facet_formula)
 })

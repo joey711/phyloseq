@@ -2,6 +2,9 @@
 \alias{speciesarerows}
 \alias{speciesAreRows}
 \title{Access speciesAreRows slot from otuTable objects.}
+\usage{
+  speciesarerows(object)
+}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that are or contain an otuTable.}
@@ -13,7 +16,6 @@
   Access speciesAreRows slot from otuTable objects.
 }
 \seealso{
-  otuTable
+  \code{\link{otuTable}}
 }
-\keyword{OTU}
 

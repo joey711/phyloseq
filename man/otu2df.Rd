@@ -1,6 +1,6 @@
 \name{otu2df}
 \alias{otu2df}
-\title{Convert an otuTable object into a redundant data.frame useful for plotting
+\title{Convert an otuTable object into a data.frame useful for plotting
 in the ggplot2 framework.}
 \usage{
   otu2df(otu, taxavec, map, keepOnlyTheseTaxa = NULL,
@@ -28,8 +28,8 @@ in the ggplot2 framework.}
   taxonomic groups are included.}
 }
 \description{
-  Convert an otuTable object into a redundant data.frame
-  useful for plotting in the ggplot2 framework.
+  Convert an otuTable object into a data.frame useful for
+  plotting in the ggplot2 framework.
 }
 \examples{
 #

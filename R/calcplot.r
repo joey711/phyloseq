@@ -79,6 +79,7 @@
 #' @return A ggplot2 plot object.
 #'
 #' @seealso plot.cca cca.object
+#' @import vegan
 #' @export
 plot_ordination_phyloseq <- function(mod, object,
 	plot_title = as(mod$call, "character")[1],
@@ -93,18 +94,18 @@ plot_ordination_phyloseq <- function(mod, object,
 	add_sites_data = NULL,
 	add_taxa_data = NULL
 			){
-	#require("vegan")
 	#require("ggplot2")
 
 	########################################
 	# Create sites and species (taxa) data.frames
 	########################################
-	pmod      <- vegan::scores(mod, display=c("biplot","cn","sites","species"), scaling=1)
+		# vegan::scores()
+	pmod      <- scores(mod, display=c("biplot","cn","sites","species"), scaling=1)
 	sitesdata <- data.frame(axis1 = pmod$sites[, 1],   axis2 = pmod$sites[, 2]   )
 	specidata <- data.frame(axis1 = pmod$species[, 1], axis2 = pmod$species[, 2] )
 
 	########################################
-	# If there is additional data in the phyloseq-class
+	# If there is additional data in the otuSam-class
 	# object specified as argument 'object' add it
 	# automatically to the respective data.frame
 	########################################

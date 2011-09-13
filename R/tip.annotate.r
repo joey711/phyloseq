@@ -23,16 +23,14 @@
 #'
 #' @export
 #' @rdname tip-annotate
-#' @name tipsymbols
 #' 
 #' @seealso tiplabels points text
 #' @examples #
 #' ## data(ex1)
-#' ## ex2 <- ex1
 #' ## # for reproducibility
 #' ## set.seed(711)
-#' ## species.names(ex2) <- sample(species.names(ex1), 50)
-#' ## plot(tre(ex2))
+#' ## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
+#' ## plot(as(tre(ex2), "phylo"))
 #' ## tipsymbols(pch=19)
 #' ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
 #' ## tiptext(2, labels="my.label")
@@ -53,8 +51,6 @@ tipsymbols <- function(tip, adj=c(0.5, 0.5), ...){
 #'
 #' @export
 #' @rdname tip-annotate
-#' @name tiptext
-#' @rdname tip-annotate
 tiptext <- function(tip, adj=c(0.5, 0.5), ...){
     lastPP <- get("last_plot.phylo", envir = .PlotPhyloEnv)
     if ( missing(tip) ){ 
@@ -65,11 +61,11 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 	text( (XX + adj[1] - 0.5), (YY + adj[2] - 0.5), ... )
 }
 ################################################################################
-#' Function to plot phyloseqTree with annotated tips.
+#' Function to plot otuSamTree with annotated tips.
 #'
 #' @param object A phyloseq object that contains a tree, sampleMap, and otuTable.
 #'  That is, you will most-likely get an error unless this is a 
-#'  phyloseqTree or phyloseqTaxTree object.
+#'  otuSamTree or otuSamTaxTree object.
 #'
 #' @param color_factor A character string specifying the column
 #'  of the sampleMap that will be used for setting the color of symbols.
@@ -191,9 +187,13 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 	}
 	names(shape_vec) <- sample.names(object)
 	
+	# This is based on ape-package plotting. Use phylo-class tree.
+	tree <- as(tre(object), "phylo")
+	
 	# Now plot the initial, symbol-less tree. Must be first to get the proper
 	# x, y limits to calculate the scales of the annotation objects.
-	plot(tre(object), type="phylogram", show.tip.label=FALSE, xpd=NA, no.margin=TRUE, edge.width=1.5)
+	plot(tree, type="phylogram", show.tip.label=FALSE,
+		xpd=NA, no.margin=TRUE, edge.width=1.5)
 
 	# Store information about the tree-plot
 	lastPP <- get("last_plot.phylo", envir = .PlotPhyloEnv)
@@ -219,12 +219,12 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 		sitesi <- sitesi[sitesi >= 1] 
 		
 		# assign to pchi / coli values if species "i" is in the associated site
-		tipi  <- which( tre(object)$tip.label %in% i )
+		tipi  <- which( tree$tip.label %in% i )
 		
 		# Now loop through to indicate multiple symbols if multiple samples
 		adj.j <- adj.j.start
 		for( j in names(sitesi) ){ # j loops over sites w/in a given species
-			size_i = base_size + size_scaling_factor * log(sitesi[j], 10)  #(sitesi[j]-1) #log((sitesi[j]-1), 10)
+			size_i = base_size + size_scaling_factor * log(sitesi[j], 10)
 			tipsymbols(tip=tipi, adj=c(adj.j, 0.5), pch=shape_vec[j], bg=color_vec[j],
 				col=color_vec[j], cex=size_i, ...)
 				

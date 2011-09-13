@@ -24,26 +24,30 @@
 #' the class of \code{tree}, unless it is a \code{phylo}/\code{phylo4} object, in
 #' which case \code{tipglom} returns an \code{otuTree} object.
 #'
+#' @rdname tipglom-methods
+#' @docType methods
 #' @export
+#'
 #' @examples #
 setGeneric("tipglom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tipglom"))
+#' @rdname tipglom-methods
+#' @aliases tipglom,phylo,otuTable-method
 setMethod("tipglom", signature("phylo", "otuTable"), function(tree, OTU, speciationMinLength=0.02){
-	# pass off to the combined-object (otuTree) version
+	# dispatch as the combined-object (otuTree-class), auto coherence.
 	tipglom( phyloseq(OTU, tree), speciationMinLength=speciationMinLength)
 })
-setMethod("tipglom", signature("phylo4", "otuTable"), function(tree, OTU, speciationMinLength=0.02){
-  # pass off to the combined-object (otuTree) version
-	tipglom( phyloseq(OTU, tree), speciationMinLength=speciationMinLength)
-})
+#' @rdname tipglom-methods
+#' @aliases tipglom,otuTree,ANY-method
 setMethod("tipglom", signature("otuTree"), function(tree, speciationMinLength=0.02){
 	tipglom.internal(tree, speciationMinLength=speciationMinLength)
-}) 
+})
+#' @rdname tipglom-methods
+#' @aliases tipglom,phylo,ANY-method
 setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02){
 	tipglom.internal(tree, speciationMinLength=speciationMinLength)
 })
-setMethod("tipglom", signature("otuTree4"), function(tree, speciationMinLength=0.02){
-	tipglom.internal(tree, speciationMinLength=speciationMinLength)
-})
+#' @rdname tipglom-methods
+#' @aliases tipglom,phylo4,ANY-method
 setMethod("tipglom", signature("phylo4"), function(tree, speciationMinLength=0.02){
 	tipglom.internal(tree, speciationMinLength=speciationMinLength)
 })
@@ -52,7 +56,7 @@ setMethod("tipglom", signature("phylo4"), function(tree, speciationMinLength=0.0
 #' 
 #' Internal function, users should use the S4 method \code{\link{tipglom}}.
 #' Tree can be higher-order object that contains a phylogenetic tree, 
-#'   e.g. otuTree, otuTree4, etc. This is because \code{\link{mergespecies}} can
+#'   e.g. otuTree, etc. This is because \code{\link{mergespecies}} can
 #' handle all the relevant objects, as can \code{\link{getTipDistMatrix}}.
 #' Create Non-trivial OTU table, by agglomerating nearby tips.
 #' tipglom.internal is called by the S4 \code{tipglom} methods. It is useful if 
@@ -90,7 +94,7 @@ tipglom.internal = function(tree, speciationMinLength){
 	return(tree)
 }
 #################################################################
-#' A wrapper function on cophenetic.phylo()
+#' An internal wrapper function on \code{ape::cophenetic.phylo}
 #' 
 #' This is useful for determining tips that should be combined.
 #' 
@@ -142,33 +146,5 @@ setMethod("getTipDistMatrix", signature("phylo4"),
 setMethod("getTipDistMatrix", signature("otuTree"), function(tree, byRootFraction=FALSE){
 	getTipDistMatrix( tre(tree) )
 })
-setMethod("getTipDistMatrix", signature("otuTree4"), function(tree, byRootFraction=FALSE){
-  getTipDistMatrix( tre(tree) )
-})
 gettipdistmatrix <- getTipDistMatrix
-################################################################################
-# Examples:
-# plot(ig, layout=layout.fruchterman.reingold, 
-	# vertex.size=0.6, vertex.label.dist=0.1, 
-	# edge.arrow.mode="-",vertex.color="red",
-	# vertex.label=NA,edge.color="blue")
-################################################################################
-# Test igraph2cliques later. Not sure if that hard indexing works on igraph
-# objects. Values don't match edgelist2clique
-# ################################################################################
-# igraph2cliques <- function(ig){
-	# # ig is a igraph "graph" object
-	# require("statnet")
-	# igfac = factor(label.propagation.community(ig))
-	# spCliques = ig[[9]][[3]][[1]][igfac]
-	# names(spCliques) = ig[[9]][[3]][[1]]
-	# tabCliques = table(spCliques) 
-	# tabCliques = tabCliques[tabCliques > 1]
-	# cliqueNames = names(factor(tabCliques))
-	# cliques = lapply(cliqueNames, function(i,spCliq){
-		# names(spCliques[spCliq %in% i])
-	# }, spCliques)
-	# return(cliques)
-# }
-# cl1 = igraph2cliques(ig)
 ################################################################################

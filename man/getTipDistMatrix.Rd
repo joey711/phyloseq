@@ -1,7 +1,7 @@
 \name{getTipDistMatrix}
 \alias{gettipdistmatrix}
 \alias{getTipDistMatrix}
-\title{A wrapper function on cophenetic.phylo()}
+\title{An internal wrapper function on \code{ape::cophenetic.phylo}}
 \arguments{
   \item{tree}{\code{phylo}}
 

@@ -1,6 +1,5 @@
 \name{sampleMap<-}
-\alias{"assign-sampleMap"}
-\alias{"sampleMap<-"}
+\alias{assign-sampleMap}
 \alias{sampleMap<-}
 \title{Assign to sampleMap an object/value.}
 \description{

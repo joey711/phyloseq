@@ -1,9 +1,8 @@
 \docType{methods}
 \name{makenetwork}
-\alias{"makenetwork,otuTable-method"}
-\alias{"makenetwork,otuTree-method"}
-\alias{"makenetwork,phyloseq-method"}
 \alias{makenetwork}
+\alias{makenetwork,otuTable-method}
+\alias{makenetwork,phyloseqFather-method}
 \title{Create a taxa graph adjacency matrix from an \code{otuTable}.}
 \arguments{
   \item{abund}{The species abundance table (otuTable) or a
@@ -39,28 +38,13 @@
   Function that inputs an abundance table as a matrix and
   makes a graph adjacency matrix ready to plot with the
   igraph package.
-
-  Creates a taxa network from an otuTable.
-
-  Creates a taxa network from an otuTable.
-
-  Creates a taxa network from an otuTable.
 }
 \examples{
 #
 ## data(ex1)
 ## makenetwork(otuTable(ex1), TRUE)
-#
-#
-#
 }
 \author{
-  Susan Holmes
-
-  Susan Holmes
-
-  Susan Holmes
-
   Susan Holmes
 }
 

@@ -1,6 +1,6 @@
 \name{plot_tree_phyloseq}
 \alias{plot_tree_phyloseq}
-\title{Function to plot phyloseqTree with annotated tips.}
+\title{Function to plot otuSamTree with annotated tips.}
 \usage{
   plot_tree_phyloseq(object, color_factor = NULL,
   shape_factor = NULL, base_size = 1, size_scaling_factor =
@@ -11,8 +11,8 @@
 \arguments{
   \item{object}{A phyloseq object that contains a tree,
   sampleMap, and otuTable. That is, you will most-likely
-  get an error unless this is a phyloseqTree or
-  phyloseqTaxTree object.}
+  get an error unless this is a otuSamTree or otuSamTaxTree
+  object.}
 
   \item{color_factor}{A character string specifying the
   column of the sampleMap that will be used for setting the
@@ -72,7 +72,7 @@
   particular taxa was observed.
 }
 \description{
-  Function to plot phyloseqTree with annotated tips.
+  Function to plot otuSamTree with annotated tips.
 }
 \examples{
 # data(ex1)

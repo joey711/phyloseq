@@ -1,6 +1,9 @@
 \name{speciesSums}
 \alias{speciesSums}
 \title{Returns the total number of individuals observed from each species.}
+\usage{
+  speciesSums(x)
+}
 \arguments{
   \item{x}{Any phyloseq-package object that is or contains
   an otuTable.}

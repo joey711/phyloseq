@@ -1,7 +1,10 @@
 \name{otuTree}
 \alias{otutree}
 \alias{otuTree}
-\title{Subset just the "otuTree" portion of a H.O. object.}
+\title{Create a subset object with just the \code{otuTable} and \code{tre} slots.}
+\usage{
+  otuTree(object)
+}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain both a phylogenetic
@@ -11,7 +14,8 @@
   A phyloseq-package object of class \code{otuTree}.
 }
 \description{
-  Subset just the "otuTree" portion of a H.O. object.
+  Create a subset object with just the \code{otuTable} and
+  \code{tre} slots.
 }
 \examples{
 #
@@ -23,8 +27,4 @@
 # class(ex1)
 # otuTree(ex1)
 }
-\seealso{
-  phyloseq
-}
-\keyword{subset}
 

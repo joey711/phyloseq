@@ -1,12 +1,11 @@
-\docType{methods}
 \name{[}
-\alias{"[,otuTable-method"}
-\alias{"[,sampleMap-method"}
-\alias{"[,taxonomyTable-method"}
 \alias{[}
-\title{extract parts of otuTable}
+\alias{[,otuTable,ANY,ANY,ANY-method}
+\alias{[,sampleMap,ANY,ANY,ANY-method}
+\alias{[,taxonomyTable,ANY,ANY,ANY-method}
+\title{Extract parts of otuTable}
 \description{
-  extract parts of otuTable
+  Extract parts of otuTable
 
   extract parts of sampleMap
 

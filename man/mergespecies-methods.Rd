@@ -1,14 +1,12 @@
 \docType{methods}
 \name{mergespecies}
-\alias{"mergespecies,otuTable-method"}
-\alias{"mergespecies,otuTree-method"}
-\alias{"mergespecies,otuTree4-method"}
-\alias{"mergespecies,phylo-method"}
-\alias{"mergespecies,phylo4-method"}
-\alias{"mergespecies,phyloseq-method"}
-\alias{"mergespecies,phyloseqTaxTree-method"}
-\alias{"mergespecies,phyloseqTree-method"}
 \alias{mergespecies}
+\alias{mergespecies,otuTable-method}
+\alias{mergespecies,phylo-method}
+\alias{mergespecies,phylo4-method}
+\alias{mergespecies,phyloseqFather-method}
+\alias{mergespecies,sampleMap-method}
+\alias{mergespecies,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \arguments{
   \item{x}{The otuTable or phylo object, or a higher-order
@@ -46,28 +44,20 @@
 
   Merge a subset of the taxa in a phylo4-class tree object.
 
-  Note to developers: The class name otuTree4 is a
-  placeholder. plan would be to migrate all ape-derived
-  "phylo" classes to \code{phylo4} of phylobase package
-  (which has a namespace). Lots more potential with phylo4,
-  phylo4d, etc. E.g. merge could store the "lost" tips as
-  data (phylo4d) associated with each tip. More effective
-  than making separate list object to keep track.
-
-  Merge a subset of the taxa in an otuTree object.
-
-  Merge a subset of the taxa in an phyloseq object.
-
-  Merge a subset of the taxa in an phyloseqTree object.
-
-  Merge a subset of the taxa in an phyloseqTaxTree object.
+  Merge a subset of the taxa in a complex phyloseq object.
 }
 \examples{
 #
-## data(ex1)
-## makenetwork(otuTable(ex1), TRUE)
+# # data(phylocom)
+# # tree <- phylocom$phylo
+# # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# # otutree0 <- phyloseq(otu, tree)
+# # plot(otutree0)
+# # otutree1 <- mergespecies(otutree0, tree$tip.label[1:8], 2)
+# # plot(otutree1)
 }
 \seealso{
-  tipglom taxglom merge_phyloseq
+  \code{\link{tipglom}}, \code{\link{taxglom}},
+  \code{\link{merge_phyloseq}}
 }
 

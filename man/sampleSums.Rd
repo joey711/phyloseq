@@ -1,6 +1,9 @@
 \name{sampleSums}
 \alias{sampleSums}
 \title{Returns the total number of individuals observed from each sample.}
+\usage{
+  sampleSums(x)
+}
 \arguments{
   \item{x}{Any phyloseq-package object that is or contains
   an otuTable.}
@@ -26,7 +29,4 @@
 \seealso{
   speciesSums rowSums colSums sum
 }
-\keyword{samples}
-\keyword{sum}
-\keyword{sums}
 

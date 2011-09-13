@@ -15,12 +15,13 @@
 #'
 #' @param x A phylogenetic object, including \code{phylo} and \code{phylo4} trees,
 #' as well as native phyloseq package objects that represent taxa / species
-#' (that is, otuTable, taxonomyTable, phyloseq, otuTree, and their superclasses).
+#' (that is, otuTable, taxonomyTable, otuSam, otuTree, and their superclasses).
 #'
 #' @return The class of the object returned by \code{prune_species} matches
 #' the class of the argument, \code{x}.
 #'
-#' @keywords prune trim subset species OTU taxa
+#' @name prune_species
+#' @rdname prune_species-methods
 #' @export
 #' @examples #
 #' ## testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
@@ -34,54 +35,107 @@
 #' ## prune_species(wh1, taxtab1)
 #' ## prune_species(wh2, taxtab1)
 setGeneric("prune_species", function(species, x) standardGeneric("prune_species"))
-setMethod("prune_species", signature("character", "phylo"), function(species, x){
-	require("picante")
-	trimTaxa <- setdiff(x$tip.label, species)
-	if( length(trimTaxa) > 0 ){
-		drop.tip(x, trimTaxa)
-	} else x
-})
-setMethod("prune_species", signature("character", "otuTree"), function(species, x){
-	tre(x) <- prune_species( species, tre(x) )
+#' @name prune_species
+#' @aliases prune_species,NULL,ANY-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("NULL"), function(species, x){
 	return(x)
 })
-
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,character,phylo-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("character", "phylo"), function(species, x){
+	trimTaxa <- setdiff(x$tip.label, species)
+	if( length(trimTaxa) > 0 ){
+		ape::drop.tip(x, trimTaxa)
+	} else x
+})
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,character,phylo4-method
+#' @docType methods
+#' @rdname prune_species-methods
+#' @import phylobase
 setMethod("prune_species", signature("character", "phylo4"), function(species, x){
 	trimTaxa <- setdiff(tipLabels(x), species)
 	if( length(trimTaxa) > 0 ){
-		subset(x, tips.exclude=trimTaxa) # drop.tip(x, trimTaxa)
+		## temporary hack; phylobase subset sometimes too slow or fails
+		# subset(x, tips.exclude=trimTaxa)
+		## convert to "phylo" tree, trim, then back to "phylo4".
+		x <- ape::drop.tip(as(x, "phylo"), trimTaxa)
+		as(x, "phylo4")
 	} else x
 })
-setMethod("prune_species", signature("character", "otuTree4"), function(species, x){
-	tre(x) <- prune_species( species, tre(x) )
-	return(x)
-})
-
-# otuTable related methods
-setMethod("prune_species", signature("logical", "otuTable"), function(species, x){
-	if( is.null(names(species)) ){
-		species.names(x) <- species.names(x)[species]
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,character,otuTable-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("character", "otuTable"), function(species, x){
+	species <- intersect( species, species.names(x) )
+	if( speciesarerows(x) ){
+		x[species, ]
 	} else {
-		species.names(x) <- names(species)[species]
+		x[, species]
+	}	
+})
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,character,sampleMap-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("character", "sampleMap"), function(species, x){
+	return(x)
+})
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,character,phyloseqFather-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("character", "phyloseqFather"), 
+		function(species, x){
+	# Save time and return if species of x are same as species
+	if( setequal(species, species.names(x)) ){
+		return(x)
+	} else {	
+		# All phyloseqFather children have an otuTable slot, no need to test.
+		x@otuTable <- prune_species(species, x@otuTable)
+		
+		# Test if slot is present. If so, perform the component prune.
+		if( !is.null(access(x, "taxTab")) ){
+			x@taxTab    <- prune_species(species, x@taxTab)
+		}
+		if( !is.null(access(x, "tre")) ){
+			x@tre       <- prune_species(species, x@tre)
+		}
+		return(x)
 	}
-	return(x)
 })
-setMethod("prune_species", signature("logical", "phyloseq"), function(species, x){
-	otuTable(x) <- prune_species(species, otuTable(x))
-	return(x)
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,character,taxonomyTable-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("character", "taxonomyTable"), 
+		function(species, x){
+	species <- intersect( species, species.names(x) )
+	return( x[species, ] )
 })
-setMethod("prune_species", signature("logical", "otuTree"), function(species, x){
-	otuTable(x) <- prune_species(species, otuTable(x))
-	return(x)
-})
-
-# taxonomyTable 
-setMethod("prune_species", signature("logical", "taxonomyTable"), function(species, x){
+################################################################################
+#' @name prune_species
+#' @aliases prune_species,logical,ANY-method
+#' @docType methods
+#' @rdname prune_species-methods
+setMethod("prune_species", signature("logical", "ANY"), function(species, x){
+	# convert the logical argument to character and dispatch
 	if( is.null(names(species)) ){
-		x <- x[species, ]
+		species <- species.names(x)[species]
 	} else {
-		x <- x[names(species)[species], ]
+		species <- names(species)[species]
 	}
-	return(x)
+	prune_species(species, x)
 })
 ################################################################################
