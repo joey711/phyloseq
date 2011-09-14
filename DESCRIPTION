@@ -21,7 +21,8 @@ Depends:
     ggplot2 (>= 0.8)
 Suggests:
     adephylo,
-    ade4
+    ade4,
+    Rmpi
 Collate:
     'allclasses.r'
     'allpackage.r'
