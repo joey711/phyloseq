@@ -1,23 +1,23 @@
-Right now, the near-term improvements will be:
+The near-term improvements expected are:
 
-(0) Namespace documentation, in the source code using Roxygen; as well
-as other revisions that are required for Bioconductor, including a vignette.
+(-2) Shortened vignette suitable for Bioconductor.
 
-(1) Dependencies.
-For Bioconductor, dependencies will need to be explicit. This may mean
-that it can only depend on packages with namespaces. Every package in 
-Bioconductor has a namespace, but many packages at CRAN, including 
-vegan, ape, etc., do not have namespace documentation and therefore
-can only be relied-upon by fully loading them (or borrowing their 
-code directly and removing the dependence).
+(-1) Additional example data sets. Suggestions so far:
+	The "human enterotype" dataset
+	Soils reproducibility dataset	
 
-(2) DPCoA support.
+(0) Importers for Mothur, pangea, RDP_pipeline, etc.
 
-(3) Additional multiple testing features building on multtest, applied to phylogenetic sequencing data.
+(1) Add extensions for running parallelized wUniFrac.
 
-DONE v0.2.4+: (4)a Pipeline for certain common ordination methods applied to phyloseq data. That is, the rda.phyloseq or cca.phyloseq methods, plus their graphic representation based on 
-the arguments and possibly extra parameters or features in the object.
+(2) DPCoA support methods.
 
-DONE v0.2.4+: (4)b Default graphics for plot-method resulting from ordination methods.
+(3) Species-network and sample-network plotting tools.
 
-(5) Species-network and sample-network plotting tools.
+(4) Abundance table simulation / resampling tools.
+
+(5) Quick alpha-diversity metrics summary
+
+(6) Add alpha-diversity summary to barplots
+
+(7) Legends for fancy tree plots.
