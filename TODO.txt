@@ -1,10 +1,8 @@
 The near-term improvements expected are:
 
-(-2) Shortened vignette suitable for Bioconductor.
-
 (-1) Additional example data sets. Suggestions so far:
 	The "human enterotype" dataset
-	Soils reproducibility dataset	
+	Soils reproducibility dataset
 
 (0) Importers for Mothur, pangea, RDP_pipeline, etc.
 

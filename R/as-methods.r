@@ -1,13 +1,6 @@
 ################################################################################
 # coercion methods
-# Google how to document setAs statements using roxygen.
 ################################################################################
-#' Coerce an otuTable object to a matrix.
-#'
-#' @name as
-#' @aliases as,otuTable,matrix-method
-#' @docType methods
-#' @rdname as-methods
 setAs("otuTable", "matrix", function(from){
 	from@.Data
 })

@@ -25,12 +25,6 @@
   a more complex object that already contains a
   phylogenetic tree and abundance table, then the argument
   \code{tree} is not necessary and will be ignored.
-
-  Calculate weighted UniFrac from an abundance matrix and a
-  tree.
-
-  Calculate weighted UniFrac from an abundance matrix and a
-  tree.
 }
 \examples{
 #

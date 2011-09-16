@@ -17,12 +17,6 @@
 \description{
   These methods depend on the picante and ape packages, as
   currently implemented.
-
-  Calculate unweighted UniFrac from an abundance matrix and
-  a tree.
-
-  Calculate unweighted UniFrac from an abundance matrix and
-  a tree.
 }
 \examples{
 #
