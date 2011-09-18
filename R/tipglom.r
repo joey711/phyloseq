@@ -11,10 +11,11 @@
 #' the OTU argument can be ommitted. If, alternatively, \code{tree} is a \code{phylo}
 #' or \code{phylo4} object, then \code{OTU} is required. 
 #'
-#' @param OTU optional. Ignored if \code{tree} is an \code{otuTree} object or 
-#' one of its superclasses. Required if \code{tree} is a \code{phylo} or \code{phylo4}
-#'  object. \code{OTU} must be an \code{otuTable} object or a 2-column table that
-#' indicates the sample from which each sequence originated.
+#' @param OTU An otuTable object. Optional. Ignored if \code{tree} is an 
+#'  \code{otuTree} object or 
+#'  one of its superclasses. If \code{tree} is a \code{phylo} or \code{phylo4}
+#'  object and \code{OTU} is provided, then return will be an \code{otuTree}
+#'  object. 
 #'
 #' @param speciationMinLength The minimum branch length that separates taxa. All
 #' tips of the tree separated by a cophenetic distance smaller than 
@@ -29,6 +30,15 @@
 #' @export
 #'
 #' @examples #
+#' # # # data(phylocom)
+#' # # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+#' # # # tree <- as(phylocom$phylo, "phylo4")
+#' # # # x1   <- phyloseq(otu, tree)
+#' # # # print(x1)
+#' # # # library("phylobase")
+#' # # # plot(tre(x1))
+#' # # # x2 <- tipglom(x1, speciationMinLength=2.1)
+#' # # # plot(tre(x2))
 setGeneric("tipglom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tipglom"))
 #' @rdname tipglom-methods
 #' @aliases tipglom,phylo,otuTable-method

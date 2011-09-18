@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.3.8
-Date: 2011-09-13
+Version: 0.3.10
+Date: 2011-09-18
 Title: Analyze pre-processed phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -42,7 +42,7 @@ Collate:
     'readQiime.r'
     'mergespecies.r'
     'edgelist2clique.r'
-    'tipGlom.R'
+    'tipglom.r'
     'taxglom.r'
     'getvalues.r'
     'tip.annotate.r'
