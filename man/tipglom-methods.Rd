@@ -13,12 +13,11 @@
   \code{phylo} or \code{phylo4} object, then \code{OTU} is
   required.}
 
-  \item{OTU}{optional. Ignored if \code{tree} is an
-  \code{otuTree} object or one of its superclasses.
-  Required if \code{tree} is a \code{phylo} or
-  \code{phylo4} object. \code{OTU} must be an
-  \code{otuTable} object or a 2-column table that indicates
-  the sample from which each sequence originated.}
+  \item{OTU}{An otuTable object. Optional. Ignored if
+  \code{tree} is an \code{otuTree} object or one of its
+  superclasses. If \code{tree} is a \code{phylo} or
+  \code{phylo4} object and \code{OTU} is provided, then
+  return will be an \code{otuTree} object.}
 
   \item{speciationMinLength}{The minimum branch length that
   separates taxa. All tips of the tree separated by a
@@ -43,5 +42,14 @@
 }
 \examples{
 #
+# # # data(phylocom)
+# # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# # # tree <- as(phylocom$phylo, "phylo4")
+# # # x1   <- phyloseq(otu, tree)
+# # # print(x1)
+# # # library("phylobase")
+# # # plot(tre(x1))
+# # # x2 <- tipglom(x1, speciationMinLength=2.1)
+# # # plot(tre(x2))
 }
 
