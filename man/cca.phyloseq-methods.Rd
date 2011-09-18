@@ -2,12 +2,16 @@
 \name{cca.phyloseq}
 \alias{cca.phyloseq}
 \alias{cca.phyloseq,formula-method}
+\alias{cca.phyloseq,otuTable-method}
+\alias{cca.phyloseq,phyloseqFather-method}
 \title{phyloseq package extension for \code{vegan::cca}.}
 \arguments{
   \item{X}{formula-class object specifying the input. No
   need to splat higher-order objects. \code{cca.phyloseq}
   understands where to find the abundance table and sample
-  characteristics.}
+  characteristics. Alternatively, X can be an otuTable, or
+  any more complex phyloseq-package class that contains an
+  otuTable.}
 
   \item{data}{\code{data.frame} containing information
   equivalent to a \code{sampleMap} object / component. Only

@@ -2,6 +2,8 @@
 \name{rda.phyloseq}
 \alias{rda.phyloseq}
 \alias{rda.phyloseq,formula-method}
+\alias{rda.phyloseq,otuTable-method}
+\alias{rda.phyloseq,phyloseqFather-method}
 \title{phyloseq package extension for \code{vegan::rda}.}
 \arguments{
   \item{X}{formula-class object specifying the input. No
@@ -17,7 +19,9 @@
   phyloseq object containing your data. Because this is a
   formula object, quotes should not be used. See
   \code{\link{formula}} for details about writing a formula
-  in R.}
+  in R. Alternatively, X can be an otuTable-class, or any
+  more complex phyloseq-package class that contains an
+  otuTable.}
 
   \item{data}{\code{data.frame} containing information
   equivalent to a \code{sampleMap} object / component. Only

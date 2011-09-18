@@ -13,7 +13,8 @@
 #'  variate names in your object, try \code{colnames(sampleMap(ex1))}, where
 #'  \code{ex1} is the phyloseq object containing your data. Because this is
 #'  a formula object, quotes should not be used. See \code{\link{formula}}
-#'  for details about writing a formula in R.
+#'  for details about writing a formula in R. Alternatively, X can be an otuTable-class,
+#'  or any more complex phyloseq-package class that contains an otuTable.
 #'
 #' @param data \code{data.frame} containing information equivalent to
 #'  a \code{sampleMap} object / component. Only necessary if complex object
@@ -51,4 +52,21 @@ setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	}
 	vegan::rda(newFormula, data=data)	
 })
-####################################################################################
+################################################################################
+#' @aliases rda.phyloseq,otuTable-method
+#' @rdname rda.phyloseq-methods
+setMethod("rda.phyloseq", "otuTable", function(X){
+	if( speciesAreRows(X) ){
+		X <- t(as(X, "matrix"))
+	} else {
+		X <- as(X, "matrix")
+	}
+	vegan::cca(X)	
+})
+################################################################################
+#' @aliases rda.phyloseq,phyloseqFather-method
+#' @rdname rda.phyloseq-methods
+setMethod("rda.phyloseq", "phyloseqFather", function(X){
+	rda.phyloseq(otuTable(X))
+})
+################################################################################

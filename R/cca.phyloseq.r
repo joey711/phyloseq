@@ -14,7 +14,8 @@
 #' 
 #' @param X formula-class object specifying the input. No need to splat higher-order
 #'  objects. \code{cca.phyloseq} understands where to find the abundance table
-#'  and sample characteristics.
+#'  and sample characteristics. Alternatively, X can be an otuTable, or any
+#'  more complex phyloseq-package class that contains an otuTable. 
 #'
 #' @param data \code{data.frame} containing information equivalent to
 #'  a \code{sampleMap} object / component. Only necessary if complex object
@@ -54,22 +55,20 @@ setMethod("cca.phyloseq", "formula", function(X, data=NULL){
 	vegan::cca(newFormula, data=data)	
 })
 ################################################################################
-####################################################################################
-# Have not implemented cca.phyloseq for the (X, Y, Z, ...) variant of cca inputs. yet.
-####################################################################################
-# setMethod("cca.phyloseq", "otuTable", function(X, ...){
-	# require(vegan)
-	# if( speciesAreRows(X) ){ X <- t(X)@.Data }
-	# vegan::cca(X=X, ...)
-# })
-# ####################################################################################
-# setMethod("cca.phyloseq", "phyloseq", function(X, Y, ...){
-	# # Option to specify which variables to contrain-by, rather than provide the whole matrix
-	# if(class(Y) == "character"){ Y <- data.frame(sampleMap(X))[, Y, drop=FALSE] }
-	# if(class(Z) == "character"){ Z <- data.frame(sampleMap(X))[, Z, drop=FALSE] }
-	# cca.phyloseq(otuTable(X), Y, Z, ...)
-# })
-####################################################################################
-# examples
-####################################################################################
-# cca.phyloseq(ex2 ~ Diet + Sex)
+#' @aliases cca.phyloseq,otuTable-method
+#' @rdname cca.phyloseq-methods
+setMethod("cca.phyloseq", "otuTable", function(X){
+	if( speciesAreRows(X) ){
+		X <- t(as(X, "matrix"))
+	} else {
+		X <- as(X, "matrix")
+	}
+	vegan::cca(X)	
+})
+################################################################################
+#' @aliases cca.phyloseq,phyloseqFather-method
+#' @rdname cca.phyloseq-methods
+setMethod("cca.phyloseq", "phyloseqFather", function(X){
+	cca.phyloseq(otuTable(X))
+})
+################################################################################
