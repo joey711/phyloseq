@@ -49,7 +49,7 @@ setGeneric("genefilterSample", function(X, flist, A=1) standardGeneric("genefilt
 #' @aliases genefilterSample,matrix-method
 setMethod("genefilterSample", signature("matrix"), function(X, flist, A=1){
 	TFmat = apply(X, 2, flist)
-	apply(TFmat, 1, function(x, A){sum(x)>A}, A)
+	apply(TFmat, 1, function(x, A){sum(x) >= A}, A)
 })
 #' @rdname genefilterSample-methods
 #' @aliases genefilterSample,otuTable-method
