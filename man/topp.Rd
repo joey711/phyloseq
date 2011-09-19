@@ -12,8 +12,10 @@
   Default is \code{TRUE}.}
 }
 \value{
-  Returns a function (enclosure) that will return TRUE for
-  each element in the most abundant p fraction of values.
+  A function (enclosure), suitable for
+  \code{\link{filterfunSample}}, that will return
+  \code{TRUE} for each element in the most abundant p
+  fraction of taxa.
 }
 \description{
   The most abundant \code{p} fraction of taxa
