@@ -1,31 +1,30 @@
 ############################################################################
-#' Create an otuTable object from an abundance matrix.
-#' 
-#' (first unnamed entry), and a logical specifying the orientation in a named
-#' entry for \code{speciesAreRows}. Other slots in 
-#' the otuTable object
-#' are determined automatically from dimensions and dim-names. If no dim-names
-#' are provided, a default set is created with "sa" prefix for samples, and "sp"
-#' prefix for species / taxa. 
-#'
-#' This is an internal method. The suggested approach for creating an
-#' otuTable object from an abundance matrix is to use the 
-#' \code{\link{otuTable}} method instead.
-#' 
-#' @param .Object numeric (integer) matrix containing abundance data.
-#' 
-#' @param speciesAreRows A single-element logical specifying the orientation
-#'  of the abundance table.
-#'  
-#' @param ... Optional additional arguments. Ignored.
-#' 
-#' @seealso \code{\link{otuTable}}
-#' @name initialize
+# Create an otuTable object from an abundance matrix.
+# 
+# (first unnamed entry), and a logical specifying the orientation in a named
+# entry for \code{speciesAreRows}. Other slots in 
+# the otuTable object
+# are determined automatically from dimensions and dim-names. If no dim-names
+# are provided, a default set is created with "sa" prefix for samples, and "sp"
+# prefix for species / taxa. 
+#
+# This is an internal method. The suggested approach for creating an
+# otuTable object from an abundance matrix is to use the 
+# \code{\link{otuTable}} method instead.
+# 
+# @param .Object numeric (integer) matrix containing abundance data.
+# 
+# @param speciesAreRows A single-element logical specifying the orientation
+#  of the abundance table.
+#  
+# @param ... Optional additional arguments. Ignored.
+# 
+# @seealso \code{\link{otuTable}}
+#
+# @examples 
+# ## otuTable(matrix(sample(0:5,300,TRUE),30,10), speciesAreRows=FALSE)
+#
 #' @aliases initialize,otuTable-method
-#' @docType methods
-#' @rdname initialize-methods
-#' @examples 
-#' ## otuTable(matrix(sample(0:5,300,TRUE),30,10), speciesAreRows=FALSE)
 setMethod("initialize", "otuTable", function(.Object, speciesAreRows, ...) { 
 	.Object <- callNextMethod()
 	.Object@speciesAreRows <- speciesAreRows
@@ -56,16 +55,14 @@ setMethod("initialize", "otuTable", function(.Object, speciesAreRows, ...) {
 	.Object
 })
 ############################################################################
-#' Create an sampleMap object from a required data.frame class.
-#' (first unnamed entry). Other slots in \code{\link{sampleMap}} object
-#' are determined automatically from dimensions and row.names. If no dim-names
-#' are provided, a default set is created with "sa" prefix for samples.
-#' @param .Object numeric (integer) matrix containing abundance data.
-#' @seealso \code{\link{sampleMap}}
-#' @name initialize
+# Create an sampleMap object from a required data.frame class.
+# (first unnamed entry). Other slots in \code{\link{sampleMap}} object
+# are determined automatically from dimensions and row.names. If no dim-names
+# are provided, a default set is created with "sa" prefix for samples.
+# @param .Object numeric (integer) matrix containing abundance data.
+# @seealso \code{\link{sampleMap}}
+#
 #' @aliases initialize,sampleMap-method
-#' @docType methods
-#' @rdname initialize-methods
 setMethod("initialize", "sampleMap", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object@nsamples <- nrow(.Object)
@@ -76,23 +73,22 @@ setMethod("initialize", "sampleMap", function(.Object, ...) {
 	.Object
 })	
 ############################################################################
-#' Create a \code{taxonomyTable} object from a character matrix.
-#' 
-#' If \code{.Object} has no dim-names, then taxonomic-level and species/taxa names
-#' are added as dummy default.
-#' 
-#' @param .Object character matrix containing taxonomic classifiers, where each row
-#' is a different species / taxa in a high-throughput sequencing experiment.
-#' 
-#' @param ... Additional arguments. Ignored. 
-#' 
-#' @seealso \code{\link{taxTab}}
-#' @name initialize
+# Create a \code{taxonomyTable} object from a character matrix.
+# 
+# If \code{.Object} has no dim-names, then taxonomic-level and species/taxa names
+# are added as dummy default.
+# 
+# @param .Object character matrix containing taxonomic classifiers, where each row
+# is a different species / taxa in a high-throughput sequencing experiment.
+# 
+# @param ... Additional arguments. Ignored. 
+# 
+# @seealso \code{\link{taxTab}}
+#
+# @examples
+# ## taxtab1 <- new("taxonomyTable", matrix("abc", 5, 5))
+#
 #' @aliases initialize,taxonomyTable-method
-#' @docType methods
-#' @rdname initialize-methods
-#' @examples
-#' ## taxtab1 <- new("taxonomyTable", matrix("abc", 5, 5))
 setMethod("initialize", "taxonomyTable", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object@nspecies <- nrow(.Object@.Data)
@@ -109,51 +105,41 @@ setMethod("initialize", "taxonomyTable", function(.Object, ...) {
 # Initialization methods for the higher-order classes.
 ############################################################################
 # Need to add an automagic conversion for phylo -> phylo4
-#' @name initialize
+# Should be wrapped into the tre() build method, which would also be
+# consistent with the other component class builders
 #' @aliases initialize,otuTree-method
-#' @rdname initialize-methods
 setMethod("initialize", "otuTree", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object <- reconcile_species(.Object)
 	.Object
 })
-#' @name initialize
 #' @aliases initialize,otuTax-method
-#' @rdname initialize-methods
 setMethod("initialize", "otuTax", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object <- reconcile_species(.Object)
 	.Object 
 })
-#' @name initialize
 #' @aliases initialize,otuSam-method
-#' @rdname initialize-methods
 setMethod("initialize", "otuSam", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object <- reconcile_samples(.Object)
 	.Object 
 })
-#' @name initialize
 #' @aliases initialize,otuSamTax-method
-#' @rdname initialize-methods
 setMethod("initialize", "otuSamTax", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object <- reconcile_species(.Object)
 	.Object <- reconcile_samples(.Object)
 	.Object 
 })
-#' @name initialize
 #' @aliases initialize,otuSamTree-method
-#' @rdname initialize-methods
 setMethod("initialize", "otuSamTree", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object <- reconcile_species(.Object)
 	.Object <- reconcile_samples(.Object)
 	.Object 
 })
-#' @name initialize
 #' @aliases initialize,otuSamTaxTree-method
-#' @rdname initialize-methods
 setMethod("initialize", "otuSamTaxTree", function(.Object, ...) {
 	.Object <- callNextMethod()
 	.Object <- reconcile_species(.Object)

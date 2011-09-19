@@ -15,19 +15,6 @@
   \item{...}{(optional) ignored unless \code{object} is a
   matrix, in which case \code{speciesAreRows} is required
   as a named argument.}
-
-  \item{object}{An otuTable-class object. The abundance
-  table.}
-
-  \item{object}{Any \emph{phyloseq}-package object that
-  contains an otuTable.}
-
-  \item{object}{An abundance table in the form of an
-  integer matrix. # # \code{speciesAreRows} must be
-  specified in \code{...}-argument . # #}
-
-  \item{...}{The additional named argument
-  \code{speciesAreRows} must be # # provided. A logical.}
 }
 \value{
   An otuTable object. It is either grabbed from the
@@ -51,16 +38,6 @@
   specific for grabbing the otuTable of an object. It
   should work on both otuTable component objects, and
   higher-order classes that contain an otuTable slot.
-
-  # # Return the otuTable object as-is. # # # #
-
-  # # Return the otuTable component from a H.O. object. # #
-  # #
-
-  # # Instantiate an otuTable from a raw abundance matrix.
-  # # # #
-
-  # # Convert to matrix, then instantiate otuTable. # #
 }
 \details{
   This is the main method suggested for constructing

@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.3.11
+Version: 0.3.12
 Date: 2011-09-18
 Title: Analyze pre-processed phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -61,3 +61,4 @@ Collate:
     'reconcile.r'
     'extract-methods.r'
     'subset.r'
+    'reconcile_categories.r'

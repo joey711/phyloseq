@@ -46,41 +46,25 @@
 #' # ex1 <- phyloseq(OTU1, map1, tax1)
 #' # otuTable(ex1)
 setGeneric("otuTable", function(object, ...) standardGeneric("otuTable"))
-################################################################################
-# # #' Return the otuTable object as-is.
-# # #'
-# # #' @param object An otuTable-class object. The abundance table. 
-#' @name otuTable
-#' @docType methods
-#' @aliases otuTable,otuTable-method
-#' @rdname otuTable-methods
-setMethod("otuTable", "otuTable", function(object) access(object, "otuTable") )
-################################################################################
-# # #' Return the otuTable component from a H.O. object.
-# # #'
-# # #' @param object Any \emph{phyloseq}-package object that contains an otuTable.
-#' @name otuTable
-#' @docType methods
+# Access the otuTable slot, or return an otuTable as-is.
 #' @aliases otuTable,phyloseqFather-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "phyloseqFather", function(object) access(object, "otuTable") )
-################################################################################
-# # #' Instantiate an otuTable from a raw abundance matrix.
-# # #' 
-# # #' @param object An abundance table in the form of an integer matrix. 
-# # #'  \code{speciesAreRows} must be specified in \code{...}-argument .
-# # #' @param ... The additional named argument \code{speciesAreRows} must be 
-# # #'  provided. A logical.
-#' @name otuTable
-#' @docType methods
+#' @aliases otuTable,otuTable-method
+#' @rdname otuTable-methods
+setMethod("otuTable", "otuTable", function(object) access(object, "otuTable") )
+# # # Instantiate an otuTable from a raw abundance matrix.
+# # # 
+# # # @param object An abundance table in the form of an integer matrix. 
+# # #  \code{speciesAreRows} must be specified in \code{...}-argument .
+# # # @param ... The additional named argument \code{speciesAreRows} must be 
+# # #  provided. A logical.
 #' @aliases otuTable,matrix-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "matrix", function(object, ...){
 	new("otuTable", object, ...)
 })
-################################################################################
-# # #' Convert to matrix, then instantiate otuTable.
-# # #' 
+# # # Convert to matrix, then instantiate otuTable.
 #' @aliases otuTable,data.frame-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "data.frame", function(object, ...){
@@ -134,6 +118,8 @@ setMethod("sampleMap", "ANY", function(object){
 #' @rdname sampleMap-methods
 #' @aliases sampleMap,data.frame-method
 setMethod("sampleMap", "data.frame", function(object){
+	# Make sure there are no phantom levels in categorical variables
+	object <- reconcile_categories(object)
 	new("sampleMap", object)
 })
 ################################################################################
@@ -191,18 +177,18 @@ setMethod("taxTab", "matrix", function(object){
 #' @export
 taxtab <- taxTab
 ################################################################################
-#' Access tre slot.
+#' Access tre slot, or check/coerce to phylo4 class.
 #'
-#' \code{tre()} is an accessor method. This is the main method suggested 
+#' \code{tre()} is an accessor OR coercion method. This is the main method suggested 
 #' for accessing/subsetting
 #' the phylogenetic tree (phylo4 class) from a more complex object.
 #' \code{tre} is the slot name for trees. 
 #' that holds the phylo4-class object in a multi-component phyloseq-package
-#' object. 
+#' object.
 #' 
-#' Note that the tip.labels should be named to match the
-#' \code{species.names} of the other objects to which it is paired. The 
-#' initialization methods for more complex objects automatically check for
+#' Note that the tip labels should be named to match the
+#' \code{species.names} of the other objects to which it is going to be paired.
+#' The initialization methods for more complex objects automatically check for
 #' exact agreement in the set of species described by the phlyogenetic tree 
 #' and the other components (taxonomyTable, otuTable). 
 #' They also trim accordingly. Thus, the tip.labels in a phylo object
@@ -213,15 +199,26 @@ taxtab <- taxTab
 #' package that contain a phylogenetic tree. If object already is a phylogenetic
 #' tree (a component data class), then it is returned as-is.
 #'
-#' @return A phylo object. It is grabbed from the tre-slot. If object does not
+#' @return A phylo4 object. It is grabbed from the tre-slot. If object does not
 #'  contain a tre-slot, then NULL is returned. This is a convenience wrapper
 #'  of the \code{\link{access}} function.
 #'
 #' @seealso otuTable sampleMap taxTab phyloseq
 #' @export
-tre <- function(object){
+#' @rdname tre-methods
+#' @docType methods
+setGeneric("tre", function(object) standardGeneric("tre"))
+#' @rdname tre-methods
+#' @aliases tre,ANY-method
+setMethod("tre", "ANY", function(object){
 	access(object, "tre")
-}
+})
+# Constructor; for coercing "phylo4" from a "phylo".
+#' @rdname tre-methods
+#' @aliases tre,phylo-method
+setMethod("tre", "phylo", function(object){
+	as(object, "phylo4")
+})
 ################################################################################
 #' Access speciesAreRows slot from otuTable objects.
 #'
