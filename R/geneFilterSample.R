@@ -72,13 +72,13 @@ setMethod("genefilterSample", signature("phyloseqFather"), function(X, flist, A=
 #' @param ... A comma-separated list of functions.
 #' 
 #' @return An enclosure (function) that itself will return a logical vector, 
-#' according to the
-#' functions provided in the argument list, evaluated in order. The output of
-#' filterfunSample is appropriate for the `flist' argument to the 
-#' genefilterSample method.
+#'  according to the
+#'  functions provided in the argument list, evaluated in order. The output of
+#'  filterfunSample is appropriate for the `flist' argument to the 
+#'  genefilterSample method.
 #' 
+#' @export
 #' @seealso genefilter genefilterSample
-#' @keywords genefilter trim filter
 #' @examples #
 filterfunSample = function(...){
     flist <- list(...)
@@ -97,8 +97,16 @@ filterfunSample = function(...){
 	return(f)
 }
 ############################################################
-# Returns a function that returns TRUE for each element in the largest k values
-############################################################
+#' The most abundant \code{k} taxa
+#'
+#' @param k An integer, indicating how many of the most abundant taxa
+#'  should be kept.
+#' @param na.rm A logical. Should \code{NA}s be removed. Default is \code{TRUE}.
+#'
+#' @return Returns a function (enclosure) that will return TRUE
+#'  for each element in the most abundant k values.
+#'
+#' @export
 topk = function(k, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
@@ -106,8 +114,16 @@ topk = function(k, na.rm=TRUE){
     }
 }
 ############################################################
-# Returns a function that returns TRUE for each element in the largest p fraction of values
-############################################################
+#' The most abundant \code{p} fraction of taxa
+#'
+#' @param p A numeric of length 1, indicating what fraction of the most abundant taxa
+#'  should be kept.
+#' @param na.rm A logical. Should \code{NA}s be removed. Default is \code{TRUE}.
+#'
+#' @return Returns a function (enclosure) that will return TRUE
+#'  for each element in the most abundant p fraction of values.
+#'
+#' @export
 topp = function(p, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}

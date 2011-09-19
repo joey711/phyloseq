@@ -199,11 +199,15 @@ Function                    & Description \\
 % Data Trimming.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-\section{Trimming, filtering phyloseq data}\label{sec:trim}
+\section{Trimming, subsetting, filtering phyloseq data}\label{sec:trim}
+\subsection{Trimming: \code{prune{\textunderscore}species()} and \code{prune{\textunderscore}samples()}}
 Trimming high-throughput phylogenetic sequencing data can be useful, or even necessary, for certain types of analyses. However, it is important that the original data always be available for reference and reproducibility; and that the methods used for trimming be transparent to others, so they can perform the same trimming or filtering steps on the same or related data.
 
 To facilitate this, \emph{phyloseq} contains many ways to trim/filter the data from a phylogenetic sequencing project. Because matching indices for taxa and samples is strictly enforced, subsetting one of the data components automatically subsets the corresponding indices from the others. Variables holding trimmed versions of your original data can be declared, and further trimmed, without losing track of the original data.
 
+In general, most trimming should be accomplished using the S4 methods \code{prune{\textunderscore}species()} or \code{prune{\textunderscore}samples()}.
+
+\subsection{Simple filtering example}
 <<echo=FALSE>>=
 topN <- 20
 @
@@ -219,7 +223,7 @@ An alternative, replacement-style approach is also supported by \emph{phyloseq}:
 species.names(ex2) <- names(most_abundant_taxa)
 @
 
-Now we can ask the question, ``what taxonomic Family are these OTUs?'' (Subsetting still returns a taxonomyTable object, which is summarized. We will need to convert to a vector)
+Now we can ask the question, ``what taxonomic Family are these OTUs?'' (Subsetting still returns a \code{taxonomyTable} object, which is summarized. We will need to convert to a vector)
 
 \begin{scriptsize}
 <<>>=
@@ -228,21 +232,37 @@ as(topFamilies, "vector")
 @
 \end{scriptsize}
 
-Can subset directly to keep only \emph{Gender A}, for example
+\subsection{Arbitrarily complex abundance filtering}
+The previous example was a relatively simple filtering in which we kept only the most abundant \Sexpr{topN} in the whole experiment. But what if we wanted to keep the most abundant \Sexpr{topN} taxa of each sample? And of those, keep only the taxa that are also found in at least one-third of our samples? 
+
+For this more complicated filtering \emph{phyloseq} contains a function, \code{genefilterSample()}, that takes as an argument a \emph{phyloseq} object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (\code{otuTable}), as well as an integer argument, \code{A}, that specifies for how many samples the filtering function must return \code{TRUE} for a particular taxa to avoid removal from the object. A supporting function \code{filterfunSample} is also included in \emph{phyloseq} to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. \code{genefilterSample} returns a logical vector suitable for sending directly to prune{\textunderscore}species() for the actual trimming.
+<<eval=FALSE>>=
+filterfunSample(topk(2))
+wh1 <- genefilterSample(ex1, f1, A=2)
+sum(wh1)
+prune_species(wh1, testOTU)
+@
+
+\subsection{\code{subset{\textunderscore}samples()}: subset by sample variates}
+It is possible to subset the samples in a \emph{phyloseq} object based on the sample variables using the \code{subset{\textunderscore}samples()} function. For example to subset \code{ex1} such that only \emph{Gender A} is present, the following line is needed (the related tables are subsetted automatically as well):
 <<>>=
-ex3 <- ex1
-sampleMap(ex3) <- subset(sampleMap(ex3), Gender=="A")
+ex3 <- subset_samples(ex1, Gender=="A")
 @
 \begin{scriptsize}
 <<>>=
 ex3
 @
 \end{scriptsize}
+For this example only a categorical variable is shown, but in principle a continuous variable could be specified and a logical expression provided just as for the \code{subset} function. In fact, because \code{sampleMap} component objects are an extension of the data.frame class, they can also be subsetted with the \code{subset} function:
 
-Or by specific taxonomic category
 <<>>=
-ex4 <- ex1
-species.names(ex4) <- species.names(ex1)[taxTab(ex1)[, "Phylum"]=="Firmicutes"]
+subset(sampleMap(ex1), Gender=="A")
+@
+
+\subsection{\code{subset{\textunderscore}species()}: subset by taxonomic categories}
+It is possible to subset by specific taxonomic category using the \code{subset{\textunderscore}species()} function. For example, if we wanted to subset \code{ex1} so that it only contains data regarding the phylum \emph{Firmicutes}:
+<<>>=
+ex4 <- subset_species(ex1, Phylum=="Firmicutes")
 @
 \begin{scriptsize}
 <<>>=
@@ -250,10 +270,9 @@ ex4
 @
 \end{scriptsize}
 
-Can also randomly subset, for example a random subset of 100 OTUs
+Can also randomly subset, for example a random subset of 100 taxa from the full dataset.
 <<>>=
-ex5 <- ex1
-species.names(ex5) <- sample(species.names(ex5), 100, replace=FALSE)
+ex5 <- prune_species(sample(species.names(ex1), 100, replace=FALSE), ex1)
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

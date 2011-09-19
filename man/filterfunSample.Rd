@@ -25,7 +25,4 @@ genefilter package.}
 \seealso{
   genefilter genefilterSample
 }
-\keyword{filter}
-\keyword{genefilter}
-\keyword{trim}
 
