@@ -120,8 +120,9 @@ topk = function(k, na.rm=TRUE){
 #'  should be kept.
 #' @param na.rm A logical. Should \code{NA}s be removed. Default is \code{TRUE}.
 #'
-#' @return Returns a function (enclosure) that will return TRUE
-#'  for each element in the most abundant p fraction of values.
+#' @return A function (enclosure), suitable for \code{\link{filterfunSample}},
+#'  that will return \code{TRUE}
+#'  for each element in the most abundant p fraction of taxa.
 #'
 #' @export
 topp = function(p, na.rm=TRUE){
@@ -130,22 +131,79 @@ topp = function(p, na.rm=TRUE){
 		x >= sort(x, decreasing=TRUE)[ceiling(length(x)*p)]
     }
 }
-############################################################
+################################################################################
+#' The top f fraction of observations in a sample.
+#'
+#' As opposed to \code{\link{topp}}, which gives the
+#' most abundant p fraction of observed taxa (richness, instead of cumulative
+#' abundance. Said another way, topf ensures a certain
+#' fraction of the total sequences are retained, while topp ensures
+#' that a certain fraction of taxa/species/OTUs are retained.
+#'
+#' @param f Single numeric value between 0 and 1.
+#' @param na.rm Logical. Should we remove NA values. Default \code{TRUE}.
+#'
+#' @return A function (enclosure), suitable for \code{\link{filterfunSample}},
+#'  that will return \code{TRUE}
+#'  for each element in the taxa comprising the most abundant f fraction of individuals.
+#'
+#' @export
+#' @examples
+#' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
+#' topf(0.6)(t1)
+topf <- function(f, na.rm=TRUE){
+    function(x){
+        if (na.rm){
+            x = x[!is.na(x)]
+        }
+        y <- sort(x, decreasing = TRUE)
+        y <- cumsum(y)/sum(x)
+        return( (y <= f)[names(x)] )
+    }
+}
+################################################################################
+#' Set to FALSE any outlier species greater than f fractional abundance.
+#'
+#' This is for removing overly-abundant outlier taxa, not for trimming low-abundance
+#' taxa.
+#'
+#' @param f Single numeric value between 0 and 1. The maximum fractional abundance
+#'  value that a taxa will be allowed to have in a sample without being marked
+#'  for trimming.
+#'
+#' @param na.rm Logical. Should we remove NA values. Default \code{TRUE}.
+#'
+#' @return A function (enclosure), suitable for \code{\link{filterfunSample}}.
+#'
+#' @export
+#' @examples
+#' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
+#' rm_outlierf(0.15)(t1)
+rm_outlierf <- function(f, na.rm=TRUE){
+	function(x){
+		if(na.rm){
+			x = x[!is.na(x)]
+		}
+		y <- x / sum(x)
+        return( y < f )
+    }
+}
+################################################################################
 # ################################################################################
-# #' A generic extension of the genefilter method from the genefilter package. 
-# #'
-# #' @param expr A phyloseq object that is or contains an otuTable.
-# #' @param flist A filterfun class object, a function, that is itself often
-# #' constructred from a list of functions. It takes a single argument, and
-# #' returns a logical vector with length equal to the number of rows in
-# #' \code{expr}.
-# #' 
-# #' @return A logical. See genefilter from the genefilter package.
-# #' 
-# #' @seealso genefilter genefilterSample
-# #' @keywords genefilter trim filter
-# #' @importFrom genefilter genefilter
-# #' @examples #
+# # A generic extension of the genefilter method from the genefilter package. 
+# #
+# # @param expr A phyloseq object that is or contains an otuTable.
+# # @param flist A filterfun class object, a function, that is itself often
+# # constructred from a list of functions. It takes a single argument, and
+# # returns a logical vector with length equal to the number of rows in
+# # \code{expr}.
+# # 
+# # @return A logical. See genefilter from the genefilter package.
+# # 
+# # @seealso genefilter genefilterSample
+# # @keywords genefilter trim filter
+# # @importFrom genefilter genefilter
+# # @examples #
 # setGeneric("genefilter")
 # setMethod("genefilter", signature("phyloseqFather"),function(expr, flist){
 	# genefilter(otuTable(expr), flist)

@@ -236,12 +236,42 @@ as(topFamilies, "vector")
 The previous example was a relatively simple filtering in which we kept only the most abundant \Sexpr{topN} in the whole experiment. But what if we wanted to keep the most abundant \Sexpr{topN} taxa of each sample? And of those, keep only the taxa that are also found in at least one-third of our samples? 
 
 For this more complicated filtering \emph{phyloseq} contains a function, \code{genefilterSample()}, that takes as an argument a \emph{phyloseq} object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (\code{otuTable}), as well as an integer argument, \code{A}, that specifies for how many samples the filtering function must return \code{TRUE} for a particular taxa to avoid removal from the object. A supporting function \code{filterfunSample} is also included in \emph{phyloseq} to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. \code{genefilterSample} returns a logical vector suitable for sending directly to prune{\textunderscore}species() for the actual trimming.
+
+Here is an example on a completely fabricated \code{otuTable} called \code{testOTU}.
 <<eval=FALSE>>=
-filterfunSample(topk(2))
-wh1 <- genefilterSample(ex1, f1, A=2)
-sum(wh1)
+testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+f1  <- filterfunSample(topk(2))
+wh1 <- genefilterSample(testOTU, f1, A=2)
+wh2 <- c(T, T, T, F, F)
 prune_species(wh1, testOTU)
+prune_species(wh2, testOTU)
 @
+
+Here is a second example using the included dataset, \code{ex1}. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset \code{ex1}. Note that it is not necessary to subset \code{ex1} in order to do this filtering. The S4 method prune{\textunderscore}species() subsets each of the relavent component objects, and returns the complex object back.
+<<>>=
+data(ex1)
+f1  <- filterfunSample(topp(0.1))
+wh1 <- genefilterSample(ex1, f1, A=(1/2*nsamples(ex1)))
+sum(wh1)
+ex2 <- prune_species(wh1, ex1)
+@
+\begin{scriptsize}
+<<>>=
+  print(ex2)
+@
+\end{scriptsize}
+
+
+If instead of the most abundant fraction of taxa, you are interested in the most abundant fraction of individuals (aka sequences, observations), then the \code{topf} function is appropriate. For steep rank-abundance curves, \code{topf} will seem to be much more conservative (trim more taxa) because it is based on the cumulative sum of relative abundance. It does not guarantee that a certain number or fraction of total taxa (richness) will be retained.
+
+<<eval=FALSE>>=
+data(ex1)
+f1  <- filterfunSample(topf(0.9))
+wh1 <- genefilterSample(ex1, f1, A=(1/3*nsamples(ex1)))
+sum(wh1)
+prune_species(wh1, ex1)
+@
+
 
 \subsection{\code{subset{\textunderscore}samples()}: subset by sample variates}
 It is possible to subset the samples in a \emph{phyloseq} object based on the sample variables using the \code{subset{\textunderscore}samples()} function. For example to subset \code{ex1} such that only \emph{Gender A} is present, the following line is needed (the related tables are subsetted automatically as well):
@@ -270,9 +300,11 @@ ex4
 @
 \end{scriptsize}
 
+\subsection{random subsample abundance data}
 Can also randomly subset, for example a random subset of 100 taxa from the full dataset.
 <<>>=
-ex5 <- prune_species(sample(species.names(ex1), 100, replace=FALSE), ex1)
+randomSpecies100 <- sample(species.names(ex1), 100, replace=FALSE)
+ex5 <- prune_species(randomSpecies100, ex1)
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -352,6 +384,7 @@ For development version of the \emph{phyloseq} package when it is not yet availa
 <<eval=FALSE>>=
   install.packages("devtools")
   library("devtools")
+  install_github("devtools"); library("devtools")
   install("ape")
   install("ggplot2")
   install("igraph")
