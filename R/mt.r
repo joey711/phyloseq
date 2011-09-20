@@ -28,37 +28,22 @@
 #' ## data(ex1)
 #' ## mt(ex1, "Diet")
 #' ## mt(otuSamTax(ex1), "Diet", minPmaxT="minsldzxc")
-setGeneric("mt", function(X, classlabel, minPmaxT="minP", ...)
-	standardGeneric("mt")
-)
-####################################################################################
-# otuTree doesn't have a sampleMap. just grab otuTable hope 4 best.
-#' @aliases mt,matrix,integer-method
-#' @rdname mt-methods
-setMethod("mt", c("matrix", "integer"), function(X, classlabel, minPmaxT="minP", ...){
-	# require(multtest)
-	if( minPmaxT == "minP" ){
-		mt.minP(X, classlabel, minPmaxT, ...)
-	} else if( minPmaxT == "maxT" ){
-		mt.maxT(X, classlabel, minPmaxT, ...)	
-	} else {
-		print("Nothing calculated. minPmaxT argument must be either minP or maxT.")
-	}
-})
+setGeneric("mt", function(X, classlabel, minPmaxT="minP", ...) standardGeneric("mt") )
 ################################################################################
 #' @aliases mt,ANY,integer-method
 #' @rdname mt-methods
 setMethod("mt", c("ANY", "integer"), function(X, classlabel, minPmaxT="minP", ...){
 	X <- otuTable(X)
 	if( !speciesAreRows(X) ){ X <- t(X)	}
-	mt(as(X, "matrix"), classlabel, minPmaxT, ...)
+	mt.phyloseq.internal(as(X, "matrix"), classlabel, minPmaxT, ...)
 })
 ################################################################################
 #' @aliases mt,otuSam,character-method
 #' @rdname mt-methods
 setMethod("mt", c("otuSam", "character"), function(X, classlabel, minPmaxT="minP", ...){
-	rawFactor <- as(sampleMap(X), "data.frame")[, classlabel]
-	mt(otuTable(X), factor(rawFactor), minPmaxT, ...)
+	rawFactor  <- as(sampleMap(X), "data.frame")[, classlabel]
+	classlabel <- (0:1)[rawFactor]
+	mt(otuTable(X), classlabel, minPmaxT, ...)
 })
 ################################################################################
 #' @aliases mt,ANY,factor-method
@@ -69,4 +54,19 @@ setMethod("mt", c("ANY", "factor"), function(X, classlabel, minPmaxT="minP", ...
 	# Use dispatch of mtmaxT with classlabel now a suitable classlabel
 	mt(otuTable(X), classlabel, minPmaxT, ...)
 })
-################################################################################
+####################################################################################
+# Internal function
+# @aliases mt,matrix,integer-method
+# not exported
+# @keywords internal
+mt.phyloseq.internal <- function(X, classlabel, minPmaxT="minP", ...){
+	# require(multtest)
+	if( minPmaxT == "minP" ){
+		mt.minP(X, classlabel, ...)
+	} else if( minPmaxT == "maxT" ){
+		mt.maxT(X, classlabel, ...)	
+	} else {
+		print("Nothing calculated. minPmaxT argument must be either minP or maxT.")
+	}
+}
+####################################################################################
