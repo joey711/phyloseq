@@ -33,72 +33,40 @@ setGeneric("mt", function(X, classlabel, minPmaxT="minP", ...)
 )
 ####################################################################################
 # otuTree doesn't have a sampleMap. just grab otuTable hope 4 best.
-#' @aliases mt,otuTree,ANY-method
+#' @aliases mt,matrix,integer-method
 #' @rdname mt-methods
-setMethod("mt", "otuTree", function(X, classlabel, minPmaxT="minP", ...){
-	mt(otuTable(X), classlabel, minPmaxT, ...)
-})
-################################################################################
-# otuSamTree does have a sampleMap. dispatch it to otuSam version.
-#' @aliases mt,otuSamTree,ANY-method
-#' @rdname mt-methods
-setMethod("mt", "otuSamTree", function(X, classlabel, minPmaxT="minP", ...){
-	mt(otuSam(X), classlabel, minPmaxT, ...)
-})
-################################################################################
-# otuSamTree does have a sampleMap. dispatch it to otuSam version.
-#' @aliases mt,otuSamTax,ANY-method
-#' @rdname mt-methods
-setMethod("mt", "otuSamTax", function(X, classlabel, minPmaxT="minP", ...){
-	mt(otuSam(X), classlabel, minPmaxT, ...)
-})
-################################################################################
-#' @aliases mt,otuSam,factor-method
-#' @rdname mt-methods
-setMethod("mt", c("otuSam", "factor"),
-	function(X, classlabel, minPmaxT="minP", ...){
-	mt(otuTable(X), classlabel, minPmaxT, ...)
-})
-################################################################################
-#' @aliases mt,otuSam,integer-method
-#' @rdname mt-methods
-setMethod("mt", c("otuSam", "integer"),
-	function(X, classlabel, minPmaxT="minP", ...){
-	mt(otuTable(X), classlabel, minPmaxT, ...)
-})
-################################################################################
-#' @aliases mt,otuSam,character-method
-#' @rdname mt-methods
-setMethod("mt", c("otuSam", "character"),
-	function(X, classlabel, minPmaxT="minP", ...){
-	rawFactor <- as(sampleMap(X), "data.frame")[, classlabel]
-	mt(otuTable(X), factor(rawFactor), minPmaxT, ...)
-})
-################################################################################
-#' @aliases mt,otuTable,factor-method
-#' @rdname mt-methods
-setMethod("mt", c("otuTable", "factor"),
-	function(X, classlabel, minPmaxT="minP", ...){
-	# integerize classlabel to logical suitable for mtmaxT
-	classlabel <- (0:1)[classlabel]
-	# Use dispatch of mtmaxT with classlabel now a suitable classlabel
-	mt(X, classlabel, minPmaxT, ...)
-})
-################################################################################
-#' @aliases mt,otuTable,ANY-method
-#' @rdname mt-methods
-setMethod("mt", "otuTable", function(X, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("matrix", "integer"), function(X, classlabel, minPmaxT="minP", ...){
 	# require(multtest)
-	if( !speciesAreRows(X) ){
-		X <- t(X)
-	}
-	# Now call mt.maxT or mt.minP
 	if( minPmaxT == "minP" ){
-		mt.minP(as(X, "matrix"), classlabel, minPmaxT, ...)
+		mt.minP(X, classlabel, minPmaxT, ...)
 	} else if( minPmaxT == "maxT" ){
-		mt.maxT(as(X, "matrix"), classlabel, minPmaxT, ...)	
+		mt.maxT(X, classlabel, minPmaxT, ...)	
 	} else {
 		print("Nothing calculated. minPmaxT argument must be either minP or maxT.")
 	}
 })
-####################################################################################
+################################################################################
+#' @aliases mt,ANY,integer-method
+#' @rdname mt-methods
+setMethod("mt", c("ANY", "integer"), function(X, classlabel, minPmaxT="minP", ...){
+	X <- otuTable(X)
+	if( !speciesAreRows(X) ){ X <- t(X)	}
+	mt(as(X, "matrix"), classlabel, minPmaxT, ...)
+})
+################################################################################
+#' @aliases mt,otuSam,character-method
+#' @rdname mt-methods
+setMethod("mt", c("otuSam", "character"), function(X, classlabel, minPmaxT="minP", ...){
+	rawFactor <- as(sampleMap(X), "data.frame")[, classlabel]
+	mt(otuTable(X), factor(rawFactor), minPmaxT, ...)
+})
+################################################################################
+#' @aliases mt,ANY,factor-method
+#' @rdname mt-methods
+setMethod("mt", c("ANY", "factor"), function(X, classlabel, minPmaxT="minP", ...){
+	# integerize classlabel to logical suitable for mtmaxT
+	classlabel <- (0:1)[classlabel]
+	# Use dispatch of mtmaxT with classlabel now a suitable classlabel
+	mt(otuTable(X), classlabel, minPmaxT, ...)
+})
+################################################################################

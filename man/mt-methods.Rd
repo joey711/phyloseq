@@ -1,14 +1,10 @@
 \docType{methods}
 \name{mt}
 \alias{mt}
+\alias{mt,ANY,factor-method}
+\alias{mt,ANY,integer-method}
+\alias{mt,matrix,integer-method}
 \alias{mt,otuSam,character-method}
-\alias{mt,otuSam,factor-method}
-\alias{mt,otuSam,integer-method}
-\alias{mt,otuSamTax,ANY-method}
-\alias{mt,otuSamTree,ANY-method}
-\alias{mt,otuTable,ANY-method}
-\alias{mt,otuTable,factor-method}
-\alias{mt,otuTree,ANY-method}
 \title{Wrapper of mt.maxT and mt.minP for the phyloseq package.}
 \arguments{
   \item{X}{An \code{otuTable} or an object that contains an
