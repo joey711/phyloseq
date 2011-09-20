@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.3.14
+Version: 0.3.15
 Date: 2011-09-19
 Title: Analyze pre-processed phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
