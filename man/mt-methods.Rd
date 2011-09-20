@@ -3,6 +3,7 @@
 \alias{mt}
 \alias{mt,ANY,factor-method}
 \alias{mt,ANY,integer-method}
+\alias{mt,ANY,numeric-method}
 \alias{mt,otuSam,character-method}
 \title{Wrapper of mt.maxT and mt.minP for the phyloseq package.}
 \arguments{
