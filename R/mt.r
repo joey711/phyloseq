@@ -38,6 +38,13 @@ setMethod("mt", c("ANY", "integer"), function(X, classlabel, minPmaxT="minP", ..
 	mt.phyloseq.internal(as(X, "matrix"), classlabel, minPmaxT, ...)
 })
 ################################################################################
+# Force numeric classlabel to be integer, pass-on
+#' @aliases mt,ANY,numeric-method
+#' @rdname mt-methods
+setMethod("mt", c("ANY", "numeric"), function(X, classlabel, minPmaxT="minP", ...){
+	mt(X, as(classlabel, "integer"), minPmaxT="minP", ...)
+})
+################################################################################
 #' @aliases mt,otuSam,character-method
 #' @rdname mt-methods
 setMethod("mt", c("otuSam", "character"), function(X, classlabel, minPmaxT="minP", ...){
