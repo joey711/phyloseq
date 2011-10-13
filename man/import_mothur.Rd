@@ -51,4 +51,26 @@
   General function for importing mothur files into
   phyloseq.
 }
+\examples{
+# # The following example assumes you have downloaded the esophagus example
+# # dataset from the mothur wiki:
+# # "http://www.mothur.org/wiki/Esophageal_community_analysis"
+# # "http://www.mothur.org/w/images/5/55/Esophagus.zip"
+# # The path on your machine may (probably will) vary
+# mothur_list_file  <- "~/Downloads/mothur/Esophagus/esophagus.an.list"
+# mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
+# mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
+# # # Actual examples follow:
+# show_mothur_list_cutoffs(mothur_list_file)
+# test1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
+# test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
+# # Returns just a tree
+# import_mothur(mothur_list_file, mothur_tree_file=mothur_tree_file)
+# # Returns just an otuTable
+# import_mothur(mothur_list_file, mothur_group_file=mothur_group_file)
+# # Returns an error
+# import_mothur(mothur_list_file)
+# # Should return an "OMG, you must provide the list file" error
+# import_mothur()
+}
 

@@ -1,7 +1,7 @@
 Package: phyloseq
-Version: 0.3.19
+Version: 0.3.20
 Date: 2011-09-19
-Title: Analyze pre-processed phylogenetic sequence data.
+Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
 Description: phyloseq is a set of classes, wrappers, and

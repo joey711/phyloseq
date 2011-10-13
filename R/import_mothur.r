@@ -290,8 +290,32 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #'  and tree file are provided, then only a tree is returned (\code{"phylo"} class).
 #'
 #' @export
+#'
+#' @examples
+#' # # The following example assumes you have downloaded the esophagus example
+#' # # dataset from the mothur wiki:
+#' # # "http://www.mothur.org/wiki/Esophageal_community_analysis"
+#' # # "http://www.mothur.org/w/images/5/55/Esophagus.zip"
+#' # # The path on your machine may (probably will) vary
+#' # mothur_list_file  <- "~/Downloads/mothur/Esophagus/esophagus.an.list"
+#' # mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
+#' # mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
+#' # # # Actual examples follow:
+#' # show_mothur_list_cutoffs(mothur_list_file)
+#' # test1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
+#' # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
+#' # # Returns just a tree
+#' # import_mothur(mothur_list_file, mothur_tree_file=mothur_tree_file)
+#' # # Returns just an otuTable
+#' # import_mothur(mothur_list_file, mothur_group_file=mothur_group_file)
+#' # # Returns an error
+#' # import_mothur(mothur_list_file)
+#' # # Should return an "OMG, you must provide the list file" error
+#' # import_mothur()
 import_mothur <- function(mothur_list_file,  mothur_group_file=NULL,
 		mothur_tree_file=NULL, cutoff=NULL){
+
+	if( missing(mothur_list_file) ){cat("you must provide the mothur_list_file argument\n")}
 
 	# Create otuTable object, OTU, only if group file provided. 
 	if( !is.null(mothur_group_file) ){
