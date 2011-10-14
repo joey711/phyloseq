@@ -341,4 +341,50 @@ import_mothur <- function(mothur_list_file,  mothur_group_file=NULL,
 	}
 }
 ################################################################################
+#' Import mothur-formatted distance file
+#'
+#' The mothur application will produce a file containing the pairwise distances
+#' between all sequences in a dataset. This distance matrix can be the basis for
+#' OTU cluster designations. R also has many built-in or off-the-shelf tools for
+#' dealing with distance matrices. 
+#' 
+#' @usage import_mothur_dist(mothur_dist_file)
+#' 
+#' @param mothur_dist_file Required. The distance file name / location produced by \emph{mothur}.
+#'
+#' @return A distance matrix object describing all sequences in a dataset.
+#'
+#' @export
+#'
+#' @examples
+#' # # Take a look at the dataset shown here as an example:
+#' # # "http://www.mothur.org/wiki/Esophageal_community_analysis"
+#' # # find the file ending with extension ".dist", download to your system
+#' # # The location of your file may vary
+#' # mothur_dist_file <- "~/Downloads/mothur/Esophagus/esophagus.dist"
+#' # myNewDistObject  <- import_mothur_dist(mothur_dist_file)
+import_mothur_dist <- function(mothur_dist_file){
+	# Read the raw distance matrix file produced by mothur:
+	raw_dist_lines <- readLines(mothur_dist_file)
+	
+	# split each line on white space, and begin modifying into dist-matrix format
+	dist_char <- strsplit(raw_dist_lines, "[[:space:]]+")
+	dist_char <- dist_char[-1]
+	# add name to each list element
+	names(dist_char) <- sapply(dist_char, function(i){i[1]})
+	# pop out the names from each vector
+	dist_char <- sapply(dist_char, function(i){i[-1]})
+	# convert to numeric vectors
+	dist_char <- sapply(dist_char, function(i){as(i, "numeric")})
+	
+	# Initialize and fill the matrix
+	distm <- matrix(0, nrow=length(dist_char), ncol=length(dist_char))
+	rownames(distm) <- names(dist_char); colnames(distm) <- names(dist_char)
+	for( i in names(dist_char)[-1] ){
+		distm[i, 1:length(dist_char[[i]])] <- dist_char[[i]]
+	}
+	diag(distm) <- 1
+	distd <- as.dist(distm)
+	return(distd)
+}
 ################################################################################
