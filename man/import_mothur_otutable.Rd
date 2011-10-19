@@ -1,6 +1,6 @@
 \name{import_mothur_otutable}
 \alias{import_mothur_otutable}
-\title{Import mothur list file and return as list object in R.}
+\title{Import mothur list and group files and return an otuTable}
 \usage{
   import_mothur_otutable(mothur_list_file,
   mothur_group_file, cutoff=NULL)
@@ -33,24 +33,10 @@
   function.}
 }
 \value{
-  A list, where each element is a character vector of 1 or
-  more sequence identifiers, indicating how each sequence
-  from the original data is clustered into OTUs by
-  \emph{mothur}. Note that in some cases this is highly
-  dependent on the choice for \code{cutoff}.
+  An \code{\link{otuTable}} object.
 }
 \description{
-  This is a user-available module of a more comprehensive
-  function for importing OTU clustering/abundance data
-  using the \emph{mothur} package. The list object returned
-  by this function is not immediately useable by other
-  \emph{phyloseq} functions, and must be first parsed in
-  conjunction with a separate \emph{mothur} \code{"group"}
-  file. This function is made accessible to \emph{phyloseq}
-  users for troubleshooting and inspection, but the
-  \code{link{import_mothur()}} function is suggested if the
-  goal is to import the OTU clustering results from
-  \emph{mothur} into \emph{phyloseq}.
+  Import mothur list and group files and return an otuTable
 }
 \seealso{
   \code{\link{show_mothur_list_cutoffs}},
