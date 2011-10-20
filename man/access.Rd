@@ -20,7 +20,7 @@
 \description{
   This function is used internally by many convenience
   accessors and in many functions/methods that need to
-  access a partiular component data type. If something is
+  access a particular component data type. If something is
   wrong, or the slot is missing, the expected behavior is
   that this function will return NULL. Thus, the output can
   be tested by \code{\link{is.null}} as verification of the

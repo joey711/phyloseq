@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.3.23
-Date: 2011-10-19
+Version: 0.3.24
+Date: 2011-10-20
 Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -48,7 +48,7 @@ Collate:
     'colname2hex.r'
     'geneFilterSample.R'
     'unifrac.r'
-    'transformSampleCounts.r'
+    'transformSampleCounts.R'
     'threshrank.r'
     'cca.phyloseq.r'
     'rda.phyloseq.r'

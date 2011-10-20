@@ -3,6 +3,8 @@
 #' 
 #' An S4 Generic method for removing (pruning) unwanted samples.
 #'
+#' @usage prune_samples(samples, x)
+#'
 #' @param samples A character vector of the samples in object x that you want to
 #' keep. 
 #'

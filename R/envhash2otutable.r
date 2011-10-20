@@ -6,6 +6,8 @@
 #' each row specifies (in order) the sequence name, source sample, and (optionally)
 #' the number of times the sequence was observed. 
 #'
+#' @usage read_env_file(envfilename, tree=NULL, sep="\t")
+#'
 #' @param envfilename A charater string of the ENV filename (relative or absolute)
 #'
 #' @param tree Optional phylo object that will be used to prune elements in the
@@ -41,6 +43,8 @@ read_env_file <- function(envfilename, tree=NULL, sep="\t"){
 #' species. If a phylogenetic tree is available, it can be submitted with this
 #' table as arguments to \code{\link{tipglom}} to create an object with a
 #' non-trivial \code{otuTable}.  
+#'
+#' @usage envHash2otuTable(tipSampleTable)
 #'
 #' @param tipSampleTable a two-column character table (matrix or data.frame), 
 #' where each row specifies the sequence name and source sample. This format 

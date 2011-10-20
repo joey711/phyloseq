@@ -19,6 +19,8 @@
 #' an abundance matrix. It is also the suggested method for accessing subsetting
 #' the otuTable from a more complex object.
 #'
+#' @usage otuTable(object, ...)
+#'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain an otuTable.
 #'
@@ -86,6 +88,8 @@ setMethod("otuTable", "data.frame", function(object, ...){
 #' It is also the suggested method for accessing/subsetting
 #' the sampleMap from a more complex object.
 #'
+#' @usage sampleMap(object)
+#'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain sampleMap.
 #'
@@ -141,6 +145,8 @@ setMethod("sampleMap", "data.frame", function(object){
 #' that holds the taxonomyTable-class object in a multi-component phyloseq
 #' object.
 #'
+#' @usage taxTab(object)
+#'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain taxonomyTable.
 #'
@@ -194,6 +200,8 @@ taxtab <- taxTab
 #' They also trim accordingly. Thus, the tip.labels in a phylo object
 #' must be named to match the
 #' \code{species.names} of the other objects to which it will ultimately be paired.
+#'
+#' @usage tre(object)
 #' 
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain a phylogenetic tree. If object already is a phylogenetic
@@ -222,6 +230,8 @@ setMethod("tre", "phylo", function(object){
 ################################################################################
 #' Access speciesAreRows slot from otuTable objects.
 #'
+#' @usage speciesarerows(object)
+#'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that are or contain an otuTable.
 #'
@@ -241,6 +251,8 @@ speciesAreRows <- speciesarerows
 #' 
 #' This method works on otuTable, taxonomyTable objects, or the more
 #' complex objects that represent species, as well as phylogenetic trees ``phylo''.
+#'
+#' @usage nspecies(object)
 #'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that represent species.
@@ -278,6 +290,8 @@ setMethod("nspecies", "phylo4", function(object) length(tipLabels(object)) )
 #' This method works on otuTable, taxonomyTable objects, or the more
 #' complex objects that represent species, as well as phylogenetic trees
 #' ``phylo''.
+#'
+#' @usage species.names(object)
 #'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that represent species.
@@ -327,6 +341,8 @@ setMethod("species.names", "phylo4", function(object) tipLabels(object) )
 #' This method works on otuTable and sampleMap objects, as well as the more
 #' complex objects that represent samples in an experiment.
 #'
+#' @usage nsamples(object)
+#'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that represent samples.
 #'
@@ -360,6 +376,8 @@ setMethod("nsamples", "phyloseqFather", function(object){
 #' 
 #' This method works on otuTable and sampleMap objects, as well as the more
 #' complex objects that represent samples in an experiment.
+#'
+#' @usage sample.names(object)
 #'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that represent samples.
@@ -398,6 +416,8 @@ setMethod("sample.names", "phyloseqFather", function(x){
 sampleNames <- sample.names
 ################################################################################
 #' Create a subset object with just the \code{otuTable} and \code{sampleMap} slots.
+#'
+#' @usage otuSam(object)
 #' 
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain both a sampleMap and an otuTable.
@@ -419,6 +439,8 @@ otuSam <- function(object){
 otusam <- otuSam
 ################################################################################
 #' Create a subset object with just the \code{otuTable} and \code{tre} slots.
+#'
+#' @usage otuTree(object)
 #' 
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain both a phylogenetic tree and an otuTable.
@@ -452,6 +474,8 @@ otutree <- otuTree
 #' This is an accessor method only. For building an otuTax object from its 
 #' components, the \code{\link{phyloseq}} function is suggested.
 #'
+#' @usage otuTax(object)
+#'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain a taxonomyTable, and an otuTable.
 #'
@@ -469,6 +493,8 @@ otuTax <- function(object){
 otutax <- otuTax
 ################################################################################
 #' Subset just the otuSamTree portion of a H.O. object.
+#'
+#' @usage otuSamTree(object)
 #' 
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain a phylogenetic tree, sampleMap, and an otuTable.
@@ -487,6 +513,8 @@ otuSamTree <- function(object){
 otusamtree <- otuSamTree
 ################################################################################
 #' Subset just the otuSamTax portion of a H.O. object.
+#'
+#' @usage otuSamTax(object)
 #' 
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain a taxonomyTable, sampleMap, and an otuTable.
@@ -508,6 +536,8 @@ otusamtax <- otuSamTax
 #'
 #' There are no arguments to this function. It returns a named character
 #' when called, which can then be used for tests of component data types, etc.
+#'
+#' @usage get.component.classes()
 #' 
 #' @return a character vector of the component objects classes, where each 
 #' element is named by the corresponding slot name in the higher-order 
@@ -524,6 +554,8 @@ get.component.classes <- function(){
 }
 ################################################################################
 #' Convert phyloseq objects into a named list of the component type (class)
+#'
+#' @usage splat.phyloseq.objects(x)
 #'
 #' @param x An object of a class defined by the phyloseq-package. Component
 #'  data and complex classes are both acceptable.
@@ -555,6 +587,8 @@ splat.phyloseq.objects <- function(x){
 #'
 #' Like getSlots, but returns the class name if argument is component data object.
 #' 
+#' @usage getslots.phyloseq(x)
+#'
 #' @param x An object of a class defined by the phyloseq-package. Component
 #'  data and complex classes are both acceptable. 
 #' 
@@ -582,11 +616,13 @@ getslots.phyloseq <- function(x){
 #' General slot accessor function for phyloseq-package.
 #'
 #' This function is used internally by many convenience accessors and in 
-#' many functions/methods that need to access a partiular component data type.
+#' many functions/methods that need to access a particular component data type.
 #' If something is wrong, or the slot is missing, the expected behavior is that
 #' this function will return NULL. Thus, the output can be tested by 
 #' \code{\link{is.null}} as verification of the presence of a particular 
-#' data component.
+#' data component. 
+#'
+#' @usage access(object, slot)
 #'
 #' @param object An object of a class defined or extended by the phyloseq 
 #'  package.
@@ -597,6 +633,7 @@ getslots.phyloseq <- function(x){
 #' @return Returns the component object specified by the argument \code{slot}. 
 #'  Returns NULL if slot does not exist. Returns \code{object} as-is 
 #'  if it is a component class that already matches the slot name.
+#'
 #' @seealso merge_phyloseq
 #' @export
 #' @examples #

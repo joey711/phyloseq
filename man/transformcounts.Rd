@@ -12,11 +12,11 @@
   transformSampleCounts(x, flist)
 }
 \arguments{
-  \item{x}{the \code{otuTable} or higher-order object that
-  contains an \code{otutable}.}
+  \item{x}{(Required). the \code{otuTable} or higher-order
+  object that contains an \code{otutable}.}
 
-  \item{flist}{list of functions that will be applied to
-  the abundance counts of each sample.}
+  \item{flist}{(Required). A list of functions that will be
+  applied to the abundance counts of each sample.}
 }
 \value{
   The transformed \code{otuTable} or higher-order object
@@ -32,6 +32,10 @@
   of each sample will be transformed individually. No
   sample-sample interaction/comparison is possible by this
   method.
+
+  # #
+
+  # #
 }
 \examples{
 #

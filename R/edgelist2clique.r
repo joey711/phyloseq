@@ -8,6 +8,8 @@
 #' greedy, such that the only requirement for inclusion in a clique is an edge
 #' to any of the other members of that clique.
 #'
+#' @usage edgelist2clique(EdgeList)
+#'
 #' @param EdgeList a 2-column table of vertices where each row represents an edge. 
 #'
 #' @return A list, where each element is a character vector of tips that should

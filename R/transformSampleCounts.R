@@ -8,18 +8,17 @@
 #'
 #' @usage transformsamplecounts(x, flist)
 #'
-#' @param x the \code{otuTable} or higher-order object that 
+#' @param x (Required). the \code{otuTable} or higher-order object that 
 #'  contains an \code{otutable}.
 #'
-#' @param flist list of functions that will be applied to the abundance counts of
-#'  each sample.
+#' @param flist (Required). A list of functions that will be applied
+#'  to the abundance counts of each sample.
 #' 
 #' @return The transformed \code{otuTable} or higher-order object with its
 #'  \code{otuTable} transformed. In general, trimming is not expected by this 
 #'  method, so it is suggested that the user provide only functions that return
 #'  a full-length vector.
 #'
-#' @name transformsamplecounts
 #' @docType methods
 #' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
 #' @rdname transformcounts
@@ -37,15 +36,15 @@ transformsamplecounts <- function(x, flist){
 	otuTable(x) <- otuTable(newx, speciesAreRows=speciesarerows(x))
 	return(x)
 }
-#' @name transformsamplecounts
+####################################################################################
+# # #' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
 #' @docType methods
-#' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
 #' @rdname transformcounts
 #' @export
 TransformSampleCounts <- transformsamplecounts
-#' @name transformsamplecounts
+####################################################################################
+# # #' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
 #' @docType methods
-#' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
 #' @rdname transformcounts
 #' @export
 transformSampleCounts <- transformsamplecounts

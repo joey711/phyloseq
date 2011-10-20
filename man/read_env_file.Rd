@@ -2,7 +2,7 @@
 \alias{read_env_file}
 \title{Read a UniFrac-formatted ENV file.}
 \usage{
-  read_env_file(envfilename, tree = NULL, sep = "\t")
+  read_env_file(envfilename, tree=NULL, sep="\t")
 }
 \arguments{
   \item{envfilename}{A charater string of the ENV filename

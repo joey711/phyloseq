@@ -5,6 +5,7 @@
 #' This is a simple accessor function for investigating 
 #' a single species-of-interest. 
 #'
+#' @usage getSamples(x, i)
 #' @param x otuTable, or H.O. object containing an otuTable.
 #' @param i a single taxa/species/OTU ID for which you want
 #'  to know the abundance in each sample.
@@ -43,6 +44,7 @@ setMethod("getSamples", "phyloseqFather", function(x, i){
 #' This is a simple accessor function for investigating 
 #' a single sample-of-interest. 
 #'
+#' @usage getSpecies(x, i)
 #' @param x otuTable, or H.O. object containing an otuTable.
 #' @param i a single sample for which you want
 #'  to know the abundance of each species.

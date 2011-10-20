@@ -8,6 +8,9 @@
 \alias{mergespecies,sampleMap-method}
 \alias{mergespecies,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
+\usage{
+  mergespecies(x, eqspecies, archetype=1)
+}
 \arguments{
   \item{x}{The otuTable or phylo object, or a higher-order
   object that contains an otuTable or tree.}
@@ -38,13 +41,16 @@
   and taxglom can both reliably call mergespecies for their
   respective purposes.
 
-  Merge a subset of the taxa in an otuTable.
+  # # Merge a subset of the taxa in an otuTable.
 
-  Merge a subset of the taxa in a phylo-class tree object.
+  # # Merge a subset of the taxa in a phylo-class tree
+  object. # # # #
 
-  Merge a subset of the taxa in a phylo4-class tree object.
+  # # Merge a subset of the taxa in a phylo4-class tree
+  object. # # # #
 
-  Merge a subset of the taxa in a complex phyloseq object.
+  # # Merge a subset of the taxa in a complex phyloseq
+  object. # # # #
 }
 \examples{
 #

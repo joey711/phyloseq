@@ -17,8 +17,9 @@
   # # Plot an otuTree object as a simple phylogenetic tree.
   # # # #
 
-  Plot a otuSam object as a taxaplot style barplot.
+  # # Plot a otuSam object as a taxaplot style barplot.
 
-  Plot a otuSamTree object as an annotated phylogenetic
+  # # Plot a otuSamTree object as an annotated phylogenetic
+  tree.
 }
 

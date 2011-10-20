@@ -4,6 +4,10 @@
 \alias{makenetwork,otuTable-method}
 \alias{makenetwork,phyloseqFather-method}
 \title{Create a taxa graph adjacency matrix from an \code{otuTable}.}
+\usage{
+  makenetwork(abund, plotgraph=TRUE, community=TRUE,
+  threshold=0, incommon=0.4, method="jaccard")
+}
 \arguments{
   \item{abund}{The species abundance table (otuTable) or a
   more complex phyloseq-package object that contains an

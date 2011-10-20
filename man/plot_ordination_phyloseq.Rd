@@ -3,13 +3,13 @@
 \title{Convenient rendering of ordination results using ggplot2.}
 \usage{
   plot_ordination_phyloseq(mod, object, plot_title =
-  as(mod$call, "character")[1], man.colors = NULL,
-  man.sizes = NULL, man.shapes = NULL, species_alpha =
-  1/10, sites_alpha = 2/3, species_color_category = NULL,
-  species_shape_category = NULL, species_size_category =
-  NULL, site_color_category = NULL, site_shape_category =
-  NULL, site_size_category = NULL, add_sites_data = NULL,
-  add_taxa_data = NULL)
+  as(mod$call, "character")[1], man.colors=NULL,
+  man.sizes=NULL, man.shapes=NULL, species_alpha=1/10,
+  sites_alpha=2/3, species_color_category =NULL,
+  species_shape_category =NULL, species_size_category
+  =NULL, site_color_category=NULL,
+  site_shape_category=NULL, site_size_category=NULL,
+  add_sites_data = NULL, add_taxa_data = NULL)
 }
 \arguments{
   \item{mod}{A \code{cca} or \code{rda} results object. See

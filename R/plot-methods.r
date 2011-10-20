@@ -18,7 +18,7 @@ setMethod("plot", "otuTree", function(x, ...){
 	edgelabels(as.character(1:nrow(tree$edge)),edge=1:nrow(tree$edge))
 })
 ################################################################################
-#' Plot a otuSam object as a taxaplot style barplot.
+# # #' Plot a otuSam object as a taxaplot style barplot.
 #'
 #' @export
 #' @name plot
@@ -29,7 +29,7 @@ setMethod("plot", "otuSamTax", function(x, ...){
 	taxaplot(otu=x, ...)
 })
 ################################################################################
-#' Plot a otuSamTree object as an annotated phylogenetic
+# # #' Plot a otuSamTree object as an annotated phylogenetic tree.
 #'
 #' @export
 #' @name plot

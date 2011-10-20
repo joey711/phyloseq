@@ -5,6 +5,9 @@
 #' and makes a graph adjacency matrix ready to plot 
 #' with the igraph package.
 #'
+#' @usage makenetwork(abund, plotgraph=TRUE, 
+#'			community=TRUE, threshold=0, incommon=0.4, method="jaccard")
+#'
 #' @param abund The species abundance table (otuTable) or a more complex
 #'  phyloseq-package object that contains an otuTable.
 #'

@@ -1,6 +1,9 @@
 \name{get.component.classes}
 \alias{get.component.classes}
 \title{Show the component objects classes and slot names.}
+\usage{
+  get.component.classes()
+}
 \value{
   a character vector of the component objects classes,
   where each element is named by the corresponding slot

@@ -2,8 +2,8 @@
 \alias{calcplot}
 \title{Convenience wrapper for performing ordination and plotting.}
 \usage{
-  calcplot(X, RDA_or_CCA = "cca", object =
-  get(all.vars(X)[1]), ...)
+  calcplot(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]),
+  ...)
 }
 \arguments{
   \item{X}{A formula object, with the left-hand side

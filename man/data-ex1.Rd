@@ -6,6 +6,9 @@
 \description{
   Example data set 1 for the phyloseq package.
 }
+\examples{
+## data(ex1)
+}
 \author{
   Paul J. McMurdie II \email{mcmurdie@stanford.edu}
 }

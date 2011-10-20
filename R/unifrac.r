@@ -90,6 +90,7 @@ UFwi = function(edge,samples,OTU,tree,AT=sum(OTU[samples[1],]),BT=sum(OTU[sample
 #' Returns a single numeric value, between 0 and 1 if normalized
 #'
 #' @usage wUniFracPair(OTU, tree, A, B, UFwi=UFwi, normalized=TRUE)
+#'
 #' @param OTU otuTable in samples-by-species orientation
 #' @param tree object of class \code{phylo}
 #' @param A single character string matching the first sample ID in the pair

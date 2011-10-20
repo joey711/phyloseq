@@ -14,6 +14,19 @@
 #' the specific examples provided by the phyloseq vignette, or the more 
 #' comprehensive documentation available for the ggplot2 package itself. 
 #' 
+#' @usage plot_ordination_phyloseq(mod, object,
+#'	plot_title = as(mod$call, "character")[1],
+#'	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
+#'	species_alpha=1/10, sites_alpha=2/3,
+#'	species_color_category =NULL,
+#'	species_shape_category =NULL,
+#'	species_size_category  =NULL,
+#'	site_color_category=NULL,
+#'	site_shape_category=NULL,
+#'	site_size_category=NULL,	
+#'	add_sites_data = NULL,
+#'	add_taxa_data = NULL)
+#'
 #' @param mod A \code{cca} or \code{rda} results object. 
 #'  See \code{\link{cca.object}}. For phyloseq
 #'  objects, you probably want to see \code{\link{cca.phyloseq}} or 
@@ -217,6 +230,8 @@ plot_ordination_phyloseq <- function(mod, object,
 # calcplot
 ################################################################################
 #' Convenience wrapper for performing ordination and plotting.
+#'
+#' @usage calcplot(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...)
 #'
 #' @param X A formula object, with the left-hand side specifying a single 
 #'  phyloseq object that contains (at minimum) an \code{otuTable} and a 

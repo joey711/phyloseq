@@ -22,6 +22,8 @@
 #' component type -- several otuTable objects, for example -- then a single merged object
 #' of that component type is returned.
 #' 
+#' @usage merge_phyloseq(...)
+#'
 #' @param ... a comma-separated list of phyloseq objects. 
 #'
 #' @return Merges are performed by first separating higher-order objects into
@@ -104,6 +106,8 @@ merge_phyloseq <- function(...){
 #' The \code{\link{merge_phyloseq}} function is recommended in general.
 #' 
 #' Special note: trees are merged using \code{ape::\link{consensus}}.
+#'
+#' @usage merge_phyloseq_pair(x, y) 
 #'
 #' @param x A character vector of the species in object x that you want to
 #' keep -- OR alternatively -- a logical vector where the kept species are TRUE, and length
