@@ -5,6 +5,9 @@
 \alias{speciesarerows<-,otuTable,logical-method}
 \alias{speciesarerows<-,phyloseqFather,logical-method}
 \title{Manually change speciesAreRows through assignment.}
+\usage{
+  speciesarerows(x) <- value
+}
 \arguments{
   \item{x}{An otuTable-class or higher-order object that
   contains an otuTable.}

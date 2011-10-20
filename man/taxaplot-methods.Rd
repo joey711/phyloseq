@@ -5,6 +5,12 @@
 \alias{taxaplot,otuSamTax-method}
 \alias{taxaplot,otuTable-method}
 \title{Create a structured barplot graphic of the taxonomic groups.}
+\usage{
+  taxaplot(otu, taxavec="Domain", map,
+  showOnlyTheseTaxa=NULL, threshold=NULL,
+  x_category="sample", fill_category=x_category,
+  facet_formula = . ~ TaxaGroup)
+}
 \arguments{
   \item{otu}{An \code{otuTable} object, or higher-order
   object that contains an otuTable and sampleMap (e.g.

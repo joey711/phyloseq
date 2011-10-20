@@ -2,7 +2,7 @@
 \alias{threshrank}
 \title{Thresholded rank transformation.}
 \usage{
-  threshrank(x, thresh, keep0s = FALSE, ...)
+  threshrank(x, thresh, keep0s=FALSE, ...)
 }
 \arguments{
   \item{x}{The numeric vector to transform}

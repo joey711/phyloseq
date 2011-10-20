@@ -2,7 +2,7 @@
 \alias{topk}
 \title{The most abundant \code{k} taxa}
 \usage{
-  topk(k, na.rm = TRUE)
+  topk(k, na.rm=TRUE)
 }
 \arguments{
   \item{k}{An integer, indicating how many of the most

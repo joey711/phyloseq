@@ -2,6 +2,8 @@
 #' Convert an otuTable object into a data.frame useful for plotting
 #' in the ggplot2 framework.
 #'
+#' @usage otu2df(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
+#'
 #' @param otu An \code{otuTable} object.
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
@@ -102,6 +104,10 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  have ``Tax'' in its title), then the second argument, \code{taxavec}, is
 #'  required and should have length equal to the number of species/taxa in
 #'  \code{otu}.
+#'
+#' @usage taxaplot(otu, taxavec="Domain", map,
+#'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
+#'	facet_formula = . ~ TaxaGroup)
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
 #'  categorize each species in \code{otu}. If \code{otu} is a higher-order

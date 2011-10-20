@@ -5,6 +5,9 @@
 \alias{rda.phyloseq,otuTable-method}
 \alias{rda.phyloseq,phyloseqFather-method}
 \title{phyloseq package extension for \code{vegan::rda}.}
+\usage{
+  rda.phyloseq(X, ...)
+}
 \arguments{
   \item{X}{formula-class object specifying the input. No
   need to splat higher-order objects. \code{rda.phyloseq}
@@ -23,11 +26,13 @@
   more complex phyloseq-package class that contains an
   otuTable.}
 
-  \item{data}{\code{data.frame} containing information
-  equivalent to a \code{sampleMap} object / component. Only
-  necessary if complex object does not already contain
-  \code{sampleMap} or you are keeping the data separate for
-  some reason.}
+  \item{...}{(Optional). In most cases, if additional
+  parameter needs to be specified, it will have the form
+  \code{data=DF}, where \code{DF} is a \code{data.frame}
+  containing information equivalent to a \code{sampleMap}
+  object / component. Only necessary if complex object does
+  not already contain \code{sampleMap} or you are keeping
+  the data separate for some reason.}
 }
 \value{
   same output as \code{vegan::\link{rda}}

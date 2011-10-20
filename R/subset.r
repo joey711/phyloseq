@@ -7,6 +7,8 @@
 #' based on an expression related to the columns and values within the 
 #' sampleMap slot of \code{x}.
 #'
+#' @usage subset_samples(x, ...)
+#'
 #' @param x A \code{sampleMap} class, or a more complex class that contains a
 #'  \code{sampleMap}. If the \code{sampleMap} slot is missing in \code{x}, then \code{x}
 #'  will be returned as-is and a warning will be printed to screen.
@@ -47,7 +49,9 @@ subset_samples <- function(x, ...){
 #' It is intended to speed subsetting complex experimental objects with one
 #' function call. In the case of \code{subset_species}, the subsetting will be
 #' based on an expression related to the columns and values within the 
-#' taxTab slot of \code{x}.
+#' \code{taxTab} (\code{taxonomyTable} component) slot of \code{x}.
+#'
+#' @usage subset_species(x, ...)
 #'
 #' @param x A taxonomyTable class, or a more complex class that contains a
 #'  taxonomyTable. If the \code{taxTab} slot is missing in \code{x}, then \code{x}

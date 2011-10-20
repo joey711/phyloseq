@@ -2,7 +2,7 @@
 \alias{topp}
 \title{The most abundant \code{p} fraction of taxa}
 \usage{
-  topp(p, na.rm = TRUE)
+  topp(p, na.rm=TRUE)
 }
 \arguments{
   \item{p}{A numeric of length 1, indicating what fraction

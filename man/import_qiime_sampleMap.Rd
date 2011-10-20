@@ -1,8 +1,8 @@
-\name{readQiime_sampleMap}
-\alias{readQiime_sampleMap}
+\name{import_qiime_sampleMap}
+\alias{import_qiime_sampleMap}
 \title{Import just OTU/Taxonomy file from QIIME pipeline.}
 \usage{
-  readQiime_sampleMap(mapfilename)
+  import_qiime_sampleMap(mapfilename)
 }
 \arguments{
   \item{mapfilename}{The QIIME map file required for
@@ -30,7 +30,8 @@
 #
 }
 \seealso{
-  \code{\link{readQiime}}, \code{\link{merge_phyloseq}},
-  \code{\link{phyloseq}}, \code{\link{readQiime_otu_tax}}
+  \code{\link{import_qiime}}, \code{\link{merge_phyloseq}},
+  \code{\link{phyloseq}},
+  \code{\link{import_qiime_otu_tax}}
 }
 

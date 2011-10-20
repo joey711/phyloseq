@@ -2,8 +2,7 @@
 \alias{wUniFracPair}
 \title{Calculate weighted UniFrac for a pair of samples from an OTU table.}
 \usage{
-  wUniFracPair(OTU, tree, A, B, UFwi = UFwi, normalized =
-  TRUE)
+  wUniFracPair(OTU, tree, A, B, UFwi=UFwi, normalized=TRUE)
 }
 \arguments{
   \item{OTU}{otuTable in samples-by-species orientation}

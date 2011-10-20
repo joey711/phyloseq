@@ -2,6 +2,16 @@
 \alias{assign-species.names}
 \alias{species.names<-}
 \title{Assign species names to an object.}
+\usage{
+  species.names(x) <- value
+}
+\arguments{
+  \item{x}{(Required). The object within which you will
+  replace something}
+
+  \item{value}{(Required). The value with which you will
+  replace that thing in x.}
+}
 \description{
   A convenience / syntax wrapper around
   \code{\link{prune_samples}}. This is typically used for

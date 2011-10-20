@@ -4,6 +4,9 @@
 \alias{UniFrac,otuTable,phylo-method}
 \alias{UniFrac,otuTree,ANY-method}
 \title{Calculate unweighted UniFrac from an abundance matrix and a tree.}
+\usage{
+  UniFrac(OTU, tree)
+}
 \arguments{
   \item{OTU}{otuTable, or a more-complex object that
   contains an otuTable.}

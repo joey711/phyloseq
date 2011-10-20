@@ -6,6 +6,8 @@
 #' the categorical taxonomic levels rather than patristic distances on the
 #' phylogenetic tree. 
 #'
+#' @usage taxglom(object, tax=NULL, taxlevel="Phylum")
+#'
 #' @param object An \code{otuTable} or more complex object that
 #'  contains an \code{otuTable}.
 #'

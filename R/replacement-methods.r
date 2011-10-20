@@ -1,6 +1,10 @@
 ################################################################################
 #' Assign to otuTable an object/value.
 #'
+#' @usage otuTable(x) <- value
+#' @param x (Required). The object within which you will replace something
+#' @param value (Required). The value with which you will replace that thing in x.
+#'
 #' @export
 #' @docType methods
 #' @rdname assign-otuTable
@@ -45,6 +49,8 @@ setMethod("otuTable<-", c("otuSamTaxTree", "otuTable"), function(x, value){
 #' The speciesAreRows slot is a logical indicating the orientation of the
 #' abundance table contained in object \code{x}.
 #'
+#' @usage speciesarerows(x) <- value
+#'
 #' @param x An otuTable-class or higher-order object that contains an otuTable.
 #'
 #' @param value A logical of length equal to 1. If \code{length(value) > 1}, 
@@ -79,6 +85,10 @@ setMethod("speciesarerows<-", c("phyloseqFather", "logical"), function(x, value)
 #' This is typically used for subsetting an object to just those species
 #' indicated by the character vector \code{value}.
 #'
+#' @usage species.names(x) <- value
+#' @param x (Required). The object within which you will replace something
+#' @param value (Required). The value with which you will replace that thing in x.
+#'
 #' @export
 #' @rdname assign-species.names
 #' @aliases assign-species.names species.names<-
@@ -99,6 +109,10 @@ setMethod("speciesarerows<-", c("phyloseqFather", "logical"), function(x, value)
 #' This is typically used for subsetting an object to just those samples
 #' indicated by the character vector \code{value}.
 #'
+#' @usage sample.names(x) <- value
+#' @param x (Required). The object within which you will replace something
+#' @param value (Required). The value with which you will replace that thing in x.
+#'
 #' @export
 #' @rdname assign-sample.names
 #' @aliases assign-sample.names sample.names<-
@@ -115,6 +129,10 @@ setMethod("speciesarerows<-", c("phyloseqFather", "logical"), function(x, value)
 ################################################################################
 #' Assign to sampleMap an object/value.
 #'
+#' @usage sampleMap(x) <- value
+#' @param x (Required). The object within which you will replace something
+#' @param value (Required). The value with which you will replace that thing in x.
+#'
 #' @export
 #' @rdname assign-sampleMap
 #' @aliases assign-sampleMap sampleMap<-
@@ -126,6 +144,10 @@ setMethod("speciesarerows<-", c("phyloseqFather", "logical"), function(x, value)
 }
 ################################################################################
 #' Assign to taxTab an object/value.
+#'
+#' @usage taxTab(x) <- value
+#' @param x (Required). The object within which you will replace something
+#' @param value (Required). The value with which you will replace that thing in x.
 #'
 #' @export
 #' @rdname assign-taxTab
@@ -141,6 +163,10 @@ setMethod("speciesarerows<-", c("phyloseqFather", "logical"), function(x, value)
 #'
 #' This will automatically convert "phylo"-class trees (ape package) to
 #' "phylo4"-class trees (phylobase package).
+#'
+#' @usage tre(x) <- value
+#' @param x (Required). The object within which you will replace something
+#' @param value (Required). The value with which you will replace that thing in x.
 #'
 #' @export
 #' @docType methods

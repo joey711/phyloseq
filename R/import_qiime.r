@@ -1,33 +1,44 @@
 ######################################################################################
-#' Import function to read output from the QIIME pipeline.
+#' Import function to read files created by the QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
 #' including especially an OTU file that typically contains both OTU-abundance
 #' and taxonomic identity information. The map-file is also an important input
-#' to QIIME that can also indicate sample covariates, converted naturally to the 
-#' sampleMap component data type in phyloseq-package.  
+#' to QIIME that stores sample covariates, converted naturally to the 
+#' sampleMap component data type in the phyloseq-package. QIIME may also produce a
+#' phylogenetic tree with a tip for each OTU, which can also be imported by this
+#' function.
 #' 
-#' Add reference to the QIIME pipeline.
+#' See \code{"http://www.qiime.org/"} for details on using QIIME. While there are
+#' many complex dependencies, QIIME can be downloaded as a pre-installed 
+#' linux virtual machine that runs ``off the shelf''. 
 #'
-#' @param otufilename A character string indicating the file location of the OTU file.
+#' The different files useful for import to \emph{phyloseq} are not collocated in
+#' a typical run of the QIIME pipeline. See the main \emph{phyloseq} vignette for an 
+#' example of where ot find the relevant files in the output directory. 
+#'
+#' @usage import_qiime(otufilename=NULL, mapfilename=NULL,
+#'	treefilename=NULL, biotaxonomy=NULL, ...)
+#'
+#' @param otufilename (Optional). A character string indicating the file location of the OTU file.
 #' The combined OTU abundance and taxonomic identification file,
 #' tab-delimited, as produced by QIIME under default output settings.
 #'  Default value is \code{NULL}. 
 #' 
-#' @param mapfilename The QIIME map file required for processing pyrosequencing tags
+#' @param mapfilename (Optional). The QIIME map file required for processing pyrosequencing tags
 #' in QIIME as well as some of the post-clustering analysis. This is a required
 #' input file for running QIIME. Its strict formatting specification should be
 #' followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
-#' @param treefilename A phylogenetic tree in NEXUS format. For the QIIME pipeline
+#' @param treefilename (Optional). A phylogenetic tree in NEXUS format. For the QIIME pipeline
 #'  this is typically a tree of the representative 16S rRNA sequences from each OTU
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
 #'  Default value is \code{NULL}. ALTERNATIVELY, this argument can be a tree object
 #'  ()\code{"phylo4"} or \code{"phylo"} class), in case the tree has already been
 #'  imported, or is in a different format than NEXUS.
 #'
-#' @param biotaxonomy A character vector indicating the name of each taxonomic level
+#' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
 #'  in the taxonomy-portion of the otu-file, which may not specify these levels 
 #'  explicitly.
 #'  Default value is \code{NULL}. 
@@ -36,19 +47,19 @@
 #'  Make sure that your phylogenetic tree file is readable by \code{\link{read.nexus}}
 #'  prior to calling this function.
 #'
-#' @return The class of the object returned by \code{readQiime} depends upon which 
+#' @return The class of the object returned by \code{import_qiime} depends upon which 
 #' filenames are provided. The most comprehensive class is chosen automatically,
-#' based on the input files listed as arguments. \code{readQiime()} will return 
+#' based on the input files listed as arguments. \code{import_qiime()} will return 
 #' nothing.
 #'
 #' @seealso \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-#'   \code{\link{readQiime_otu_tax}}, \code{\link{readQiime_sampleMap}},
+#'   \code{\link{import_qiime_otu_tax}}, \code{\link{import_qiime_sampleMap}},
 #'	 \code{\link{read.tree}}, \code{\link{read.nexus}}, \code{\link{readNexus}}
 #'   \code{\link{readNewick}}
 #'
 #' @export
 #' @examples #
-readQiime <- function(otufilename=NULL, mapfilename=NULL,
+import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	treefilename=NULL, biotaxonomy=NULL, ...){
 
 	# initialize the argument-list for phyloseq. Start empty.
@@ -61,12 +72,12 @@ readQiime <- function(otufilename=NULL, mapfilename=NULL,
 
 	if( !is.null(mapfilename) ){	
 		# Process mapfile. Name rows as samples.
-		QiimeMap     <- readQiime_sampleMap(mapfilename)
+		QiimeMap     <- import_qiime_sampleMap(mapfilename)
 		argumentlist <- c(argumentlist, list(QiimeMap))
 	}
 
 	if( !is.null(otufilename) ){
-		otutax       <- readQiime_otu_tax(otufilename, biotaxonomy)	
+		otutax       <- import_qiime_otu_tax(otufilename, biotaxonomy)	
 		argumentlist <- c(argumentlist, list(otuTable(otutax)), list(taxTab(otutax)) )
 	}
 
@@ -109,11 +120,11 @@ readQiime <- function(otufilename=NULL, mapfilename=NULL,
 #' @return An \code{otuTax} object.
 #'
 #' @seealso \code{\link{merge_phyloseq}}, \code{\link{phyloseq}}, 
-#'   \code{\link{readQiime_sampleMap}}
+#'   \code{\link{import_qiime_sampleMap}}
 #'
 #' @export
 #' @examples #
-readQiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
+import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	if( is.null(biotaxonomy) ){
 	 	biotaxonomy=c("Root", "Domain", "Phylum", "Class", "Order",
 		 	"Family", "Genus", "Species", "Strain")
@@ -167,12 +178,12 @@ readQiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 #'
 #' @return A \code{sampleMap} object.
 #'
-#' @seealso \code{\link{readQiime}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-#'	 \code{\link{readQiime_otu_tax}}
+#' @seealso \code{\link{import_qiime}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
+#'	 \code{\link{import_qiime_otu_tax}}
 #'
 #' @export
 #' @examples #
-readQiime_sampleMap <- function(mapfilename){
+import_qiime_sampleMap <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,
 		sep="\t", comment.char="")

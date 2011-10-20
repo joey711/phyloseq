@@ -7,6 +7,8 @@
 #' \code{speciationMinLength} will be agglomerated using \code{mergespecies}.
 #' Can be used to create non-trivial OTU table, by agglomerating nearby tips.
 #'
+#' @usage tipglom(tree, OTU, speciationMinLength=0.02)
+#'
 #' @param tree An object of class \code{otuTree} or its superclasses, in which case
 #' the OTU argument can be ommitted. If, alternatively, \code{tree} is a \code{phylo}
 #' or \code{phylo4} object, then \code{OTU} is required. 

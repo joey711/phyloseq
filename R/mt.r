@@ -1,6 +1,8 @@
 ####################################################################################
 #' Wrapper of mt.maxT and mt.minP for the phyloseq package.
 #'
+#' @usage mt(X, classlabel, minPmaxT="minP", ...)
+#'
 #' @param X An \code{otuTable} or an object that contains an \code{otuTable}.
 #'  In this multiple testing framework, different taxa correspond to variables
 #'  (hypotheses), and samples to observations.
@@ -12,6 +14,9 @@
 #'  third option is for classlabel to be a 2-level factor, with length
 #'  equal to the number of samples of X. 
 #'
+#' @param minPmaxT (Optional). Whether to use \code{mt.minP} or \code{mt.maxT}.
+#'  Default is to use \code{mt.minP}
+#' 
 #' @param ... Additional arguments, forwarded to \code{mt.maxT} 
 #' 
 #' @return A dataframe with components specified in the documentation for

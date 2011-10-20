@@ -5,6 +5,9 @@
 \alias{genefilterSample,otuTable-method}
 \alias{genefilterSample,phyloseqFather-method}
 \title{Filter OTUs sample-wise.}
+\usage{
+  genefilterSample(X, flist, A=1)
+}
 \arguments{
   \item{X}{The object that needs trimming. Can be matrix,
   otuTable, or higher- order phyloseq classes that contain
@@ -25,17 +28,20 @@
   A general OTU trim function for selecting OTUs that
   satisfy some criteria within the distribution of each
   sample, and then also an additional criteria for number
-  of samples. By contrast, \code{genefilter}, of the
-  genefilter package in Bioconductor, works only on the
-  rows of a matrix. Here we want a genefilter function that
-  considers sample-wide (column-wide) criteria and
-  determines which rows are acceptable within each column.
-  The number of acceptable samples (columns) is then used
-  as the final criteria to determine whether or not the
-  taxa should be TRUE or FALSE. Just like with genefilter,
-  a logical having length equal to nrow()/nspecies is
-  returned, indicating which should be kept. This output
-  can be provided directly to OTU trimming function,
+  of samples that pass. By contrast, \code{genefilter}, of
+  the genefilter package in Bioconductor, works only on the
+  rows of a matrix.
+}
+\details{
+  Here we want a genefilter function that considers
+  sample-wide (column-wide) criteria and determines which
+  rows are acceptable within each column. The number of
+  acceptable samples (columns) is then used as the final
+  criteria to determine whether or not the taxa should be
+  TRUE or FALSE. Just like with genefilter, a logical
+  having length equal to nrow()/nspecies is returned,
+  indicating which should be kept. This output can be
+  provided directly to OTU trimming function,
   \code{\link{prune_species}}.
 }
 \examples{

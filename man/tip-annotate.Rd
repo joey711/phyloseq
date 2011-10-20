@@ -3,7 +3,7 @@
 \alias{tiptext}
 \title{Annotate tips on a tree.}
 \usage{
-  tipsymbols(tip, adj = c(0.5, 0.5), ...)
+  tipsymbols(tip, adj=c(0.5, 0.5), ...)
 
   tiptext(tip, adj = c(0.5, 0.5), ...)
 }

@@ -1,8 +1,8 @@
-\name{readQiime_otu_tax}
-\alias{readQiime_otu_tax}
+\name{import_qiime_otu_tax}
+\alias{import_qiime_otu_tax}
 \title{Import just OTU/Taxonomy file from QIIME pipeline.}
 \usage{
-  readQiime_otu_tax(otufilename, biotaxonomy = NULL)
+  import_qiime_otu_tax(otufilename, biotaxonomy = NULL)
 }
 \arguments{
   \item{otufilename}{A character string indicating the file
@@ -33,6 +33,6 @@
 }
 \seealso{
   \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-  \code{\link{readQiime_sampleMap}}
+  \code{\link{import_qiime_sampleMap}}
 }
 

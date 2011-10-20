@@ -3,9 +3,10 @@
 #' 
 #' A general OTU trim function for selecting OTUs that satisfy
 #'  some criteria within the distribution of each sample, and then
-#'  also an additional criteria for number of samples.
+#'  also an additional criteria for number of samples that pass.
 #' By contrast, \code{genefilter}, of the genefilter package in Bioconductor,
 #' works only on the rows of a matrix.
+#'
 #' Here we want a genefilter function that considers sample-wide (column-wide)
 #' criteria and determines which rows are acceptable
 #' within each column. The number of acceptable samples (columns) is then used
@@ -15,6 +16,8 @@
 #' logical having length equal to nrow()/nspecies is returned, indicating which
 #' should be kept. This output can be provided
 #' directly to OTU trimming function, \code{\link{prune_species}}.
+#'
+#' @usage genefilterSample(X, flist, A=1)
 #'
 #' @param X The object that needs trimming. Can be matrix, otuTable, or higher-
 #' order phyloseq classes that contain an otuTable.
@@ -69,6 +72,8 @@ setMethod("genefilterSample", signature("phyloseqFather"), function(X, flist, A=
 #' A sample-wise generic filter function, analogous to filterfun from the 
 #' genefilter package. 
 #'
+#' @usage filterfunSample(...)
+#'
 #' @param ... A comma-separated list of functions.
 #' 
 #' @return An enclosure (function) that itself will return a logical vector, 
@@ -99,6 +104,8 @@ filterfunSample = function(...){
 ############################################################
 #' The most abundant \code{k} taxa
 #'
+#' @usage topk(k, na.rm=TRUE)
+#'
 #' @param k An integer, indicating how many of the most abundant taxa
 #'  should be kept.
 #' @param na.rm A logical. Should \code{NA}s be removed. Default is \code{TRUE}.
@@ -115,6 +122,8 @@ topk = function(k, na.rm=TRUE){
 }
 ############################################################
 #' The most abundant \code{p} fraction of taxa
+#'
+#' @usage topp(p, na.rm=TRUE)
 #'
 #' @param p A numeric of length 1, indicating what fraction of the most abundant taxa
 #'  should be kept.
@@ -140,6 +149,7 @@ topp = function(p, na.rm=TRUE){
 #' fraction of the total sequences are retained, while topp ensures
 #' that a certain fraction of taxa/species/OTUs are retained.
 #'
+#' @usage topf(f, na.rm=TRUE)
 #' @param f Single numeric value between 0 and 1.
 #' @param na.rm Logical. Should we remove NA values. Default \code{TRUE}.
 #'
@@ -166,6 +176,8 @@ topf <- function(f, na.rm=TRUE){
 #'
 #' This is for removing overly-abundant outlier taxa, not for trimming low-abundance
 #' taxa.
+#'
+#' @usage rm_outlierf(f, na.rm=TRUE)
 #'
 #' @param f Single numeric value between 0 and 1. The maximum fractional abundance
 #'  value that a taxa will be allowed to have in a sample without being marked

@@ -3,8 +3,8 @@
 \title{Convert an otuTable object into a data.frame useful for plotting
 in the ggplot2 framework.}
 \usage{
-  otu2df(otu, taxavec, map, keepOnlyTheseTaxa = NULL,
-  threshold = NULL)
+  otu2df(otu, taxavec, map, keepOnlyTheseTaxa=NULL,
+  threshold=NULL)
 }
 \arguments{
   \item{otu}{An \code{otuTable} object.}

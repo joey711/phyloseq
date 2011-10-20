@@ -2,7 +2,7 @@
 \alias{topf}
 \title{The top f fraction of observations in a sample.}
 \usage{
-  topf(f, na.rm = TRUE)
+  topf(f, na.rm=TRUE)
 }
 \arguments{
   \item{f}{Single numeric value between 0 and 1.}

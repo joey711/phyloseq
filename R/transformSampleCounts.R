@@ -6,6 +6,8 @@
 #' The counts of each sample will be transformed individually. No sample-sample 
 #' interaction/comparison is possible by this method. 
 #'
+#' @usage transformsamplecounts(x, flist)
+#'
 #' @param x the \code{otuTable} or higher-order object that 
 #'  contains an \code{otutable}.
 #'

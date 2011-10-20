@@ -5,6 +5,8 @@
 #' suggested for constructing \code{phyloseq} higher-order
 #' objects from their components.
 #'
+#' @usage phyloseq(...)
+#'
 #' @param ... One or more component objects among the set of classes
 #'  defined by the phyloseq package, as well as \code{phylo4} objects
 #'  (defined by the phylobase package). Each argument should be a different class.

@@ -2,7 +2,7 @@
 \alias{rm_outlierf}
 \title{Set to FALSE any outlier species greater than f fractional abundance.}
 \usage{
-  rm_outlierf(f, na.rm = TRUE)
+  rm_outlierf(f, na.rm=TRUE)
 }
 \arguments{
   \item{f}{Single numeric value between 0 and 1. The

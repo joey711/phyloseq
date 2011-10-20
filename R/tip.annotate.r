@@ -10,6 +10,8 @@
 #' but where the tip
 #' coordinates are specified by giving the tip ID (integer) as input.
 #'
+#' @usage tipsymbols(tip, adj=c(0.5, 0.5), ...)
+#'
 #' @param tip An integer specifying the tip ID in a tree that for which the 
 #'  base plot has already been generated and is still available to \code{R}.
 #' 

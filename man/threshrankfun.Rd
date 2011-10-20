@@ -2,7 +2,7 @@
 \alias{threshrankfun}
 \title{A closure version of the \code{threshrank} function.}
 \usage{
-  threshrankfun(thresh, keep0s = FALSE, ...)
+  threshrankfun(thresh, keep0s=FALSE, ...)
 }
 \arguments{
   \item{thresh}{A single numeric value giving the

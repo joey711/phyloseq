@@ -5,15 +5,16 @@
   reconcile_categories(DFSM)
 }
 \arguments{
-  \item{DFSM}{A data.frame or sampleMap object that needs
-  to be cleaned.}
+  \item{DFSM}{(Required). A \code{data.frame} or
+  \code{sampleMap} object that needs to be cleaned.}
 }
 \value{
-  A single data.frame object. Even if the input argument is
-  a sampleMap, the return is a data.frame. Because this is
-  intended to be used internally by the builder method, it
-  cannot also call the builder function to re-build the
-  cleaned sampleMap.
+  A single \code{data.frame} object. Even if the input
+  argument is a \code{sampleMap}, the return is a
+  \code{data.frame}. Because this is intended to be used
+  internally by the builder method, it cannot also call the
+  builder function to re-build the cleaned
+  \code{sampleMap}.
 }
 \description{
   This is used internally by the builder method,

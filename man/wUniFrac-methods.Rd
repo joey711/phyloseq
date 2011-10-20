@@ -4,6 +4,9 @@
 \alias{wUniFrac,otuTable,phylo-method}
 \alias{wUniFrac,otuTree,ANY-method}
 \title{Calculate weighted UniFrac for all samples in an OTU table.}
+\usage{
+  wUniFrac(OTU, tree, normalized=TRUE)
+}
 \arguments{
   \item{OTU}{otuTable, or a more-complex object that
   contains an otuTable.}

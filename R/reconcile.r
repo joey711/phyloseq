@@ -6,6 +6,8 @@
 #' It relies heavily on the \code{\link{Reduce}} function to determine the 
 #' strictly common species.
 #'
+#' @usage intersect_species(x)
+#'
 #' @param x An object of the phyloseq package that contains 2 or more components
 #'  data tables that in-turn describe species/taxa. E.g. An otuTree object, or
 #'  an otuTax object.
@@ -37,6 +39,8 @@ intersect_species <- function(x){
 #' actual trimming. In expected cases, a user will not need to invoke this
 #' function, because phyloseq objects are reconciled during instantiation by
 #' default.
+#'
+#' @usage reconcile_species(x)
 #'
 #' @param x An object of the phyloseq package that contains 2 or more components
 #'  data tables that in-turn describe species/taxa. E.g. An otuTree object, or
@@ -73,6 +77,8 @@ reconcile_species <- function(x){
 #' In expected cases, a user will not need to invoke this
 #' function, because phyloseq objects are reconciled during instantiation by
 #' default.
+#'
+#' @usage reconcile_samples(x)
 #'
 #' @param x An object of the phyloseq package that contains 2 or more components
 #'  data tables that in-turn describe samples. At present this is limited to 

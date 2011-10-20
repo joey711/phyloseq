@@ -24,7 +24,8 @@
   subsetting complex experimental objects with one function
   call. In the case of \code{subset_species}, the
   subsetting will be based on an expression related to the
-  columns and values within the taxTab slot of \code{x}.
+  columns and values within the \code{taxTab}
+  (\code{taxonomyTable} component) slot of \code{x}.
 }
 \examples{
 ## ex3 <- subset_species(ex1, Phylum=="Bacteroidetes")

@@ -7,6 +7,8 @@
 #' from the abundance values in the associated otuTable, not other phyloseq
 #' tables
 #'
+#' @usage speciesSums(x)
+#'
 #' @param x Any phyloseq-package object that is or contains an otuTable.
 #' 
 #' @return A named integer vector with length equal to the number of species
@@ -33,6 +35,8 @@ speciessums <- speciesSums
 #' more complex phyloseq objects, not just otuTable. Result always derived
 #' from the abundance values in the associated otuTable, not other phyloseq
 #' tables.
+#'
+#' @usage sampleSums(x)
 #'
 #' @param x Any phyloseq-package object that is or contains an otuTable.
 #' 
