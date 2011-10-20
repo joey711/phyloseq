@@ -72,8 +72,6 @@ exportClasses(phyloseqFather)
 exportClasses(sampleMap)
 exportClasses(taxonomyTable)
 exportMethods("[")
-exportMethods("mergespecies
-# #")
 exportMethods("otuTable<-")
 exportMethods("speciesarerows<-")
 exportMethods("tre<-")

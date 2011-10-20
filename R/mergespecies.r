@@ -73,8 +73,8 @@ setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
 ###############################################################################
 # # #' Merge a subset of the taxa in a phylo-class tree object.
 # # #'
-# # #' @exportMethod mergespecies
-# # #'
+#' @exportMethod mergespecies
+#'
 #' @aliases mergespecies,phylo-method
 #' @rdname mergespecies-methods
 setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
@@ -95,8 +95,8 @@ setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
 ###############################################################################
 # # #' Merge a subset of the taxa in a phylo4-class tree object.
 # # #'
-# # #' @exportMethod mergespecies
-# # #'
+#' @exportMethod mergespecies
+#'
 #' @aliases mergespecies,phylo4-method
 #' @rdname mergespecies-methods
 #'
@@ -126,8 +126,8 @@ setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
 ################################################################################
 # # #' Merge a subset of the taxa in a complex phyloseq object.
 # # #'
-# # #' @exportMethod mergespecies
-# # #'
+#' @exportMethod mergespecies
+#'
 #' @aliases mergespecies,phyloseqFather-method
 #' @rdname mergespecies-methods
 setMethod("mergespecies", "phyloseqFather", function(x, eqspecies, archetype=1){

@@ -44,13 +44,13 @@
   # # Merge a subset of the taxa in an otuTable.
 
   # # Merge a subset of the taxa in a phylo-class tree
-  object. # # # #
+  object. # #
 
   # # Merge a subset of the taxa in a phylo4-class tree
-  object. # # # #
+  object. # #
 
   # # Merge a subset of the taxa in a complex phyloseq
-  object. # # # #
+  object. # #
 }
 \examples{
 #

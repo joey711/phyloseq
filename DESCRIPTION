@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.3.24
+Version: 0.3.25
 Date: 2011-10-20
 Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
