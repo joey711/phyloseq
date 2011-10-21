@@ -58,7 +58,8 @@ intersect_species <- function(x){
 #' ## reconcile_species(ex1)
 reconcile_species <- function(x){
 	species <- intersect_species(x)
-	# prevent infinite recursion issues by checking if intersection already satisfied
+	# prevent infinite recursion issues and unecessary mucking around
+	# by checking if intersection already satisfied
 	if( setequal(species, species.names(x)) ){
 		return(x)
 	} else {

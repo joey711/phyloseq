@@ -170,23 +170,26 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
         stop("Rooted phylogeny required for UniFrac calculation")
     }
 	# ensure that OTU is a matrix class OTU table
-    OTU <- as.matrix(OTU)
+    OTU <- as(OTU, "matrix")
+    
     # s is the number of samples. In Picante, the OTU-table is samples by species
     # instead of species by samples
     s <- nrow(OTU)
 	# create N x 2 matrix of all pairwise combinations of samples.
     spn = combn(rownames(OTU),2)
-    # initialize UniFrac with NAs, a symmetric distance matrix
-    UniFrac <- matrix(NA, s, s)
-    # define the rows/cols of UniFrac with the sample names (rownames)    
-    rownames(UniFrac) <- rownames(OTU)
-    colnames(UniFrac) <- rownames(OTU)
-  	# Calculate unifrac at each index.
+    
+    # initialize UniFracMat with NAs
+    UniFracMat <- matrix(NA, s, s)
+    # define the rows/cols of UniFracMat with the sample names (rownames)    
+    rownames(UniFracMat) <- rownames(OTU)
+    colnames(UniFracMat) <- rownames(OTU)
+  	# Calculate wUniFrac at each index.
     for(i in 1:ncol(spn)){
-		A = spn[1,i]; B = spn[2,i]
-    	UniFrac[B,A] = wUniFracPair(OTU,tree,A,B,UFwi,normalized)
+		A <- spn[1,i]
+		B <- spn[2,i]
+    	UniFracMat[B,A] <- wUniFracPair(OTU,tree,A,B,UFwi,normalized)
     }
-    return(as.dist(UniFrac))
+    return(as.dist(UniFracMat))
 })
 ################################################################################
 #' @aliases wUniFrac,otuTree,ANY-method
@@ -200,7 +203,7 @@ setMethod("wUniFrac", signature("otuTree"),
 	} else { 
 		otu <- otuTable(OTU)
 	}
-	wUniFrac(otu, as(tre(OTU), "phylo"), normalized)
+	wUniFrac(otu, suppressWarnings(as(tre(OTU), "phylo")), normalized)
 })
 ##############################################################################
 ##############################################################################
@@ -233,9 +236,15 @@ setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
     if (!is.rooted(tree)) {
         stop("Rooted phylogeny required for UniFrac calculation")
     }
+    
+    # Force orientation to "speciesAreCols"
+    if( speciesarerows(OTU) ){OTU <- t(OTU)}
+    
     # ensure that OTU is a matrix class OTU table
-    OTU <- as.matrix(OTU)
-    # s is the number of samples. In Picante, the OTU-table is samples x species instead of species x samples
+    OTU <- as(OTU, "matrix")
+    
+    # s is the number of samples. 
+    # In Picante, the OTU-table is samples by species instead of species x samples
     s   <- nrow(OTU)
 	# create N x 2 matrix of all pairwise combinations of samples.
     spn <- combn(rownames(OTU), 2)
@@ -250,8 +259,8 @@ setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
     # initialize UniFrac with NAs, a symmetric distance matrix
     UniFracMat <- matrix(NA, s, s)
     # define the rows/cols of UniFrac with the sample names (rownames)    
-    rownames(UniFrac) <- rownames(OTU)
-    colnames(UniFrac) <- rownames(OTU)  
+    rownames(UniFracMat) <- rownames(OTU)
+    colnames(UniFracMat) <- rownames(OTU)  
 	# Calculate unifrac at each index.
     for(i in 1:ncol(spn)){
 		UniFracMat[spn[2,i], spn[1,i]] <- 2 - ( pdOTU[spn[1, i], "PD"] + 
@@ -263,6 +272,6 @@ setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
 #' @aliases UniFrac,otuTree,ANY-method
 #' @rdname UniFrac-methods
 setMethod("UniFrac", signature("otuTree"), function(OTU, tree=NULL){
-	UniFrac(otuTable(OTU), as(tre(OTU), "phylo") )
+	UniFrac(otuTable(OTU), suppressWarnings(as(tre(OTU), "phylo")) )
 })
 ################################################################################
