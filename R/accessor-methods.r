@@ -377,12 +377,12 @@ setMethod("nsamples", "phyloseqFather", function(object){
 #' This method works on otuTable and sampleMap objects, as well as the more
 #' complex objects that represent samples in an experiment.
 #'
-#' @usage sample.names(object)
+#' @usage sample.names(x)
 #'
-#' @param object An object among the set of classes defined by the phyloseq 
+#' @param x (Required). An object among the set of classes defined by the phyloseq 
 #' package that represent samples.
 #'
-#' @return A character vector of the names of the samples in \code{object}.
+#' @return A character vector. The names of the samples in \code{x}.
 #'
 #' @seealso species.names nsamples
 #' @aliases sample.names sampleNames

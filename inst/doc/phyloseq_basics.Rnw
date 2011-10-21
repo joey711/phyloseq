@@ -65,24 +65,43 @@ To use \emph{phyloseq} in a new R session, it will have to be loaded. This can b
 \subsection{Import data}\label{sec:import}
 An important feature of \emph{phyloseq} are methods for importing phylogenetic sequencing data from common taxonomic clustering pipelines. These methods take file pathnames as input, read and parse those files, and return a single object that contains all of the data. 
 
-As an example, the following lines of code would create a \code{phyloseqTaxTree} object (see Appendix~\ref{sec:app-classes} for class definitions) from files on your computer, had they been created by the the QIIME pipeline. 
-
-%readQiime_directory_structure.png
+\subsection{Import from QIIME}\label{sec:qiimeimport}
+As an example, the following lines of code would create a \code{phyloseqTaxTree} object (see Appendix~\ref{sec:app-classes} for class definitions) from files on your computer, had they been created by the QIIME pipeline. 
 
 <<eval=FALSE>>=
   otufilename <- "../data/ex1_otutable.txt"
   mapfilename <- "../data/ex1_samplemap.txt"
   trefilename <- "../data/ex1_tree.tre"
-  ex1 <- readQiime(otufilename, mapfilename, trefilename)
+  ex1 <- import_qiime(otufilename, mapfilename, trefilename)
 @
 
+In practice, you will have to find the relevant QIIME files among a number of other files created by the QIIME pipeline. A screenshot of the directory structure created during a typical QIIME run is shown in Figure~\ref{fig:qiimedirectory}.
+
+A separate object containing taxonomic data is not necessary, because this information is included in the ``otu{\textunderscore}table.txt'' file, and parsed into a proper \code{taxonomyTable} component object by \code{import{\textunderscore}qiime()}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.55\textwidth]{import_qiime_directory_structure.pdf}
+\caption[]{ {\textbf A typical QIIME output directory}. The two output files suitable for import by \emph{phyloseq} are highlighted. A third file describing the samples, their barcodes and covariates, is created by the user and required as \emph{input} to QIIME. It is a good idea to import this file, as it can be converted directly to a \code{sampleMap} object and can be extremely useful for certain analyses.}
+\label{fig:qiimedirectory}
+\end{center}
+\end{figure}
+
+\clearpage
+\subsection{Import from mothur}\label{sec:mothurimport}
+
+\subsection{Import from PyroTagger}\label{sec:pyrotaggerimport}
+
+\subsection{Import from RDP pipeline}\label{sec:RDPimport}
+
+\clearpage
+\subsection{Example Data}
 An example data set is included in \emph{phyloseq}, called ``\code{ex1}''. It is derived from a preliminary investigation of human intestinal microbiome. The user need only invoke the \code{data()} command to bring this object into the environment:
 
 <<>>=
 data(ex1)
 @
 
-\clearpage
 \subsection{phyloseq object summaries}
 In small font, the following is the summary of object \code{ex1} that prints to the terminal. These summaries are consistent among all object classes defined by \emph{phyloseq}. Although the components of \code{ex1} have many thousands of elements, the command-line returns only a short summary of each by default. This encourages you to check that an object is still what you expect, without needing to let thousands of elements scroll across the terminal. In the cases in which you do want to see all elements of an object, use \code{print()}.
 
@@ -91,6 +110,8 @@ In small font, the following is the summary of object \code{ex1} that prints to 
 ex1
 @
 \end{scriptsize}
+
+
 
 \clearpage
 \subsection{Convert raw data to phyloseq components}
@@ -147,7 +168,7 @@ You do not need to have all four data types in the example above in order to com
 ex1c <- phyloseq(my_otuTable, my_sampleMap)
 @
 
-We refer to these classes that contain more than one component data type as \emph{higher-order} classes. Whenever an instance of these classes is created by \emph{phyloseq} --- for example, when we use the \code{readQiime()} function to import data, or combine manually imported tables using the \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly the same species and samples.
+We refer to these classes that contain more than one component data type as \emph{higher-order} classes. Whenever an instance of these classes is created by \emph{phyloseq} --- for example, when we use the \code{import{\textunderscore}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly the same species and samples.
 
 \subsection{\code{merge{\textunderscore}phyloseq()} function: merge multiple phyloseq objects}
 What if you have multiple objects describing parts of the same experimental project (say, because they came from different files)? What if you had already built a combined object for the earlier trials with the \code{phyloseq()} function, but now want to add additional data tables to that new object? 
@@ -367,7 +388,7 @@ We use the term ``higher-order classes'' for those that contain two or more of t
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.7\textwidth]{phyloseq_classes_2_clipped.pdf}
+\includegraphics[width=0.7\textwidth]{phyloseq_classes_3_clipped.pdf}
 \caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order object contains a slot with the associated class as one of its components.}
 \label{fig:phyloseqclasses}
 \end{center}

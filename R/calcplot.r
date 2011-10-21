@@ -233,14 +233,32 @@ plot_ordination_phyloseq <- function(mod, object,
 #'
 #' @usage calcplot(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...)
 #'
-#' @param X A formula object, with the left-hand side specifying a single 
+#' @param X (Required). A formula object. The left-hand side specifying a single 
 #'  phyloseq object that contains (at minimum) an \code{otuTable} and a 
-#'  \code{sampleMap}. The right-hand side expects at least two different
-#'  variates, present in the \code{sampleMap} of the LHS. For available
+#'  \code{sampleMap}. The right-hand side should contain the label of at least
+#'  one variate present in the \code{sampleMap} of the LHS object. There is
+#'  one supported alternative, the special \code{"."} for the RHS, in which case
+#'  all available variates will be specified as constraints in the constrained
+#'  ordination, but not shaded. This behavior is less explicit and may depend
+#'  somewhat arbitrarily on the order of variates in your \code{sampelMap}; 
+#'  as such, it should be used with caution.
+#'
+#'  For example, there are two variates in the example object obtained with
+#'  \code{data(ex1)}. \code{X} can be specified as 
+#'
+#'  \code{ex1 ~ Diet + Gender}
+#'
+#'  for using both as constraints in the ordination (and shading), or as
+#'
+#'  \code{ex1 ~ Diet}
+#'
+#'  if you only wanted to constrain on the Diet variable, for example.
+#'
+#'  For available
 #'  variate names in your object, try \code{colnames(sampleMap(ex1))}, where
 #'  \code{ex1} is the phyloseq object containing your data. Because this is
 #'  a formula object, quotes should not be used. See \code{\link{formula}}
-#'  for details about writing a formula in R.
+#'  for details about writing a formula in \code{R}.
 #'
 #' @param RDA_or_CCA A character string, indicating whether the ordination
 #'  method should be RDA or CCA. Default is "cca". Case ignored. Only first
@@ -259,6 +277,11 @@ plot_ordination_phyloseq <- function(mod, object,
 #' @seealso \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
 #'  \code{\link{rda}}, \code{\link{cca}}
 calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
+	if( class(X) != "formula" ){
+		warning("First argument, X, must be formula class. See ?formula for more info\n")
+		return()
+	}
+	
 	if( substr(RDA_or_CCA, 1, 1) %in% c("R", "r") ){
 		mod <- rda.phyloseq(X)		
 	} else if( substr(RDA_or_CCA, 1, 1) %in% c("C", "c") ){
@@ -271,11 +294,18 @@ calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 
 	ord_vars <- all.vars(X)[-1]
 
-	# default is to use the R.H.S. elements of X as color and shape
-	plot_ordination_phyloseq(mod,
-		object = object, 
-		site_shape_category = ord_vars[1],
-		site_color_category = ord_vars[2]
-	)
+	# Initialize call list for plot_ordination_phyloseq
+	popcallList <- list(mod=mod, object=object)
+
+	# Populate the shading/shaping options in the call list.
+	if( ord_vars[1] != "."){
+		popcallList <- c(popcallList, list(site_color_category = ord_vars[1]))
+	} 
+	if( length(ord_vars) > 1){
+		popcallList <- c(popcallList, list(site_shape_category = ord_vars[2]))
+	}
+	
+	# Create the plot
+	do.call("plot_ordination_phyloseq", popcallList)
 }
 ################################################################################
