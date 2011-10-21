@@ -6,17 +6,39 @@
   ...)
 }
 \arguments{
-  \item{X}{A formula object, with the left-hand side
+  \item{X}{(Required). A formula object. The left-hand side
   specifying a single phyloseq object that contains (at
   minimum) an \code{otuTable} and a \code{sampleMap}. The
-  right-hand side expects at least two different variates,
-  present in the \code{sampleMap} of the LHS. For available
-  variate names in your object, try
+  right-hand side should contain the label of at least one
+  variate present in the \code{sampleMap} of the LHS
+  object. There is one supported alternative, the special
+  \code{"."} for the RHS, in which case all available
+  variates will be specified as constraints in the
+  constrained ordination, but not shaded. This behavior is
+  less explicit and may depend somewhat arbitrarily on the
+  order of variates in your \code{sampelMap}; as such, it
+  should be used with caution.
+
+  For example, there are two variates in the example object
+  obtained with \code{data(ex1)}. \code{X} can be specified
+  as
+
+  \code{ex1 ~ Diet + Gender}
+
+  for using both as constraints in the ordination (and
+  shading), or as
+
+  \code{ex1 ~ Diet}
+
+  if you only wanted to constrain on the Diet variable, for
+  example.
+
+  For available variate names in your object, try
   \code{colnames(sampleMap(ex1))}, where \code{ex1} is the
   phyloseq object containing your data. Because this is a
   formula object, quotes should not be used. See
   \code{\link{formula}} for details about writing a formula
-  in R.}
+  in \code{R}.}
 
   \item{RDA_or_CCA}{A character string, indicating whether
   the ordination method should be RDA or CCA. Default is

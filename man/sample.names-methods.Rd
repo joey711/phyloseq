@@ -7,15 +7,14 @@
 \alias{sampleNames}
 \title{Get the sample names of the samples described by an object.}
 \usage{
-  sample.names(object)
+  sample.names(x)
 }
 \arguments{
-  \item{object}{An object among the set of classes defined
-  by the phyloseq package that represent samples.}
+  \item{x}{(Required). An object among the set of classes
+  defined by the phyloseq package that represent samples.}
 }
 \value{
-  A character vector of the names of the samples in
-  \code{object}.
+  A character vector. The names of the samples in \code{x}.
 }
 \description{
   This method works on otuTable and sampleMap objects, as
