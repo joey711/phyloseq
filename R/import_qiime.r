@@ -162,19 +162,24 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	return( phyloseq(otutab, taxtab) )
 }
 ######################################################################################
-#' Import just OTU/Taxonomy file from QIIME pipeline.
+#' Import just \code{sampleMap} file from QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
 #' This includes the map-file, which is an important \emph{input}
 #' to QIIME that can also indicate sample covariates. It is converted naturally to the 
 #' sampleMap component data type in phyloseq-package, based on the R data.frame.   
 #' 
-#' Add reference to the QIIME pipeline.
+#' See \code{\link{import_qiime}} for more information about QIIME. It is also the
+#' suggested function for importing QIIME-produced data files. 
 #'
-#' @param mapfilename The QIIME map file required for processing pyrosequencing tags
-#' in QIIME as well as some of the post-clustering analysis. This is a required
-#' input file for running QIIME. Its strict formatting specification should be
-#' followed for correct parsing by this function.
+#' @usage import_qiime_sampleMap(mapfilename)
+#'
+#' @param mapfilename (Required). A character string. The name of the QIIME map
+#'  file required for processing pyrosequencing tags
+#'  in QIIME as well as some of the post-clustering analysis. This is a required
+#'  input file for running QIIME. Its strict formatting specification is expected by
+#'  this function, do not attempt to modify it manually once it has worked properly
+#'  in QIIME. 
 #'
 #' @return A \code{sampleMap} object.
 #'
