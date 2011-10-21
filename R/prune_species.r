@@ -65,7 +65,7 @@ setMethod("prune_species", signature("character", "phylo4"), function(species, x
 		## temporary hack; phylobase subset sometimes too slow or fails
 		# subset(x, tips.exclude=trimTaxa)
 		## convert to "phylo" tree, trim, then back to "phylo4".
-		x <- ape::drop.tip(as(x, "phylo"), trimTaxa)
+		x <- ape::drop.tip(suppressWarnings(as(x, "phylo")), trimTaxa)
 		as(x, "phylo4")
 	} else x
 })

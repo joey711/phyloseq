@@ -30,6 +30,12 @@
 ## data(ex1)
 ## head(intersect_species(ex1), 10)
 ## reconcile_species(ex1)
+# # data(phylocom)
+# # tree <- phylocom$phylo
+# # OTU  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# # ex3  <- phyloseq(OTU, tree)
+# # reconcile_species(ex3)
+# # intersect_species(ex3)
 }
 \seealso{
   \code{\link{reconcile_samples}}, \code{\link{Reduce}}

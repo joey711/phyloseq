@@ -56,11 +56,20 @@ intersect_species <- function(x){
 #' ## data(ex1)
 #' ## head(intersect_species(ex1), 10)
 #' ## reconcile_species(ex1)
+#' # # data(phylocom)
+#' # # tree <- phylocom$phylo
+#' # # OTU  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+#' # # ex3  <- phyloseq(OTU, tree)
+#' # # reconcile_species(ex3)
+#' # # intersect_species(ex3)
 reconcile_species <- function(x){
-	species <- intersect_species(x)
+	# Make species the intersection of all species in the components
+	species    <- intersect_species(x)
+	# Make allspecies the union of all species in the components
+	allspecies <- unique(unlist(lapply(splat.phyloseq.objects(x), species.names)))	
 	# prevent infinite recursion issues and unecessary mucking around
-	# by checking if intersection already satisfied
-	if( setequal(species, species.names(x)) ){
+	# by checking if intersection and union are already the same (same species, all)
+	if( setequal(species, allspecies) ){
 		return(x)
 	} else {
 		slots2reconcile <- names(getslots.phyloseq(x))
