@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.3.27
+Version: 0.3.28
 Date: 2011-10-21
 Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -65,3 +65,4 @@ Collate:
     'import_pyrotagger_tab.r'
     'import_RDP_cluster.r'
     'import_qiime.r'
+    'parapply.r'
