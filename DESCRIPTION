@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.3.29
+Version: 0.3.30
 Date: 2011-10-21
 Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -18,11 +18,12 @@ Depends:
     methods,
     picante (>= 1.3),
     ape (>= 2.7),
-    ggplot2 (>= 0.8),
-    Rmpi (>= 0.5)
+    ggplot2 (>= 0.8)
 Suggests:
     adephylo,
     ade4
+Enhances:
+    Rmpi (>= 0.5)
 Collate:
     'allclasses.r'
     'allpackage.r'
