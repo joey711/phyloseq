@@ -131,6 +131,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 	}
 }
 ##############################################################################
+##############################################################################
 #' Calculate weighted UniFrac for all samples in an OTU table.
 #'
 #' This function calculates the weighted-UniFrac distance for all sample-pairs
@@ -139,7 +140,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' tree and abundance table, then the argument \code{tree} is not necessary
 #' and will be ignored.  
 #'
-#' @usage wUniFrac(OTU, tree, normalized=TRUE, num_cores=1)
+#' @usage wUniFrac(OTU, tree, normalized=TRUE, parallel=FALSE)
 #'
 #' @param OTU (Required). \code{otuTable}, or an \code{otuTree}. If you have
 #'  instead a simple matrix of abundances, see \code{\link{otuTable}} for coercing
@@ -153,23 +154,27 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' @param normalized (Optional). Logical. Should the output be normalized such that values 
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}.
 #'
-#' @param num_cores (Optional). Integer. The number of CPU cores to use in calculation.
-#'  This is not checked for validity. User must specify a valid number. If value
-#'  is \code{<=1}, then a serial implementation is used. Default is 1. 
+#' @param parallel (Optional). Logical. Should execute calculation in parallel,
+#'  using multiple CPU cores simultaneously? This can dramatically hasten the
+#'  computation time for this function. However, it also requires that the user
+#'  has registered a parallel ``backend'' prior to calling this function. 
+#'  Default is \code{FALSE}. If FALSE, wUniFrac will register a serial backend
+#'  so that \code{foreach::\%dopar\%} does not throw a warning.
 #' 
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' @seealso UniFrac unifrac vegdist
 #' 
 #' @docType methods
 #' @export
+#' @import foreach
 #' @rdname wUniFrac-methods
 #' @examples #
-setGeneric("wUniFrac", function(OTU, tree, normalized=TRUE, num_cores=1) standardGeneric("wUniFrac"))
+setGeneric("wUniFrac", function(OTU, tree, normalized=TRUE, parallel=FALSE) standardGeneric("wUniFrac"))
 ################################################################################
 #' @aliases wUniFrac,otuTable,phylo-method
 #' @rdname wUniFrac-methods
 setMethod("wUniFrac", signature("otuTable", "phylo"),
-										function(OTU, tree, normalized=TRUE, num_cores=1){
+										function(OTU, tree, normalized=TRUE, parallel=FALSE){
 	#require(picante); require(ape)
     if (is.null(tree$edge.length)) {
         stop("Tree has no branch lengths, cannot compute UniFrac")
@@ -177,42 +182,37 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
     if (!is.rooted(tree)) {
         stop("Rooted phylogeny required for UniFrac calculation")
     }
+
+	### Some parallel-foreach housekeeping.    
+    # If user specifies not-parallel run (the default), register the sequential "back-end"
+    if( !parallel ){ registerDoSEQ() }
     
-    # Coerce to the picante orientation, with species as columns
-	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
-    
-	# Coerce that OTU is a matrix class OTU table
-    OTU <- as(OTU, "matrix")
-    
-    # s is the number of samples. In Picante, the OTU-table is samples by species
-    # instead of species by samples
-    s <- nrow(OTU)
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(rownames(OTU), 2)
-    
+    spn <- combn(sample.names(OTU), 2, simplify=FALSE)
     # initialize UniFracMat with NAs
-    UniFracMat <- matrix(NA, s, s)
+    UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
     # define the rows/cols of UniFracMat with the sample names (rownames)    
-    rownames(UniFracMat) <- rownames(OTU)
-    colnames(UniFracMat) <- rownames(OTU)
-
-	# Define an internal function for wrapping the pairwise dist calc
-	# It uses <<- to force assignment to UniFracMat
-	fillufmat <- function(i, spn, OTU, tree, normalized){
-		A <- spn[1, i]
-		B <- spn[2, i]
-		UniFracMat[B, A] <<- wUniFracPair(OTU, tree, A, B, normalized)
+    rownames(UniFracMat) <- sample.names(OTU)
+    colnames(UniFracMat) <- sample.names(OTU)
+    
+	## Format coercion
+	# Coerce to the picante orientation, with species as columns
+	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
+   	# Coerce OTU to matrix for calculations.
+    OTU <- as(OTU, "matrix")
+	
+   	# optionally-parallel implementation with foreach
+  	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
+		A <- i[1]
+		B <- i[2]
+		return( phyloseq::wUniFracPair(OTU, tree, A, B, normalized) )
 	}
-
-	# Is parallelization is desired, and if-so, how many cores?  
-    if(num_cores <= 1){
-    	# serial implementation
-	  	junk <- sapply(1:ncol(spn), fillufmat, spn, OTU, tree, normalized)
-	} else {
-    	# parallel implementation
-   		require(Rmpi)		
-		junk <- parapply(1:ncol(spn), fillufmat, num_cores, spn, OTU, tree, normalized)
-	}
+	
+    # This is in serial, but it is quick.
+    distlist2distmat <- function(i, spn, DL){
+    	UniFracMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
+    }
+	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
     
     return(as.dist(UniFracMat))
 })
@@ -221,14 +221,9 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
 #' @rdname wUniFrac-methods
 #' @import phylobase
 setMethod("wUniFrac", signature("otuTree"), 
-		function(OTU, tree=NULL, normalized=TRUE, num_cores=1){
-				
-	if ( speciesAreRows(OTU) ){
-		otu <- t( otuTable(OTU) )
-	} else { 
-		otu <- otuTable(OTU)
-	}
-	wUniFrac(otu, suppressWarnings(as(tre(OTU), "phylo")), normalized, num_cores)
+		function(OTU, tree=NULL, normalized=TRUE, parallel=FALSE){
+	# splat and pass to core function.
+	wUniFrac(OTU=otuTable(OTU), tree=suppressWarnings(as(tre(OTU), "phylo")), normalized, parallel)
 })
 ##############################################################################
 ##############################################################################

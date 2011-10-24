@@ -1,18 +1,19 @@
 Package: phyloseq
-Version: 0.3.30
-Date: 2011-10-21
+Version: 0.3.31
+Date: 2011-10-24
 Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
 Description: phyloseq is a set of classes, wrappers, and
-    tools to make it easier to import, store, and analyze
-    phylogenetic sequencing data.
+    tools to facilitate the import, storage, and analysis
+    of phylogenetic sequencing data.
 License: AGPL-3
 Imports:
     phylobase (>= 0.6.3),
     igraph (>= 0.5),
     multtest (>= 2.8),
-    vegan (>= 2.0)
+    vegan (>= 2.0),
+    foreach (>= 1.3)
 Depends:
     R (>= 2.13.0),
     methods,
@@ -22,8 +23,7 @@ Depends:
 Suggests:
     adephylo,
     ade4
-Enhances:
-    Rmpi (>= 0.5)
+Enhances: DoMC (>= 1.2)
 Collate:
     'allclasses.r'
     'allpackage.r'
@@ -66,4 +66,3 @@ Collate:
     'import_pyrotagger_tab.r'
     'import_RDP_cluster.r'
     'import_qiime.r'
-    'parapply.r'
