@@ -199,7 +199,7 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
     if( !setequal(species.names(tree), species.names(OTU)) ){
 		warning("Species names between tree and OTU do not match exactly. They must.\n")
 		warning("Attempting to prune non-shared species from either object... \n")
-		cat("In the future, try the constuctor function: phyloseq(OTU, tree), or prune_species( ).\n")
+		warning("To solve, try: phyloseq(OTU, tree)    or try:  prune_species( ).\n")
 		combinedOTUtree <- phyloseq(OTU, tree)
 		OTU  <- otuTable(combinedOTUtree)
 		tree <- suppressWarnings(as(tre(combinedOTUtree), "phylo"))
@@ -272,11 +272,22 @@ setGeneric("UniFrac", function(OTU, tree) standardGeneric("UniFrac"))
 #' @rdname UniFrac-methods
 setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
 	#require(picante)
-    if (is.null(tree$edge.length)) {
+
+	# Some important checks.
+    if( is.null(tree$edge.length) ) {
         stop("Tree has no branch lengths, cannot compute UniFrac")
     }
-    if (!is.rooted(tree)) {
+    if( !is.rooted(tree) ) {
         stop("Rooted phylogeny required for UniFrac calculation")
+    }
+    # Attempt to prune if species-names do not match between tree and OTU.
+    if( !setequal(species.names(tree), species.names(OTU)) ){
+		warning("Species names between tree and OTU do not match exactly. They must.\n")
+		warning("Attempting to prune non-shared species from either object... \n")
+		warning("To solve, try: phyloseq(OTU, tree)    or try:  prune_species( ).\n")
+		combinedOTUtree <- phyloseq(OTU, tree)
+		OTU  <- otuTable(combinedOTUtree)
+		tree <- suppressWarnings(as(tre(combinedOTUtree), "phylo"))
     }
     
     # Force orientation to "speciesAreCols"
