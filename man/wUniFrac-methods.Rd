@@ -5,7 +5,7 @@
 \alias{wUniFrac,otuTree,ANY-method}
 \title{Calculate weighted UniFrac for all samples in an OTU table.}
 \usage{
-  wUniFrac(OTU, tree, normalized=TRUE, num_cores=1)
+  wUniFrac(OTU, tree, normalized=TRUE, parallel=FALSE)
 }
 \arguments{
   \item{OTU}{(Required). \code{otuTable}, or an
@@ -23,11 +23,15 @@
   independent of branch length values? Default is
   \code{TRUE}.}
 
-  \item{num_cores}{(Optional). Integer. The number of CPU
-  cores to use in calculation. This is not checked for
-  validity. User must specify a valid number. If value is
-  \code{<=1}, then a serial implementation is used. Default
-  is 1.}
+  \item{parallel}{(Optional). Logical. Should execute
+  calculation in parallel, using multiple CPU cores
+  simultaneously? This can dramatically hasten the
+  computation time for this function. However, it also
+  requires that the user has registered a parallel
+  ``backend'' prior to calling this function. Default is
+  \code{FALSE}. If FALSE, wUniFrac will register a serial
+  backend so that \code{foreach::\%dopar\%} does not throw
+  a warning.}
 }
 \value{
   a sample-by-sample distance matrix, suitable for NMDS,
