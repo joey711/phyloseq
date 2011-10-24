@@ -44,6 +44,24 @@
   a more complex object that already contains a
   phylogenetic tree and abundance table, then the argument
   \code{tree} is not necessary and will be ignored.
+  WARNING: The species names of both \code{OTU} and
+  \code{tree} must match exactly, or weird index erros can
+  result. A warning has been added to further protect users
+  from encountering this issue unknowingly. The easiest
+  solution is to combine the \code{OTU} and \code{tree}
+  objects using the \code{\link{phyloseq}} function. E.g.
+  \code{phyloseq(OTU, tree)} will return an
+  \code{otuTree}-class object that has been pruned and
+  comprises the minimum arguments necessary for
+  \code{wUniFrac()}.
+}
+\details{
+  Parallelization is possible, and encouraged for a
+  computing-intensive calculation such as weighted-UniFrac.
+  It has been implemented with the \emph{foreach} package.
+  This means that parallel calls need to be preceded by 2
+  or more commands that that register the parallel
+  ``backend''.
 }
 \examples{
 #

@@ -138,7 +138,18 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' in a species-abundance table using the abundances and a phylogenetic tree.
 #' If \code{OTU} is a more complex object that already contains a phylogenetic
 #' tree and abundance table, then the argument \code{tree} is not necessary
-#' and will be ignored.  
+#' and will be ignored. WARNING: The species names of both \code{OTU} and
+#' \code{tree} must match exactly, or weird index erros can result. A warning
+#' has been added to further protect users from encountering this issue unknowingly.
+#' The easiest solution is to combine the \code{OTU} and \code{tree} objects 
+#' using the \code{\link{phyloseq}} function. E.g. \code{phyloseq(OTU, tree)}
+#' will return an \code{otuTree}-class object that has been pruned and comprises
+#' the minimum arguments necessary for \code{wUniFrac()}. 
+#'
+#' Parallelization is possible, and encouraged for a computing-intensive calculation
+#' such as weighted-UniFrac. It has been implemented with the \emph{foreach} package.
+#' This means that parallel calls need to be preceded by 2 or more commands that
+#' that register the parallel ``backend''.
 #'
 #' @usage wUniFrac(OTU, tree, normalized=TRUE, parallel=FALSE)
 #'
@@ -175,12 +186,23 @@ setGeneric("wUniFrac", function(OTU, tree, normalized=TRUE, parallel=FALSE) stan
 #' @rdname wUniFrac-methods
 setMethod("wUniFrac", signature("otuTable", "phylo"),
 										function(OTU, tree, normalized=TRUE, parallel=FALSE){
-	#require(picante); require(ape)
-    if (is.null(tree$edge.length)) {
+	#require(picante); require(ape); require(foreach)
+
+	# Some important checks.
+    if( is.null(tree$edge.length) ) {
         stop("Tree has no branch lengths, cannot compute UniFrac")
     }
-    if (!is.rooted(tree)) {
+    if( !is.rooted(tree) ) {
         stop("Rooted phylogeny required for UniFrac calculation")
+    }
+    # Attempt to prune if species-names do not match between tree and OTU.
+    if( !setequal(species.names(tree), species.names(OTU)) ){
+		warning("Species names between tree and OTU do not match exactly. They must.\n")
+		warning("Attempting to prune non-shared species from either object... \n")
+		cat("In the future, try the constuctor function: phyloseq(OTU, tree), or prune_species( ).\n")
+		combinedOTUtree <- phyloseq(OTU, tree)
+		OTU  <- otuTable(combinedOTUtree)
+		tree <- suppressWarnings(as(tre(combinedOTUtree), "phylo"))
     }
 
 	### Some parallel-foreach housekeeping.    
