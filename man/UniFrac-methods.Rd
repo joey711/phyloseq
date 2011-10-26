@@ -94,6 +94,35 @@
 }
 \examples{
 #
+# # ########################################
+# # # Create a simulated tree and abundance matrix
+# # ########################################
+# # ### Set dimensions of random data.
+# # Nspec <- 50
+# # Nsamp <- 10
+# # ### Create random otuTable
+# # abvec <- sample(c(rep(0, 5), 1:10), Nsamp*Nspec, TRUE)
+# # rOTU  <- otuTable(matrix(abvec, nrow=Nsamp, ncol=Nspec), speciesAreRows=FALSE)
+# # ### Create random tree
+# # rtree <- ape::rcoal(Nspec, tip.label=species.names(rOTU))
+# # ### Combine into one object.
+# # rotuTree <- phyloseq(rOTU, rtree)
+# # ########################################
+# # # Run UniFrac
+# # ########################################
+# # ### Unweighted UniFrac
+# # unweightedUF.dist <- UniFrac(rotuTree)
+# # ### weighted UniFrac
+# # weightedUF.ser.dist <- UniFrac(rotuTree, weighted=TRUE)
+# # ### parallel weighted UniFrac
+# # require("doMC")
+# # registerDoMC(4)
+# # getDoParWorkers()
+# # weightedUF.par.dist <- UniFrac(rotuTree, weighted=TRUE, parallel=TRUE)
+# # ### Compare with picante version
+# # picUF <- unifrac( as(rOTU, "matrix"), rtree)
+# # round((unweightedUF.dist - picUF), 5)
+##
 }
 \seealso{
   \code{vegan::vegdist}
