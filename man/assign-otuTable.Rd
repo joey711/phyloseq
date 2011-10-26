@@ -9,9 +9,6 @@
 \alias{otuTable<-,otuTable,otuTable-method}
 \alias{otuTable<-,otuTree,otuTable-method}
 \title{Assign to otuTable an object/value.}
-\usage{
-  otuTable(x) <- value
-}
 \arguments{
   \item{x}{(Required). The object within which you will
   replace something}

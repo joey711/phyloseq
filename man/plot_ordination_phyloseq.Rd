@@ -12,8 +12,8 @@
   add_sites_data = NULL, add_taxa_data = NULL)
 }
 \arguments{
-  \item{mod}{A \code{cca} or \code{rda} results object. See
-  \code{\link{cca.object}}. For phyloseq objects, you
+  \item{mod}{A \code{cca} or \code{rda} results object.
+  See \code{\link{cca.object}}. For phyloseq objects, you
   probably want to see \code{\link{cca.phyloseq}} or
   \code{\link{rda.phyloseq}}.}
 
@@ -49,7 +49,7 @@
   that represent samples/sites. Default is \code{2/3}.}
 
   \item{species_color_category}{A manual color scale for
-  taxa. Default is \code{NULL}.}
+  taxa.  Default is \code{NULL}.}
 
   \item{species_shape_category}{A manual shape scale for
   taxa. Default is \code{NULL}.}
@@ -58,26 +58,26 @@
   taxa. Default is \code{NULL}.}
 
   \item{site_color_category}{A manual color scale for
-  samples/sites. Default is \code{NULL}.}
+  samples/sites.  Default is \code{NULL}.}
 
   \item{site_shape_category}{A manual shape scale for
-  samples/sites. Default is \code{NULL}.}
+  samples/sites.  Default is \code{NULL}.}
 
   \item{site_size_category}{A manual size scale for
-  samples/sites. Default is \code{NULL}.}
+  samples/sites.  Default is \code{NULL}.}
 
   \item{add_sites_data}{A \code{data.frame} object
   providing additional data about the samples/sites that is
   not already available in the \code{sampleMap} of your
   phyloseq object specified by \code{object}. As such, it
   must have the same number of rows as as there are samples
-  in \code{object}. Default is \code{NULL}.}
+  in \code{object}.  Default is \code{NULL}.}
 
   \item{add_taxa_data}{A \code{matrix} object providing
   additional data about the taxa that is not already
   available in the \code{taxTab} of your phyloseq object
   specified by \code{object}, if it has a \code{taxTab}
-  slot. It is not required. As such, it must have the same
+  slot.  It is not required. As such, it must have the same
   number of rows as there are taxa in \code{object}.
   Default is \code{NULL}.}
 }

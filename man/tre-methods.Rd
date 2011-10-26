@@ -4,9 +4,6 @@
 \alias{tre,ANY-method}
 \alias{tre,phylo-method}
 \title{Access tre slot, or check/coerce to phylo4 class.}
-\usage{
-  tre(object)
-}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain a phylogenetic tree.

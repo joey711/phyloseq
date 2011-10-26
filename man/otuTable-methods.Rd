@@ -8,9 +8,6 @@
 \alias{otuTable,otuTable-method}
 \alias{otuTable,phyloseqFather-method}
 \title{Build or access otuTable objects.}
-\usage{
-  otuTable(object, ...)
-}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain an otuTable.}

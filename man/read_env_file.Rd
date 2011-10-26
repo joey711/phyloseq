@@ -14,7 +14,7 @@
   excluded from the output.}
 
   \item{sep}{A character string indicating the delimiter
-  used in the file. The default is \code{"\t"}.}
+  used in the file.  The default is \code{"\t"}.}
 }
 \value{
   A two- or three- column hash table (matrix).

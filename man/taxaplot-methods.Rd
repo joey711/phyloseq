@@ -5,16 +5,10 @@
 \alias{taxaplot,otuSamTax-method}
 \alias{taxaplot,otuTable-method}
 \title{Create a structured barplot graphic of the taxonomic groups.}
-\usage{
-  taxaplot(otu, taxavec="Domain", map,
-  showOnlyTheseTaxa=NULL, threshold=NULL,
-  x_category="sample", fill_category=x_category,
-  facet_formula = . ~ TaxaGroup)
-}
 \arguments{
   \item{otu}{An \code{otuTable} object, or higher-order
   object that contains an otuTable and sampleMap (e.g.
-  ``otuSam'' class and its superclasses.). If \code{otu}
+  ``otuSam'' class and its superclasses.).  If \code{otu}
   does not contain a taxTab slot (is a class that does not
   have ``Tax'' in its title), then the second argument,
   \code{taxavec}, is required and should have length equal
@@ -25,7 +19,7 @@
   If \code{otu} is a higher-order object that contains a
   taxonomyTable, then taxavec can alternatively specify the
   desired taxonomic level as a character string of length
-  1. E.g. \code{taxavec = "Phylum"}. Default value is
+  1.  E.g. \code{taxavec = "Phylum"}. Default value is
   \code{"Domain"}.}
 
   \item{map}{The corresponding sampleMap object for
@@ -48,21 +42,21 @@
   column should be used to define the horizontal axis
   categories. Default is \code{"sample"}. Note that a few
   column-names are added by default and are available as
-  options. They are ``sample'', ``Abundance'', and
+  options.  They are ``sample'', ``Abundance'', and
   ``TaxaGroup''.}
 
   \item{fill_category}{A character string indicating which
   map column should be used to define the fill color of the
   bars. This does not have to match \code{x_category}, but
   does so by default. Note that a few column-names are
-  added by default and are available as options. They are
+  added by default and are available as options.  They are
   ``sample'', ``Abundance'', and ``TaxaGroup''.}
 
   \item{facet_formula}{A formula object as used by
   \code{\link{facet_grid}} in \code{\link{ggplot}} or
   \code{\link{qplot}} commands The default is: \code{. ~
   TaxaGroup}. Note that a few column-names are added by
-  default and are available as options. They are
+  default and are available as options.  They are
   ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An
   alternative \code{facet_grid} could be \code{sample ~
   TaxaGroup}.}

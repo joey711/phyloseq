@@ -1,4 +1,8 @@
 ####################################################################################
+# # # # Cannot do broad import of multtest. Its plot and summary export conflicts
+# # # # conflicts with phylobase
+# # # # @import multtest
+####################################################################################
 #' Wrapper of mt.maxT and mt.minP for the phyloseq package.
 #'
 #' @usage mt(X, classlabel, minPmaxT="minP", ...)
@@ -22,13 +26,15 @@
 #' @return A dataframe with components specified in the documentation for
 #'  \code{mt.maxT} or \code{mt.minP} respectively.
 #'
-#' @seealso mt.maxT mt.minP
+#' @seealso \code{\link[multtest]{mt.maxT}}, \code{\link[multtest]{mt.minP}}
 #'
 #' @rdname mt-methods
 #' @docType methods
 #' @export
 #'
-#' @import multtest
+#' @importFrom multtest mt.maxT
+#' @importFrom multtest mt.minP
+#'
 #' @examples #
 #' ## data(ex1)
 #' ## mt(ex1, "Diet")

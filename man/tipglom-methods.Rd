@@ -6,9 +6,6 @@
 \alias{tipglom,phylo,otuTable-method}
 \alias{tipglom,phylo4,ANY-method}
 \title{Agglomerate nearby tips in tree.}
-\usage{
-  tipglom(tree, OTU, speciationMinLength=0.02)
-}
 \arguments{
   \item{tree}{An object of class \code{otuTree} or its
   superclasses, in which case the OTU argument can be

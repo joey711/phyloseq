@@ -5,9 +5,6 @@
 \alias{taxglom,otuTable,taxonomyTable-method}
 \alias{taxglom,otuTax,ANY-method}
 \title{Agglomerate taxa of the same type.}
-\usage{
-  taxglom(object, tax=NULL, taxlevel="Phylum")
-}
 \arguments{
   \item{object}{An \code{otuTable} or more complex object
   that contains an \code{otuTable}.}

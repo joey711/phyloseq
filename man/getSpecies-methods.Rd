@@ -5,9 +5,6 @@
 \alias{getSpecies,phyloseqFather-method}
 \title{Returns the abundance values of sample \code{i} for
 all species in \code{x}.}
-\usage{
-  getSpecies(x, i)
-}
 \arguments{
   \item{x}{otuTable, or H.O. object containing an
   otuTable.}

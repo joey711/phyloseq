@@ -5,9 +5,6 @@
 \alias{prune_samples,character,otuTable-method}
 \alias{prune_samples,character,sampleMap-method}
 \title{Prune unwanted samples from a phyloseq object.}
-\usage{
-  prune_samples(samples, x)
-}
 \arguments{
   \item{samples}{A character vector of the samples in
   object x that you want to keep.}

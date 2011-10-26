@@ -8,9 +8,6 @@
 \alias{species.names,sampleMap-method}
 \alias{species.names,taxonomyTable-method}
 \title{Get the species / taxa names from an object.}
-\usage{
-  species.names(object)
-}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that represent species.}

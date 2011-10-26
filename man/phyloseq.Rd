@@ -8,7 +8,7 @@
   \item{...}{One or more component objects among the set of
   classes defined by the phyloseq package, as well as
   \code{phylo4} objects (defined by the phylobase package).
-  Each argument should be a different class. For combining
+  Each argument should be a different class.  For combining
   multiple components of the same class, or multiple
   higher-order classes, use the
   \code{\link{merge_phyloseq}} function. Unlike in earlier
@@ -19,7 +19,7 @@
   The class of the returned object depends on the argument
   class(es). To construct a H.O. object, two or more
   component data objects must be provided in the argument
-  list. Otherwise, the order of arguments does not matter.
+  list.  Otherwise, the order of arguments does not matter.
   If a single component-class object is provided, it is
   simply returned as-is.
 }

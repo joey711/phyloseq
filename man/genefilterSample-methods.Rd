@@ -5,9 +5,6 @@
 \alias{genefilterSample,otuTable-method}
 \alias{genefilterSample,phyloseqFather-method}
 \title{Filter OTUs sample-wise.}
-\usage{
-  genefilterSample(X, flist, A=1)
-}
 \arguments{
   \item{X}{The object that needs trimming. Can be matrix,
   otuTable, or higher- order phyloseq classes that contain

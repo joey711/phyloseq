@@ -5,9 +5,6 @@
 \alias{rda.phyloseq,otuTable-method}
 \alias{rda.phyloseq,phyloseqFather-method}
 \title{phyloseq package extension for \code{vegan::rda}.}
-\usage{
-  rda.phyloseq(X, ...)
-}
 \arguments{
   \item{X}{formula-class object specifying the input. No
   need to splat higher-order objects. \code{rda.phyloseq}

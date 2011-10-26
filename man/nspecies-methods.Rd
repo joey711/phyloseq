@@ -6,9 +6,6 @@
 \alias{nspecies,phylo4-method}
 \alias{nspecies,phyloseqFather-method}
 \title{Get the number of taxa/species in an object.}
-\usage{
-  nspecies(object)
-}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that represent species.}

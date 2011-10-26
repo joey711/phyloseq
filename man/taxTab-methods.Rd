@@ -6,8 +6,6 @@
 \alias{taxTab,matrix-method}
 \title{Access taxTab slot, or instantiate taxonomyTable-class.}
 \usage{
-  taxTab(object)
-
   taxtab(object)
 }
 \arguments{

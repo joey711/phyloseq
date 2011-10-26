@@ -4,9 +4,6 @@
 \alias{nsamples,ANY-method}
 \alias{nsamples,phyloseqFather-method}
 \title{Get the number of samples described by an object.}
-\usage{
-  nsamples(object)
-}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that represent samples.}
