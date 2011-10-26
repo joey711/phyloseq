@@ -1,8 +1,8 @@
 \name{internal2tips.self}
 \alias{internal2tips.self}
-\title{Internal function for \code{\link{wUniFrac}}.}
+\title{Custom version of \code{picante::internal2tips()}}
 \usage{
-  internal2tips.self(phy, int.node, return.names = FALSE)
+  internal2tips.self(phy, int.node, return.names = TRUE)
 }
 \arguments{
   \item{phy}{object of class \code{phylo}.}
@@ -14,17 +14,21 @@
   character vector
 }
 \description{
+  Internal function for \code{\link{UniFrac}}.
+}
+\details{
   A modified version of the \code{\link{internal2tips}}
-  function, such that when a tip is provided as int.node,
-  that tip is returned. This is a more intuitive behavior
-  than the original picante version, which returns NULL.
-  This is currently used in \code{\link{wUniFrac}}.
+  function, such that when a tip is provided as
+  \code{int.node}, that tip is returned. This is a more
+  intuitive behavior than the original picante version,
+  which returns NULL. This is currently used in
+  \code{\link{UniFrac}}.
 }
 \examples{
 #
 }
 \seealso{
-  internal2tips wUniFrac
+  internal2tips UniFrac
 }
 \keyword{internal}
 

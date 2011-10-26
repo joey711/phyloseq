@@ -1,11 +1,12 @@
 \name{wUniFracPair}
 \alias{wUniFracPair}
-\title{Calculate weighted UniFrac for a pair of samples from an OTU table.}
+\title{Calculate weighted UniFrac for a pair of samples from an abundance matrix.}
 \usage{
   wUniFracPair(OTU, tree, A, B, normalized=TRUE)
 }
 \arguments{
-  \item{OTU}{otuTable in samples-by-species orientation}
+  \item{OTU}{An abundance matrix in samples-by-species
+  orientation.}
 
   \item{tree}{object of class \code{phylo}}
 
@@ -20,10 +21,10 @@
   of branch length values? Default is \code{TRUE}.}
 }
 \value{
-  numeric
+  A single number between 0, 1.
 }
 \description{
-  Somewhat an internal function for \code{\link{wUniFrac}},
+  Somewhat an internal function for \code{\link{UniFrac}},
   as usually interested in the weighted-UniFrac distances
   between many different samples. Returns a single numeric
   value, between 0 and 1 if normalized
@@ -32,6 +33,6 @@
 #
 }
 \seealso{
-  wUniFrac
+  UniFrac
 }
 

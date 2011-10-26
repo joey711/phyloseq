@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.3.33
-Date: 2011-10-24
+Version: 0.3.34
+Date: 2011-10-25
 Title: Analyze OTU-clustered phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
 Author: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -23,7 +23,7 @@ Depends:
 Suggests:
     adephylo,
     ade4
-Enhances: DoMC (>= 1.2)
+Enhances: DoMC (>= 1.2), doSMP (>= 1.0), doSNOW (>= 1.0)
 Collate:
     'allclasses.r'
     'allpackage.r'
@@ -48,7 +48,7 @@ Collate:
     'tip.annotate.r'
     'colname2hex.r'
     'geneFilterSample.R'
-    'unifrac.r'
+    'UniFrac.r'
     'transformSampleCounts.R'
     'threshrank.r'
     'cca.phyloseq.r'

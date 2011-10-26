@@ -1,11 +1,13 @@
 ##############################################################################
-#' Internal function for \code{\link{wUniFrac}}.
+#' Custom version of \code{picante::internal2tips()}
+#'
+#' Internal function for \code{\link{UniFrac}}.
 #' 
 #' A modified version of the \code{\link{internal2tips}} function, 
 #' such that when a
-#' tip is provided as int.node, that tip is returned. This is a more intuitive
+#' tip is provided as \code{int.node}, that tip is returned. This is a more intuitive
 #' behavior than the original picante version, which returns NULL.
-#' This is currently used in \code{\link{wUniFrac}}.
+#' This is currently used in \code{\link{UniFrac}}.
 #'
 #' @param phy object of class \code{phylo}.
 #'
@@ -13,10 +15,10 @@
 #'
 #' @keywords internal
 #' @return character vector
-#' @seealso internal2tips wUniFrac
+#' @seealso internal2tips UniFrac
 #' 
 #' @examples #
-internal2tips.self = function (phy, int.node, return.names = FALSE){
+internal2tips.self = function (phy, int.node, return.names = TRUE){
 	#require(picante); require(ape)	
     Ntaxa = length(phy$tip.label)
     Nnode = phy$Nnode
@@ -50,10 +52,46 @@ internal2tips.self = function (phy, int.node, return.names = FALSE){
     return(tips)
 }
 ##############################################################################
-#' Internal function for \code{wUniFrac}.
+#' Internal function for unweighted UniFrac edge-weight.
 #' 
 #' A function that takes a phylo object (tree) and an edge-index
-#' as input, and returns the edge-weight term for weighted UniFrac.
+#' as input, and returns the edge-weight term for unweighted UniFrac.
+#'
+#' @param edge The edge index
+#'
+#' @param samples Character vector of length 2, giving the pair of
+#'  samples under comparison.
+#'
+#' @param occ \code{otuTable} object in samples-by-species orientation
+#'
+#' @param tree object of class \code{phylo}
+#'
+#' @keywords internal
+#' @return character vector
+#' @seealso UniFrac
+#' 
+#' @examples #
+ufnum <- function(edge, samples, occ, tree){
+	A <- samples[1]
+	B <- samples[2]
+	
+	# get the associated node in order to call internal2tips(). node number, n:
+	n <- tree$edge[edge, 2]
+	
+	# get subset of tips (species) that descend from this branch
+	edgeDescendants <- phyloseq:::internal2tips.self(tree, n, return.names = TRUE)
+	
+	# Tabulate whether Ai and Bi have descendants in each sample descended from branch n
+	Ai <- (sum(occ[A, edgeDescendants]) > 0) - 0
+	Bi <- (sum(occ[B, edgeDescendants]) > 0) - 0
+	wi   <- abs(Ai - Bi) > 0
+	return(wi)	
+}
+################################################################################
+#' Internal function for weighted UniFrac edge-weight.
+#' 
+#' A function that takes a phylo object (tree) and an edge-index
+#' as input, and returns the edge-weight term for weighted \code{\link{UniFrac}}.
 #'
 #' @param edge The edge index
 #'
@@ -66,7 +104,7 @@ internal2tips.self = function (phy, int.node, return.names = FALSE){
 #'
 #' @keywords internal
 #' @return character vector
-#' @seealso wUniFrac
+#' @seealso UniFrac
 #' 
 #' @examples #
 UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[samples[2],])){
@@ -82,24 +120,62 @@ UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[s
 	wi   <- abs(AiAT - BiBT)
 	return(wi)	
 }
-##############################################################################
-#' Calculate weighted UniFrac for a pair of samples from an OTU table.
+################################################################################
+#' Calculate (unweighted) UniFrac for a pair of samples from an occurrence matrix.
 #' 
-#' Somewhat an internal function for \code{\link{wUniFrac}}, as usually interested
+#' Somewhat an internal function for \code{\link{UniFrac}}, as 
+#' an investigator is usually interested
+#' in the UniFrac distances between many different samples.
+#' Returns a single numeric value, between 0 and 1.
+#'
+#' @usage unifracPair(occ, tree, A, B)
+#'
+#' @param occ (Required). A matrix. A samples-by-species occurrence matrix.
+#' @param tree (Required). A rooted phylogenetic tree. \code{phylo} class.
+#' @param A (Required). Single character string. The name of sample \code{"A"}.
+#' @param B (Required). Single character string. The name of sample \code{"B"}. 
+#'
+#' @return A single number between 0, 1.
+#' @seealso See the main function, \code{\link{UniFrac}}.
+#' 
+#' @export
+#' @examples #
+unifracPair <- function(occ, tree, A, B){
+	
+	# Prune tree to just those species present in either A or B
+	ispecies <- colnames(occ)[ (occ[A, ] > 0) | (occ[B, ] > 0) ]
+	itree    <- prune_species(ispecies, tree)
+	
+	# numerator loops over each edge:
+	edges <- 1:nrow(itree$edge)
+		
+	# sum the abs value of the occurrence matrix
+	# numerator, u = sum( bi * abs( Ai - Bi )  )
+	#numerator <- sum(tree$edge.length * sapply(edges, phyloseq:::ufnum, c(A,B), occ, tree))
+	numerator <- sum(itree$edge.length[ sapply(edges, phyloseq:::ufnum, c(A, B), occ, itree) ])
+	
+	# denominator is the sum of the branch lengths for which A and B have species
+	# (not all branches. Branches having nothing to do with A,B must not count)
+	return( numerator / sum(itree$edge.length) )
+}
+##############################################################################
+#' Calculate weighted UniFrac for a pair of samples from an abundance matrix.
+#' 
+#' Somewhat an internal function for \code{\link{UniFrac}}, as usually interested
 #' in the weighted-UniFrac distances between many different samples.
 #' Returns a single numeric value, between 0 and 1 if normalized
 #'
 #' @usage wUniFracPair(OTU, tree, A, B, normalized=TRUE)
 #'
-#' @param OTU otuTable in samples-by-species orientation
+#' @param OTU An abundance matrix in samples-by-species orientation.
 #' @param tree object of class \code{phylo}
 #' @param A single character string matching the first sample ID in the pair
 #' @param B single character string matching the second sample ID in the pair
 #' @param normalized Logical. Should the output be normalized such that values 
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}. 
 #'
-#' @return numeric
-#' @seealso wUniFrac
+#' @return A single number between 0, 1.
+#' @seealso UniFrac
 #' 
 #' @export
 #' @examples #
@@ -131,8 +207,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 	}
 }
 ##############################################################################
-##############################################################################
-#' Calculate weighted UniFrac for all samples in an OTU table.
+#' Calculate weighted or unweighted UniFrac for all samples in an OTU table.
 #'
 #' This function calculates the weighted-UniFrac distance for all sample-pairs
 #' in a species-abundance table using the abundances and a phylogenetic tree.
@@ -144,14 +219,29 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' The easiest solution is to combine the \code{OTU} and \code{tree} objects 
 #' using the \code{\link{phyloseq}} function. E.g. \code{phyloseq(OTU, tree)}
 #' will return an \code{otuTree}-class object that has been pruned and comprises
-#' the minimum arguments necessary for \code{wUniFrac()}. 
+#' the minimum arguments necessary for \code{UniFrac()}. 
 #'
-#' Parallelization is possible, and encouraged for a computing-intensive calculation
-#' such as weighted-UniFrac. It has been implemented with the \emph{foreach} package.
+#' Parallelization is possible, and encouraged for this computing-intensive calculation.
+#' It has been implemented with the \emph{foreach} package.
 #' This means that parallel calls need to be preceded by 2 or more commands that
-#' that register the parallel ``backend''.
+#' that register the parallel ``backend''. This is acheived via your choice of
+#' helper packages. One of the simplest seems to be the \emph{doMC} package.
+#' See the commented-out examples at the bottom for running \code{UniFrac()}
+#' in parallel via doMC. 
 #'
-#' @usage wUniFrac(OTU, tree, normalized=TRUE, parallel=FALSE)
+#' For more information, see the following links on registering the ``backend'':
+#' 
+#' \emph{foreach} package manual: 
+#'
+#' \code{http://cran.r-project.org/web/packages/foreach/index.html}
+#'
+#' Notes on parallel computing in \code{R}. Skip to the section describing 
+#' the \emph{foreach Framework}. It gives off-the-shelf examples for registering
+#' a parallel backend using the \emph{doMC}, \emph{doSNOW}, or \emph{doMPI} packages:
+#' 
+#' \code{http://trg.apbionet.org/euasiagrid/docs/parallelR.notes.pdf}
+#'
+#' @usage UniFrac(OTU, tree, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 #'
 #' @param OTU (Required). \code{otuTable}, or an \code{otuTree}. If you have
 #'  instead a simple matrix of abundances, see \code{\link{otuTable}} for coercing
@@ -162,31 +252,42 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #'  \code{OTU} is an object that also contains a tree (\code{otuTree} class, 
 #'  or its children).
 #'
+#' @param weighted (Optional). Logical. Should use weighted-UniFrac calculation?
+#'  Weighted-UniFrac takes into account the relative abundance of species/taxa
+#'  shared between samples, whereas unweighted-UniFrac only considers 
+#'  presence/absence. Default is \code{FALSE}, meaning the unweighted-UniFrac
+#'  distance is calculated for all pairs of samples.
+#'
 #' @param normalized (Optional). Logical. Should the output be normalized such that values 
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}.
+#'  Note that (unweighted) \code{UniFrac} is always normalized by total branch-length,
+#'  and so this value is ignored when \code{weighted == FALSE}.
 #'
 #' @param parallel (Optional). Logical. Should execute calculation in parallel,
 #'  using multiple CPU cores simultaneously? This can dramatically hasten the
 #'  computation time for this function. However, it also requires that the user
 #'  has registered a parallel ``backend'' prior to calling this function. 
-#'  Default is \code{FALSE}. If FALSE, wUniFrac will register a serial backend
+#'  Default is \code{FALSE}. If FALSE, UniFrac will register a serial backend
 #'  so that \code{foreach::\%dopar\%} does not throw a warning.
 #' 
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
-#' @seealso UniFrac unifrac vegdist
+#' @seealso \code{vegan::vegdist}
 #' 
 #' @docType methods
 #' @export
 #' @import foreach
-#' @rdname wUniFrac-methods
+#' @rdname UniFrac-methods
 #' @examples #
-setGeneric("wUniFrac", function(OTU, tree, normalized=TRUE, parallel=FALSE) standardGeneric("wUniFrac"))
+setGeneric("UniFrac", function(OTU, tree, weighted=FALSE, normalized=TRUE, parallel=FALSE){
+	standardGeneric("UniFrac")
+})
 ################################################################################
-#' @aliases wUniFrac,otuTable,phylo-method
-#' @rdname wUniFrac-methods
-setMethod("wUniFrac", signature("otuTable", "phylo"),
-										function(OTU, tree, normalized=TRUE, parallel=FALSE){
-	#require(picante); require(ape); require(foreach)
+#' @aliases UniFrac,otuTable,phylo-method
+#' @rdname UniFrac-methods
+setMethod("UniFrac", signature("otuTable", "phylo"),
+		function(OTU, tree, weighted=FALSE, normalized=TRUE, parallel=FALSE){
+											
+	# # # require(picante); require(ape); require(foreach)
 
 	# Some important checks.
     if( is.null(tree$edge.length) ) {
@@ -222,12 +323,21 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
 	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
    	# Coerce OTU to matrix for calculations.
     OTU <- as(OTU, "matrix")
+
+	if(!weighted){
+		# Coerce OTU to occurrence matrix for unweighted-UF calculations
+		occ <- (OTU > 0) - 0
+	}
 	
    	# optionally-parallel implementation with foreach
   	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
 		A <- i[1]
 		B <- i[2]
-		return( phyloseq::wUniFracPair(OTU, tree, A, B, normalized) )
+		if( weighted ){
+			return( phyloseq::wUniFracPair(OTU, tree, A, B, normalized) )
+		} else {
+			return( phyloseq::unifracPair(occ, tree, A, B) )
+		}
 	}
 	
     # This is in serial, but it is quick.
@@ -239,92 +349,12 @@ setMethod("wUniFrac", signature("otuTable", "phylo"),
     return(as.dist(UniFracMat))
 })
 ################################################################################
-#' @aliases wUniFrac,otuTree,ANY-method
-#' @rdname wUniFrac-methods
-#' @import phylobase
-setMethod("wUniFrac", signature("otuTree"), 
-		function(OTU, tree=NULL, normalized=TRUE, parallel=FALSE){
-	# splat and pass to core function.
-	wUniFrac(OTU=otuTable(OTU), tree=suppressWarnings(as(tre(OTU), "phylo")), normalized, parallel)
-})
-##############################################################################
-##############################################################################
-#' Calculate unweighted UniFrac from an abundance matrix and a tree.
-#'
-#' These methods depend on the picante and ape packages, as currently implemented.
-#'
-#' @usage UniFrac(OTU, tree)
-#'
-#' @param OTU otuTable, or a more-complex object that contains an otuTable.
-#'
-#' @param tree object of class \code{phylo}, defined by ape package.
-#'
-#' @return a distance matrix
-#' @seealso wUniFrac unifrac
-#' 
-#' @docType methods
-#' @rdname UniFrac-methods
-#' @export
-#' @examples #
-setGeneric("UniFrac", function(OTU, tree) standardGeneric("UniFrac"))
-###############################################################################
-#' @aliases UniFrac,otuTable,phylo-method
-#' @rdname UniFrac-methods
-setMethod("UniFrac", signature("otuTable", "phylo"), function(OTU, tree){
-	#require(picante)
-
-	# Some important checks.
-    if( is.null(tree$edge.length) ) {
-        stop("Tree has no branch lengths, cannot compute UniFrac")
-    }
-    if( !is.rooted(tree) ) {
-        stop("Rooted phylogeny required for UniFrac calculation")
-    }
-    # Attempt to prune if species-names do not match between tree and OTU.
-    if( !setequal(species.names(tree), species.names(OTU)) ){
-		warning("Species names between tree and OTU do not match exactly. They must.\n")
-		warning("Attempting to prune non-shared species from either object... \n")
-		warning("To solve, try: phyloseq(OTU, tree)    or try:  prune_species( ).\n")
-		combinedOTUtree <- phyloseq(OTU, tree)
-		OTU  <- otuTable(combinedOTUtree)
-		tree <- suppressWarnings(as(tre(combinedOTUtree), "phylo"))
-    }
-    
-    # Force orientation to "speciesAreCols"
-    if( speciesarerows(OTU) ){OTU <- t(OTU)}
-    
-    # ensure that OTU is a matrix class OTU table
-    OTU <- as(OTU, "matrix")
-    
-    # s is the number of samples. 
-    # In Picante, the OTU-table is samples by species instead of species x samples
-    s   <- nrow(OTU)
-	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(rownames(OTU), 2)
-    # OTU_comb sums the species abundances of all pair-wise combinations of samples from OTU
-	# This is a way of combining presence/absence. Effictively "OR" logic for unweighted UniFrac
-	OTU_comb <- t(apply(spn,2,function(i,OTU){ OTU[i[1],] + OTU[i[2],] },OTU))
-    rownames(OTU_comb) <- apply(spn, 2, paste, sep="", collapse="_") 	
-	# pdOTU is the total branch lengths of each sample
-	pdOTU <- picante::pd(OTU, tree)
-    # define pdOTU_comb, the total branch lengths for all combined sample pairs.
-    pdOTU_comb <- picante::pd(OTU_comb, tree)
-    # initialize UniFrac with NAs, a symmetric distance matrix
-    UniFracMat <- matrix(NA, s, s)
-    # define the rows/cols of UniFrac with the sample names (rownames)    
-    rownames(UniFracMat) <- rownames(OTU)
-    colnames(UniFracMat) <- rownames(OTU)  
-	# Calculate unifrac at each index.
-    for(i in 1:ncol(spn)){
-		UniFracMat[spn[2,i], spn[1,i]] <- 2 - ( pdOTU[spn[1, i], "PD"] + 
-			pdOTU[spn[2,i],"PD"] ) / pdOTU_comb[i, "PD"]
-    }
-    return(as.dist(UniFracMat))
-})
-###############################################################################
 #' @aliases UniFrac,otuTree,ANY-method
 #' @rdname UniFrac-methods
-setMethod("UniFrac", signature("otuTree"), function(OTU, tree=NULL){
-	UniFrac(otuTable(OTU), suppressWarnings(as(tre(OTU), "phylo")) )
+#' @import phylobase
+setMethod("UniFrac", signature("otuTree"), 
+		function(OTU, tree=NULL, weighted=FALSE, normalized=TRUE, parallel=FALSE){
+	# splat and pass to core function.
+	UniFrac(OTU=otuTable(OTU), tree=suppressWarnings(as(tre(OTU), "phylo")), weighted, normalized, parallel)
 })
-################################################################################
+##############################################################################
