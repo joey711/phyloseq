@@ -209,7 +209,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 ##############################################################################
 #' Calculate weighted or unweighted UniFrac for all samples in an OTU table.
 #'
-#' This function calculates the weighted-UniFrac distance for all sample-pairs
+#' This function calculates the UniFrac distance for all sample-pairs
 #' in a species-abundance table using the abundances and a phylogenetic tree.
 #' If \code{OTU} is a more complex object that already contains a phylogenetic
 #' tree and abundance table, then the argument \code{tree} is not necessary
