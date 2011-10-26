@@ -48,7 +48,7 @@ Collate:
     'tip.annotate.r'
     'colname2hex.r'
     'geneFilterSample.R'
-    'UniFrac.r'
+    'unifrac.r'
     'transformSampleCounts.R'
     'threshrank.r'
     'cca.phyloseq.r'
