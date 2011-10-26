@@ -49,22 +49,21 @@
   etc.
 }
 \description{
-  This function calculates the weighted-UniFrac distance
-  for all sample-pairs in a species-abundance table using
-  the abundances and a phylogenetic tree. If \code{OTU} is
-  a more complex object that already contains a
-  phylogenetic tree and abundance table, then the argument
-  \code{tree} is not necessary and will be ignored.
-  WARNING: The species names of both \code{OTU} and
-  \code{tree} must match exactly, or weird index erros can
-  result. A warning has been added to further protect users
-  from encountering this issue unknowingly. The easiest
-  solution is to combine the \code{OTU} and \code{tree}
-  objects using the \code{\link{phyloseq}} function. E.g.
-  \code{phyloseq(OTU, tree)} will return an
-  \code{otuTree}-class object that has been pruned and
-  comprises the minimum arguments necessary for
-  \code{UniFrac()}.
+  This function calculates the UniFrac distance for all
+  sample-pairs in a species-abundance table using the
+  abundances and a phylogenetic tree. If \code{OTU} is a
+  more complex object that already contains a phylogenetic
+  tree and abundance table, then the argument \code{tree}
+  is not necessary and will be ignored. WARNING: The
+  species names of both \code{OTU} and \code{tree} must
+  match exactly, or weird index erros can result. A warning
+  has been added to further protect users from encountering
+  this issue unknowingly. The easiest solution is to
+  combine the \code{OTU} and \code{tree} objects using the
+  \code{\link{phyloseq}} function. E.g. \code{phyloseq(OTU,
+  tree)} will return an \code{otuTree}-class object that
+  has been pruned and comprises the minimum arguments
+  necessary for \code{UniFrac()}.
 }
 \details{
   Parallelization is possible, and encouraged for this
