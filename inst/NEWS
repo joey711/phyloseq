@@ -1,7 +1,12 @@
 phyloseq 0.3
 ===========
 
+* Added Importers for mothur, RDP-pipeline, and PyroTagger
+* Lots of new plotting and analysis support
+* Parallelized UniFrac calculations using foreach
 * Some improvements to the class inheritance structure to simplify method extension and future development.
+* Function-level documentation
+* Vignette-level documentation
 
 phyloseq 0.2.4
 ===========
@@ -20,7 +25,3 @@ phyloseq 0.1
 * some support for phylo4 objects
 * readQiime() A Qiime input wrapper
 
-To Do:
-* Function-level documentation
-* Vignette-level documentation (beyond psb manuscript)
-* implement Mothur and other input wrappers
