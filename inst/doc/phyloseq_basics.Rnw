@@ -66,18 +66,14 @@ To use \emph{phyloseq} in a new R session, it will have to be loaded. This can b
 An important feature of \emph{phyloseq} are methods for importing phylogenetic sequencing data from common taxonomic clustering pipelines. These methods take file pathnames as input, read and parse those files, and return a single object that contains all of the data. 
 
 \subsection{Import from QIIME}\label{sec:qiimeimport}
-As an example, the following lines of code would create a \code{phyloseqTaxTree} object (see Appendix~\ref{sec:app-classes} for class definitions) from files on your computer, had they been created by the QIIME pipeline. 
+QIIME is a free, open-source OTU clustering and analysis pipeline written for Unix (mostly Linux)~\cite{Caporaso:2010jf}. It is distributed in a number of different forms (including a pre-installed virtual machine), and relevant links for obtaining and using QIIME should be found at:
 
-<<eval=FALSE>>=
-  otufilename <- "../data/ex1_otutable.txt"
-  mapfilename <- "../data/ex1_samplemap.txt"
-  trefilename <- "../data/ex1_tree.tre"
-  ex1 <- import_qiime(otufilename, mapfilename, trefilename)
-@
+\url{http://qiime.org/}
+
+\subsubsection{Input}
+One QIIME input file (sample map), and two QIIME output files (\code{"otutable.txt"}, \code{".tre"}) are recognized by the \code{import{\textunderscore}qiime()} function. Only one of the three input files is required to run, although an \code{"otutable.txt"} file is required if \code{import{\textunderscore}qiime()} is to return a complete experiment object.
 
 In practice, you will have to find the relevant QIIME files among a number of other files created by the QIIME pipeline. A screenshot of the directory structure created during a typical QIIME run is shown in Figure~\ref{fig:qiimedirectory}.
-
-A separate object containing taxonomic data is not necessary, because this information is included in the ``otu{\textunderscore}table.txt'' file, and parsed into a proper \code{taxonomyTable} component object by \code{import{\textunderscore}qiime()}.
 
 \begin{figure}
 \begin{center}
@@ -87,15 +83,108 @@ A separate object containing taxonomic data is not necessary, because this infor
 \end{center}
 \end{figure}
 
+\subsubsection{Output}
+The class of the object returned by \code{import{\textunderscore}qiime()} depends upon which filenames are provided. The most comprehensive class is chosen automatically, based on the input files listed as arguments. At least one argument needs to be provided.
+
+\subsubsection{Example}
+The following lines of code would create a \code{phyloseqTaxTree} object (see Appendix~\ref{sec:app-classes} for class definitions) from files on your computer, had they been created by the QIIME pipeline.
+
+<<eval=FALSE>>=
+  otufilename <- "../data/ex1_otutable.txt"
+  mapfilename <- "../data/ex1_samplemap.txt"
+  trefilename <- "../data/ex1_tree.tre"
+  MyExpmt1 <- import_qiime(otufilename, mapfilename, trefilename)
+@
+
+A separate object containing taxonomic data is not necessary, because this information is included in the ``otu{\textunderscore}table.txt'' file, and parsed into a proper \code{taxonomyTable} component object by \code{import{\textunderscore}qiime()}.
+
+
 \clearpage
 \subsection{Import from mothur}\label{sec:mothurimport}
+The open-source, platform-independent, locally-installed software package, ``mothur'', can also process barcoded amplicon sequences and perform OTU-clustering~\cite{Schloss:2009do}. It is extensively documented on a wiki at the following URL:
 
-\subsection{Import from PyroTagger}\label{sec:pyrotaggerimport}
+\url{http://www.mothur.org/wiki/}
 
-\subsection{Import from RDP pipeline}\label{sec:RDPimport}
+\subsubsection{Input}
+Currently, there are three different files produced by the \emph{mothur} package (Ver $1.22.0$) that can be imported by \emph{phyloseq}. At minimum, a user must supply a \code{".list"} file, and at least one of the following two files: \code{".groups"} or \code{".tree"}
+
+The group file is produced by \emph{mothur}'s \code{"make.group()"} function. Details on its use can be found at:
+
+\url{http://www.mothur.org/wiki/Make.group}
+
+The tree file is a phylogenetic tree calculated by \emph{mothur}.
+
+\subsubsection{Output}
+The output from \code{import{\textunderscore}mothur()} depends on which file types are provided. If all three file types are provided, an \code{"otuTree"} object is returned (which contains both an OTU abundance table and its associated phylogenetic tree).
+
+\subsubsection{Example}
+The path on your machine may (probably will) vary, but here is an example import with all three files:
+
+<<eval=FALSE>>=
+mothur_list_file  <- "~/Downloads/mothur/Esophagus/esophagus.an.list"
+mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
+mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
+# # Actual examples follow:
+show_mothur_list_cutoffs(mothur_list_file)
+MyExpmt1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
+@
 
 \clearpage
-\subsection{Example Data}
+\subsection{Import from PyroTagger}\label{sec:pyrotaggerimport}
+PyroTagger is an OTU-clustering pipeline for barcoded 16S rRNA amplicon sequences, served and maintained by the Department of Energy's (DOE's) Joint Genome Institute (JGI). It can be used through a straightforward web interface at:
+
+\url{http://pyrotagger.jgi-psf.org/}
+
+PyroTagger takes as input the untrimmed sequence (\code{.fasta}) and sequence-quality (\code{.qual}) files, as well as a sample mapping file that contains the bar code sequence for each sample and its name. It uses a 97\% identity threshold for defining OTU clusters, and provides no options for specifying otherwise. It does allow users to modify the threshold setting for low-quality bases.
+
+\subsubsection{Input}
+PyroTagger returns a single excel spreadsheet file (\code{.xls}) containing both abundance and taxonomy data, as well as some associated confidence information related to each taxonomic assignment. This spreadsheet also reports on potential chimeric sequences.
+
+This single output file is sufficient for \code{import{\textunderscore}RDP{\textunderscore}tab()}, provided the file has been converted to a tab-delimited plain-text format. Any spreadsheet application should suffice. No other changes should be made to the \code{.xls} file.
+
+\subsubsection{Output}
+\code{import{\textunderscore}RDP{\textunderscore}tab()} returns an object from the \code{"otuTax"} class, containing the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like \code{tipglom()}.
+
+\subsubsection{Example}
+Here is an example, importing a PyroTagger file:
+<<eval=FALSE>>=
+  pyrotagger_tab_file <- "path/to/my/filename.txt"
+  myData1 <- import_pyrotagger_tab(pyrotagger_tab_file,
+    strict_taxonomy=FALSE, keep_potential_chimeras=FALSE)
+@
+
+For completeness, the optional arguments were shown with their default values selected. If you do not need to modify the optional arguments, the import command simplifies to:
+<<eval=FALSE>>=
+  myData1 <- import_pyrotagger_tab(pyrotagger_tab_file)  
+@
+
+
+\clearpage
+\subsection{Import from RDP pipeline}\label{sec:RDPimport}
+The Ribosomal Database Project (RDP~\cite{Cole:2009dm}; \url{http://rdp.cme.msu.edu/}) provides a web-based barcoded 16S rRNA amplicon sequence processing pipeline called the ``RDP Pyrosequencing Pipeline'' (\url{http://pyro.cme.msu.edu/}). A user must run all three of the ``Data Processing'' steps sequentially through the web interface in order to acquire the output from Complete Linkage Clustering, the approach to OTU clustering used by the RDP Pipeline. Note that this import function assumes that the sequence names in the resulting cluster file follow a particular naming convention with underscore delimiter. (See Section~\ref{sec:RDPnameconv}, below.)
+
+\subsubsection{Input}
+The output from the Complete Linkage Clustering, \code{".clust"}, is the only input to the RDP pipeline importer:
+
+<<eval=FALSE>>=
+  myOTU1 <- import_RDP_cluster("path/to/my/filename.clust")
+@
+
+\subsubsection{Output}
+This importer returns an \code{otuTable} object.
+
+\subsubsection{Expected Naming Convention}\label{sec:RDPnameconv}
+The RDP cluster pipeline (specifically, the output of the complete linkage clustering step) has no formal documentation for the ``.clust'' file structure or its apparent sequence naming convention.
+
+The cluster file itself contains the names of all sequences contained in the input alignment. If the upstream barcode and aligment processing steps are also done with the RDP pipeline, then the sequence names follow a predictable naming convention wherein each sequence is named by its sample and sequence ID, separated by a ``{\textunderscore}'' as delimiter:
+
+``sampleName{\textunderscore}sequenceIDnumber''
+
+This import function assumes that the sequence names in the cluster file follow this convention, and that the sample name does not contain any ``{\textunderscore}''. It is unlikely to work if this is not the case. It is likely to work if you used the upstream steps in the RDP pipeline to process your raw (barcoded, untrimmed) fasta/fastq data.
+
+
+\clearpage
+\subsection{Example Data (included)}
 An example data set is included in \emph{phyloseq}, called ``\code{ex1}''. It is derived from a preliminary investigation of human intestinal microbiome. The user need only invoke the \code{data()} command to bring this object into the environment:
 
 <<>>=
@@ -414,12 +503,15 @@ For development version of the \emph{phyloseq} package when it is not yet availa
   install("phylobase")
   install("picante")
   install("vegan")
+  install("foreach")
   install_github("phyloseq", "joey711")
 @
 
-Note that the above instructions include installation of a number of additional packages upon which \emph{phyloseq} is dependent. This may take some time to install. If there is a portion of these initial instructions not working as listed, please notify me by e-mail or at the github page. For running parallel implementation of functions/methods in \emph{phyloseq} (e.g. parallel wUniFrac), you will need also to install the ``Rmpi'' package:
+Note that the above instructions include installation of a number of additional packages upon which \emph{phyloseq} is dependent. This may take some time to install. If there is a portion of these initial instructions not working as listed, please notify me by e-mail or at the github page. For running parallel implementation of functions/methods in \emph{phyloseq} (e.g. \texttt{UniFrac(ex1, parallel=TRUE)}), you will need also to install a function for registering a parallel ``backend''. Only one working parallel backend is needed, but there are several options, depending on the details of your particular system:
 <<eval=FALSE>>=
-  install("Rmpi")
+  install("doMC")
+  install("doSNOW")
+  install("doMPI")
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -427,8 +519,8 @@ Note that the above instructions include installation of a number of additional 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Bibliography}
-%\bibliographystyle{ws-procs11x85}
-%\bibliography{phyloseq_vignette}
+%\bibliographystyle{nar}
+\bibliography{phyloseq_basics}
 
 
 
