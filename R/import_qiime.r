@@ -53,9 +53,18 @@
 #' nothing.
 #'
 #' @seealso \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-#'   \code{\link{import_qiime_otu_tax}}, \code{\link{import_qiime_sampleMap}},
 #'	 \code{\link{read.tree}}, \code{\link{read.nexus}}, \code{\link{readNexus}}
 #'   \code{\link{readNewick}}
+#'
+#' @references \url{http://qiime.org/}
+#'
+#' ``QIIME allows analysis of high-throughput community sequencing data.''
+#' J Gregory Caporaso, Justin Kuczynski, Jesse Stombaugh, Kyle Bittinger, Frederic D Bushman,
+#' Elizabeth K Costello, Noah Fierer, Antonio Gonzalez Pena, Julia K Goodrich, Jeffrey I Gordon,
+#' Gavin A Huttley, Scott T Kelley, Dan Knights, Jeremy E Koenig, Ruth E Ley, 
+#' Catherine A Lozupone, Daniel McDonald, Brian D Muegge, Meg Pirrung, Jens Reeder, Joel R Sevinsky,
+#' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
+#' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
 #' @export
 #' @examples #
@@ -122,7 +131,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' @seealso \code{\link{merge_phyloseq}}, \code{\link{phyloseq}}, 
 #'   \code{\link{import_qiime_sampleMap}}
 #'
-#' @export
+#' @keywords internal
 #' @examples #
 import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	if( is.null(biotaxonomy) ){
@@ -186,7 +195,7 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 #' @seealso \code{\link{import_qiime}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
 #'	 \code{\link{import_qiime_otu_tax}}
 #'
-#' @export
+#' @keywords internal
 #' @examples #
 import_qiime_sampleMap <- function(mapfilename){
 	# Process mapfile. Name rows as samples.

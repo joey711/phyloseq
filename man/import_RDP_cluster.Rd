@@ -48,4 +48,7 @@
   of OTU-by-sample is trivially coerced to an
   \code{\link{otuTable}} object, and returned.
 }
+\references{
+  \url{http://pyro.cme.msu.edu/index.jsp}
+}
 

@@ -18,6 +18,8 @@
 #'  importing the OTUs with the \code{import_mothur_otulist()} function.
 #' 
 #' @export
+#'
+#' @seealso \code{\link{import_mothur}}
 #'  
 show_mothur_list_cutoffs <- function(mothur_list_file){
 	mothurlist <- readLines(mothur_list_file)
@@ -58,8 +60,7 @@ show_mothur_list_cutoffs <- function(mothur_list_file){
 #'  dependent on the choice for \code{cutoff}. 
 #'
 #' @seealso \code{\link{show_mothur_list_cutoffs}}, \code{\link{import_mothur}}
-#' 
-#' @export
+#' @keywords internal
 #'  
 import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
 	mothurlist <- readLines(mothur_list_file)
@@ -113,9 +114,8 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
 #' @return A data.frame that is effectively a hash table between sequence names
 #'  and their sample source.
 #' 
-#' @seealso \code{\link{show_mothur_list_cutoffs}}, \code{\link{import_mothur_otulist}}
-#'
-#' @export
+#' @seealso \code{\link{import_mothur}}
+#' @keywords internal
 #'
 import_mothur_groups <- function(mothur_group_file){
 	group_table <- read.table(mothur_group_file, sep="\t")
@@ -149,9 +149,8 @@ import_mothur_groups <- function(mothur_group_file){
 #'
 #' @return An \code{\link{otuTable}} object.
 #'
-#' @seealso \code{\link{show_mothur_list_cutoffs}}, \code{\link{import_mothur_otulist}}
-#' 
-#' @export
+#' @seealso \code{\link{import_mothur}}
+#' @keywords internal
 #'  
 import_mothur_otutable <- function(mothur_list_file, mothur_group_file, cutoff=NULL){
 	
@@ -216,10 +215,9 @@ import_mothur_otutable <- function(mothur_list_file, mothur_group_file, cutoff=N
 #'  taxa, as defined by a particular OTU-clustering cutoff in the \emph{mothur}
 #'  list file. 
 #'
-#' @seealso \code{\link{import_mothur}}, \code{\link{import_mothur_otulist}}
+#' @seealso \code{\link{import_mothur}}
+#' @keywords internal
 #' 
-#' @export
-#'
 import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	
 	otulist <- import_mothur_otulist(mothur_list_file, cutoff)
@@ -276,6 +274,12 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #'  \code{otuTable}-class abundance table. If only a list and group file are 
 #'  provided, then an \code{otuTable} object is returned. Similarly, if only a list
 #'  and tree file are provided, then only a tree is returned (\code{"phylo"} class).
+#'
+#' @references \url{http://www.mothur.org/wiki/Main_Page}
+#'
+#' Schloss, P.D., et al., Introducing mothur: Open-source, platform-independent,
+#' community-supported software for describing and comparing microbial communities.
+#' Appl Environ Microbiol, 2009. 75(23):7537-41.
 #'
 #' @export
 #'
@@ -343,6 +347,8 @@ import_mothur <- function(mothur_list_file,  mothur_group_file=NULL,
 #' @return A distance matrix object describing all sequences in a dataset.
 #'
 #' @export
+#'
+#' @seealso \code{\link{import_mothur}}
 #'
 #' @examples
 #' # # Take a look at the dataset shown here as an example:

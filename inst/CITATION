@@ -3,7 +3,7 @@ citHeader("To cite phyloseq in publications, please use:")
 citEntry(entry = "proceedings",
   author = "{{Paul J. McMurdie} and {Susan Holmes}}",
   Organization = "{Pacific Symposium on Biocomputing}",
-  Pages = "{235-246"},
+  Pages = "235-246",
   title = "{{phyloseq: A Bioconductor Package for Handling and Analysis of High-Throughput Phylogenetic Sequence Data}}",
   Volume = "17",
   year = "2011",

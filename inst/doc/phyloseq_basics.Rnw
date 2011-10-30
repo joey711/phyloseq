@@ -32,7 +32,13 @@
 \newcommand{\Rmethod}[1]{{\textit{#1}}}
 \newcommand{\Rfunarg}[1]{{\textit{#1}}}
 
-\bibliographystyle{plainnat} 
+%\bibliographystyle{plainnat} % works
+%\bibliographystyle{nature}
+%\bibliographystyle{biblatex-nature}
+%\bibliographystyle{science}
+%\bibliographystyle{biblatex-science}
+%\bibliographystyle{pnas2009} % works
+\bibliographystyle{naturemag}
  
 \begin{document}
 %\setkeys{Gin}{width=0.55\textwidth}
@@ -77,7 +83,7 @@ In practice, you will have to find the relevant QIIME files among a number of ot
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.55\textwidth]{import_qiime_directory_structure.pdf}
+\includegraphics[width=0.55\textwidth]{basics/import_qiime_directory_structure.pdf}
 \caption[]{ {\textbf A typical QIIME output directory}. The two output files suitable for import by \emph{phyloseq} are highlighted. A third file describing the samples, their barcodes and covariates, is created by the user and required as \emph{input} to QIIME. It is a good idea to import this file, as it can be converted directly to a \code{sampleMap} object and can be extremely useful for certain analyses.}
 \label{fig:qiimedirectory}
 \end{center}
@@ -135,7 +141,7 @@ PyroTagger is an OTU-clustering pipeline for barcoded 16S rRNA amplicon sequence
 
 \url{http://pyrotagger.jgi-psf.org/}
 
-PyroTagger takes as input the untrimmed sequence (\code{.fasta}) and sequence-quality (\code{.qual}) files, as well as a sample mapping file that contains the bar code sequence for each sample and its name. It uses a 97\% identity threshold for defining OTU clusters, and provides no options for specifying otherwise. It does allow users to modify the threshold setting for low-quality bases.
+PyroTagger takes as input the untrimmed sequence (\code{.fasta}) and sequence-quality (\code{.qual}) files, as well as a sample mapping file that contains the bar code sequence for each sample and its name. It uses a 97\% identity threshold for defining OTU clusters (approximately species-level of taxonomic distinction), and provides no options for specifying otherwise. It does allow users to modify the threshold setting for low-quality bases.
 
 \subsubsection{Input}
 PyroTagger returns a single excel spreadsheet file (\code{.xls}) containing both abundance and taxonomy data, as well as some associated confidence information related to each taxonomic assignment. This spreadsheet also reports on potential chimeric sequences.
@@ -143,7 +149,7 @@ PyroTagger returns a single excel spreadsheet file (\code{.xls}) containing both
 This single output file is sufficient for \code{import{\textunderscore}RDP{\textunderscore}tab()}, provided the file has been converted to a tab-delimited plain-text format. Any spreadsheet application should suffice. No other changes should be made to the \code{.xls} file.
 
 \subsubsection{Output}
-\code{import{\textunderscore}RDP{\textunderscore}tab()} returns an object from the \code{"otuTax"} class, containing the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like \code{tipglom()}.
+\code{import{\textunderscore}RDP{\textunderscore}tab()} returns an object from the \code{"otuTax"} class, containing the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like \code{tipglom()} are not applicable.
 
 \subsubsection{Example}
 Here is an example, importing a PyroTagger file:
@@ -477,7 +483,7 @@ We use the term ``higher-order classes'' for those that contain two or more of t
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.7\textwidth]{phyloseq_classes_3_clipped.pdf}
+\includegraphics[width=0.7\textwidth]{basics/phyloseq_classes_3_clipped.pdf}
 \caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order object contains a slot with the associated class as one of its components.}
 \label{fig:phyloseqclasses}
 \end{center}
@@ -519,7 +525,6 @@ Note that the above instructions include installation of a number of additional 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Bibliography}
-%\bibliographystyle{nar}
 \bibliography{phyloseq_basics}
 
 

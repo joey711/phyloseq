@@ -36,6 +36,8 @@
 #'
 #' @return An \code{\link{otuTable}} object parsed from the \code{".clust"} file. 
 #' 
+#' @references \url{http://pyro.cme.msu.edu/index.jsp}
+#'
 #' @export
 #' 
 import_RDP_cluster <- function(RDP_cluster_file){

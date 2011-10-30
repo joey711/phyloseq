@@ -47,4 +47,5 @@
   \code{\link{show_mothur_list_cutoffs}},
   \code{\link{import_mothur}}
 }
+\keyword{internal}
 

@@ -56,7 +56,7 @@
   \emph{mothur}.
 }
 \seealso{
-  \code{\link{import_mothur}},
-  \code{\link{import_mothur_otulist}}
+  \code{\link{import_mothur}}
 }
+\keyword{internal}
 

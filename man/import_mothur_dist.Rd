@@ -27,4 +27,7 @@
 # mothur_dist_file <- "~/Downloads/mothur/Esophagus/esophagus.dist"
 # myNewDistObject  <- import_mothur_dist(mothur_dist_file)
 }
+\seealso{
+  \code{\link{import_mothur}}
+}
 

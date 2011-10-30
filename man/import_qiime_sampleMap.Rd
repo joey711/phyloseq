@@ -37,4 +37,5 @@
   \code{\link{phyloseq}},
   \code{\link{import_qiime_otu_tax}}
 }
+\keyword{internal}
 

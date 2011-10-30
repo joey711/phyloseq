@@ -26,4 +26,7 @@
   file created by the OTU clustering and analysis package
   called \emph{mothur}
 }
+\seealso{
+  \code{\link{import_mothur}}
+}
 

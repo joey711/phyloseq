@@ -272,6 +272,18 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' 
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' @seealso \code{vegan::vegdist}
+#'
+#' @references \url{http://bmf.colorado.edu/unifrac/}
+#'
+#' Lozupone, Hamady and Knight, ``UniFrac - An Online Tool for Comparing Microbial 
+#' Community Diversity in a Phylogenetic Context.'', BMC Bioinformatics 2006, 7:371
+#'
+#' Lozupone, Hamady, Kelley and Knight, ``Quantitative and qualitative (beta) 
+#' diversity measures lead to different insights into factors that structure
+#' microbial communities.'' Appl Environ Microbiol. 2007
+#'
+#' Lozupone C, Knight R. ``UniFrac: a new phylogenetic method for comparing microbial
+#' communities.'' Appl Environ Microbiol. 2005 71 (12):8228-35.
 #' 
 #' @docType methods
 #' @export

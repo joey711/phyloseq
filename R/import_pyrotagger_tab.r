@@ -6,7 +6,8 @@
 #' taxonomy data. It also includes some confidence information related to the 
 #' taxonomic assignment.
 #'
-#' PyroTagger is served by the Joint Genome Institute at \code{"http://pyrotagger.jgi-psf.org/"}
+#' PyroTagger is created and maintained by the Joint Genome Institute 
+#' at \code{"http://pyrotagger.jgi-psf.org/"}
 #' 
 #' The typical output form PyroTagger is a spreadsheet format \code{".xls"}, which poses 
 #' additional import challenges. However, virtually all spreadsheet applications 
@@ -51,6 +52,8 @@
 #'  components, parsed from the pyrotagger output.
 #'
 #' @export
+#'
+#' @references \url{http://pyrotagger.jgi-psf.org/}
 #'
 #' @examples
 #' ## New_otuTaxObject <- import_pyrotagger_tab(pyrotagger_tab_file)

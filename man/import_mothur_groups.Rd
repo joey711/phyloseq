@@ -27,7 +27,7 @@
   list file for that end.
 }
 \seealso{
-  \code{\link{show_mothur_list_cutoffs}},
-  \code{\link{import_mothur_otulist}}
+  \code{\link{import_mothur}}
 }
+\keyword{internal}
 
