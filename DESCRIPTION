@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.4.0
+Version: 0.4.1
 Date: 2011-10-31
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
@@ -24,7 +24,7 @@ Depends:
 Suggests:
     adephylo,
     ade4
-Enhances: DoMC (>= 1.2), doSMP (>= 1.0), doSNOW (>= 1.0)
+Enhances: doMC (>= 1.2), doSMP (>= 1.0), doSNOW (>= 1.0)
 Collate:
     'allclasses.r'
     'allpackage.r'
