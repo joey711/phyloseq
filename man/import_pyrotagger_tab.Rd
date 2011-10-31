@@ -19,7 +19,7 @@
   Default \code{FALSE}. The pyrotagger output also includes
   OTUs that are tagged by pyrotagger as likely chimeras.
   These putative chimeric OTUs can be retained if set to
-  \code{TRUE}.  The putative chimeras are excluded by
+  \code{TRUE}. The putative chimeras are excluded by
   default.}
 }
 \value{

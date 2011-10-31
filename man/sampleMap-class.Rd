@@ -23,7 +23,7 @@
 
   \item{nsamples}{A single positive integer, indicating the
   number of samples (rows) represented by an object.
-  Consistent with otuTable objects.  should not be assigned
+  Consistent with otuTable objects. should not be assigned
   directly by user, but is assessed internally during
   instantiation of \code{sampleMap} objects.} }
 }

@@ -1,25 +1,9 @@
-The near-term improvements expected are:
+phyloseq is under very active development. 
 
-(-1) Additional example data sets. Suggestions so far:
-	The "human enterotype" dataset
-	Soils reproducibility dataset
-	Biodegradation dataset
+Planned feature improvements are publicly catalogued at the main phyloseq development site on github. 
 
-(0) Importers for Mothur, pangea, RDP_pipeline, etc.
+Specifically on the "Issues" page for phyloseq:
 
-(1) Add extensions for running parallelized wUniFrac.
+https://github.com/joey711/phyloseq/issues
 
-(2) DPCoA support methods.
-
-(3) Species-network and sample-network plotting tools.
-
-(4) Abundance table simulation / resampling tools.
-
-(5) Quick alpha-diversity metrics summary
-
-(6) Add alpha-diversity summary to barplots
-
-(7) Legends for tree plots.
-
-(8) build_phyloseq() alias of phyloseq() for illustrative purposes. phyloseq() will still
-be the method, but purpose more obvious.
+If the feature you are hoping for is not listed, you are welcome to add it as a feature request "issue" on this page. 

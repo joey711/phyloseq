@@ -6,9 +6,12 @@
 \alias{mt,ANY,numeric-method}
 \alias{mt,otuSam,character-method}
 \title{Wrapper of mt.maxT and mt.minP for the phyloseq package.}
+\usage{
+  mt(X, classlabel, minPmaxT="minP", ...)
+}
 \arguments{
   \item{X}{An \code{otuTable} or an object that contains an
-  \code{otuTable}.  In this multiple testing framework,
+  \code{otuTable}. In this multiple testing framework,
   different taxa correspond to variables (hypotheses), and
   samples to observations.}
 
@@ -22,7 +25,7 @@
   samples of X.}
 
   \item{minPmaxT}{(Optional). Whether to use \code{mt.minP}
-  or \code{mt.maxT}.  Default is to use \code{mt.minP}}
+  or \code{mt.maxT}. Default is to use \code{mt.minP}}
 
   \item{...}{Additional arguments, forwarded to
   \code{mt.maxT}}

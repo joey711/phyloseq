@@ -4,6 +4,10 @@
 \alias{UniFrac,otuTable,phylo-method}
 \alias{UniFrac,otuTree,ANY-method}
 \title{Calculate weighted or unweighted UniFrac for all samples in an OTU table.}
+\usage{
+  UniFrac(OTU, tree, weighted=FALSE, normalized=TRUE,
+  parallel=FALSE)
+}
 \arguments{
   \item{OTU}{(Required). \code{otuTable}, or an
   \code{otuTree}. If you have instead a simple matrix of
@@ -16,9 +20,9 @@
   children).}
 
   \item{weighted}{(Optional). Logical. Should use
-  weighted-UniFrac calculation?  Weighted-UniFrac takes
-  into account the relative abundance of species/taxa
-  shared between samples, whereas unweighted-UniFrac only
+  weighted-UniFrac calculation? Weighted-UniFrac takes into
+  account the relative abundance of species/taxa shared
+  between samples, whereas unweighted-UniFrac only
   considers presence/absence. Default is \code{FALSE},
   meaning the unweighted-UniFrac distance is calculated for
   all pairs of samples.}
@@ -26,7 +30,7 @@
   \item{normalized}{(Optional). Logical. Should the output
   be normalized such that values range from 0 to 1
   independent of branch length values? Default is
-  \code{TRUE}.  Note that (unweighted) \code{UniFrac} is
+  \code{TRUE}. Note that (unweighted) \code{UniFrac} is
   always normalized by total branch-length, and so this
   value is ignored when \code{weighted == FALSE}.}
 
@@ -35,7 +39,7 @@
   simultaneously? This can dramatically hasten the
   computation time for this function. However, it also
   requires that the user has registered a parallel
-  ``backend'' prior to calling this function.  Default is
+  ``backend'' prior to calling this function. Default is
   \code{FALSE}. If FALSE, UniFrac will register a serial
   backend so that \code{foreach::\%dopar\%} does not throw
   a warning.}

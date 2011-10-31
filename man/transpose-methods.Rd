@@ -4,6 +4,9 @@
 \alias{t,otuTable-method}
 \alias{t,phyloseqFather-method}
 \title{Extension of the (base) transpose function for otuTable}
+\usage{
+  t(x)
+}
 \arguments{
   \item{x}{An \code{otuTable}, or a higher-order class that
   contains an \code{otuTable}.}

@@ -6,6 +6,9 @@
 \alias{sample.names,sampleMap-method}
 \alias{sampleNames}
 \title{Get the sample names of the samples described by an object.}
+\usage{
+  sample.names(x)
+}
 \arguments{
   \item{x}{(Required). An object among the set of classes
   defined by the phyloseq package that represent samples.}

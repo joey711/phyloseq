@@ -8,7 +8,7 @@
   \item{otufilename}{A character string indicating the file
   location of the OTU file. The combined OTU abundance and
   taxonomic identification file, tab-delimited, as produced
-  by QIIME under default output settings.  Default value is
+  by QIIME under default output settings. Default value is
   \code{NULL}.}
 
   \item{biotaxonomy}{A character vector indicating the name

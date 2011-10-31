@@ -5,6 +5,9 @@
 \alias{tre<-,otuTree,phylo-method}
 \alias{tre<-,otuTree,phylo4-method}
 \title{Assign to tre an object/value.}
+\usage{
+  tre(x) <- value
+}
 \arguments{
   \item{x}{(Required). The object within which you will
   replace something}

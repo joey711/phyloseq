@@ -5,6 +5,9 @@
 \alias{sampleMap,ANY-method}
 \alias{sampleMap,data.frame-method}
 \title{Build or access sampleMap objects.}
+\usage{
+  sampleMap(object)
+}
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain sampleMap.}

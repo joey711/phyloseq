@@ -5,9 +5,12 @@
 \alias{cca.phyloseq,otuTable-method}
 \alias{cca.phyloseq,phyloseqFather-method}
 \title{phyloseq package extension for \code{vegan::cca}.}
+\usage{
+  cca.phyloseq(X, ...)
+}
 \arguments{
   \item{X}{(Required). A formula-class object, specifying
-  the input.  No need to splat higher-order objects.
+  the input. No need to splat higher-order objects.
   \code{cca.phyloseq} understands where to find the
   abundance table and sample characteristics.
   Alternatively, \code{X} can be an otuTable, or any more
