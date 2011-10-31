@@ -81,7 +81,7 @@
 
   \emph{foreach} package manual:
 
-  \code{http://cran.r-project.org/web/packages/foreach/index.html}
+  \url{http://cran.r-project.org/web/packages/foreach/index.html}
 
   Notes on parallel computing in \code{R}. Skip to the
   section describing the \emph{foreach Framework}. It gives
@@ -89,7 +89,7 @@
   using the \emph{doMC}, \emph{doSNOW}, or \emph{doMPI}
   packages:
 
-  \code{http://trg.apbionet.org/euasiagrid/docs/parallelR.notes.pdf}
+  \url{http://trg.apbionet.org/euasiagrid/docs/parallelR.notes.pdf}
 }
 \examples{
 #
