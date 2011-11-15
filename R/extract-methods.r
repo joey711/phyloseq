@@ -38,7 +38,7 @@ setMethod("[", "taxonomyTable", function(x,i,j,...){
 #' @rdname extract-methods
 setMethod("[", "phyloseqFather", function(x, i, j, ...){
 	argslist <- list(...)
-
+	# # # return(argslist)
 	goodComponents <- c(get.component.classes(), names(get.component.classes()))
 	goodComponents <- unique(goodComponents)
 	goodComponents <- goodComponents[!goodComponents %in%
@@ -64,27 +64,20 @@ setMethod("[", "phyloseqFather", function(x, i, j, ...){
 		"Try get.component.classes() to see possible values to provide.")
 	}
 	
+	# idiosyncracy, component class and slot name do not match for taxonomyTable/taxTab
 	if( component == "taxonomyTable" ){
 		component <- "taxTab"
 	}
 	newx    <- access(x, component)
 	
-	# Need to make sure component argument is removed before pass to next function
-	extargs <- argslist[names(argslist) != "component"]
-	extargs <- extargs[sapply(sapply(extargs, "%in%", goodComponents), any)]
-	
-	# protect against NULL args in extargs (e.g. no non-component ... args)
-	extargs <- extargs[!sapply(extargs, is.null)]
-	
-	# Must add the x, i, j, argument to the list. Test if i or j is missing
+	# Nested-if to protect against missing arguments. Can only miss one at a time.
 	if( missing(i) ){
-		extargs <- c(list(x=newx, j=j), extargs)
+		return( newx[, j] )
 	} else if( missing(j) ){
-		extargs <- c(list(x=newx, i=i), extargs)
+		return( newx[i, ] )
 	} else {
-		extargs <- c(list(x=newx, i=i, j=j), extargs)		
+		return( newx[i, j] )
 	}
-	return( do.call("[", extargs) )
 })
 ################################################################################
 ################################################################################
