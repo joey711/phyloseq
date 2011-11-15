@@ -21,23 +21,23 @@
   modifying (\code{x}).}
 
   \item{x}{A phylogenetic object, including \code{phylo}
-  and \code{phylo4} trees, as well as native phyloseq
-  package objects that represent taxa / species (that is,
-  otuTable, taxonomyTable, otuSam, otuTree, and their
-  superclasses).}
+  and \code{phylo4} trees, as well as all phyloseq classes
+  that represent taxa / species. If the function
+  \code{\link{species.names}} returns a non-\code{NULL}
+  value, then your object can be pruned by this function.}
 }
 \value{
   The class of the object returned by \code{prune_species}
   matches the class of the argument, \code{x}.
 }
 \description{
-  An S4 Generic method for removing (pruning) unwanted
-  spceies from phylogenetic objects, including phylo and
-  phylo4 trees, as well as native phyloseq package objects.
-  This is particularly useful for pruning objects of the
+  An S4 Generic method for removing (pruning) unwanted taxa
+  from phylogenetic objects, including phylo and phylo4
+  trees, as well as native phyloseq package objects. This
+  is particularly useful for pruning objects of the
   \code{\link{otuTable}} and the higher order objects that
-  contain it as a component. Note, the \code{phylo} class
-  version is adapted from \code{picante::prune.samples}
+  contain it as a component. The \code{phylo} class version
+  is adapted from \code{picante::prune.samples}.
 }
 \examples{
 #

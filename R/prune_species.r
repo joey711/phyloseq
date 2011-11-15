@@ -1,11 +1,11 @@
 ################################################################################
 #' Prune unwanted species / taxa from a phylogenetic object.
 #' 
-#' An S4 Generic method for removing (pruning) unwanted spceies from phylogenetic
+#' An S4 Generic method for removing (pruning) unwanted taxa from phylogenetic
 #' objects, including phylo and phylo4 trees, as well as native phyloseq package
 #' objects. This is particularly useful for pruning objects of the 
 #' \code{\link{otuTable}} and the higher order objects that contain it as a component.
-#' Note, the \code{phylo} class version is adapted from \code{picante::prune.samples}
+#' The \code{phylo} class version is adapted from \code{picante::prune.samples}.
 #'
 #' @param species A character vector of the species in object x that you want to
 #' keep -- OR alternatively -- a logical vector where the kept species are TRUE, and length
@@ -14,8 +14,9 @@
 #' compatible with the \code{species.names} of the object you are modifying (\code{x}). 
 #'
 #' @param x A phylogenetic object, including \code{phylo} and \code{phylo4} trees,
-#' as well as native phyloseq package objects that represent taxa / species
-#' (that is, otuTable, taxonomyTable, otuSam, otuTree, and their superclasses).
+#' as well as all phyloseq classes that represent taxa / species. If the function
+#' \code{\link{species.names}} returns a non-\code{NULL} value, then your object
+#' can be pruned by this function.
 #'
 #' @return The class of the object returned by \code{prune_species} matches
 #' the class of the argument, \code{x}.
@@ -43,9 +44,7 @@ setMethod("prune_species", signature("NULL"), function(species, x){
 	return(x)
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,character,phylo-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "phylo"), function(species, x){
 	trimTaxa <- setdiff(x$tip.label, species)
@@ -54,9 +53,7 @@ setMethod("prune_species", signature("character", "phylo"), function(species, x)
 	} else x
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,character,phylo4-method
-#' @docType methods
 #' @rdname prune_species-methods
 #' @import phylobase
 setMethod("prune_species", signature("character", "phylo4"), function(species, x){
@@ -70,30 +67,24 @@ setMethod("prune_species", signature("character", "phylo4"), function(species, x
 	} else x
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,character,otuTable-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "otuTable"), function(species, x){
 	species <- intersect( species, species.names(x) )
 	if( speciesarerows(x) ){
-		x[species, ]
+		x[species, , drop=FALSE]
 	} else {
-		x[, species]
+		x[, species, drop=FALSE]
 	}	
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,character,sampleMap-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "sampleMap"), function(species, x){
 	return(x)
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,character,phyloseqFather-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "phyloseqFather"), 
 		function(species, x){
@@ -115,19 +106,15 @@ setMethod("prune_species", signature("character", "phyloseqFather"),
 	}
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,character,taxonomyTable-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "taxonomyTable"), 
 		function(species, x){
 	species <- intersect( species, species.names(x) )
-	return( x[species, ] )
+	return( x[species, , drop=FALSE] )
 })
 ################################################################################
-#' @name prune_species
 #' @aliases prune_species,logical,ANY-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("logical", "ANY"), function(species, x){
 	# convert the logical argument to character and dispatch
