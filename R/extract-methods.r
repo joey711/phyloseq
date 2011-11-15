@@ -71,7 +71,7 @@ setMethod("[", "phyloseqFather", function(x, i, j, ...){
 	
 	# Need to make sure component argument is removed before pass to next function
 	extargs <- argslist[names(argslist) != "component"]
-	extargs <- extargs[sapply(sapply(testlist, "%in%", goodComponents), any)]
+	extargs <- extargs[sapply(sapply(extargs, "%in%", goodComponents), any)]
 	
 	# protect against NULL args in extargs (e.g. no non-component ... args)
 	extargs <- extargs[!sapply(extargs, is.null)]
