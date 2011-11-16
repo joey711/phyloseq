@@ -45,6 +45,7 @@
 #' @export
 #'
 #' @examples #
+#' ## # Make a random complex object
 #' ## OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
 #' ## tax1 <- taxTab(matrix("abc", 30, 8))
 #' ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
@@ -56,6 +57,10 @@
 #' ## y <- taxTab(ex1)
 #' ## merge_phyloseq(x, y)
 #' ## merge_phyloseq(y, y, y, y)
+#' ## # Try the simple example dataset, ex1
+#' ## data(ex1)
+#' ## merge_phyloseq( otutree(ex1), sampleMap(ex1))
+#' ## merge_phyloseq( otuSam(ex1), tre(ex1), taxTab(ex1))
 merge_phyloseq <- function(...){
 	arguments <- list(...)
 	# create list of all components of all objects
@@ -81,19 +86,11 @@ merge_phyloseq <- function(...){
 			merged.list <- c(merged.list, x1)			
 		}
 	}
-	# rename such that the otuTable-containing element is named "object"
-	if( "otuTable" %in% sapply(merged.list, class) ){
-		names(merged.list)[names(merged.list)!="otuTable"] <-
-			c("x1", "x2", "x3")[1:sum(names(merged.list)!="otuTable")]	
-		names(merged.list)[names(merged.list)=="otuTable"] <- "object"		
-	} else {
-		merged.list <- unname(merged.list)
-	}
-	# in order to match the phyloseq() argument labels
-	do.call(phyloseq, merged.list)
-	# test returns, commented out:
-	#return(merged.list)
-	#return(comp.list)
+	# Remove names to avoid any conflicts with phyloseq(), which does not have named-arguments
+	names(merged.list) <- NULL
+
+	# Use do.call for calling this variable-length, variable-content argument list.
+	return( do.call(phyloseq, merged.list) )
 }
 ################################################################################
 #' Merge pair of phyloseq component data objects of the same class.

@@ -62,6 +62,7 @@
 }
 \examples{
 #
+## # Make a random complex object
 ## OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
 ## tax1 <- taxTab(matrix("abc", 30, 8))
 ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10),
@@ -73,5 +74,9 @@
 ## y <- taxTab(ex1)
 ## merge_phyloseq(x, y)
 ## merge_phyloseq(y, y, y, y)
+## # Try the simple example dataset, ex1
+## data(ex1)
+## merge_phyloseq( otutree(ex1), sampleMap(ex1))
+## merge_phyloseq( otuSam(ex1), tre(ex1), taxTab(ex1))
 }
 

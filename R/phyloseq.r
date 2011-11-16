@@ -58,17 +58,14 @@ phyloseq <- function(...){
 	## Need to determine which new() type to call.
 	# First some quality-control checks:
 	if( length(splatlist) > 4){
-		cat("phyloseq()-ERROR: Too many components provided\n")
-		return(NULL)
+		stop("phyloseq()-ERROR: Too many components provided\n")
 	} else if( length(names(splatlist)) > length(unique(names(splatlist))) ){
-		cat("phyloseq()-ERROR: Only one of each component type allowed.\n")
-		cat("For merging multiple tables of the same class, try merge_phyloseq(...)\n")
-		return(NULL)
+		stop("phyloseq()-ERROR: Only one of each component type allowed.\n",
+		"For merging multiple tables of the same class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
 	} else if( !"otuTable" %in% names(splatlist) ){
-		cat("phyloseq()-ERROR: Argument list must include an otuTable.\n")
-		return(NULL)
+		stop("phyloseq()-ERROR: Argument list must include an otuTable.\n")
 	# And finally, instantiate and return the H.O. object.
 	} else {
 		return( do.call("new", c(list(Class=newClassName), splatlist) ) )
