@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.4.7
+Version: 0.4.8
 Date: 2011-11-17
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
@@ -68,3 +68,4 @@ Collate:
     'import_RDP_cluster.r'
     'import_qiime.r'
     'merge_samples.r'
+    'export_mothur_dist.r'
