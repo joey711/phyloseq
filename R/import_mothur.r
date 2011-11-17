@@ -80,6 +80,8 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
 			cutoff <- cutoffs
 		}
 	}
+	# cutoff is often numeric, but the index itself must be a character.
+	if( class(cutoff)=="numeric" ){ cutoff <- as(cutoff, "character") }
 	
 	# The first two elements are the cutoff and the number of OTUs. metadata. rm.
 	OTUs <- tabsplit[[cutoff]][-(1:2)]
@@ -87,8 +89,9 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
 	# split each element on commas
 	OTUs <- strsplit(OTUs, ",", fixed=TRUE)
 	
-	# Name each OTU, and return the list
-	names(OTUs) <- paste("OTUID_", 1:length(OTUs), sep="")
+	# Name each OTU (currently as the first seq name in each cluster), and return the list
+	# # # names(OTUs) <- paste("OTUID_", 1:length(OTUs), sep="")
+	names(OTUs) <- sapply(OTUs, function(i){return(i[1])})
 	
 	# return as-is
 	return(OTUs)

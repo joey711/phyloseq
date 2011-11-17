@@ -18,3 +18,12 @@ More concretely, `phyloseq` provides:
 
  * Multiple testing methods specific to high-throughput phylogenetic sequencing data.
 
+For news related to the latest development version, see:
+
+https://github.com/joey711/phyloseq/blob/master/inst/NEWS
+
+phyloseq is under active development, which is hosted and versioned at github:
+
+https://github.com/joey711/phyloseq
+
+Feel free to fork and contribute!
