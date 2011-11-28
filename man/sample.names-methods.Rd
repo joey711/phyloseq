@@ -23,7 +23,7 @@
 }
 \examples{
 #
-# library("picante")
+# # From "picante" package
 # data("phylocom")
 # tree <- phylocom$phylo
 # OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)

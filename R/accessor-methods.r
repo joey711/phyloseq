@@ -266,7 +266,7 @@ speciesAreRows <- speciesarerows
 #' @export
 #'
 #' @examples #
-#' # library("picante")
+#' # # From "picante" package
 #' # data("phylocom")
 #' # tree <- phylocom$phylo
 #' # nspecies(tree)
@@ -305,7 +305,7 @@ setMethod("nspecies", "phylo4", function(object) length(tipLabels(object)) )
 #' @export
 #'
 #' @examples #
-#' # library("picante")
+#' # # From "picante" package
 #' # data("phylocom")
 #' # tree <- phylocom$phylo
 #' # OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)
@@ -355,7 +355,7 @@ setMethod("species.names", "phylo4", function(object) tipLabels(object) )
 #' @export
 #'
 #' @examples #
-#' # library("picante")
+#' # # From "picante" package
 #' # data("phylocom")
 #' # tree <- phylocom$phylo
 #' # OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)
@@ -392,7 +392,7 @@ setMethod("nsamples", "phyloseqFather", function(object){
 #' @export
 #'
 #' @examples #
-#' # library("picante")
+#' # # From "picante" package
 #' # data("phylocom")
 #' # tree <- phylocom$phylo
 #' # OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)
@@ -451,7 +451,7 @@ otusam <- otuSam
 #' @export
 #' 
 #' @examples #
-#' # library("picante")
+#' # # From "picante" package
 #' # data("phylocom")
 #' # tree <- phylocom$phylo
 #' # OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)

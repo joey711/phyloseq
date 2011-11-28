@@ -126,7 +126,7 @@ tipglom.internal = function(tree, speciationMinLength){
 #' @examples #
 setGeneric("getTipDistMatrix", function(tree, byRootFraction=FALSE) standardGeneric("getTipDistMatrix"))
 setMethod("getTipDistMatrix", signature("phylo"), function(tree, byRootFraction=FALSE){
-	# require("picante")
+	### require("picante") # picante is a "depends"-level dependency of phyloseq.
 	pairwiseSpecDists = cophenetic(tree)
 	# If byRootFraction is true, normalize the cophenetic distances
 	# according to the mean root age.

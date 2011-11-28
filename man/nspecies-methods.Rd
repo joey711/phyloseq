@@ -23,7 +23,7 @@
 }
 \examples{
 #
-# library("picante")
+# # From "picante" package
 # data("phylocom")
 # tree <- phylocom$phylo
 # nspecies(tree)
