@@ -66,9 +66,12 @@ phyloseq <- function(...){
 		return(arglist[[1]])
 	} else if( !"otuTable" %in% names(splatlist) ){
 		stop("phyloseq()-ERROR: Argument list must include an otuTable.\n")
-	# And finally, instantiate and return the H.O. object.
+	# Instantiate the H.O. object.
 	} else {
-		return( do.call("new", c(list(Class=newClassName), splatlist) ) )
+		HO <- do.call("new", c(list(Class="phyloseq"), splatlist) )
 	}
+	# Reconcile the species and samples in the H.O. object.
+	HO <- reconcile_species(HO)
+	HO <- reconcile_samples(HO)
 }
 ################################################################################

@@ -1,5 +1,5 @@
 ################################################################################
-#' The S4 class that holds taxa-abundance information.
+#' The S4 class for storing taxa-abundance information.
 #'
 #' Because orientation of these tables can vary by method, the orientation is
 #' defined explicitly in the \code{speciesAreRows} slot (a logical).
@@ -20,27 +20,22 @@
 #' @exportClass otuTable
 setClass("otuTable", representation(speciesAreRows="logical", contains = "matrix") )
 ################################################################################
-#' The S4 object in the phyloseq package that holds sample data as a data.frame.
+#' The S4 for storing sample variables.
 #'
 #' Row indices represent samples, while column indices represent experimental
-#' categories, variables, etc. that describe the samples.
+#' categories, variables (and so forth) that describe the samples.
 #'
 #' \describe{
-#'    \item{nsamples}{ A single positive integer specifying the number of distinct samples.
-#' \code{nsamples} should not be assigned directly by user, but
-#' is assessed internally during initialization of \code{sampleMap} objects.}
 #'
 #'    \item{.Data}{data-frame data, inherited from the data.frame class.}
 #' 
-#'    \item{row.names}{Also inherited from the data.frame class;
-#'  it should contain the sample names.}
+#'    \item{row.names}{
+#'	     Also inherited from the data.frame class;
+#'       it should contain the sample names.
+#'    }
 #' 
 #'    \item{names}{Inherited from the data.frame class.}
 #' 
-#'    \item{nsamples}{A single positive integer, indicating the number of samples
-#'     (rows) represented by an object. Consistent with otuTable objects. 
-#'      should not be assigned directly by user, but
-#'      is assessed internally during instantiation of \code{sampleMap} objects.}
 #'  }
 #' 
 #' @name sampleMap-class
@@ -54,11 +49,6 @@ setClass("sampleMap", contains="data.frame")
 #' Row indices represent taxa, columns represent taxonomic classifiers.
 #' 
 #' \describe{
-#'    \item{nspecies}{A single positive integer specifying the number of 
-#' distinct species/taxa. \code{nspecies} should not be assigned directly by user, but
-#' is assessed internally during instantiation of \code{taxonomyTable}
-#' objects.}
-#'
 #'    \item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
 #' }
 #'
@@ -67,5 +57,72 @@ setClass("sampleMap", contains="data.frame")
 #' @exportClass taxonomyTable
 setClass("taxonomyTable", contains = "matrix")
 ################################################################################
-
+# Use setClassUnion to define the unholy NULL-data union as a virtual class.
+# This is a way of dealing with the expected scenarios in which one or more of
+# the component data classes is not available, in which case NULL will be used
+# instead.
+################################################################################
+#' @keywords internal
+setClassUnion("otuTableOrNULL", c("otuTable", "NULL"))
+#' @keywords internal
+setClassUnion("sampleMapOrNULL", c("sampleMap", "NULL"))
+#' @keywords internal
+setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
+#' @keywords internal
+setClassUnion("phylo4OrNULL", c("phylo4", "NULL")) # suppress warnings?
+################################################################################
+# The actual phyloseq master class with all 4 slots. This is akin to 
+# the otuSamTaxTree class of previous versions, but 
+# with the possibility of empty (NULL) slots and an explicit prototype 
+# for slots to be NULL if they are not provided at instantiation.
+################################################################################
+#' The main experiment-level class for phyloseq data
+#'
+#' Contains all component classes: 
+#' \code{\link{otuTable-class}},
+#' \code{\link{sampleMap-class}},
+#' \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot), and
+#' \code{\link{phylo4-class}} (\code{"tre"} slot). There are several advantages
+#' to storing your phylogenetic sequencing experiment as an instance of the
+#' phyloseq class, not the least of which is that it is easy to return to the
+#' data later and feel confident that the different data types ``belong'' to
+#' one another. Furthermore, the \code{\link{phyloseq}} constructor ensures that
+#' the different data components have compatible indices (e.g. species and samples),
+#' and performs the necessary trimming automatically when you create your
+#' ``experiment-level'' object. Downstream analyses are aware of which data
+#' classes they require -- and where to find them -- often making your 
+#' \code{phyloseq-class} object the only data argument to analysis and plotting
+#' functions (although there are many options and parameter arguments waiting
+#' for you). 
+#'
+#' In the case of missing component data, the slots are set to \code{NULL}. As
+#' soon as a \code{phyloseq-class} object is to be updated with new component
+#' data (previously missing/\code{NULL} or not), the indices of all components
+#' are re-checked for compatibility and trimmed if necessary. This is to ensure
+#' by design that components describe the same taxa/samples, and also that these
+#' trimming/validity checks do not need to be repeated in downstream analyses.
+#' 
+#' slots:
+#' \describe{
+#'    \item{otuTable}{a single object of class otuTable.}
+#'    \item{sampleMap}{ a single object of class sampleMap.}
+#'    \item{taxTab}{ a single object of class taxonomyTable.}
+#'    \item{tre}{ a single object of class phylo, from the package ape}
+#' }
+#' @seealso The constructor, \code{\link{phyloseq}}, 
+#'  the merger \code{\link{merge_phyloseq}}, and also the component 
+#'  constructor/accessors \code{\link{otuTable}}, \code{\link{sampleMap}},
+#'  \code{\link{taxTab}}, and \code{\link{tre}}.
+#' 
+#' @name phyloseq-class
+#' @rdname phyloseq-class
+#' @exportClass phyloseq
+setClass(Class="phyloseq", 
+	representation=representation(
+		otuTable="otuTableOrNULL",
+		taxTab="taxonomyTableOrNULL",
+		sampleMap="sampleMapOrNULL",
+		tre="phylo4OrNULL"),
+	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)
+)
 ################################################################################
