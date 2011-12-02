@@ -87,7 +87,7 @@ get.component.classes <- function(){
 	return(component.classes)
 }
 ################################################################################
-#' Convert phyloseq objects into a named list of the component type (class)
+#' Convert phyloseq-class into a named list of its non-empty components.
 #'
 #' @usage splat.phyloseq.objects(x)
 #'
@@ -108,11 +108,10 @@ splat.phyloseq.objects <- function(x){
 	if( class(x) %in% component.classes ){
 		splatx <- list(x)
 		names(splatx) <- names(component.classes)[component.classes==class(x)]
-	} else {
-		slotsx <- getSlots(class(x))
-		splatx <- lapply(slotsx, function(iclass, slotsx, x){
-			do.call(names(slotsx)[slotsx==iclass], list(x))
-		}, slotsx, x)
+	} else { 
+		slotnames <- names(getSlots(class(x)))
+		allslots  <- sapply(slotnames, function(i, x){access(x, i, FALSE)}, x)
+		splatx    <- allslots[!sapply(allslots, is.null)]
 	}
 	return(splatx)
 }
@@ -143,7 +142,9 @@ getslots.phyloseq <- function(x){
 		slotsx        <- as.character(class(x))
 		names(slotsx) <- names(component.classes)[component.classes==class(x)]
 	} else {
-		slotsx <- getSlots(class(x))
+		# Make sure to return only the names of non-empty slots of x
+		splatx <- splat.phyloseq.objects(x)
+		slotsx <- names(splatx)
 	}
 	return(slotsx)
 }

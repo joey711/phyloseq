@@ -313,8 +313,14 @@ speciesAreRows <- speciesarerows
 #' # nspecies(tree)
 setGeneric("nspecies", function(object) standardGeneric("nspecies"))
 #' @rdname nspecies-methods
-#' @aliases nspecies,ANY-method
-setMethod("nspecies", "ANY", function(object) object@nspecies)
+#' @aliases nspecies,otuTable-method
+setMethod("nspecies", "otuTable", function(object){
+	if( speciesAreRows(object) ){
+		return( length(rownames(object)) )
+	} else {
+		return( length(colnames(object)) )
+	}
+})
 #' @rdname nspecies-methods
 #' @aliases nspecies,phyloseq-method
 setMethod("nspecies", "phyloseq", function(object) nspecies(otuTable(object)) )
@@ -357,14 +363,20 @@ setMethod("nspecies", "phylo4", function(object) length(tipLabels(object)) )
 setGeneric("species.names", function(object) standardGeneric("species.names"))	
 #' @rdname species.names-methods
 #' @aliases species.names,otuTable-method
-setMethod("species.names", "otuTable", function(object) object@species.names)
+setMethod("species.names", "otuTable", function(object){
+	if( speciesAreRows(object) ){
+		return( rownames(object) )
+	} else {
+		return( colnames(object) )
+	}
+})
 #' @rdname species.names-methods
 #' @aliases species.names,taxonomyTable-method
 setMethod("species.names", "taxonomyTable", function(object) rownames(object) )
 #' @rdname species.names-methods
 #' @aliases species.names,phyloseq-method
 setMethod("species.names", "phyloseq", function(object){
-	otuTable(object)@species.names
+	species.names(otuTable(object))
 })
 #' @rdname species.names-methods
 #' @aliases species.names,sampleMap-method
@@ -406,11 +418,17 @@ setMethod("species.names", "phylo4", function(object) tipLabels(object) )
 setGeneric("nsamples", function(object) standardGeneric("nsamples"))
 #' @rdname nsamples-methods
 #' @aliases nsamples,ANY-method
-setMethod("nsamples", "ANY", function(object) object@nsamples)
+setMethod("nsamples", "otuTable", function(object){
+	if( speciesAreRows(object) ){
+		return( length(colnames(object)) )
+	} else {
+		return( length(rownames(object)) )
+	}	
+})
 #' @rdname nsamples-methods
 #' @aliases nsamples,phyloseq-method
 setMethod("nsamples", "phyloseq", function(object){
-	otuTable(object)@nsamples
+	nsamples(otuTable(object))
 })
 ################################################################################
 #' Get the sample names of the samples described by an object.

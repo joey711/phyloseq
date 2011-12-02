@@ -36,3 +36,47 @@ reconcile_categories <- function(DFSM){
 	return( DF )
 }
 ################################################################################
+#' Subset samples by sampleMap expression
+#'
+#' This is a convenience wrapper around the \code{\link{subset}} function.
+#' It is intended to allow subsetting complex experimental objects with one
+#' function call. In the case of \code{subset_samples}, the subsetting will be
+#' based on an expression related to the columns and values within the 
+#' sampleMap slot of \code{x}.
+#'
+#' @usage subset_samples(x, ...)
+#'
+#' @param x A \code{sampleMap}, or a \code{phyloseq-class} object with a
+#'  \code{sampleMap}. If the \code{sampleMap} slot is missing in \code{x},
+#'  then \code{x} will be returned as-is, and a warning will be printed to screen.
+#'
+#' @param ... The subsetting expression that should be applied to the 
+#'  \code{sampleMap}. This is passed on to \code{\link{subset}}, see its
+#'  documentation for more details.
+#'
+#' @return A subsetted object with the same class as \code{x}.
+#' 
+#' @seealso \code{\link{subset_species}}
+#'
+#' @export
+#'
+#' @examples
+#' ## data(ex1)
+#' ## ex2 <- subset_samples(ex1, Gender=="A")
+#' ## ex2 <- subset_samples(ex1, Diet==1)
+subset_samples <- function(x, ...){
+	if( is.null(sampleMap(x)) ){ 
+		cat("Nothing subset. No sampleMap in x.\n")
+		return(x)
+	} else {
+		oldDF <- as(sampleMap(x), "data.frame")
+		newDF <- subset(oldDF, ...)
+		if( class(x) == "sampleMap" ){
+			return(sampleMap(newDF))
+		} else {
+			sampleMap(x) <- sampleMap(newDF)
+			return(x)
+		}
+	}
+}
+################################################################################
