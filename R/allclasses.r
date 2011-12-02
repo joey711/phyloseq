@@ -18,7 +18,7 @@
 #' @name otuTable-class
 #' @rdname otuTable-class
 #' @exportClass otuTable
-setClass("otuTable", representation(speciesAreRows="logical", contains = "matrix") )
+setClass("otuTable", representation(speciesAreRows="logical"), contains = "matrix")
 ################################################################################
 #' The S4 for storing sample variables.
 #'

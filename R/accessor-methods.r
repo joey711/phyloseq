@@ -54,7 +54,7 @@ setGeneric("otuTable", function(object, speciesAreRows, errorIfNULL=TRUE){
 	standardGeneric("otuTable")	
 })
 # Access the otuTable slot, or return an otuTable as-is.
-#' @aliases otuTable,phyloseqFather-method
+#' @aliases otuTable,phyloseq-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "ANY", function(object, errorIfNULL=TRUE){
 	access(object, "otuTable", errorIfNULL) 
@@ -316,8 +316,8 @@ setGeneric("nspecies", function(object) standardGeneric("nspecies"))
 #' @aliases nspecies,ANY-method
 setMethod("nspecies", "ANY", function(object) object@nspecies)
 #' @rdname nspecies-methods
-#' @aliases nspecies,phyloseqFather-method
-setMethod("nspecies", "phyloseqFather", function(object) nspecies(otuTable(object)) )
+#' @aliases nspecies,phyloseq-method
+setMethod("nspecies", "phyloseq", function(object) nspecies(otuTable(object)) )
 #' @rdname nspecies-methods
 #' @aliases nspecies,phylo-method
 setMethod("nspecies", "phylo", function(object) length(object$tip.label) )
@@ -362,8 +362,8 @@ setMethod("species.names", "otuTable", function(object) object@species.names)
 #' @aliases species.names,taxonomyTable-method
 setMethod("species.names", "taxonomyTable", function(object) rownames(object) )
 #' @rdname species.names-methods
-#' @aliases species.names,phyloseqFather-method
-setMethod("species.names", "phyloseqFather", function(object){
+#' @aliases species.names,phyloseq-method
+setMethod("species.names", "phyloseq", function(object){
 	otuTable(object)@species.names
 })
 #' @rdname species.names-methods
@@ -408,8 +408,8 @@ setGeneric("nsamples", function(object) standardGeneric("nsamples"))
 #' @aliases nsamples,ANY-method
 setMethod("nsamples", "ANY", function(object) object@nsamples)
 #' @rdname nsamples-methods
-#' @aliases nsamples,phyloseqFather-method
-setMethod("nsamples", "phyloseqFather", function(object){
+#' @aliases nsamples,phyloseq-method
+setMethod("nsamples", "phyloseq", function(object){
 	otuTable(object)@nsamples
 })
 ################################################################################
@@ -448,149 +448,10 @@ setMethod("sample.names", "sampleMap", function(x) x@sample.names)
 #' @aliases sample.names,otuTable-method
 setMethod("sample.names", "otuTable", function(x) x@sample.names)
 #' @rdname sample.names-methods
-#' @aliases sample.names,phyloseqFather-method
-setMethod("sample.names", "phyloseqFather", function(x){
+#' @aliases sample.names,phyloseq-method
+setMethod("sample.names", "phyloseq", function(x){
 	x@otuTable@sample.names 
 })
 #' @aliases sample.names
 #' @export
 sampleNames <- sample.names
-################################################################################
-#' Show the component objects classes and slot names.
-#'
-#' There are no arguments to this function. It returns a named character
-#' when called, which can then be used for tests of component data types, etc.
-#'
-#' @usage get.component.classes()
-#' 
-#' @return a character vector of the component objects classes, where each 
-#' element is named by the corresponding slot name in the higher-order 
-#' phyloseq objects (objects containing more than 1 phyloseq data object).
-#' @export
-#' @examples #
-#' #get.component.classes()
-get.component.classes <- function(){
-	# define classes vector
-	component.classes <- c("otuTable", "sampleMap", "phylo4", "phylo", "taxonomyTable")
-	# the names of component.classes needs to be the slot names to match getSlots / splat
-	names(component.classes) <- c("otuTable", "sampleMap", "tre", "old-tre", "taxTab")	
-	return(component.classes)
-}
-################################################################################
-#' Convert phyloseq objects into a named list of the component type (class)
-#'
-#' @usage splat.phyloseq.objects(x)
-#'
-#' @param x An object of a class defined by the phyloseq-package. Component
-#'  data and complex classes are both acceptable.
-#' 
-#' @return A named list, where each element is a component object that was contained 
-#' in the argument, \code{x}. Each element is named for the object class it contains
-#' If \code{x} is already a component data object,
-#' then a list of length (1) is returned, also named.
-#'
-#' @seealso merge_phyloseq
-#' @export
-#' @examples #
-splat.phyloseq.objects <- function(x){
-	component.classes <- get.component.classes()
-	# Check if class of x is among the component classes (not H.O.)
-	if( class(x) %in% component.classes ){
-		splatx <- list(x)
-		names(splatx) <- names(component.classes)[component.classes==class(x)]
-	} else {
-		slotsx <- getSlots(class(x))
-		splatx <- lapply(slotsx, function(iclass, slotsx, x){
-			do.call(names(slotsx)[slotsx==iclass], list(x))
-		}, slotsx, x)
-	}
-	return(splatx)
-}
-################################################################################
-#' Return the non-empty slot names of a phyloseq object.
-#'
-#' Like \code{\link{getSlots}}, but returns the class name if argument 
-#' is component data object.
-#' 
-#' @usage getslots.phyloseq(x)
-#'
-#' @param x A \code{\link{phyloseq-class}} object. If \code{x} is a component
-#'  data class, then just returns the class of \code{x}.
-#' 
-#' @return identical to getSlots. A named character vector of the slot classes
-#' of a particular S4 class, where each element is named by the slot name it
-#' represents. If \code{x} is a component data object,
-#' then a vector of length (1) is returned, named according to its slot name in
-#' the higher-order objects.
-#' 
-#' @seealso merge_phyloseq
-#' @export
-#' @examples #
-getslots.phyloseq <- function(x){
-	# Check if class of x is among the component classes (not H.O.)
-	component.classes <- get.component.classes()	
-	if( class(x) %in% component.classes ){
-		slotsx        <- as.character(class(x))
-		names(slotsx) <- names(component.classes)[component.classes==class(x)]
-	} else {
-		slotsx <- getSlots(class(x))
-	}
-	return(slotsx)
-}
-################################################################################
-#' General slot accessor function for phyloseq-package.
-#'
-#' This function is used internally by many convenience accessors and in 
-#' many functions/methods that need to access a particular component data type.
-#' If something is wrong, or the slot is missing, the expected behavior is that
-#' this function will return NULL. Thus, the output can be tested by 
-#' \code{\link{is.null}} as verification of the presence of a particular 
-#' data component. 
-#'
-#' @usage access(object, slot, errorIfNULL=FALSE)
-#'
-#' @param object (Required). A phyloseq-class object.
-#'
-#' @param slot (Required). A character string indicating the slot (not data class)
-#'  of the component data type that is desired.
-#'
-#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
-#'  an error if the slot is empty (\code{NULL})? Default \code{FALSE}. 
-#'
-#' @return Returns the component object specified by the argument \code{slot}. 
-#'  Returns NULL if slot does not exist. Returns \code{object} as-is 
-#'  if it is a component class that already matches the slot name.
-#'
-#' @seealso merge_phyloseq
-#' @export
-#' @examples #
-#' ## data(ex1)
-#' ## access(ex1, "taxTab")
-#' ## access(ex1, "tre")
-#' ## access(otuTable(ex1), "otuTable")
-#' ## # Should return NULL:
-#' ## access(otuTable(ex1), "sampleMap")
-#' ## access(otuTree(ex1), "sampleMap")
-#' ## access(otuSam(ex1), "tre")
-access <- function(object, slot, errorIfNULL=FALSE){
-	component.classes <- get.component.classes()
-	# Check if class of x is among the component classes (not H.O.)
-	if( class(object) %in% component.classes ){
-		# if slot-name matches object, return object as-is.
-		if( component.classes[slot] == class(object) ){
-			out <- object
-		} else {
-			out <- NULL
-		}
-	} else if(!slot %in% slotNames(object) ){
-		out <- NULL
-	} else {
-		out <- eval(parse(text=paste("object@", slot, sep=""))) 
-	}
-	# Test if you should error upon the emptiness of the slot being accessed
-	if( errorIfNULL & is.null(out) ){
-		stop(slot, " slot is empty.")
-	}
-	return(out)
-}
-################################################################################
