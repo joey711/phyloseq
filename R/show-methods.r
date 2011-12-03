@@ -95,10 +95,10 @@ setMethod("show", "phylo4", function(object){
 #' show method for H.O. objects.
 #'
 #' @name show
-#' @aliases show,phyloseqFather-method
+#' @aliases show,phyloseq-method
 #' @docType methods
 #' @rdname show-methods
-setMethod("show", "phyloseqFather", function(object){
+setMethod("show", "phyloseq", function(object){
 	cat( class(object), "Object \n", fill=TRUE )
 	slot_list <- splat.phyloseq.objects(object)
 	lapply(slot_list, function(i){show(i);cat("\n")})

@@ -35,11 +35,11 @@ setMethod("prune_samples", signature("character", "sampleMap"), function(samples
 	x[samples, ]
 })
 ################################################################################
-#' @aliases prune_samples,character,otuSam-method
+#' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
-setMethod("prune_samples", signature("character", "otuSam"), function(samples, x){
-	x@sampleMap <- prune_samples(samples, x@sampleMap)
-	x@otuTable  <- prune_samples(samples, x@otuTable)
+setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
+	x@sampleMap <- prune_samples(samples, sampleMap(x) )
+	x@otuTable  <- prune_samples(samples, otuTable(x) )
 	return(x)
 })
 ################################################################################

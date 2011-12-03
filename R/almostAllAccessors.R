@@ -1,225 +1,6 @@
 ################################################################################
 ### Accessor / subset methods.
 ################################################################################
-#' Build or access otuTable objects.
-#'
-#' \code{otuTable()} is both a constructor and accessor method. When the first
-#' argument is a matrix, otuTable() will attempt to create and return an 
-#' otuTable-class object,
-#' which further depends on whether or not speciesAreRows is provided as an
-#' additional argument. Alternatively, if the first argument is an object that 
-#' contains an otuTable, including an otuTable-class object, then the 
-#' corresponding otuTable is returned, as the component object by itself.
-#' This is a convenience wrapper on the more general \code{\link{access}} function
-#' specific for grabbing the otuTable of an object.
-#' It should work on both otuTable component objects, and higher-order classes
-#' that contain an otuTable slot.
-#'
-#' This is the main method suggested for constructing otuTable objects from 
-#' an abundance matrix. It is also the suggested method for accessing subsetting
-#' the otuTable from a more complex object.
-#'
-#' @usage otuTable(object, speciesAreRows, errorIfNULL=TRUE)
-#'
-#' @param object (Required). A phyloseq object.
-#'
-#' @param speciesAreRows (Conditionally optional). Ignored unless 
-#'  \code{object} is a matrix, in which case \code{speciesAreRows} is required.
-#'
-#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
-#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}. Ignored
-#'  if \code{object} argument is a matrix (constructor invoked instead).
-#'
-#' @return An otuTable object. It is either grabbed from the relevant slot
-#' if \code{object} is complex, or built anew if \code{object} is an integer
-#' matrix representing the species-abundance table. If \code{object} is a
-#' data.frame, then an attempt is made to coerce it to an integer matrix and
-#' instantiate an otuTable object.
-#'
-#' @name otuTable
-#' @seealso sampleMap taxTab tre phyloseq
-#' @aliases otuTable otutable otuTable,-method otuTable,otuTable-method
-#' @docType methods
-#' @rdname otuTable-methods
-#' @export
-#' @examples #
-#' # OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
-#' # tax1 <- taxTab(matrix("abc", 30, 8))
-#' # map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
-#' #    matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )
-#' # map1 <- sampleMap(map1) 
-#' # ex1 <- phyloseq(OTU1, map1, tax1)
-#' # otuTable(ex1)
-setGeneric("otuTable", function(object, speciesAreRows, errorIfNULL=TRUE){
-	standardGeneric("otuTable")	
-})
-# Access the otuTable slot, or return an otuTable as-is.
-#' @aliases otuTable,phyloseq-method
-#' @rdname otuTable-methods
-setMethod("otuTable", "ANY", function(object, errorIfNULL=TRUE){
-	access(object, "otuTable", errorIfNULL) 
-})
-# # # Instantiate an otuTable from a raw abundance matrix.
-# # # 
-# # # @param object An abundance table in the form of an integer matrix. 
-# # #  \code{speciesAreRows} must be specified in \code{...}-argument .
-# # # @param ... The additional named argument \code{speciesAreRows} must be 
-# # #  provided. A logical.
-#' @aliases otuTable,matrix-method
-#' @rdname otuTable-methods
-setMethod("otuTable", "matrix", function(object, speciesAreRows){
-	# Want dummy species/sample index names if missing
-	if(speciesAreRows){
-		if(is.null(rownames(object))){
-			rownames(object) <- paste("sp", 1:nrow(object), sep="")
-		}
-		if(is.null(colnames(object))){
-			colnames(object) <- paste("sa", 1:ncol(object), sep="")
-		}
-	} else {
-		if(is.null(rownames(object))){
-			rownames(object) <- paste("sa",1:nrow(object),sep="")
-		}
-		if(is.null(colnames(object))){
-			colnames(object) <- paste("sp",1:ncol(object),sep="")
-		}
-	}
-	new("otuTable", object, speciesAreRows=speciesAreRows)
-})
-# # # Convert to matrix, then instantiate otuTable.
-#' @aliases otuTable,data.frame-method
-#' @rdname otuTable-methods
-setMethod("otuTable", "data.frame", function(object, speciesAreRows){
-	otuTable(as(object, "matrix"), speciesAreRows)
-})
-################################################################################
-#' Build or access sampleMap objects.
-#'
-#' \code{sampleMap()} is both a constructor and accessor method. When the
-#' argument is a data.frame, sampleMap() will attempt to create and return an 
-#' sampleMap-class object. In this case, the rows should be named to match the
-#' \code{sample.names} of the other objects to which it will ultimately be paired.
-#' Alternatively, if the argument is an object that 
-#' contains a sampleMap, including a sampleMap-class object, then the 
-#' corresponding sampleMap is returned, as-is.
-#'
-#' This is the main method suggested for constructing sampleMap objects from 
-#' a data.frame of sample covariates. Each row represents a different sample.
-#' It is also the suggested method for accessing/subsetting
-#' the sampleMap from a more complex object.
-#'
-#' @usage sampleMap(object, errorIfNULL=TRUE)
-#'
-#' @param object An object among the set of classes defined by the phyloseq 
-#' package that contain sampleMap.
-#'
-#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
-#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}. 
-#'
-#' @return A sampleMap object. It is either grabbed from the relevant slot
-#' if \code{object} is complex, or built anew if \code{object} is a data.frame
-#' representing the sample covariates of an experiment.
-#'
-#' @seealso otuTable taxTab tre phyloseq sampleMap-class
-#' @aliases sampleMap samplemap
-#'
-#' @rdname sampleMap-methods
-#' @docType methods
-#' @export
-#'
-#' @examples #
-#' # OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
-#' # tax1 <- taxTab(matrix("abc", 30, 8))
-#' # map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
-#' #   matrix(sample(c("a","b","c"),150,TRUE), 25, 6) ) 
-#' # map1 <- sampleMap(map1)
-#' # ex1 <- phyloseq(OTU1, map1, tax1)
-#' # sampleMap(ex1)
-setGeneric("sampleMap", function(object, errorIfNULL=TRUE) standardGeneric("sampleMap"))
-#' @rdname sampleMap-methods
-#' @aliases sampleMap,ANY-method
-setMethod("sampleMap", "ANY", function(object){
-	access(object, "sampleMap", errorIfNULL)
-})
-# constructor; for creating sampleMap from a data.frame
-#' @rdname sampleMap-methods
-#' @aliases sampleMap,data.frame-method
-setMethod("sampleMap", "data.frame", function(object){
-	# Make sure there are no phantom levels in categorical variables
-	object <- reconcile_categories(object)
-	# Want dummy samples index names if missing
-	if( all(rownames(object) == as.character(1:nrow(object))) ){
-		rownames(object) <- paste("sa", 1:nrow(object), sep="")
-	}	
-	new("sampleMap", object)
-})
-################################################################################
-#' Access taxTab slot, or instantiate taxonomyTable-class.
-#'
-#' \code{taxTab()} is both a constructor and accessor method. When the
-#' argument is a character matrix, taxTab() will attempt to create and return a 
-#' taxonomyTable-class object. In this case, the rows should be named to match the
-#' \code{species.names} of the other objects to which it will ultimately be paired.
-#' Alternatively, if the argument is an object that 
-#' contains a taxonomyTable, including a taxonomyTable-class object, then the 
-#' corresponding taxonomyTable is returned, as-is.
-#'
-#' This is the main method suggested for constructing taxonomyTable objects from 
-#' a character matrix of taxonomy classifications. Each row represents a 
-#' different species.
-#' It is also the suggested method for accessing/subsetting
-#' the taxonomyTable from a more complex object. \code{taxTab} is the slot name
-#' that holds the taxonomyTable-class object in a multi-component phyloseq
-#' object.
-#'
-#' @usage taxTab(object, errorIfNULL=TRUE)
-#'
-#' @param object An object among the set of classes defined by the phyloseq 
-#' package that contain taxonomyTable.
-#'
-#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
-#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
-#'
-#' @return A taxonomyTable object. It is either grabbed from the relevant slot
-#' if \code{object} is complex, or built anew if \code{object} is a 
-#' character matrix representing the taxonomic classification of species in the
-#' experiment.
-#'
-#' @seealso otuTable sampleMap tre phyloseq
-#' @aliases taxTab taxtab
-#'
-#' @rdname taxTab-methods
-#' @docType methods
-#' @export
-#'
-#' @examples #
-#' # tax1 <- taxTab(matrix("abc", 30, 8))
-#' # taxTab(ex1)
-#' # tax1
-setGeneric("taxTab", function(object, errorIfNULL=TRUE) standardGeneric("taxTab"))
-#' @rdname taxTab-methods
-#' @aliases taxTab,ANY-method
-setMethod("taxTab",  "ANY", function(object, errorIfNULL=TRUE){
-	access(object, "taxTab", errorIfNULL)
-})
-# Constructor; for creating taxonomyTable from a matrix.
-#' @rdname taxTab-methods
-#' @aliases taxTab,matrix-method
-setMethod("taxTab", "matrix", function(object){
-	# Want dummy species/taxa index names if missing
-	if(is.null(rownames(object))){
-		rownames(object) <- paste("sp", 1:nrow(object), sep="")
-	}
-	if(is.null(colnames(object))){
-		colnames(object) <- paste("ta", 1:ncol(object), sep="")
-	}	
-	new("taxonomyTable", object)
-})
-#' @rdname taxTab-methods
-#' @aliases taxTab taxtab
-#' @export
-taxtab <- taxTab
-################################################################################
 #' Access tre slot, or check/coerce to phylo4 class.
 #'
 #' \code{tre()} is an accessor OR coercion method. This is the main method suggested 
@@ -461,14 +242,20 @@ setMethod("nsamples", "phyloseq", function(object){
 setGeneric("sample.names", function(x) standardGeneric("sample.names"))	
 #' @rdname sample.names-methods
 #' @aliases sample.names,sampleMap-method
-setMethod("sample.names", "sampleMap", function(x) x@sample.names)
+setMethod("sample.names", "sampleMap", function(x) rownames(x) )
 #' @rdname sample.names-methods
 #' @aliases sample.names,otuTable-method
-setMethod("sample.names", "otuTable", function(x) x@sample.names)
+setMethod("sample.names", "otuTable", function(x){
+	if( speciesAreRows(x) ){
+		return( colnames(x) )
+	} else {
+		return( rownames(x) )
+	}
+})
 #' @rdname sample.names-methods
 #' @aliases sample.names,phyloseq-method
 setMethod("sample.names", "phyloseq", function(x){
-	x@otuTable@sample.names 
+	sample.names(otuTable(x))
 })
 #' @aliases sample.names
 #' @export

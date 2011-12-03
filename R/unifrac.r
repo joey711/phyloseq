@@ -218,7 +218,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' has been added to further protect users from encountering this issue unknowingly.
 #' The easiest solution is to combine the \code{OTU} and \code{tree} objects 
 #' using the \code{\link{phyloseq}} function. E.g. \code{phyloseq(OTU, tree)}
-#' will return an \code{otuTree}-class object that has been pruned and comprises
+#' will return an \code{phyloseq}-class object that has been pruned and comprises
 #' the minimum arguments necessary for \code{UniFrac()}. 
 #'
 #' Parallelization is possible, and encouraged for this computing-intensive calculation.
@@ -243,13 +243,13 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #'
 #' @usage UniFrac(OTU, tree, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 #'
-#' @param OTU (Required). \code{otuTable}, or an \code{otuTree}. If you have
+#' @param OTU (Required). \code{otuTable}, or \code{phyloseq} object. If you have
 #'  instead a simple matrix of abundances, see \code{\link{otuTable}} for coercing
 #'  it to the \code{otuTable} class.
 #'
 #' @param tree (Optional). Object of class \code{phylo}. Not necessary (and ignored) 
 #'  if 
-#'  \code{OTU} is an object that also contains a tree (\code{otuTree} class, 
+#'  \code{OTU} is an object that also contains a tree (\code{phyloseq} class, 
 #'  or its children).
 #'
 #' @param weighted (Optional). Logical. Should use weighted-UniFrac calculation?
@@ -394,10 +394,10 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
     return(as.dist(UniFracMat))
 })
 ################################################################################
-#' @aliases UniFrac,otuTree,ANY-method
+#' @aliases UniFrac,phyloseq,ANY-method
 #' @rdname UniFrac-methods
 #' @import phylobase
-setMethod("UniFrac", signature("otuTree"), 
+setMethod("UniFrac", signature("phyloseq"), 
 		function(OTU, tree=NULL, weighted=FALSE, normalized=TRUE, parallel=FALSE){
 	# splat and pass to core function.
 	UniFrac(OTU=otuTable(OTU), tree=suppressWarnings(as(tre(OTU), "phylo")), weighted, normalized, parallel)

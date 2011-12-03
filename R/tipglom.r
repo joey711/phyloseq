@@ -9,23 +9,22 @@
 #'
 #' @usage tipglom(tree, OTU, speciationMinLength=0.02)
 #'
-#' @param tree An object of class \code{otuTree} or its superclasses, in which case
+#' @param tree An object of class \code{phyloseq}, in which case
 #' the OTU argument can be ommitted. If, alternatively, \code{tree} is a \code{phylo}
 #' or \code{phylo4} object, then \code{OTU} is required. 
 #'
-#' @param OTU An otuTable object. Optional. Ignored if \code{tree} is an 
-#'  \code{otuTree} object or 
-#'  one of its superclasses. If \code{tree} is a \code{phylo} or \code{phylo4}
-#'  object and \code{OTU} is provided, then return will be an \code{otuTree}
+#' @param OTU An otuTable object. Optional. Ignored if \code{tree} is a 
+#'  \code{phyloseq} object. If \code{tree} is a \code{phylo} or \code{phylo4}
+#'  object and \code{OTU} is provided, then return will be an \code{phyloseq}
 #'  object. 
 #'
 #' @param speciationMinLength The minimum branch length that separates taxa. All
 #' tips of the tree separated by a cophenetic distance smaller than 
 #' \code{speciationMinLength} will be agglomerated. Default is 0.02
 #'
-#' @return An object of class \code{otuTree} or its superclasses. Output class matches
+#' @return An object of class \code{phyloseq}. Output class matches
 #' the class of \code{tree}, unless it is a \code{phylo}/\code{phylo4} object, in
-#' which case \code{tipglom} returns an \code{otuTree} object.
+#' which case \code{tipglom} returns an \code{phyloseq} object.
 #'
 #' @rdname tipglom-methods
 #' @docType methods
@@ -45,12 +44,12 @@ setGeneric("tipglom", function(tree, OTU, speciationMinLength=0.02) standardGene
 #' @rdname tipglom-methods
 #' @aliases tipglom,phylo,otuTable-method
 setMethod("tipglom", signature("phylo", "otuTable"), function(tree, OTU, speciationMinLength=0.02){
-	# dispatch as the combined-object (otuTree-class), auto coherence.
+	# dispatch as the combined-object (phyloseq-class), auto coherence.
 	tipglom( phyloseq(OTU, tree), speciationMinLength=speciationMinLength)
 })
 #' @rdname tipglom-methods
-#' @aliases tipglom,otuTree,ANY-method
-setMethod("tipglom", signature("otuTree"), function(tree, speciationMinLength=0.02){
+#' @aliases tipglom,phyloseq,ANY-method
+setMethod("tipglom", signature("phyloseq"), function(tree, speciationMinLength=0.02){
 	tipglom.internal(tree, speciationMinLength=speciationMinLength)
 })
 #' @rdname tipglom-methods
@@ -68,28 +67,27 @@ setMethod("tipglom", signature("phylo4"), function(tree, speciationMinLength=0.0
 #' 
 #' Internal function, users should use the S4 method \code{\link{tipglom}}.
 #' Tree can be higher-order object that contains a phylogenetic tree, 
-#'   e.g. otuTree, etc. This is because \code{\link{mergespecies}} can
+#'   e.g. phyloseq, etc. This is because \code{\link{mergespecies}} can
 #' handle all the relevant objects, as can \code{\link{getTipDistMatrix}}.
 #' Create Non-trivial OTU table, by agglomerating nearby tips.
 #' tipglom.internal is called by the S4 \code{tipglom} methods. It is useful if 
 #' a motivated user wants to see the internals of the implementation. By design
 #' it lacks explicit object handling. Use \code{\link{tipglom}} instead.
 #'
-#' @param tree An object of class \code{phylo}, \code{phylo4}, \code{otuTree} 
-#' or its superclasses. 
+#' @param tree An object of class \code{phylo}, \code{phylo4}, or \code{phyloseq} 
 #'
 #' @param speciationMinLength The minimum branch length that separates taxa. All
 #' tips of the tree separated by a cophenetic distance smaller than 
 #' \code{speciationMinLength} will be agglomerated.
 #'
-#' @return An object of class \code{phylo}, \code{phylo4}, \code{otuTree} 
-#' or its superclasses. Output class matches the class of \code{tree}.
+#' @return An object of class \code{phylo}, \code{phylo4}, or \code{phyloseq}.
+#'  Output class matches the class of \code{tree}.
 #'
 #' @seealso tipglom
 #' @import igraph
 #'
 #' @examples #
-tipglom.internal = function(tree, speciationMinLength){
+tipglom.internal <- function(tree, speciationMinLength){
 	# Create adjacency matrix, where tips are adjacent
 	# if their distance is below the threshold speciationMinLength
 	tipAdjacent <- (getTipDistMatrix( tree ) < speciationMinLength)
@@ -155,7 +153,7 @@ setMethod("getTipDistMatrix", signature("phylo4"),
     # Hand off to the "phylo" dispatch, rather than re-write for "phylo4"
 	getTipDistMatrix(as(tree, "phylo"))
 })
-setMethod("getTipDistMatrix", signature("otuTree"), function(tree, byRootFraction=FALSE){
+setMethod("getTipDistMatrix", signature("phyloseq"), function(tree, byRootFraction=FALSE){
 	getTipDistMatrix( tre(tree) )
 })
 gettipdistmatrix <- getTipDistMatrix

@@ -25,12 +25,10 @@ setMethod("t", signature("otuTable"), function(x){
 	return(x)
 })
 ##############################################################################
-#' @aliases t,phyloseqFather-method
+#' @aliases t,phyloseq-method
 #' @rdname transpose-methods
-setMethod("t", signature("phyloseqFather"), function(x){
+setMethod("t", signature("phyloseq"), function(x){
 	x@otuTable <- t( otuTable(x) )
 	return(x)
 })
 ##############################################################################
-
-

@@ -7,9 +7,9 @@
 #' @export
 #' @aliases [,otuTable,ANY,ANY,ANY-method
 #' @rdname extract-methods
-setMethod("[", "otuTable", function(x,i,j,...){
-	newx <- callNextMethod(x@.Data,i,j,drop=FALSE,...)
-	new("otuTable", x@speciesAreRows, newx)
+setMethod("[", "otuTable", function(x, i, j, ...){
+	newx <- as(x, "matrix")[i, j, drop=FALSE]
+	otuTable(newx, speciesAreRows(x) )
 })
 ################################################################################
 #' extract parts of sampleMap
@@ -17,8 +17,8 @@ setMethod("[", "otuTable", function(x,i,j,...){
 #' @export
 #' @aliases [,sampleMap,ANY,ANY,ANY-method
 #' @rdname extract-methods
-setMethod("[", "sampleMap", function(x,i,j,...){
-	new("sampleMap", callNextMethod(data.frame(x),i,j,drop=FALSE,...))
+setMethod("[", "sampleMap", function(x, i, j, ...){
+	sampleMap( data.frame(x)[i, j, drop=FALSE] )
 })
 ################################################################################
 #' extract parts of taxonomyTable
@@ -26,17 +26,17 @@ setMethod("[", "sampleMap", function(x,i,j,...){
 #' @export
 #' @aliases [,taxonomyTable,ANY,ANY,ANY-method
 #' @rdname extract-methods
-setMethod("[", "taxonomyTable", function(x,i,j,...){
-	new("taxonomyTable", callNextMethod(x@.Data,i,j,drop=FALSE,...))
+setMethod("[", "taxonomyTable", function(x, i, j, ...){
+	taxTab( as(x, "matrix")[i, j, drop=FALSE] )
 })
 ################################################################################
 ################################################################################
 #' Generic extraction from higher-order object
 #'
 #' @export
-#' @aliases [,phyloseqFather,ANY,ANY,ANY-method
+#' @aliases [,phyloseq,ANY,ANY,ANY-method
 #' @rdname extract-methods
-setMethod("[", "phyloseqFather", function(x, i, j, ...){
+setMethod("[", "phyloseq", function(x, i, j, ...){
 	argslist <- list(...)
 	# # # return(argslist)
 	goodComponents <- c(get.component.classes(), names(get.component.classes()))

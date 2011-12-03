@@ -51,8 +51,8 @@ setMethod("taxglom", c("otuTable", "character"), function(object, tax=NULL, taxl
 	taxglom.internal(object, tax)
 })
 #' @rdname taxglom-methods
-#' @aliases taxglom,otuTax,ANY-method
-setMethod("taxglom", "otuTax", function(object, tax=NULL, taxlevel="Phylum"){
+#' @aliases taxglom,phyloseq,ANY-method
+setMethod("taxglom", "phyloseq", function(object, tax=NULL, taxlevel="Phylum"){
 	# vectorize the taxonomy table.
 	tax <- as(taxTab(object), "matrix")[, taxlevel]
 	taxglom.internal(object, tax)

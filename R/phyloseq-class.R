@@ -59,9 +59,14 @@ phyloseq <- function(...){
 	} else {
 		ps <- do.call("new", c(list(Class="phyloseq"), splatlist) )
 	}
-	# Reconcile the species and samples in the H.O. object.
-	ps <- reconcile_species(ps)
-	ps <- reconcile_samples(ps)
+	# Verify there is more than one component that describes species before attempting to reconcile.
+	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), species.names), is.null)) >= 2 ){	
+		ps <- reconcile_species(ps)
+	}
+	# Verify there is more than one component that describes samples before attempting to reconcile.
+	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
+		ps <- reconcile_samples(ps)		
+	}
 	return(ps)
 }
 ################################################################################
@@ -310,11 +315,11 @@ reconcile_species <- function(x){
 #' ## data(ex1)
 #' ## reconcile_samples(ex1)
 reconcile_samples <- function(x){
-	samples <- intersect(rownames(x@sampleMap), sample.names(x@otuTable))
 	# prevent infinite recursion issues by checking if intersection already satisfied
-	if( setequal(samples, sample.names(x)) ){
+	if( setequal(sample.names(sampleMap(x)), sample.names(otuTable(x))) ){
 		return(x)
 	} else {
+		samples <- intersect(sample.names(sampleMap(x)), sample.names(otuTable(x)))		
 		x@sampleMap <- prune_samples(samples, x@sampleMap)
 		x@otuTable  <- prune_samples(samples, x@otuTable)
 		return(x)
