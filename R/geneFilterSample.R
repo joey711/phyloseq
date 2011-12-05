@@ -64,8 +64,8 @@ setMethod("genefilterSample", signature("otuTable"), function(X, flist, A=1){
 	}
 })
 #' @rdname genefilterSample-methods
-#' @aliases genefilterSample,phyloseqFather-method
-setMethod("genefilterSample", signature("phyloseqFather"), function(X, flist, A=1){
+#' @aliases genefilterSample,phyloseq-method
+setMethod("genefilterSample", signature("phyloseq"), function(X, flist, A=1){
 	genefilterSample(otuTable(X), flist, A)
 })
 ################################################################################
@@ -217,6 +217,6 @@ rm_outlierf <- function(f, na.rm=TRUE){
 # # @importFrom genefilter genefilter
 # # @examples #
 # setGeneric("genefilter")
-# setMethod("genefilter", signature("phyloseqFather"),function(expr, flist){
+# setMethod("genefilter", signature("phyloseq"),function(expr, flist){
 	# genefilter(otuTable(expr), flist)
 # })

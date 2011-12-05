@@ -32,9 +32,9 @@ setMethod("getSamples", "otuTable", function(x, i){
 	}
 })
 ################################################################################
-#' @aliases getSamples,phyloseqFather-method
+#' @aliases getSamples,phyloseq-method
 #' @rdname getSamples-methods
-setMethod("getSamples", "phyloseqFather", function(x, i){
+setMethod("getSamples", "phyloseq", function(x, i){
 	getSamples(otuTable(x), i)
 })
 ################################################################################
@@ -69,12 +69,9 @@ setMethod("getSpecies", "otuTable", function(x, i){
 		as(x, "matrix")[i, ]
 	}
 })
-#' @aliases getSpecies,phyloseqFather-method
+#' @aliases getSpecies,phyloseq-method
 #' @rdname getSpecies-methods
-setMethod("getSpecies", "phyloseqFather", function(x, i){
+setMethod("getSpecies", "phyloseq", function(x, i){
 	getSpecies(otuTable(x), i)
 })
 ################################################################################
-
-
-

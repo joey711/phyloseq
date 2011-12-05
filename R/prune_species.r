@@ -36,9 +36,8 @@
 #' ## prune_species(wh1, taxtab1)
 #' ## prune_species(wh2, taxtab1)
 setGeneric("prune_species", function(species, x) standardGeneric("prune_species"))
-#' @name prune_species
+################################################################################
 #' @aliases prune_species,NULL,ANY-method
-#' @docType methods
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("NULL"), function(species, x){
 	return(x)
@@ -84,23 +83,23 @@ setMethod("prune_species", signature("character", "sampleMap"), function(species
 	return(x)
 })
 ################################################################################
-#' @aliases prune_species,character,phyloseqFather-method
+#' @aliases prune_species,character,phyloseq-method
 #' @rdname prune_species-methods
-setMethod("prune_species", signature("character", "phyloseqFather"), 
+setMethod("prune_species", signature("character", "phyloseq"), 
 		function(species, x){
 	# Save time and return if species of x are same as species
 	if( setequal(species, species.names(x)) ){
 		return(x)
 	} else {	
-		# All phyloseqFather children have an otuTable slot, no need to test.
-		x@otuTable <- prune_species(species, x@otuTable)
+		# All phyloseq objects have an otuTable slot, no need to test.
+		otuTable(x) <- prune_species(species, otuTable(x))
 		
 		# Test if slot is present. If so, perform the component prune.
 		if( !is.null(access(x, "taxTab")) ){
-			x@taxTab    <- prune_species(species, x@taxTab)
+			taxTab(x)    <- prune_species(species, taxTab(x))
 		}
 		if( !is.null(access(x, "tre")) ){
-			x@tre       <- prune_species(species, x@tre)
+			tre(x)       <- prune_species(species, tre(x))
 		}
 		return(x)
 	}

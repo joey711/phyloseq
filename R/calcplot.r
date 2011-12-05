@@ -27,13 +27,13 @@
 #'	add_sites_data = NULL,
 #'	add_taxa_data = NULL)
 #'
-#' @param mod A \code{cca} or \code{rda} results object. 
+#' @param mod (Required). A \code{cca} or \code{rda} results object. 
 #'  See \code{\link{cca.object}}. For phyloseq
 #'  objects, you probably want to see \code{\link{cca.phyloseq}} or 
 #'  \code{\link{rda.phyloseq}}.
 #'  
-#' @param object A \code{phyloseq} object or one of its child classes
-#'  (superclasses). Required. Necessary because ordination result objects
+#' @param object (required). A \code{\link{phyloseq-class}} object. Necessary
+#'  because ordination result objects
 #'  will only refer to the abundance table, not the phyloseq object used to
 #'  create them.
 #' 
@@ -89,11 +89,36 @@
 #'  the same number of rows as there are taxa in \code{object}. 
 #'  Default is \code{NULL}.
 #'
-#' @return A ggplot2 plot object.
+#' @return A graphic object from the ggplot2 package.
 #'
-#' @seealso plot.cca cca.object
+#' @seealso \code{\link{calcplot}}, \code{\link[vegan]{plot.cca}}, \code{\link[vegan]{cca.object}}
 #' @import vegan
 #' @export
+#' @examples
+#' # data(ex1)
+#' # ex4  <- transformsamplecounts(ex1, threshrankfun(500))
+#' # # RDA
+#' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
+#' # # CCA
+#' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
+#' # plot_ordination_phyloseq(modr, ex1)
+#' # plot_ordination_phyloseq(modc, ex1)
+#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
+#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+#' # site_shape_category="Diet", site_color_category="Gender", species_alpha=1)
+#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+#' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
+#' # species_alpha=0.4, sites_alpha=2/3,
+#' # add_sites_data=data.frame(total.reads=sampleSums(ex1)) 
+#' # site.colors <- c("darkorchid1", "blue3")
+#' # species.col.groups <- unique(as(taxTab(ex1), "matrix")[,"Phylum"])
+#' # man.colors <- c(site.colors, rainbow((1+length(species.col.groups)),start=11/12, end=5/12))
+#' # p<-plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+#' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
+#' # species_alpha=0.4, sites_alpha=2/3,
+#' # add_sites_data=data.frame(total.reads=sampleSums(ex1)),
+#' # man.colors=man.colors)
+#' # print(p)
 plot_ordination_phyloseq <- function(mod, object,
 	plot_title = as(mod$call, "character")[1],
 	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
@@ -276,6 +301,9 @@ plot_ordination_phyloseq <- function(mod, object,
 #' @export
 #' @seealso \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
 #'  \code{\link{rda}}, \code{\link{cca}}
+#' @examples
+#' ## data(ex1)
+#' ## calcplot(ex1 ~ Diet + Gender)
 calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 	if( class(X) != "formula" ){
 		warning("First argument, X, must be formula class. See ?formula for more info\n")

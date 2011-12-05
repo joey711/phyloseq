@@ -180,7 +180,7 @@ import_mothur_otutable <- function(mothur_list_file, mothur_group_file, cutoff=N
 ################################################################################
 #' Import and prune mothur-produced tree.
 #'
-#' The \code{ape::read.tree()} function is sufficient for importing a 
+#' The \code{\link[ape]{read.tree}} function is sufficient for importing a 
 #' \emph{mothur}-produced tree into \code{R} in \code{"phylo"} format. This 
 #' function further requires a list file as input, and prunes / renames the tree
 #' such that it is compatible with the associated abundance data. The expected
@@ -192,7 +192,7 @@ import_mothur_otutable <- function(mothur_list_file, mothur_group_file, cutoff=N
 #'
 #' This is a user-available module of a more comprehensive function for importing
 #' output files from the \emph{mothur} package, \code{link{import_mothur}}. 
-#' The \code{link{import_mothur}} function
+#' The \code{import_mothur} function
 #' is suggested if the goal is to import more than just the tree from \emph{mothur}.
 #'
 #' @usage import_mothur_tree(mothur_tree_file, mothur_list_file, cutoff=NULL)
@@ -383,5 +383,77 @@ import_mothur_dist <- function(mothur_dist_file){
 	diag(distm) <- 1
 	distd <- as.dist(distm)
 	return(distd)
+}
+################################################################################
+################################################################################
+#' Export a distance object as \code{.names} and \code{.dist} files for mothur
+#'
+#' The purpose of this function is to allow a user to easily export a distance object
+#' as a pair of files that can be immediately imported by mothur for OTU clustering
+#' and related analysis. A distance object can be created in \code{R} in a number of
+#' ways, including via cataloguing the cophentic distances of a tree object.
+#'
+#' @usage export_mothur_dist(x, out=NULL, makeTrivialNamesFile=NULL)
+#'
+#' @param x (Required). A \code{"dist"} object, or a symmetric matrix.
+#'
+#' @param out (Optional). The desired output filename for the \code{.dist} file, OR
+#'  left \code{NULL}, the default, in which case the mothur-formated distance table
+#'  is returned to \code{R} standard out.
+#'
+#' @param makeTrivialNamesFile (Optional). Default \code{NULL}. The desired name of the \code{.names} file.
+#'  If left \code{NULL}, the file name will be a modified version of the \code{out} argument.
+#'
+#' @return A character vector of the different cutoff values contained in the file.
+#'  For a given set of arguments to the \code{cluster()} command from within
+#'  \emph{mothur}, a number of OTU-clustering results are returned in the same
+#'  list file. The exact cutoff values used by \emph{mothur} can vary depending
+#'  on the input data. This simple function returns the cutoffs that were actually
+#'  included in the \emph{mothur} output. This an important extra step prior to
+#'  importing the OTUs with the \code{import_mothur_otulist()} function.
+#'
+#' @examples #
+#' ### data(ex1) 
+#' ### myDistObject <- as.dist(cophenetic(tre(ex1)))
+#' ### export_mothur_dist(myDistObject, "myfilepathname.dist")
+export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
+	if( class(x)== "matrix" ){ x <- as.dist(x) }
+	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }
+
+	# While x is a dist-object, get the length of unique pairs
+	# to initialize the dist table.
+	distdf <- matrix("", nrow=length(x), ncol=3)
+
+	# Now convert x to matrix for looping, indexing.
+	x <- as(x, "matrix")
+	colnames(distdf) <- c("i", "j", "d") 
+	# distdf row counter
+	z <- 1
+	
+	# The big loop.
+	for( i in 2:nrow(x) ){ # i <- 2
+		thisvec <- x[i, 1:(i-1)]
+		for( j in 1:length(thisvec) ){ # j <- 1
+			distdf[z, "i"] <- rownames(x)[i]
+			distdf[z, "j"] <- colnames(x)[j]
+			distdf[z, "d"] <- thisvec[j]
+			z <- z + 1
+		}
+	}	
+
+	# mothur requires a .names file, in case you removed identical sequences
+	# from within mothur and need to keep track and add them back.
+	if( !is.null(makeTrivialNamesFile) ){
+		namestab <- matrix(rownames(x), nrow=length(rownames(x)), ncol=2)
+		write.table(namestab, file=makeTrivialNamesFile, quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+	}
+	
+	# If is.null(out)==TRUE, then return two-column table.
+	# If it's a character, write.table-it 
+	if( is.null(out) ){
+		return(distdf)
+	} else {
+		write.table(distdf, file=out, quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+	}
 }
 ################################################################################

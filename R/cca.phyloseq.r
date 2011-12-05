@@ -7,9 +7,9 @@
 # Whether-or-not to transpose needs to be a check, based on the 
 #   "SpeciesAreRows" slot value
 ################################################################################
-#' phyloseq package extension for \code{vegan::cca}.
+#' phyloseq package extension for \code{\link[vegan]{cca}}.
 #'
-#' A formula is main input to \code{vegan::cca}. This complicates dispatch based
+#' A formula is main input to \code{\link[vegan]{cca}}. This complicates dispatch based
 #' on object signature. A new method with a separate name is defined instead.
 #'
 #' @usage cca.phyloseq(X, ...)
@@ -26,9 +26,9 @@
 #'  does not already contain \code{sampleMap} or you are keeping the data 
 #'  separate for some reason.
 #'
-#' @return same output as \code{vegan::cca}.
+#' @return same output as \code{\link[vegan]{cca}}.
 #'
-#' @seealso \code{\link{rda.phyloseq}}
+#' @seealso \code{\link{rda.phyloseq}}, \code{\link[vegan]{cca}}
 #'
 #' @rdname cca.phyloseq-methods
 #' @docType methods
@@ -70,9 +70,9 @@ setMethod("cca.phyloseq", "otuTable", function(X){
 	vegan::cca(X)	
 })
 ################################################################################
-#' @aliases cca.phyloseq,phyloseqFather-method
+#' @aliases cca.phyloseq,phyloseq-method
 #' @rdname cca.phyloseq-methods
-setMethod("cca.phyloseq", "phyloseqFather", function(X){
+setMethod("cca.phyloseq", "phyloseq", function(X){
 	cca.phyloseq(otuTable(X))
 })
 ################################################################################

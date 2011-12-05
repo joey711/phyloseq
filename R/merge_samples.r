@@ -11,8 +11,7 @@
 #' @usage merge_samples(x, group, fun=mean) 
 #'
 #' @param x (Required). An instance of a phyloseq class that has sample indices. This includes 
-#'  \code{\link{sampleMap-class}}, \code{\link{otuTable-class}}, 
-#'  \code{\link{otuSam-class}} and its children. 
+#'  \code{\link{sampleMap-class}}, \code{\link{otuTable-class}}, and \code{\link{phyloseq-class}}. 
 #'
 #' @param group (Required). Either the a single character string matching a variable name in
 #'  the corresponding sampleMap of \code{x}, or a factor with the same length as
@@ -93,39 +92,45 @@ setMethod("merge_samples", signature("otuTable"), function(x, group){
 	# coerce to matrix, x2
 	x2 <- as(x, "matrix")
 	
-	#aggregate(x2, list(group), fun)
+	# # # #aggregate(x2, list(group), fun)
 	out <- rowsum(x2, group)
 	
 	# convert back to otuTable, and return
 	return( otuTable(out, speciesAreRows=FALSE) )
 })
 ################################################################################
-#' @aliases merge_samples,otuSam-method
+#' @aliases merge_samples,phyloseq-method
 #' @rdname merge_samples-methods
-setMethod("merge_samples", signature("otuSam"), function(x, group, fun=mean){
-	
-	# Check class of group and modify if single "character" (column name)
-	x1 <- data.frame(sampleMap(x))
-	if( class(group)=="character" & length(group)==1 ){
-		if( !group %in% colnames(x1) ){stop("group not found among sample variable names.")}
-		group <- x1[, group]
-	}
-	if( class(group)!="factor" ){
-		# attempt to coerce to factor
-		group <- factor(group)
-	}
+setMethod("merge_samples", signature("phyloseq"), function(x, group, fun=mean){
 
-	newSM <- merge_samples(sampleMap(x), group, fun)
-	newOT <- merge_samples(otuTable(x), group)
-
-	phyloseqList <- list(newOT, newSM)
+	# Check if phyloseq object has a sampleMap
+	if( !is.null(access(x, "sampleMap")) ){
+		# Check class of group and modify if single "character" (column name)
+		if( class(group)=="character" & length(group)==1 ){
+			x1 <- data.frame(sampleMap(x))		
+			if( !group %in% colnames(x1) ){stop("group not found among sample variable names.")}
+			group <- x1[, group]
+		}
+		if( class(group)!="factor" ){
+			# attempt to coerce to factor
+			group <- factor(group)
+		}
+		newSM <- merge_samples(sampleMap(x), group, fun)
+		newOT <- merge_samples(otuTable(x), group)
+		phyloseqList <- list(newOT, newSM)
+		
+	# Else, the only relevant object to "merge_samples" is the otuTable
+	} else {
+		if( class(group)!="factor" ){ group <- factor(group) }
+		phyloseqList <- list( newOT=merge_samples(otuTable(x), group) )
+	}
 	
 	### Add to build-call-list the remaining components, if present in x.
 	### NULL is returned by accessor if object lacks requested component/slot.
 	### Order of objects in list doesn't matter for phyloseq.
 	### The list should not be named.
-	if( !is.null(taxTab(x)) ){ phyloseqList <- c(phyloseqList, list(taxTab(x))) }
-	if( !is.null(tre(x)) ){ phyloseqList <- c(phyloseqList, list(tre(x))) }
+	if( !is.null(access(x, "taxTab")) ){ phyloseqList <- c(phyloseqList, list(taxTab(x))) }
+	if( !is.null(access(x, "tre"))    ){ phyloseqList <- c(phyloseqList, list(tre(x))) }
 	
 	return( do.call("phyloseq", phyloseqList) )
 })

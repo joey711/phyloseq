@@ -9,10 +9,11 @@
 #'
 #' @usage mergespecies(x, eqspecies, archetype=1)
 #'
-#' @param x The otuTable or phylo object, or a higher-order object that
-#'   contains an otuTable or tree.
+#' @param x (Required). An object that describes species (taxa). This includes
+#'  \code{\link{phyloseq-class}}, \code{\link{otuTable-class}}, \code{\link{taxonomyTable-class}}, 
+#'  \code{\link[ape]{phylo}}, and \code{\link[phylobase]{phylo4-class}}.
 #' 
-#' @param eqspecies The species names, or indices, that should be merged together.
+#' @param eqspecies (Required). The species names, or indices, that should be merged together.
 #'  If \code{length(eqspecies) < 2}, then the object \code{x} will be returned
 #'  safely unchanged. 
 #' 
@@ -26,8 +27,10 @@
 #' @return The object, \code{x}, in its original class, but with the specified
 #'   species merged into one entry in all relevant components.
 #'
-#' @seealso \code{\link{tipglom}}, \code{\link{taxglom}}, \code{\link{merge_phyloseq}}
+#' @seealso \code{\link{tipglom}}, \code{\link{taxglom}}, \code{\link{merge_phyloseq}},
+#'  \code{\link{merge_samples}}
 #'
+#' @import phylobase
 #' @export
 #' @docType methods
 #' @rdname mergespecies-methods
@@ -41,8 +44,6 @@
 #' # # plot(otutree1)
 setGeneric("mergespecies", function(x, eqspecies, archetype=1) standardGeneric("mergespecies"))
 ###############################################################################
-# # #' Merge a subset of the taxa in an otuTable.
-#'
 #' @aliases mergespecies,otuTable-method
 #' @rdname mergespecies-methods
 setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
@@ -71,10 +72,6 @@ setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
-# # #' Merge a subset of the taxa in a phylo-class tree object.
-# # #'
-#' @exportMethod mergespecies
-#'
 #' @aliases mergespecies,phylo-method
 #' @rdname mergespecies-methods
 setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
@@ -93,14 +90,8 @@ setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
-# # #' Merge a subset of the taxa in a phylo4-class tree object.
-# # #'
-#' @exportMethod mergespecies
-#'
 #' @aliases mergespecies,phylo4-method
 #' @rdname mergespecies-methods
-#'
-#' @import phylobase
 setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
 	y <- as(x, "phylo")
 	y <- mergespecies(y, eqspecies, archetype)
@@ -124,18 +115,14 @@ setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
 	# # return(x)
 # # })
 ################################################################################
-# # #' Merge a subset of the taxa in a complex phyloseq object.
-# # #'
-#' @exportMethod mergespecies
-#'
-#' @aliases mergespecies,phyloseqFather-method
+#' @aliases mergespecies,phyloseq-method
 #' @rdname mergespecies-methods
-setMethod("mergespecies", "phyloseqFather", function(x, eqspecies, archetype=1){
+setMethod("mergespecies", "phyloseq", function(x, eqspecies, archetype=1){
 	comp_list   <- splat.phyloseq.objects(x)
 	merged_list <- lapply(comp_list, mergespecies, eqspecies, archetype)
 	# the element names can wreak havoc on do.call
 	names(merged_list) <- NULL
-	# Re-instantiate the combined object
+	# Re-instantiate the combined object using the species-merged object.
 	do.call("phyloseq", merged_list)
 })
 ###############################################################################

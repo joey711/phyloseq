@@ -1,13 +1,13 @@
 ################################################################################
 # coercion methods
 ################################################################################
-setAs("otuTable", "matrix", function(from){
+setAs("phyloseq", "matrix", function(from){
 	from@.Data
 })
-setAs("otuTree", "otuTable", function(from){
+setAs("phyloseq", "otuTable", function(from){
 	otuTable(from)	
 })
-setAs("otuSam", "otuTable", function(from){
+setAs("phyloseq", "otuTable", function(from){
 	otuTable(from)	
 })
 ################################################################################
@@ -17,21 +17,21 @@ setAs("data.frame", "sampleMap", function(from){
 setAs("sampleMap", "data.frame", function(from){
 	data.frame(from)
 })
-setAs("otuSam", "sampleMap", function(from){
+setAs("phyloseq", "sampleMap", function(from){
 	sampleMap(from)	
 })
 ################################################################################
 setAs("taxonomyTable", "matrix", function(from){
 	from@.Data
 })
-setAs("otuTax", "taxonomyTable", function(from){
+setAs("phyloseq", "taxonomyTable", function(from){
 	taxTab(from)	
 })
 ################################################################################
-setAs("otuTree", "phylo4", function(from){
+setAs("phyloseq", "phylo4", function(from){
 	tre(from)	
 })
-setAs("otuTree", "phylo", function(from){
+setAs("phyloseq", "phylo", function(from){
 	as(tre(from), "phylo")
 })
 ################################################################################

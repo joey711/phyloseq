@@ -86,7 +86,7 @@ merge_phyloseq <- function(...){
 			merged.list <- c(merged.list, x1)			
 		}
 	}
-	# Remove names to avoid any conflicts with phyloseq(), which does not have named-arguments
+	# Remove names to avoid any conflicts with phyloseq(), which does not need named-arguments
 	names(merged.list) <- NULL
 
 	# Use do.call for calling this variable-length, variable-content argument list.
@@ -102,7 +102,7 @@ merge_phyloseq <- function(...){
 #'
 #' The \code{\link{merge_phyloseq}} function is recommended in general.
 #' 
-#' Special note: trees are merged using \code{ape::\link{consensus}}.
+#' Special note: trees are merged using \code{\link[ape]{consensus}}.
 #'
 #' @usage merge_phyloseq_pair(x, y) 
 #'
@@ -228,7 +228,7 @@ setMethod("merge_phyloseq_pair", signature("sampleMap", "sampleMap"), function(x
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
-	consensus(x, y)
+	ape::consensus(x, y)
 })
 ################################################################################
 #' @aliases merge_phyloseq_pair,phylo4,phylo4-method
