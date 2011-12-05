@@ -167,11 +167,11 @@ unifracPair <- function(occ, tree, A, B){
 #'
 #' @usage wUniFracPair(OTU, tree, A, B, normalized=TRUE)
 #'
-#' @param OTU An abundance matrix in samples-by-species orientation.
-#' @param tree object of class \code{phylo}
-#' @param A single character string matching the first sample ID in the pair
-#' @param B single character string matching the second sample ID in the pair
-#' @param normalized Logical. Should the output be normalized such that values 
+#' @param OTU (Required). An abundance matrix in samples-by-species orientation.
+#' @param tree (Required). Object of class \code{\link[ape]{phylo}}
+#' @param A (Required). single character string matching the first sample ID in the pair
+#' @param B (Required). single character string matching the second sample ID in the pair
+#' @param normalized (Optional). Logical. Should the output be normalized such that values 
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}. 
 #'
 #' @return A single number between 0, 1.

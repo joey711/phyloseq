@@ -17,7 +17,7 @@
 #'
 #' @param threshold A [0,1] numeric. Fraction of abundance of the taxonomic
 #'  groups to keep for each sample. The higher the value, the larger
-#'  the diversity of taxonomica groups included. That is, a greater number of
+#'  the diversity of taxonomic groups included. That is, a greater number of
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
@@ -98,16 +98,16 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' the sampleMap component of \code{otu}, or the \code{map} argument if
 #' \code{otu} is a simple \code{otuTable}.
 #'
-#' @param otu An \code{otuTable} object, or higher-order object that contains
+#' @usage taxaplot(otu, taxavec="Domain",
+#'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
+#'	facet_formula = . ~ TaxaGroup)
+#'
+#' @param otu (Required). An \code{otuTable} object, or higher-order object that contains
 #'  an otuTable and sampleMap (e.g. ``otuSam'' class and its superclasses.).
 #'  If \code{otu} does not contain a taxTab slot (is a class that does not
 #'  have ``Tax'' in its title), then the second argument, \code{taxavec}, is
 #'  required and should have length equal to the number of species/taxa in
 #'  \code{otu}.
-#'
-#' @usage taxaplot(otu, taxavec="Domain", map,
-#'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
-#'	facet_formula = . ~ TaxaGroup)
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
 #'  categorize each species in \code{otu}. If \code{otu} is a higher-order
@@ -115,9 +115,6 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  contains a taxonomyTable, then taxavec can alternatively specify the
 #'  desired taxonomic level as a character string of length 1. 
 #'  E.g. \code{taxavec = "Phylum"}. Default value is \code{"Domain"}.
-#' 
-#' @param map The corresponding sampleMap object for \code{otu}. This is ignored
-#'  for higher-order objects, where the sampleMap component is used instead.
 #' 
 #' @param showOnlyTheseTaxa A vector of the taxonomic labels that you want
 #'  included. If NULL, the default, then all taxonomic labels are used, except
@@ -159,17 +156,23 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' # data(ex1)
 #' # taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
 #' # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
-setGeneric("taxaplot", function(otu, taxavec="Domain", map,
+setGeneric("taxaplot", function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
 	facet_formula = . ~ TaxaGroup){
 		standardGeneric("taxaplot")
 })
 ################################################################################
 #' @rdname taxaplot-methods
-#' @aliases taxaplot,otuTable-method
-setMethod("taxaplot", "otuTable", function(otu, taxavec="Domain", map,
+#' @aliases taxaplot,phyloseq-method
+setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula = . ~ TaxaGroup){
+
+	# Some preliminary assignments. Assumes otu has non-empty sampleMap slot.
+	map <- sampleMap(otu)
+	if( length(taxavec) == 1 ){ 
+		taxavec <- as(taxTab(otu), "matrix")[, taxavec, drop=TRUE]
+	}
 
 	# Build the main species-level data.frame
 	df <- otu2df(otu, taxavec, map,	showOnlyTheseTaxa, threshold)
@@ -264,30 +267,5 @@ setMethod("taxaplot", "otuTable", function(otu, taxavec="Domain", map,
 	# Return the ggplot object so the user can 
 	# additionally manipulate it.
 	return(p)
-})
-################################################################################
-#' @rdname taxaplot-methods
-#' @aliases taxaplot,otuSam-method
-setMethod("taxaplot", "otuSam", function(otu, taxavec="Domain",
-	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
-	facet_formula= . ~ TaxaGroup){
-
-	taxaplot(otuTable(otu), taxavec, map=sampleMap(otu),
-		showOnlyTheseTaxa, threshold,  x_category, fill_category, facet_formula)
-})
-################################################################################
-#' @rdname taxaplot-methods
-#' @aliases taxaplot,otuSamTax-method
-setMethod("taxaplot", "otuSamTax", function(otu, taxavec="Domain",
-	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
-	facet_formula= . ~ TaxaGroup){
-
-	if( length(taxavec) == 1 ){ 
-		taxavec <- as(taxTab(otu), "matrix")[, taxavec, drop=TRUE]
-	}
-
-	taxaplot(otuSam(otu), taxavec=taxavec, showOnlyTheseTaxa=showOnlyTheseTaxa,
-		threshold=threshold, x_category=x_category, fill_category=fill_category,
-		facet_formula=facet_formula)
 })
 ################################################################################

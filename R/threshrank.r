@@ -31,7 +31,7 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #' A closure version of the \code{threshrank} function.
 #'
 #' Takes the same arguments as \code{\link{threshrank}}, except for \code{x}, 
-#' because the output is a function rather than a rank-transformed numeric. 
+#' because the output is a single-argument function rather than a rank-transformed numeric. 
 #' This approach is useful for creating an input to a higher-order function,
 #' like "filterfun", that require a single-argument function as input. 
 #'

@@ -1,42 +1,25 @@
 #
-# extension of plot methods for different classes of objects in phyloseq package.
+# extension of plot methods for phyloseq object.
 # 
 ################################################################################
-# # #' Plot an otuTree object as a simple phylogenetic tree.
-# # #'
-# # #' @param x an \code{otuTree} object.
-# # #' @param ... Additional plotting parameters, providede to \code{ape::plot.phylo()}
-#' @export
-#' @name plot
-#' @aliases plot,otuTree,ANY-method
-#' @docType methods
-#' @rdname plot-methods
-setMethod("plot", "otuTree", function(x, ...){
-	tree <- as(tre(x), "phylo")
-	ape::plot.phylo(tree, ...)	
-	nodelabels(as.character(1:max(tree$edge)),node=1:max(tree$edge))
-	edgelabels(as.character(1:nrow(tree$edge)),edge=1:nrow(tree$edge))
-})
 ################################################################################
-# # #' Plot a otuSam object as a taxaplot style barplot.
-#'
-#' @export
-#' @name plot
-#' @aliases plot,otuSamTax,ANY-method
-#' @docType methods
-#' @rdname plot-methods
-setMethod("plot", "otuSamTax", function(x, ...){
-	taxaplot(otu=x, ...)
-})
 ################################################################################
-# # #' Plot a otuSamTree object as an annotated phylogenetic tree.
-#'
+################################################################################
 #' @export
 #' @name plot
-#' @aliases plot,otuSamTree,ANY-method
+#' @aliases plot,phyloseq,ANY-method
 #' @docType methods
 #' @rdname plot-methods
-setMethod("plot", "otuSamTree", function(x, ...){
-	plot_tree_phyloseq(x, ...)
+setMethod("plot", "phyloseq", function(x, ...){
+	if( all(c("otuTable", "sampleMap", "tre") %in% names(splat.phyloseq.objects(x))) ){
+		plot_tree_phyloseq(x, ...)		
+	} else if( all(c("otuTable", "sampleMap", "taxTab") %in% names(splat.phyloseq.objects(x))) ){
+		taxaplot(otu=x, ...)
+	} else if( all(c("otuTable", "tre") %in% names(splat.phyloseq.objects(x))) ){
+		tree <- as(tre(x), "phylo")
+		ape::plot.phylo(tree, ...)	
+		nodelabels(as.character(1:max(tree$edge)),node=1:max(tree$edge))
+		edgelabels(as.character(1:nrow(tree$edge)),edge=1:nrow(tree$edge))		
+	}
 })
 ################################################################################
