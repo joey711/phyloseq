@@ -1,7 +1,7 @@
 \name{[}
 \alias{[}
 \alias{[,otuTable,ANY,ANY,ANY-method}
-\alias{[,phyloseqFather,ANY,ANY,ANY-method}
+\alias{[,phyloseq,ANY,ANY,ANY-method}
 \alias{[,sampleMap,ANY,ANY,ANY-method}
 \alias{[,taxonomyTable,ANY,ANY,ANY-method}
 \title{Extract parts of otuTable}

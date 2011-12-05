@@ -6,18 +6,23 @@
 \alias{otuTable,data.frame-method}
 \alias{otuTable,matrix-method}
 \alias{otuTable,otuTable-method}
-\alias{otuTable,phyloseqFather-method}
+\alias{otuTable,phyloseq-method}
 \title{Build or access otuTable objects.}
 \usage{
-  otuTable(object, ...)
+  otuTable(object, speciesAreRows, errorIfNULL=TRUE)
 }
 \arguments{
-  \item{object}{An object among the set of classes defined
-  by the phyloseq package that contain an otuTable.}
+  \item{object}{(Required). A phyloseq object.}
 
-  \item{...}{(optional) ignored unless \code{object} is a
-  matrix, in which case \code{speciesAreRows} is required
-  as a named argument.}
+  \item{speciesAreRows}{(Conditionally optional). Ignored
+  unless \code{object} is a matrix, in which case
+  \code{speciesAreRows} is required.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}. Ignored if
+  \code{object} argument is a matrix (constructor invoked
+  instead).}
 }
 \value{
   An otuTable object. It is either grabbed from the
@@ -50,7 +55,7 @@
 }
 \examples{
 #
-# OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
+# OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), TRUE)
 # tax1 <- taxTab(matrix("abc", 30, 8))
 # map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10),
 #    matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )

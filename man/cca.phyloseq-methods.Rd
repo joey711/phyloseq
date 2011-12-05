@@ -3,8 +3,8 @@
 \alias{cca.phyloseq}
 \alias{cca.phyloseq,formula-method}
 \alias{cca.phyloseq,otuTable-method}
-\alias{cca.phyloseq,phyloseqFather-method}
-\title{phyloseq package extension for \code{vegan::cca}.}
+\alias{cca.phyloseq,phyloseq-method}
+\title{phyloseq package extension for \code{\link[vegan]{cca}}.}
 \usage{
   cca.phyloseq(X, ...)
 }
@@ -25,10 +25,10 @@
   some reason.}
 }
 \value{
-  same output as \code{vegan::cca}.
+  same output as \code{\link[vegan]{cca}}.
 }
 \description{
-  A formula is main input to \code{vegan::cca}. This
+  A formula is main input to \code{\link[vegan]{cca}}. This
   complicates dispatch based on object signature. A new
   method with a separate name is defined instead.
 }
@@ -38,6 +38,6 @@
 ## cca.phyloseq(ex1 ~ Diet + Gender)
 }
 \seealso{
-  \code{\link{rda.phyloseq}}
+  \code{\link{rda.phyloseq}}, \code{\link[vegan]{cca}}
 }
 

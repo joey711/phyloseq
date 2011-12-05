@@ -1,6 +1,6 @@
 \name{phyloseq}
 \alias{phyloseq}
-\title{Build objects for the phyloseq package.}
+\title{Build phyloseq-class objects from their components.}
 \usage{
   phyloseq(...)
 }

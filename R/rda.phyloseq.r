@@ -68,9 +68,9 @@ setMethod("rda.phyloseq", "otuTable", function(X){
 	vegan::cca(X)	
 })
 ################################################################################
-#' @aliases rda.phyloseq,phyloseqFather-method
+#' @aliases rda.phyloseq,phyloseq-method
 #' @rdname rda.phyloseq-methods
-setMethod("rda.phyloseq", "phyloseqFather", function(X){
+setMethod("rda.phyloseq", "phyloseq", function(X){
 	rda.phyloseq(otuTable(X))
 })
 ################################################################################

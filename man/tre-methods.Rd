@@ -5,19 +5,23 @@
 \alias{tre,phylo-method}
 \title{Access tre slot, or check/coerce to phylo4 class.}
 \usage{
-  tre(object)
+  tre(object, errorIfNULL=TRUE)
 }
 \arguments{
-  \item{object}{An object among the set of classes defined
-  by the phyloseq package that contain a phylogenetic tree.
-  If object already is a phylogenetic tree (a component
-  data class), then it is returned as-is.}
+  \item{object}{(Required). An instance of phyloseq-class
+  that contains a phylogenetic tree. If object is a
+  phylogenetic tree (a component data class), then it is
+  returned as-is.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
   A phylo4 object. It is grabbed from the tre-slot. If
-  object does not contain a tre-slot, then NULL is
-  returned. This is a convenience wrapper of the
-  \code{\link{access}} function.
+  object is not a phylogenetic tree and does not contain a
+  tre-slot, then NULL is returned. This is a convenience
+  wrapper of the \code{\link{access}} function.
 }
 \description{
   \code{tre()} is an accessor OR coercion method. This is

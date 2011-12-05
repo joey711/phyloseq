@@ -45,7 +45,7 @@
   in general.
 
   Special note: trees are merged using
-  \code{ape::\link{consensus}}.
+  \code{\link[ape]{consensus}}.
 }
 \examples{
 #

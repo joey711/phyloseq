@@ -6,13 +6,17 @@
 \alias{taxTab,matrix-method}
 \title{Access taxTab slot, or instantiate taxonomyTable-class.}
 \usage{
-  taxTab(object)
+  taxTab(object, errorIfNULL=TRUE)
 
-  taxtab(object)
+  taxtab(object, errorIfNULL = TRUE)
 }
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain taxonomyTable.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
   A taxonomyTable object. It is either grabbed from the

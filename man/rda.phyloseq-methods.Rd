@@ -3,7 +3,7 @@
 \alias{rda.phyloseq}
 \alias{rda.phyloseq,formula-method}
 \alias{rda.phyloseq,otuTable-method}
-\alias{rda.phyloseq,phyloseqFather-method}
+\alias{rda.phyloseq,phyloseq-method}
 \title{phyloseq package extension for \code{vegan::rda}.}
 \usage{
   rda.phyloseq(X, ...)

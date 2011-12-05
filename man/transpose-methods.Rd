@@ -2,7 +2,7 @@
 \name{t}
 \alias{t}
 \alias{t,otuTable-method}
-\alias{t,phyloseqFather-method}
+\alias{t,phyloseq-method}
 \title{Extension of the (base) transpose function for otuTable}
 \usage{
   t(x)

@@ -1,6 +1,6 @@
 \name{splat.phyloseq.objects}
 \alias{splat.phyloseq.objects}
-\title{Convert phyloseq objects into a named list of the component type (class)}
+\title{Convert phyloseq-class into a named list of its non-empty components.}
 \usage{
   splat.phyloseq.objects(x)
 }
@@ -17,8 +17,8 @@
   of length (1) is returned, also named.
 }
 \description{
-  Convert phyloseq objects into a named list of the
-  component type (class)
+  Convert phyloseq-class into a named list of its non-empty
+  components.
 }
 \examples{
 #

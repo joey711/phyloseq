@@ -3,7 +3,7 @@
 \alias{assign-speciesarerows}
 \alias{speciesarerows<-}
 \alias{speciesarerows<-,otuTable,logical-method}
-\alias{speciesarerows<-,phyloseqFather,logical-method}
+\alias{speciesarerows<-,phyloseq,logical-method}
 \title{Manually change speciesAreRows through assignment.}
 \usage{
   speciesarerows(x) <- value

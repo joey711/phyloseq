@@ -59,6 +59,10 @@
   Convenience wrapper for performing ordination and
   plotting.
 }
+\examples{
+## data(ex1)
+## calcplot(ex1 ~ Diet + Gender)
+}
 \seealso{
   \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
   \code{\link{rda}}, \code{\link{cca}}

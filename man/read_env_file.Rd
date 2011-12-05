@@ -5,11 +5,11 @@
   read_env_file(envfilename, tree=NULL, sep="\t")
 }
 \arguments{
-  \item{envfilename}{A charater string of the ENV filename
-  (relative or absolute)}
+  \item{envfilename}{(Required). A charater string of the
+  ENV filename (relative or absolute)}
 
-  \item{tree}{Optional phylo object that will be used to
-  prune elements in the ENV hash table once it is read.
+  \item{tree}{(Optional). A phylo object that will be used
+  to prune elements in the ENV hash table once it is read.
   Taxa not present as tip.labels in \code{tree} will be
   excluded from the output.}
 
@@ -30,8 +30,4 @@
 \examples{
 #
 }
-\keyword{environment}
-\keyword{file}
-\keyword{OTU}
-\keyword{trivial}
 

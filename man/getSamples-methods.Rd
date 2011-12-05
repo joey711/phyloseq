@@ -2,7 +2,7 @@
 \name{getSamples}
 \alias{getSamples}
 \alias{getSamples,otuTable-method}
-\alias{getSamples,phyloseqFather-method}
+\alias{getSamples,phyloseq-method}
 \title{Returns the abundance values of species \code{i} for
 all samples in \code{x}.}
 \usage{

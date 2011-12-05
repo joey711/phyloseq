@@ -2,7 +2,7 @@
 \name{makenetwork}
 \alias{makenetwork}
 \alias{makenetwork,otuTable-method}
-\alias{makenetwork,phyloseqFather-method}
+\alias{makenetwork,phyloseq-method}
 \title{Create a taxa graph adjacency matrix from an \code{otuTable}.}
 \usage{
   makenetwork(abund, plotgraph=TRUE, community=TRUE,

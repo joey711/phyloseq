@@ -3,7 +3,7 @@
 \alias{taxglom}
 \alias{taxglom,otuTable,character-method}
 \alias{taxglom,otuTable,taxonomyTable-method}
-\alias{taxglom,otuTax,ANY-method}
+\alias{taxglom,phyloseq,ANY-method}
 \title{Agglomerate taxa of the same type.}
 \usage{
   taxglom(object, tax=NULL, taxlevel="Phylum")

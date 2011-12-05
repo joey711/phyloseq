@@ -1,15 +1,19 @@
 \name{access}
 \alias{access}
-\title{General slot accessor function for phyloseq-package.}
+\title{General slot accessor function for phyloseq-class.}
 \usage{
-  access(object, slot)
+  access(object, slot, errorIfNULL=FALSE)
 }
 \arguments{
-  \item{object}{An object of a class defined or extended by
-  the phyloseq package.}
+  \item{object}{(Required). A phyloseq-class object.}
 
-  \item{slot}{A character string indicating the slot (not
-  data class) of the component data type that is desired.}
+  \item{slot}{(Required). A character string indicating the
+  slot (not data class) of the component data type that is
+  desired.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{FALSE}.}
 }
 \value{
   Returns the component object specified by the argument
@@ -20,11 +24,11 @@
 \description{
   This function is used internally by many convenience
   accessors and in many functions/methods that need to
-  access a particular component data type. If something is
-  wrong, or the slot is missing, the expected behavior is
-  that this function will return NULL. Thus, the output can
-  be tested by \code{\link{is.null}} as verification of the
-  presence of a particular data component.
+  access a particular type of component data. If something
+  is wrong, or the slot is missing, the expected behavior
+  is that this function will return NULL. Thus, the output
+  can be tested by \code{\link{is.null}} as verification of
+  the presence of a particular data component.
 }
 \examples{
 #

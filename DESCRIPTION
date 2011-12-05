@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.5.0
-Date: 2011-11-28
+Version: 0.5.1
+Date: 2011-12-5
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -29,10 +29,7 @@ Collate:
     'allclasses.r'
     'allpackage.r'
     'alldata.r'
-    'initialize-methods.r'
-    'accessor-methods.r'
     'as-methods.r'
-    'phyloseq.r'
     'merge_phyloseq.r'
     'transpose-methods.r'
     'replacement-methods.r'
@@ -42,7 +39,6 @@ Collate:
     'taxaplot.r'
     'prune_species.r'
     'mergespecies.r'
-    'edgelist2clique.r'
     'tipglom.r'
     'taxglom.r'
     'getvalues.r'
@@ -55,17 +51,16 @@ Collate:
     'cca.phyloseq.r'
     'rda.phyloseq.r'
     'mt.r'
-    'envhash2otutable.r'
-    'sums.r'
     'makenetwork.r'
     'prune_samples.r'
-    'reconcile.r'
     'extract-methods.r'
-    'subset.r'
-    'reconcile_categories.r'
     'import_mothur.r'
     'import_pyrotagger_tab.r'
     'import_RDP_cluster.r'
     'import_qiime.r'
     'merge_samples.r'
-    'export_mothur_dist.r'
+    'almostAllAccessors.R'
+    'otuTable-class.R'
+    'phyloseq-class.R'
+    'sampleMap-class.R'
+    'taxonomyTable-class.R'

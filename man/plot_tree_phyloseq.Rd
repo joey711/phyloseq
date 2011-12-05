@@ -9,10 +9,8 @@
   printTheseTaxa = NULL, ...)
 }
 \arguments{
-  \item{object}{A phyloseq object that contains a tree,
-  sampleMap, and otuTable. That is, you will most-likely
-  get an error unless this is a otuSamTree or otuSamTaxTree
-  object.}
+  \item{object}{(Required). A phyloseq object with
+  non-empty tree, sampleMap, and otuTable components.}
 
   \item{color_factor}{A character string specifying the
   column of the sampleMap that will be used for setting the

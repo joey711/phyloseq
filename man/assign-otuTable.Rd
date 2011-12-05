@@ -2,12 +2,7 @@
 \name{otuTable<-}
 \alias{assign-otuTable}
 \alias{otuTable<-}
-\alias{otuTable<-,otuSam,otuTable-method}
-\alias{otuTable<-,otuSamTax,otuTable-method}
-\alias{otuTable<-,otuSamTaxTree,otuTable-method}
-\alias{otuTable<-,otuSamTree,otuTable-method}
-\alias{otuTable<-,otuTable,otuTable-method}
-\alias{otuTable<-,otuTree,otuTable-method}
+\alias{otuTable<-,phyloseq,otuTable-method}
 \title{Assign to otuTable an object/value.}
 \usage{
   otuTable(x) <- value

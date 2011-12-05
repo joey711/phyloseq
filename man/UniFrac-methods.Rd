@@ -2,21 +2,21 @@
 \name{UniFrac}
 \alias{UniFrac}
 \alias{UniFrac,otuTable,phylo-method}
-\alias{UniFrac,otuTree,ANY-method}
+\alias{UniFrac,phyloseq,ANY-method}
 \title{Calculate weighted or unweighted UniFrac for all samples in an OTU table.}
 \usage{
   UniFrac(OTU, tree, weighted=FALSE, normalized=TRUE,
   parallel=FALSE)
 }
 \arguments{
-  \item{OTU}{(Required). \code{otuTable}, or an
-  \code{otuTree}. If you have instead a simple matrix of
-  abundances, see \code{\link{otuTable}} for coercing it to
-  the \code{otuTable} class.}
+  \item{OTU}{(Required). \code{otuTable}, or
+  \code{phyloseq} object. If you have instead a simple
+  matrix of abundances, see \code{\link{otuTable}} for
+  coercing it to the \code{otuTable} class.}
 
   \item{tree}{(Optional). Object of class \code{phylo}. Not
   necessary (and ignored) if \code{OTU} is an object that
-  also contains a tree (\code{otuTree} class, or its
+  also contains a tree (\code{phyloseq} class, or its
   children).}
 
   \item{weighted}{(Optional). Logical. Should use
@@ -61,7 +61,7 @@
   this issue unknowingly. The easiest solution is to
   combine the \code{OTU} and \code{tree} objects using the
   \code{\link{phyloseq}} function. E.g. \code{phyloseq(OTU,
-  tree)} will return an \code{otuTree}-class object that
+  tree)} will return an \code{phyloseq}-class object that
   has been pruned and comprises the minimum arguments
   necessary for \code{UniFrac()}.
 }

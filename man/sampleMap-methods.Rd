@@ -6,11 +6,15 @@
 \alias{sampleMap,data.frame-method}
 \title{Build or access sampleMap objects.}
 \usage{
-  sampleMap(object)
+  sampleMap(object, errorIfNULL=TRUE)
 }
 \arguments{
   \item{object}{An object among the set of classes defined
   by the phyloseq package that contain sampleMap.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
   A sampleMap object. It is either grabbed from the

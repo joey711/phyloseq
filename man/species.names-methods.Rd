@@ -4,7 +4,7 @@
 \alias{species.names,otuTable-method}
 \alias{species.names,phylo-method}
 \alias{species.names,phylo4-method}
-\alias{species.names,phyloseqFather-method}
+\alias{species.names,phyloseq-method}
 \alias{species.names,sampleMap-method}
 \alias{species.names,taxonomyTable-method}
 \title{Get the species / taxa names from an object.}

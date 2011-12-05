@@ -5,6 +5,10 @@
 ################################################################################
 ################################################################################
 ################################################################################
+#' Generic plot defaults for phyloseq-objects.
+#'
+#' The specific plot type is chosen according to available non-empty slots.
+#'
 #' @export
 #' @name plot
 #' @aliases plot,phyloseq,ANY-method

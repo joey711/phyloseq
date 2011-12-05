@@ -1,13 +1,13 @@
 \name{getslots.phyloseq}
 \alias{getslots.phyloseq}
-\title{return the slot names of phyloseq objects.}
+\title{Return the non-empty slot names of a phyloseq object.}
 \usage{
   getslots.phyloseq(x)
 }
 \arguments{
-  \item{x}{An object of a class defined by the
-  phyloseq-package. Component data and complex classes are
-  both acceptable.}
+  \item{x}{A \code{\link{phyloseq-class}} object. If
+  \code{x} is a component data class, then just returns the
+  class of \code{x}.}
 }
 \value{
   identical to getSlots. A named character vector of the
@@ -18,8 +18,8 @@
   higher-order objects.
 }
 \description{
-  Like getSlots, but returns the class name if argument is
-  component data object.
+  Like \code{\link{getSlots}}, but returns the class name
+  if argument is component data object.
 }
 \examples{
 #

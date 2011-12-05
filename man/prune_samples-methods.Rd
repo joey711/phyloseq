@@ -1,8 +1,8 @@
 \docType{methods}
 \name{prune_samples}
 \alias{prune_samples}
-\alias{prune_samples,character,otuSam-method}
 \alias{prune_samples,character,otuTable-method}
+\alias{prune_samples,character,phyloseq-method}
 \alias{prune_samples,character,sampleMap-method}
 \title{Prune unwanted samples from a phyloseq object.}
 \usage{

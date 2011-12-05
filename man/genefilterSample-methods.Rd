@@ -3,7 +3,7 @@
 \alias{genefilterSample}
 \alias{genefilterSample,matrix-method}
 \alias{genefilterSample,otuTable-method}
-\alias{genefilterSample,phyloseqFather-method}
+\alias{genefilterSample,phyloseq-method}
 \title{Filter OTUs sample-wise.}
 \usage{
   genefilterSample(X, flist, A=1)

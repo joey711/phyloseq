@@ -95,8 +95,7 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' The vertical axis is always relative abundance, but the data
 #' can be further organized at the horizontal axis and faceting grid
 #' by any combination of variates present in
-#' the sampleMap component of \code{otu}, or the \code{map} argument if
-#' \code{otu} is a simple \code{otuTable}.
+#' the sampleMap component of \code{otu}.
 #'
 #' @usage taxaplot(otu, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
@@ -126,12 +125,12 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
-#' @param x_category A character string indicating which map column should be
+#' @param x_category A character string indicating which sampleMap column should be
 #'  used to define the horizontal axis categories. Default is \code{"sample"}. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
 #' 
-#' @param fill_category A character string indicating which map column
+#' @param fill_category A character string indicating which sampleMap column
 #'  should be used to define the fill color of the bars. This does not have to 
 #'  match \code{x_category}, but does so by default. Note
 #'  that a few column-names are added by default and are available as options. 

@@ -2,7 +2,7 @@
 \name{sample.names}
 \alias{sample.names}
 \alias{sample.names,otuTable-method}
-\alias{sample.names,phyloseqFather-method}
+\alias{sample.names,phyloseq-method}
 \alias{sample.names,sampleMap-method}
 \alias{sampleNames}
 \title{Get the sample names of the samples described by an object.}

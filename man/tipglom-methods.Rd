@@ -1,26 +1,25 @@
 \docType{methods}
 \name{tipglom}
 \alias{tipglom}
-\alias{tipglom,otuTree,ANY-method}
 \alias{tipglom,phylo,ANY-method}
 \alias{tipglom,phylo,otuTable-method}
 \alias{tipglom,phylo4,ANY-method}
+\alias{tipglom,phyloseq,ANY-method}
 \title{Agglomerate nearby tips in tree.}
 \usage{
   tipglom(tree, OTU, speciationMinLength=0.02)
 }
 \arguments{
-  \item{tree}{An object of class \code{otuTree} or its
-  superclasses, in which case the OTU argument can be
-  ommitted. If, alternatively, \code{tree} is a
-  \code{phylo} or \code{phylo4} object, then \code{OTU} is
-  required.}
+  \item{tree}{An object of class \code{phyloseq}, in which
+  case the OTU argument can be ommitted. If, alternatively,
+  \code{tree} is a \code{phylo} or \code{phylo4} object,
+  then \code{OTU} is required.}
 
   \item{OTU}{An otuTable object. Optional. Ignored if
-  \code{tree} is an \code{otuTree} object or one of its
-  superclasses. If \code{tree} is a \code{phylo} or
-  \code{phylo4} object and \code{OTU} is provided, then
-  return will be an \code{otuTree} object.}
+  \code{tree} is a \code{phyloseq} object. If \code{tree}
+  is a \code{phylo} or \code{phylo4} object and \code{OTU}
+  is provided, then return will be an \code{phyloseq}
+  object.}
 
   \item{speciationMinLength}{The minimum branch length that
   separates taxa. All tips of the tree separated by a
@@ -29,10 +28,10 @@
   is 0.02}
 }
 \value{
-  An object of class \code{otuTree} or its superclasses.
-  Output class matches the class of \code{tree}, unless it
-  is a \code{phylo}/\code{phylo4} object, in which case
-  \code{tipglom} returns an \code{otuTree} object.
+  An object of class \code{phyloseq}. Output class matches
+  the class of \code{tree}, unless it is a
+  \code{phylo}/\code{phylo4} object, in which case
+  \code{tipglom} returns an \code{phyloseq} object.
 }
 \description{
   tipglom determines those groups of tips in the tree that

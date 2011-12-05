@@ -5,11 +5,11 @@
   envHash2otuTable(tipSampleTable)
 }
 \arguments{
-  \item{tipSampleTable}{a two-column character table
-  (matrix or data.frame), where each row specifies the
-  sequence name and source sample. This format mirrors the
-  output from \code{\link{read_env_file}}, consistent with
-  the env-file for the UniFrac server(REF).}
+  \item{tipSampleTable}{(Required). A two-column character
+  table (matrix or data.frame), where each row specifies
+  the sequence name and source sample. This format mirrors
+  the output from \code{\link{read_env_file}}, consistent
+  with the env-file for the UniFrac server(REF).}
 }
 \value{
   Trivial (sparse) OTU table. Object of class

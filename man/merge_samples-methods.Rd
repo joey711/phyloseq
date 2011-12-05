@@ -1,8 +1,8 @@
 \docType{methods}
 \name{merge_samples}
 \alias{merge_samples}
-\alias{merge_samples,otuSam-method}
 \alias{merge_samples,otuTable-method}
+\alias{merge_samples,phyloseq-method}
 \alias{merge_samples,sampleMap-method}
 \title{Merge samples based on a sample variable or factor.}
 \usage{
@@ -12,8 +12,8 @@
   \item{x}{(Required). An instance of a phyloseq class that
   has sample indices. This includes
   \code{\link{sampleMap-class}},
-  \code{\link{otuTable-class}}, \code{\link{otuSam-class}}
-  and its children.}
+  \code{\link{otuTable-class}}, and
+  \code{\link{phyloseq-class}}.}
 
   \item{group}{(Required). Either the a single character
   string matching a variable name in the corresponding

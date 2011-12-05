@@ -1,10 +1,10 @@
 \docType{methods}
 \name{nspecies}
 \alias{nspecies}
-\alias{nspecies,ANY-method}
+\alias{nspecies,otuTable-method}
 \alias{nspecies,phylo-method}
 \alias{nspecies,phylo4-method}
-\alias{nspecies,phyloseqFather-method}
+\alias{nspecies,phyloseq-method}
 \title{Get the number of taxa/species in an object.}
 \usage{
   nspecies(object)

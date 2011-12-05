@@ -2,8 +2,8 @@
 \name{tre<-}
 \alias{assign-tre}
 \alias{tre<-}
-\alias{tre<-,otuTree,phylo-method}
-\alias{tre<-,otuTree,phylo4-method}
+\alias{tre<-,phyloseq,phylo-method}
+\alias{tre<-,phyloseq,phylo4-method}
 \title{Assign to tre an object/value.}
 \usage{
   tre(x) <- value

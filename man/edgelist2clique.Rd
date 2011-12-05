@@ -26,6 +26,4 @@
 #
 # edgelist2clique(get.edgelist(ig))
 }
-\keyword{agglomerate}
-\keyword{clique}
 

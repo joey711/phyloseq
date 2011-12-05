@@ -22,7 +22,7 @@ in the ggplot2 framework.}
 
   \item{threshold}{A [0,1] numeric. Fraction of abundance
   of the taxonomic groups to keep for each sample. The
-  higher the value, the larger the diversity of taxonomica
+  higher the value, the larger the diversity of taxonomic
   groups included. That is, a greater number of the rare
   groups are included. If NULL (or 1), the default, all
   taxonomic groups are included.}

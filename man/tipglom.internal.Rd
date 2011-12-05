@@ -6,7 +6,7 @@
 }
 \arguments{
   \item{tree}{An object of class \code{phylo},
-  \code{phylo4}, \code{otuTree} or its superclasses.}
+  \code{phylo4}, or \code{phyloseq}}
 
   \item{speciationMinLength}{The minimum branch length that
   separates taxa. All tips of the tree separated by a
@@ -14,14 +14,14 @@
   \code{speciationMinLength} will be agglomerated.}
 }
 \value{
-  An object of class \code{phylo}, \code{phylo4},
-  \code{otuTree} or its superclasses. Output class matches
-  the class of \code{tree}.
+  An object of class \code{phylo}, \code{phylo4}, or
+  \code{phyloseq}. Output class matches the class of
+  \code{tree}.
 }
 \description{
   Internal function, users should use the S4 method
   \code{\link{tipglom}}. Tree can be higher-order object
-  that contains a phylogenetic tree, e.g. otuTree, etc.
+  that contains a phylogenetic tree, e.g. phyloseq, etc.
   This is because \code{\link{mergespecies}} can handle all
   the relevant objects, as can
   \code{\link{getTipDistMatrix}}. Create Non-trivial OTU

@@ -40,11 +40,7 @@
   \code{\link{read.nexus}} prior to calling this function.}
 }
 \value{
-  The class of the object returned by \code{import_qiime}
-  depends upon which filenames are provided. The most
-  comprehensive class is chosen automatically, based on the
-  input files listed as arguments. \code{import_qiime()}
-  will return nothing.
+  A \code{\link{phyloseq-class}} object.
 }
 \description{
   QIIME produces several files that can be analyzed in the
@@ -88,7 +84,7 @@
   Methods, 2010; doi:10.1038/nmeth.f.303
 }
 \seealso{
-  \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
+  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
   \code{\link{read.tree}}, \code{\link{read.nexus}},
   \code{\link{readNexus}} \code{\link{readNewick}}
 }

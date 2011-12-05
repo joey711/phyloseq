@@ -1,10 +1,9 @@
-\docType{methods}
 \name{prune_species}
 \alias{prune_species}
 \alias{prune_species,character,otuTable-method}
 \alias{prune_species,character,phylo-method}
 \alias{prune_species,character,phylo4-method}
-\alias{prune_species,character,phyloseqFather-method}
+\alias{prune_species,character,phyloseq-method}
 \alias{prune_species,character,sampleMap-method}
 \alias{prune_species,character,taxonomyTable-method}
 \alias{prune_species,logical,ANY-method}

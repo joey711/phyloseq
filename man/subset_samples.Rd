@@ -5,11 +5,10 @@
   subset_samples(x, ...)
 }
 \arguments{
-  \item{x}{A \code{sampleMap} class, or a more complex
-  class that contains a \code{sampleMap}. If the
-  \code{sampleMap} slot is missing in \code{x}, then
-  \code{x} will be returned as-is and a warning will be
-  printed to screen.}
+  \item{x}{A \code{sampleMap}, or a \code{phyloseq-class}
+  object with a \code{sampleMap}. If the \code{sampleMap}
+  slot is missing in \code{x}, then \code{x} will be
+  returned as-is, and a warning will be printed to screen.}
 
   \item{...}{The subsetting expression that should be
   applied to the \code{sampleMap}. This is passed on to

@@ -5,7 +5,7 @@
   subset_species(x, ...)
 }
 \arguments{
-  \item{x}{A taxonomyTable class, or a more complex class
+  \item{x}{A taxonomyTable class, or \code{phyloseq-class}
   that contains a taxonomyTable. If the \code{taxTab} slot
   is missing in \code{x}, then \code{x} will be returned
   as-is and a warning will be printed to screen.}

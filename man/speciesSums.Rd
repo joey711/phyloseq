@@ -5,8 +5,8 @@
   speciesSums(x)
 }
 \arguments{
-  \item{x}{Any phyloseq-package object that is or contains
-  an otuTable.}
+  \item{x}{Any phyloseq object that is or contains an
+  otuTable.}
 }
 \value{
   A named integer vector with length equal to the number of
