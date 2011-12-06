@@ -1,19 +1,22 @@
 \name{reconcile_species}
 \alias{reconcile_species}
+\alias{reconcile_species,phyloseq-method}
 \title{Keep only species-indices common to all components.}
 \usage{
   reconcile_species(x)
 }
 \arguments{
-  \item{x}{An object of the phyloseq package that contains
-  2 or more components data tables that in-turn describe
-  species/taxa. E.g. An otuTree object, or an otuTax
-  object.}
+  \item{x}{(Required). A phyloseq object. Only meaningful
+  if \code{x} has at least two non-empty slots of the
+  following slots that describe species:
+  \code{\link{otuTable}}, \code{\link{taxTab}},
+  \code{\link{tre}}.}
 }
 \value{
   A trimmed version of the argument, \code{x}, in which
   each component describes exactly the same set of
-  species/taxa. Class of \code{x} should be unchanged.
+  species/taxa. Class of return should match argument,
+  \code{x}.
 }
 \description{
   This function is used internally as part of the

@@ -254,15 +254,16 @@ intersect_species <- function(x){
 #'
 #' @usage reconcile_species(x)
 #'
-#' @param x An object of the phyloseq package that contains 2 or more components
-#'  data tables that in-turn describe species/taxa. E.g. An otuTree object, or
-#'  an otuTax object.
+#' @param x (Required). A phyloseq object. Only meaningful if \code{x} has at
+#'  least two non-empty slots of the following slots that describe species:
+#'  \code{\link{otuTable}}, \code{\link{taxTab}}, \code{\link{tre}}.
 #'
 #' @return A trimmed version of the argument, \code{x}, in which each component
-#'  describes exactly the same set of species/taxa. Class of \code{x} should be
-#'  unchanged.
+#'  describes exactly the same set of species/taxa. Class of return should match
+#'  argument, \code{x}.
 #'
 #' @seealso \code{\link{reconcile_samples}}, \code{\link{Reduce}}
+#' @rdname reconcile_species-methods
 #' @export
 #' @examples #
 #' ## data(ex1)
@@ -274,7 +275,12 @@ intersect_species <- function(x){
 #' # # ex3  <- phyloseq(OTU, tree)
 #' # # reconcile_species(ex3)
 #' # # intersect_species(ex3)
-reconcile_species <- function(x){
+setGeneric("reconcile_species", function(x) standardGeneric("reconcile_species"))
+################################################################################
+#' @aliases reconcile_species,phyloseq-method
+#' @rdname reconcile_species-methods
+setMethod("reconcile_species", signature("phyloseq"), function(x){
+	# # # # # reconcile_species <- function(x){
 	# Make species the intersection of all species in the components
 	species    <- intersect_species(x)
 	# Make allspecies the union of all species in the components
@@ -284,13 +290,10 @@ reconcile_species <- function(x){
 	if( setequal(species, allspecies) ){
 		return(x)
 	} else {
-		slots2reconcile <- names(getslots.phyloseq(x))
-		for( i in slots2reconcile ){
-			eval(parse(text=paste("x@", i, "<- prune_species(species, x@", i, ")", sep="")))
-		}
+		x <- prune_species(species, x)
 		return(x)
 	}
-}
+})
 ################################################################################
 #' Keep only sample-indices common to all components.
 #'

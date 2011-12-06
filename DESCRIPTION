@@ -26,9 +26,9 @@ Suggests:
     ade4
 Enhances: doMC (>= 1.2), doSMP (>= 1.0), doSNOW (>= 1.0)
 Collate:
-    'allClasses.R'
-    'allPackage.R'
-    'allData.R'
+    'allclasses.r'
+    'allpackage.r'
+    'alldata.r'
     'as-methods.r'
     'merge_phyloseq.r'
     'transpose-methods.r'
