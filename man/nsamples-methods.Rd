@@ -1,7 +1,7 @@
 \docType{methods}
 \name{nsamples}
 \alias{nsamples}
-\alias{nsamples,ANY-method}
+\alias{nsamples,otuTable-method}
 \alias{nsamples,phyloseq-method}
 \title{Get the number of samples described by an object.}
 \usage{

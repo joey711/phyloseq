@@ -1,6 +1,7 @@
 \docType{methods}
 \name{sample.names}
 \alias{sample.names}
+\alias{sample.names,ANY-method}
 \alias{sample.names,otuTable-method}
 \alias{sample.names,phyloseq-method}
 \alias{sample.names,sampleMap-method}

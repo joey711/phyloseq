@@ -4,7 +4,7 @@
 \alias{mt,otuTable,factor-method}
 \alias{mt,otuTable,integer-method}
 \alias{mt,otuTable,numeric-method}
-\alias{mt,phyloseq,character-method}
+\alias{mt,phyloseq,ANY-method}
 \title{Wrapper of mt.maxT and mt.minP for the phyloseq package.}
 \usage{
   mt(X, classlabel, minPmaxT="minP", ...)
