@@ -334,11 +334,6 @@ most_abundant_taxa <- sort(speciesSums(ex1), TRUE)[1:topN]
 ex2 <- prune_species(names(most_abundant_taxa), ex1)
 @
 
-An alternative, replacement-style approach is also supported by \emph{phyloseq}:
-<<eval=FALSE>>=
-species.names(ex2) <- names(most_abundant_taxa)
-@
-
 Now we can ask the question, ``what taxonomic Family are these OTUs?'' (Subsetting still returns a \code{taxonomyTable} object, which is summarized. We will need to convert to a vector)
 
 \begin{scriptsize}

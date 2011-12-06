@@ -5,14 +5,21 @@
 \title{Example data set 1 for the phyloseq package.}
 \description{
   Example data set 1 for the phyloseq package.
+
+  Example data set 1 for the phyloseq package.
 }
 \examples{
+## data(ex1)
 ## data(ex1)
 }
 \author{
   Paul J. McMurdie II \email{mcmurdie@stanford.edu}
+
+  Paul J. McMurdie II \email{mcmurdie@stanford.edu}
 }
 \references{
+  \url{www.stanford.edu/~mcmurdie}
+
   \url{www.stanford.edu/~mcmurdie}
 }
 \keyword{data}

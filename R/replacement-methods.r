@@ -15,7 +15,7 @@ setGeneric("otuTable<-", function(x, value) standardGeneric("otuTable<-"))
 #' @rdname assign-otuTable
 #' @aliases otuTable<-,phyloseq,otuTable-method
 setMethod("otuTable<-", c("phyloseq", "otuTable"), function(x, value){
-	new("phyloseq", otuTable=value, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=x@tre)
+	phyloseq(otuTable=value, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=x@tre)
 })
 ################################################################################
 #' Manually change speciesAreRows through assignment.
@@ -49,7 +49,7 @@ setMethod("speciesarerows<-", c("otuTable", "logical"), function(x, value){
 #' @rdname assign-speciesarerows
 #' @aliases speciesarerows<-,phyloseq,logical-method
 setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
-	speciesAreRows(otuTable(x)) <- value
+	speciesarerows(otuTable(x)) <- value
 	return(x)
 })
 ################################################################################
@@ -64,7 +64,7 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 #' @aliases assign-sampleMap sampleMap<-
 #' @examples #
 "sampleMap<-" <- function(x, value){
-	new("phyloseq", otuTable=x@otuTable, sampleMap=value, taxTab=x@taxTab, tre=x@tre)
+	phyloseq(otuTable=x@otuTable, sampleMap=value, taxTab=x@taxTab, tre=x@tre)
 }
 ################################################################################
 #' Assign to taxTab an object/value.
@@ -78,7 +78,7 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 #' @aliases assign-taxTab taxTab<-
 #' @examples #
 "taxTab<-" <- function(x, value){
-	new("phyloseq", otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=value, tre=x@tre)
+	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=value, tre=x@tre)
 }
 ################################################################################
 #' Assign to tre an object/value.
@@ -99,15 +99,19 @@ setGeneric("tre<-", function(x, value) standardGeneric("tre<-"))
 #' @rdname assign-tre
 #' @aliases tre<-,phyloseq,phylo-method
 setMethod("tre<-", c("phyloseq", "phylo"), function(x, value){
-	x@tre <- as(value, "phylo4")
-	species.names(x) <- value$tip.label
-	return(x)
+	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=as(value, "phylo4"))
 })
 #' @rdname assign-tre
 #' @aliases tre<-,phyloseq,phylo4-method
 setMethod("tre<-", c("phyloseq", "phylo4"), function(x, value){
-	x@tre <- value
-	species.names(x) <- tipLabels(value) # value$tip.label
-	return(x)
+	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=value)
 })
 ################################################################################
+# # # # # assign.internal <- function(x, value, slot){
+	# # # # # arglist <- splat.phyloseq.objects(x)
+	# # # # # arglist[slot] <- value
+	# # # # # do.call("phyloseq", arglist)
+# # # # # }
+# # # # # assign.internal(x, value, "tre")
+# # # # # assign.internal(x, value, "otuTable")
+# # # # # assign.internal(x, value, "")

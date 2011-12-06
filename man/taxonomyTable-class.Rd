@@ -5,8 +5,14 @@ matrix.}
 \description{
   Row indices represent taxa, columns represent taxonomic
   classifiers.
+
+  Row indices represent taxa, columns represent taxonomic
+  classifiers.
 }
 \details{
+  \describe{ \item{.Data}{This slot is inherited from the
+  \code{\link{matrix}} class.} }
+
   \describe{ \item{.Data}{This slot is inherited from the
   \code{\link{matrix}} class.} }
 }
