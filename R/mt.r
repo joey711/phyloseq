@@ -59,7 +59,7 @@ setMethod("mt", c("otuTable", "numeric"), function(X, classlabel, minPmaxT="minP
 	mt(X, as(classlabel, "integer"), minPmaxT="minP", ...)
 })
 ################################################################################
-#' @aliases mt,phyloseq,character-method
+#' @aliases mt,phyloseq,ANY-method
 #' @rdname mt-methods
 setMethod("mt", c("phyloseq", "ANY"), function(X, classlabel, minPmaxT="minP", ...){
 	if( !is.null(access(X, "sampleMap")) & class(classlabel)=="character" ){

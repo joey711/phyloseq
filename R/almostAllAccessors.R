@@ -198,7 +198,7 @@ setMethod("species.names", "phylo4", function(object) tipLabels(object) )
 #' # nsamples(physeq1)
 setGeneric("nsamples", function(object) standardGeneric("nsamples"))
 #' @rdname nsamples-methods
-#' @aliases nsamples,ANY-method
+#' @aliases nsamples,otuTable-method
 setMethod("nsamples", "otuTable", function(object){
 	if( speciesAreRows(object) ){
 		return( length(colnames(object)) )
@@ -239,7 +239,13 @@ setMethod("nsamples", "phyloseq", function(object){
 #' # sample.names(OTU1)
 #' # ex1 <- phyloseq(OTU1, tree)
 #' # sample.names(ex1)
-setGeneric("sample.names", function(x) standardGeneric("sample.names"))	
+setGeneric("sample.names", function(x) standardGeneric("sample.names"))
+# Unless otherwise specified, this should return a value of NULL
+# That way, objects that do not explicitly describe samples all
+# behave in the same (returning NULL) way.
+#' @rdname sample.names-methods
+#' @aliases sample.names,ANY-method
+setMethod("sample.names", "ANY", function(x){ return(NULL) })
 #' @rdname sample.names-methods
 #' @aliases sample.names,sampleMap-method
 setMethod("sample.names", "sampleMap", function(x) rownames(x) )
