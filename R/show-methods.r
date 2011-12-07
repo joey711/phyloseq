@@ -70,7 +70,7 @@ setMethod("show", "sampleMap", function(object){
 #' @docType methods
 #' @rdname show-methods
 setMethod("show", "taxonomyTable", function(object){
-	tableprint(as(object, "matrix"), "Taxonomy Table", "Species", "Taxonomic Level")		
+	tableprint(as(object, "matrix"), "Taxonomy Table", "Species", "Taxonomic Rank")		
 })
 ############################################################################
 #' @name show

@@ -1,6 +1,10 @@
-\name{speciesarerows}
+\docType{methods}
+\name{speciesAreRows}
 \alias{speciesarerows}
 \alias{speciesAreRows}
+\alias{speciesAreRows,ANY-method}
+\alias{speciesAreRows,otuTable-method}
+\alias{speciesAreRows,phyloseq-method}
 \title{Access speciesAreRows slot from otuTable objects.}
 \usage{
   speciesarerows(object)

@@ -5,6 +5,7 @@
 \alias{nspecies,phylo-method}
 \alias{nspecies,phylo4-method}
 \alias{nspecies,phyloseq-method}
+\alias{nspecies,taxonomyTable-method}
 \title{Get the number of taxa/species in an object.}
 \usage{
   nspecies(object)

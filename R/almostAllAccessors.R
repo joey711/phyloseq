@@ -4,11 +4,12 @@
 #' Access tre slot, or check/coerce to phylo4 class.
 #'
 #' \code{tre()} is an accessor OR coercion method. This is the main method suggested 
-#' for accessing/subsetting
-#' the phylogenetic tree (phylo4 class) from a more complex object.
-#' \code{tre} is the slot name for trees. 
-#' that holds the phylo4-class object in a multi-component phyloseq-package
-#' object.
+#' for accessing
+#' the phylogenetic tree (\code{\link{phylo4-class}}) from a \code{\link{phyloseq-class}}.
+#' Like other accessors (see See Also, below), the default behavior of this method
+#' is to stop with an
+#' error if \code{object} is a \code{phyloseq-class} but does not 
+#' contain a phylogenetic tree.  
 #' 
 #' Note that the tip labels should be named to match the
 #' \code{species.names} of the other objects to which it is going to be paired.
@@ -16,8 +17,8 @@
 #' exact agreement in the set of species described by the phlyogenetic tree 
 #' and the other components (taxonomyTable, otuTable). 
 #' They also trim accordingly. Thus, the tip.labels in a phylo object
-#' must be named to match the
-#' \code{species.names} of the other objects to which it will ultimately be paired.
+#' must be named to match the results of
+#' \code{\link{species.names}} of the other objects to which it will ultimately be paired.
 #'
 #' @usage tre(object, errorIfNULL=TRUE)
 #' 
@@ -28,15 +29,21 @@
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
-#' @return A phylo4 object. It is grabbed from the tre-slot. If object
-#'  is not a phylogenetic tree and does not
-#'  contain a tre-slot, then NULL is returned. This is a convenience wrapper
-#'  of the \code{\link{access}} function.
+#' @return The \code{\link{phylo4-class}} object contained within \code{object};
+#'  or NULL if \code{object} does not have a tree.
+#'  This method stops with an error in the latter NULL case be default, which
+#'  can be over-ridden by changing the value of \code{errorIfNULL} to \code{FALSE}.
 #'
-#' @seealso otuTable sampleMap taxTab phyloseq
+#' @seealso \code{\link{otuTable}}, \code{\link{sampleMap}}, \code{\link{taxTab}}
+#'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
+#' 
 #' @export
 #' @rdname tre-methods
 #' @docType methods
+#'
+#' @examples
+#' # data(ex1)
+#' # tre(ex1)
 setGeneric("tre", function(object, errorIfNULL=TRUE) standardGeneric("tre"))
 #' @rdname tre-methods
 #' @aliases tre,ANY-method
@@ -60,14 +67,25 @@ setMethod("tre", "phylo", function(object){
 #' @return A logical indicating the orientation of the otuTable.
 #'
 #' @seealso \code{\link{otuTable}}
+#' @rdname speciesAreRows-methods
+#' @docType methods
+#' @export
+#' @aliases speciesAreRows speciesarerows
+setGeneric("speciesAreRows", function(object) standardGeneric("speciesAreRows"))
+#' @rdname speciesAreRows-methods
+#' @aliases speciesAreRows,ANY-method
+setMethod("speciesAreRows", "ANY", function(object){NULL})
+#' @rdname speciesAreRows-methods
+#' @aliases speciesAreRows,otuTable-method
+setMethod("speciesAreRows", "otuTable", function(object){object@speciesAreRows})
+#' @rdname speciesAreRows-methods
+#' @aliases speciesAreRows,phyloseq-method
+setMethod("speciesAreRows", "phyloseq", function(object){
+	speciesAreRows(otuTable(object))
+})
 #' @aliases speciesAreRows speciesarerows
 #' @export
-speciesarerows <- function(object){
-	otuTable(object)@speciesAreRows
-}
-#' @aliases speciesAreRows speciesarerows
-#' @export
-speciesAreRows <- speciesarerows
+speciesarerows <- speciesAreRows
 ################################################################################
 #' Get the number of taxa/species in an object.
 #' 
@@ -102,6 +120,9 @@ setMethod("nspecies", "otuTable", function(object){
 		return( length(colnames(object)) )
 	}
 })
+#' @rdname nspecies-methods
+#' @aliases nspecies,taxonomyTable-method
+setMethod("nspecies", "taxonomyTable", function(object){ nrow(object) })
 #' @rdname nspecies-methods
 #' @aliases nspecies,phyloseq-method
 setMethod("nspecies", "phyloseq", function(object) nspecies(otuTable(object)) )

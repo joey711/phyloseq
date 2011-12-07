@@ -1,68 +1,52 @@
 ################################################################################
-#' Build or access otuTable objects.
+#' Build or access the otuTable.
 #'
-#' \code{otuTable()} is both a constructor and accessor method. When the first
+#' This is the suggested method for both constructing and accessing
+#' Operational Taxonomic Unit (OTU) abundance (\code{\link{otuTable-class}}) objects.
+#' When the first
 #' argument is a matrix, otuTable() will attempt to create and return an 
 #' otuTable-class object,
-#' which further depends on whether or not speciesAreRows is provided as an
-#' additional argument. Alternatively, if the first argument is an object that 
-#' contains an otuTable, including an otuTable-class object, then the 
-#' corresponding otuTable is returned, as the component object by itself.
-#' This is a convenience wrapper on the more general \code{\link{access}} function
-#' specific for grabbing the otuTable of an object.
-#' It should work on both otuTable component objects, and higher-order classes
-#' that contain an otuTable slot.
-#'
-#' This is the main method suggested for constructing otuTable objects from 
-#' an abundance matrix. It is also the suggested method for accessing subsetting
-#' the otuTable from a more complex object.
+#' which further depends on whether or not \code{speciesAreRows} is provided as an
+#' additional argument. 
+#' Alternatively, if the first argument is an experiment-level (\code{\link{phyloseq-class}})
+#' object, then the corresponding \code{otuTable} is returned.
 #'
 #' @usage otuTable(object, speciesAreRows, errorIfNULL=TRUE)
 #'
-#' @param object (Required). A phyloseq object.
+#' @param object (Required). An integer matrix, \code{\link{otuTable-class}},
+#'  or \code{\link{phyloseq-class}}.
 #'
-#' @param speciesAreRows (Conditionally optional). Ignored unless 
-#'  \code{object} is a matrix, in which case \code{speciesAreRows} is required.
+#' @param speciesAreRows (Conditionally optional). Logical; of length 1. Ignored
+#'  unless \code{object} is a matrix, in which case it is is required.
 #'
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}. Ignored
 #'  if \code{object} argument is a matrix (constructor invoked instead).
 #'
-#' @return An otuTable object. It is either grabbed from the relevant slot
-#' if \code{object} is complex, or built anew if \code{object} is an integer
-#' matrix representing the species-abundance table. If \code{object} is a
-#' data.frame, then an attempt is made to coerce it to an integer matrix and
-#' instantiate an otuTable object.
+#' @return An \code{\link{otuTable-class}} object. 
 #'
-#' @name otuTable
-#' @seealso sampleMap taxTab tre phyloseq
-#' @aliases otuTable otutable otuTable,-method otuTable,otuTable-method
+#' @seealso \code{\link{tre}}, \code{\link{sampleMap}}, \code{\link{taxTab}}
+#'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
+#' 
 #' @docType methods
 #' @rdname otuTable-methods
 #' @export
 #' @examples #
-#' # OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), TRUE)
-#' # tax1 <- taxTab(matrix("abc", 30, 8))
-#' # map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
-#' #    matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )
-#' # map1 <- sampleMap(map1) 
-#' # ex1 <- phyloseq(OTU1, map1, tax1)
+#' # data(ex1)
 #' # otuTable(ex1)
 setGeneric("otuTable", function(object, speciesAreRows, errorIfNULL=TRUE){
 	standardGeneric("otuTable")	
 })
-# Access the otuTable slot, or return an otuTable as-is.
+# Access the otuTable slot.
 #' @aliases otuTable,phyloseq-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "phyloseq", function(object, errorIfNULL=TRUE){
 	access(object, "otuTable", errorIfNULL) 
 })
-# return the otuTable as-is, via access() for consistency.
+# return the otuTable as-is.
 #' @aliases otuTable,otuTable-method
 #' @rdname otuTable-methods
-setMethod("otuTable", "otuTable", function(object, errorIfNULL=TRUE){
-	access(object, "otuTable", errorIfNULL) 
-})
+setMethod("otuTable", "otuTable", function(object, errorIfNULL=TRUE){ return(object) })
 # Instantiate an otuTable from a raw abundance matrix.
 #' @aliases otuTable,matrix-method
 #' @rdname otuTable-methods

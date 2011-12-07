@@ -1,21 +1,18 @@
 ################################################################################
-#' Access taxTab slot, or instantiate taxonomyTable-class.
+#' Build or access the taxonomyTable.
 #'
-#' \code{taxTab()} is both a constructor and accessor method. When the
-#' argument is a character matrix, taxTab() will attempt to create and return a 
-#' taxonomyTable-class object. In this case, the rows should be named to match the
+#' This is the suggested method for both constructing and accessing a table of
+#' taxonomic names, organized with ranks as columns (\code{\link{taxonomyTable-class}}). 
+#' When the argument is a character matrix, taxTab() will create and return a 
+#' \code{\link{taxonomyTable-class}} object.
+#' In this case, the rows should be named to match the
 #' \code{species.names} of the other objects to which it will ultimately be paired.
-#' Alternatively, if the argument is an object that 
-#' contains a taxonomyTable, including a taxonomyTable-class object, then the 
-#' corresponding taxonomyTable is returned, as-is.
-#'
-#' This is the main method suggested for constructing taxonomyTable objects from 
-#' a character matrix of taxonomy classifications. Each row represents a 
-#' different species.
-#' It is also the suggested method for accessing/subsetting
-#' the taxonomyTable from a more complex object. \code{taxTab} is the slot name
-#' that holds the taxonomyTable-class object in a multi-component phyloseq
-#' object.
+#' Alternatively, if the first argument is an experiment-level (\code{\link{phyloseq-class}})
+#' object, then the corresponding \code{taxonomyTable} is returned.
+#' Like other accessors (see See Also, below), the default behavior of this method
+#' is to stop with an
+#' error if \code{object} is a \code{phyloseq-class} but does not 
+#' contain a \code{taxonomyTable}. 
 #'
 #' @usage taxTab(object, errorIfNULL=TRUE)
 #'
@@ -30,8 +27,8 @@
 #' character matrix representing the taxonomic classification of species in the
 #' experiment.
 #'
-#' @seealso otuTable sampleMap tre phyloseq
-#' @aliases taxTab taxtab
+#' @seealso \code{\link{tre}}, \code{\link{sampleMap}}, \code{\link{otuTable}}
+#'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #'
 #' @rdname taxTab-methods
 #' @docType methods
@@ -39,8 +36,8 @@
 #'
 #' @examples #
 #' # tax1 <- taxTab(matrix("abc", 30, 8))
+#' # data(ex1)
 #' # taxTab(ex1)
-#' # tax1
 setGeneric("taxTab", function(object, errorIfNULL=TRUE) standardGeneric("taxTab"))
 #' @rdname taxTab-methods
 #' @aliases taxTab,ANY-method
