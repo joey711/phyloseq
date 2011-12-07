@@ -42,6 +42,10 @@ phyloseq <- function(...){
 		}
 	}
 	
+	# Remove names from arglist. Will replace them based on their class
+	names(arglist) <- NULL
+	
+	# Make the name-replaced, splatted list, vetted by splat.phlyoseq.objects
 	splatlist <- sapply(arglist, splat.phyloseq.objects)
 
 	## Need to determine which new() type to call.
@@ -53,7 +57,7 @@ phyloseq <- function(...){
 		"For merging multiple tables of the same class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
-	} else if( !"otuTable" %in% names(splatlist) ){
+	} else if( !("otuTable" %in% sapply(splatlist, class)) ){
 		stop("phyloseq()-ERROR: Argument list must include an otuTable.\n")
 	# Instantiate the phyloseq-class object, ps.
 	} else {
@@ -94,13 +98,22 @@ get.component.classes <- function(){
 ################################################################################
 #' Convert phyloseq-class into a named list of its non-empty components.
 #'
+#' This is used in internal handling functions, and one of its key features
+#' is that the names in the returned-list match the slot-names, which is useful
+#' for constructing calls with language-computing functions like \code{\link{do.call}}.
+#' Another useful aspect is that it only returns the contents of non-empty slots.
+#' In general, this should only be used by phyloseq-package developers. Standard
+#' users should not need or use this function, and should use the accessors and 
+#' other tools that leave the multi-component object in one piece.
+#'
 #' @usage splat.phyloseq.objects(x)
 #'
-#' @param x An object of a class defined by the phyloseq-package. Component
-#'  data and complex classes are both acceptable.
+#' @param x A \code{\link{phyloseq-class}} object. Alternatively, a component
+#'  data object will work, resulting in named list of length 1. 
 #' 
 #' @return A named list, where each element is a component object that was contained 
-#' in the argument, \code{x}. Each element is named for the object class it contains
+#' in the argument, \code{x}. Each element is named according to its slot-name in
+#' the phyloseq-object from which it is derived. 
 #' If \code{x} is already a component data object,
 #' then a list of length (1) is returned, also named.
 #'
@@ -156,12 +169,16 @@ getslots.phyloseq <- function(x){
 ################################################################################
 #' General slot accessor function for phyloseq-class.
 #'
-#' This function is used internally by many convenience accessors and in 
+#' This function is used internally by many accessors and in 
 #' many functions/methods that need to access a particular type of component data.
 #' If something is wrong, or the slot is missing, the expected behavior is that
 #' this function will return NULL. Thus, the output can be tested by 
 #' \code{\link{is.null}} as verification of the presence of a particular 
-#' data component. 
+#' data component. Unlike the component-specific accessors (e.g. \code{\link{otuTable}},
+#' or \code{\link{tre}}),
+#' the default behavior is not to stop with an error if the desired slot is empty.
+#' In all cases this is controlled by the \code{errorIfNULL} argument, which can
+#' be set to \code{TRUE} if an error is desired. 
 #'
 #' @usage access(object, slot, errorIfNULL=FALSE)
 #'
