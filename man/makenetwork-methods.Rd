@@ -9,9 +9,8 @@
   threshold=0, incommon=0.4, method="jaccard")
 }
 \arguments{
-  \item{abund}{The species abundance table (otuTable) or a
-  more complex phyloseq-package object that contains an
-  otuTable.}
+  \item{abund}{(Required). An \code{\link{otuTable-class}}
+  or \code{\link{phyloseq-class}} object.}
 
   \item{plotgraph}{A logical. Default TRUE. Indicates
   whether or not to plot the network}

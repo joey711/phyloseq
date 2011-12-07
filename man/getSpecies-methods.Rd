@@ -9,11 +9,12 @@ all species in \code{x}.}
   getSpecies(x, i)
 }
 \arguments{
-  \item{x}{otuTable, or H.O. object containing an
-  otuTable.}
+  \item{x}{(Required). \code{\link{otuTable-class}}, or
+  \code{\link{phyloseq-class}}.}
 
-  \item{i}{a single sample for which you want to know the
-  abundance of each species.}
+  \item{i}{(Required). A single sample for which you want
+  to know the abundance of each species. Can be integer for
+  index value, or sample name.}
 }
 \value{
   An integer vector of the abundance values for each

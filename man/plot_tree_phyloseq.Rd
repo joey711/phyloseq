@@ -1,6 +1,6 @@
 \name{plot_tree_phyloseq}
 \alias{plot_tree_phyloseq}
-\title{Function to plot otuSamTree with annotated tips.}
+\title{Function to plot phyloseq-class as tree with annotated tips.}
 \usage{
   plot_tree_phyloseq(object, color_factor = NULL,
   shape_factor = NULL, base_size = 1, size_scaling_factor =
@@ -70,7 +70,8 @@
   particular taxa was observed.
 }
 \description{
-  Function to plot otuSamTree with annotated tips.
+  Function to plot phyloseq-class as tree with annotated
+  tips.
 }
 \examples{
 # data(ex1)
