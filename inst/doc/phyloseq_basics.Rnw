@@ -235,8 +235,8 @@ Function                    & Input Class      & Output Description \\
 \hline
 Function                    & Input Class                 & Output Description \\
 \hline
-\Rfunction{phyloseq}        & 2 or more component objects & Complete experiment object \\
-\Rfunction{merge{\textunderscore}phyloseq}  & 2 or more component/complex objects & Complete experiment object \\
+\Rfunction{phyloseq}        & 2 or more component objects & phyloseq-class, ``experiment-level'' object \\
+\Rfunction{merge{\textunderscore}phyloseq}  & 2 or more component or phyloseq-class objects & Combined instance of phyloseq-class \\
 \hline
 \end{tabular}
 \end{center}
@@ -258,12 +258,12 @@ Once you've converted the data tables to their appropriate class, combining them
 ex1b <- phyloseq(my_otuTable, my_sampleMap, my_taxonomyTable, my_tree)
 @
 
-You do not need to have all four data types in the example above in order to combine them. The \code{phyloseq()} method will create an object of whichever class is appropriate, according to the data you provide. Downstream analysis methods will know which class and which data types are required, and throw a warning if something is missing. For most downstream methods you will only need to supply the combined object returned by \code{phyloseq()} (usually as the first argument) and appropriate options.
+You do not need to have all four data types in the example above in order to combine them into one validity-checked experiment-level phyloseq-class object. The \code{phyloseq()} method will detect which component data classes are present, and build accordingly. Downstream analysis methods will access the required components using emph{phyloseq}'s accessors, and throw an error if something is missing. For most downstream methods you will only need to supply the combined, phyloseq-class object (the output of \code{phyloseq()} ), usually as the first argument. 
 <<eval=FALSE>>=
 ex1c <- phyloseq(my_otuTable, my_sampleMap)
 @
 
-We refer to these classes that contain more than one component data type as \emph{higher-order} classes. Whenever an instance of these classes is created by \emph{phyloseq} --- for example, when we use the \code{import{\textunderscore}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly the same species and samples.
+Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\textunderscore}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same species and samples.
 
 \subsection{\code{merge{\textunderscore}phyloseq()} function: merge multiple phyloseq objects}
 What if you have multiple objects describing parts of the same experimental project (say, because they came from different files)? What if you had already built a combined object for the earlier trials with the \code{phyloseq()} function, but now want to add additional data tables to that new object? 
@@ -288,12 +288,6 @@ Function                    & Description \\
 \Rfunction{getSamples}      & Returns the abundance values of species `i' for all samples in `x' \\
 \Rfunction{nsamples}        & Get the number of samples described by an object \\
 \Rfunction{nspecies}        & Get the number of species (taxa) described by an object \\
-\Rfunction{otuSam}          & Subset just the otuSam portion of a H.O. object \\
-\Rfunction{otuTree}         & Subset just the otuTree portion of a H.O. object \\
-\Rfunction{otuTax}          & Subset just the otuTax portion of a H.O. object \\
-\Rfunction{otuSamTax}       & Subset just the otuSamTax portion of a H.O. object \\
-\Rfunction{otuSamTree}      & Subset just the otuSamTree portion of a H.O. object \\
-\Rfunction{otuSamTaxTree}   & Subset just the otuSamTaxTree portion of a H.O. object \\
 \Rfunction{otuTable}        & Build or access otuTable objects \\
 \Rfunction{sampleMap}       & Build or access sampleMap objects \\
 \Rfunction{taxTab}          & Build or access taxTab objects \\
@@ -474,11 +468,11 @@ The class structure in the \emph{phyloseq} package follows the inheritance diagr
 
 The \code{sampleMap} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa (e.g. \emph{species}) and columns are taxonomic levels (e.g. \emph{Phylum}). 
 
-We use the term ``higher-order classes'' for those that contain two or more of the previously-described core data classes. We assume that \emph{phyloseq} users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so all higher-order classes contain an \code{otuTable} slot. There are a number of common methods that require either an \code{otuTable} and \code{sampleMap} combination, or an \code{otuTable} and phylogenetic tree combination. These methods can operate on instances of the \code{otuSam} or \code{otuTree} classes, respectively, or their children. In addition, a virtual class has been defined, \code{phyloseqFather}, that is inherited by all other higher-order classes. In many cases a method will only need to be defined for one of these classes in order to work properly for other relevant classes as well. 
+The phyloseq-class can be considered an ``experiment-level class'' and should contain two or more of the previously-described core data classes. We assume that \emph{phyloseq} users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so the \code{phyloseq()} constructor will stop with an error if the arguments do not include an \code{otuTable}. There are a number of common methods that require either an \code{otuTable} and \code{sampleMap} combination, or an \code{otuTable} and phylogenetic tree combination. These methods can operate on instances of the phyloseq-class, and will stop with an error if the required component data is missing.  
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.7\textwidth]{phyloseq_classes_3_clipped.pdf}
+\includegraphics[width=0.8\textwidth]{phyloseq_classes_3_clipped.pdf}
 \caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order object contains a slot with the associated class as one of its components.}
 \label{fig:phyloseqclasses}
 \end{center}
