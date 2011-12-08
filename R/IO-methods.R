@@ -206,7 +206,8 @@ import_qiime_sampleMap <- function(mapfilename){
 #' Read a UniFrac-formatted ENV file.
 #'
 #' Convenience wrapper function to read the environment-file, as formatted for 
-#' input to the UniFrac server(REF). The official format of these files is that
+#' input to the UniFrac server (\url{http://bmf2.colorado.edu/unifrac/}).
+#' The official format of these files is that
 #' each row specifies (in order) the sequence name, source sample, and (optionally)
 #' the number of times the sequence was observed. 
 #'
@@ -223,6 +224,9 @@ import_qiime_sampleMap <- function(mapfilename){
 #'
 #' @return A two- or three- column hash table (matrix).
 #'
+#' @references \url{http://bmf2.colorado.edu/unifrac/}
+#' 
+#' @seealso \code{\link{envHash2otuTable}}
 #' @export
 #' @examples #
 read_env_file <- function(envfilename, tree=NULL, sep="\t"){
@@ -236,11 +240,7 @@ read_env_file <- function(envfilename, tree=NULL, sep="\t"){
 ################################################################################  
 #' Convert a sequence-sample hash (like ENV file) into an OTU table.
 #' 
-#' Takes a two- or three-column character table (matrix or data.frame), where each
-#' row specifies the sequence name, source sample, and (optionally) abundance. 
-#' This format mirrors the output
-#' from \code{\link{read_env_file}}, consistent with the env file for UniFrac
-#' server. Parses the 2 column table into a sparse matrix of species-by-sample, where
+#' Parses an ENV-file into a sparse matrix of species-by-sample, where
 #' each species-row has only one non-zero value. We call this sparse abundance
 #' table the trivial OTU table, where every sequence is treated as a separate 
 #' species. If a phylogenetic tree is available, it can be submitted with this
@@ -252,7 +252,7 @@ read_env_file <- function(envfilename, tree=NULL, sep="\t"){
 #' @param tipSampleTable (Required). A two-column character table (matrix or data.frame), 
 #' where each row specifies the sequence name and source sample. This format 
 #' mirrors the output from \code{\link{read_env_file}}, consistent with the 
-#' env-file for the UniFrac server(REF). 
+#' env-file for the UniFrac server (\url{http://bmf2.colorado.edu/unifrac/}). 
 #'
 #' @return Trivial (sparse) OTU table. Object of class \code{otuTable}. 
 #' The 2- (or 3-) column hash table is parsed into a sparse matrix of 
@@ -261,7 +261,9 @@ read_env_file <- function(envfilename, tree=NULL, sep="\t"){
 #' table the trivial OTU table, where every sequence is treated as a separate 
 #' species.
 #' 
-#' @seealso tipglom read_env_file otuTable
+#' @references \url{http://bmf2.colorado.edu/unifrac/}
+#' 
+#' @seealso \code{\link{read_env_file}}, \code{\link{tipglom}}, \code{\link{otuTable}}
 #'
 #' @keywords OTU trivial environment file
 #' @export
