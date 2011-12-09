@@ -244,23 +244,24 @@ edgelist2clique = function(EdgeList){
 ################################################################################
 #' Agglomerate taxa of the same type.
 #'
-#' This method merges species that are of the same taxaonomic level,
-#' using \code{mergespecies} similar in approach to \code{tipglom}, but using
-#' the categorical taxonomic levels rather than patristic distances on the
-#' phylogenetic tree. 
+#' This method merges species if, at a certain taxaonomic rank, their taxonomy
+#' is the same. 
+#' Its approach is analogous to \code{tipglom}, but uses categorical data
+#' instead of a tree. In principal, other categorical data known for all taxa
+#' could also be used in place of taxonomy. 
 #'
-#' @usage taxglom(object, tax=NULL, taxlevel="Phylum")
+#' @usage taxglom(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
 #'
-#' @param object An \code{otuTable} or more complex object that
-#'  contains an \code{otuTable}.
+#' @param physeq (Required). \code{\link{phyloseq-class}} or \code{\link{otuTable}}.
 #'
-#' @param tax Either a \code{taxonomyTable} object, or alternatively, a 
+#' @param tax (Optional). Either a \code{link{taxonomyTable-class}}, or alternatively, a 
 #'  character vector specifying the desired taxonomic group of each taxa in 
-#'  \code{object}. If \code{tax} is a character vector, it must have length equal
-#'  to the (original) number of taxa in \code{object}, and each element must be
+#'  \code{physeq}. If \code{tax} is a character vector, it must have length equal
+#'  to the (original) number of taxa in \code{physeq} (\code{nspecies(physeq)}), 
+#'  and each element must be
 #'  named according to the taxa ID (that is, the result of 
-#'  \code{species.names(object)}). If \code{tax} is a character vector, than
-#'  the \code{taxlevel} argument is ignored. If \code{object} already contains
+#'  \code{species.names(physeq)}). If \code{tax} is a character vector, than
+#'  the \code{taxlevel} argument is ignored. If \code{physeq} already contains
 #'  a \code{taxonomyTable} component in its \code{taxTab} slot, then 
 #'  the \code{tax} argument is ignored. 
 #'
@@ -270,35 +271,62 @@ edgelist2clique = function(EdgeList){
 #'  The default value is \code{"Phylum"}. Note that this default may
 #'  agglomerate too broadly for a given experiment, and the user is strongly
 #'  encouraged to try different taxonomic levels.
-#' 
-#' @return A taxonomically-agglomerated object with class matching
-#' the class of \code{object}.
 #'
+#' @param NArm (Optional). Logical, length equal to one. Default is \code{TRUE}.
+#'  CAUTION. The decision to prune (or not) taxa for which you lack categorical
+#'  data could have a large effect on downstream analysis. You may want to
+#'  re-compute your analysis under both conditions, or at least think carefully
+#'  about what the effect might be and the reasons explaining the absence of 
+#'  information for certain taxa. In the case of taxonomy, it is often a result 
+#'  of imprecision in taxonomic designation based on short phylogenetic sequences
+#'  and a patchy system of nomenclature. If this seems to be an issue for your
+#'  analysis, think about also trying the nomenclature-agnostic \code{\link{tipglom}}
+#'  method if you have a phylogenetic tree available.
+#'
+#' @param bad_empty (Optional). Character vector. Default: \code{c(NA, "", " ", "\t")}.
+#'  Defines the bad/empty values 
+#'  that should be ignored and/or considered unknown. They will be removed
+#'  from the internal agglomeration vector derived from the argument to \code{tax},
+#'  and therefore agglomeration will not combine taxa according to the presence
+#'  of these values in \code{tax}. Furthermore, the corresponding taxa can be
+#'  optionally pruned from the output if \code{NArm} is set to \code{TRUE}.
+#' 
+#' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
+#' the class of \code{physeq}.
+#'
+#' @seealso \code{\link{tipglom}}, \code{\link{prune_species}}, \code{\link{mergespecies}}
+#' 
 #' @rdname taxglom-methods
 #' @docType methods
 #' @export
 #'
 #' @examples
 #' ##
-setGeneric("taxglom", function(object, tax=NULL, taxlevel="Phylum") standardGeneric("taxglom"))
+setGeneric("taxglom", 
+	function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
+	standardGeneric("taxglom")
+})
 #' @rdname taxglom-methods
 #' @aliases taxglom,otuTable,taxonomyTable-method
-setMethod("taxglom", c("otuTable", "taxonomyTable"), function(object, tax=NULL, taxlevel="Phylum"){
+setMethod("taxglom", c("otuTable", "taxonomyTable"),
+				function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
 	# vectorize the taxonomy table.
 	tax <- as(tax, "matrix")[, taxlevel]
-	taxglom.internal(object, tax)
+	taxglom.internal(physeq, tax, NArm, bad_empty)
 })
 #' @rdname taxglom-methods
 #' @aliases taxglom,otuTable,character-method
-setMethod("taxglom", c("otuTable", "character"), function(object, tax=NULL, taxlevel="Phylum"){
-	taxglom.internal(object, tax)
+setMethod("taxglom", c("otuTable", "character"),
+				function(physeq, tax=NULL,taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
+	taxglom.internal(physeq, tax, NArm, bad_empty)
 })
 #' @rdname taxglom-methods
 #' @aliases taxglom,phyloseq,ANY-method
-setMethod("taxglom", "phyloseq", function(object, tax=NULL, taxlevel="Phylum"){
+setMethod("taxglom", "phyloseq",
+				function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
 	# vectorize the taxonomy table.
-	tax <- as(taxTab(object), "matrix")[, taxlevel]
-	taxglom.internal(object, tax)
+	tax <- as(taxTab(physeq), "matrix")[, taxlevel]
+	taxglom.internal(physeq, tax, NArm, bad_empty)
 })
 ################################################################################
 #' taxglom core internal function.
@@ -306,28 +334,36 @@ setMethod("taxglom", "phyloseq", function(object, tax=NULL, taxlevel="Phylum"){
 #' taxglom.internal makes all the glomming happen, and delegates the
 #' object-handling issues to \code{mergespecies()}.
 #'
-#' @param object the object on which agglomeration is to take place.
+#' @param physeq the object on which agglomeration is to take place.
 #'
 #' @param tax for this internal function, tax must be a character vector.
 #' \code{tax} is a vector in the core internal function.
 #' 
-#' @return the agglomerated object. Class matches argument \code{object}.
+#' @return the agglomerated object. Class matches argument \code{physeq}.
 #'
 #' @keywords internal
-taxglom.internal <- function(object, tax){
-	# Remove NAs and useless
-	tax <- tax[ !tax %in% c("", " ", "\t") ]
-	tax <- tax[ !is.na(tax) ]	
+taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\t") ){
+
+	# if NArm is TRUE, remove the empty, white-space, NA values from 
+	if( NArm ){
+		keep_species <- names(tax)[ !(tax %in% bad_empty) ]
+		physeq <- prune_species(keep_species, physeq)
+	}
+
+	# Remove NAs and useless from the vector/factor for looping.
+	# This does not remove the taxa that have an unknown (NA)
+	# taxonomic designation at this particular taxonomic rank.
+	tax <- tax[ !(tax %in% bad_empty) ]
 	
 	# Define the species cliques to loop through
-	spCliques     <- tapply(names(tax), factor(tax), list)
+	spCliques <- tapply(names(tax), factor(tax), list)
 	
-	# successively merge taxa in object.
+	# successively merge taxa in physeq.
 	for( i in names(spCliques)){
 		# print(i)
-		object <- mergespecies(object, eqspecies=spCliques[[i]])
+		physeq <- mergespecies(physeq, eqspecies=spCliques[[i]])
 	}
-	return(object)
+	return(physeq)
 }
 ################################################################################
 # test <- taxglom.internal(ex1, as(taxTab(ex1), "matrix")[, "Phylum"])

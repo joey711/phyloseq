@@ -17,12 +17,13 @@
   (hypotheses), and samples to observations.}
 
   \item{classlabel}{(Required). A single character index of
-  the sample-variable in the sampleMap that will be used
-  for multiple testing. Alternatively, \code{classlabel}
-  can be a custom integer, character, or factor with length
-  equal to the number of samples. In either scenario -- a
-  sample variable within the phyloseq-class object or a
-  custom vector -- \code{classlabel} must be coercable to a
+  the sample-variable in the \code{\link{sampleMap}} of
+  \code{physeq} that will be used for multiple testing.
+  Alternatively, \code{classlabel} can be a custom integer,
+  character, or factor with length equal to
+  \code{nsamples(physeq)}. In either scenario -- a sample
+  variable within the phyloseq-class object or a custom
+  vector -- \code{classlabel} must be coercable to a
   logical (i.e. two-level factor). A variable with more
   than two states is not appropriate for this category of
   test.}
@@ -37,8 +38,8 @@
 }
 \value{
   A dataframe with components specified in the
-  documentation for \code{mt.maxT} or \code{mt.minP}
-  respectively.
+  documentation for \code{\link[multtest]{mt.maxT}} or
+  \code{\link[multtest]{mt.minP}}, respectively.
 }
 \description{
   Multiple testing of taxa abundancesa acccording to a

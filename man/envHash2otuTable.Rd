@@ -9,7 +9,8 @@
   table (matrix or data.frame), where each row specifies
   the sequence name and source sample. This format mirrors
   the output from \code{\link{read_env_file}}, consistent
-  with the env-file for the UniFrac server(REF).}
+  with the env-file for the UniFrac server
+  (\url{http://bmf2.colorado.edu/unifrac/}).}
 }
 \value{
   Trivial (sparse) OTU table. Object of class
@@ -20,12 +21,7 @@
   every sequence is treated as a separate species.
 }
 \description{
-  Takes a two- or three-column character table (matrix or
-  data.frame), where each row specifies the sequence name,
-  source sample, and (optionally) abundance. This format
-  mirrors the output from \code{\link{read_env_file}},
-  consistent with the env file for UniFrac server. Parses
-  the 2 column table into a sparse matrix of
+  Parses an ENV-file into a sparse matrix of
   species-by-sample, where each species-row has only one
   non-zero value. We call this sparse abundance table the
   trivial OTU table, where every sequence is treated as a
@@ -44,8 +40,12 @@
 ## test    <- cbind(fakeSeqNameVec, fakeSamNameVec)
 ## testotu <- envHash2otuTable( test )
 }
+\references{
+  \url{http://bmf2.colorado.edu/unifrac/}
+}
 \seealso{
-  tipglom read_env_file otuTable
+  \code{\link{read_env_file}}, \code{\link{tipglom}},
+  \code{\link{otuTable}}
 }
 \keyword{environment}
 \keyword{file}

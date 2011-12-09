@@ -6,24 +6,26 @@
 \alias{taxglom,phyloseq,ANY-method}
 \title{Agglomerate taxa of the same type.}
 \usage{
-  taxglom(object, tax=NULL, taxlevel="Phylum")
+  taxglom(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE,
+  bad_empty=c(NA, "", " ", "\t"))
 }
 \arguments{
-  \item{object}{An \code{otuTable} or more complex object
-  that contains an \code{otuTable}.}
+  \item{physeq}{(Required). \code{\link{phyloseq-class}} or
+  \code{\link{otuTable}}.}
 
-  \item{tax}{Either a \code{taxonomyTable} object, or
-  alternatively, a character vector specifying the desired
-  taxonomic group of each taxa in \code{object}. If
-  \code{tax} is a character vector, it must have length
-  equal to the (original) number of taxa in \code{object},
-  and each element must be named according to the taxa ID
-  (that is, the result of \code{species.names(object)}). If
-  \code{tax} is a character vector, than the
-  \code{taxlevel} argument is ignored. If \code{object}
-  already contains a \code{taxonomyTable} component in its
-  \code{taxTab} slot, then the \code{tax} argument is
-  ignored.}
+  \item{tax}{(Optional). Either a
+  \code{link{taxonomyTable-class}}, or alternatively, a
+  character vector specifying the desired taxonomic group
+  of each taxa in \code{physeq}. If \code{tax} is a
+  character vector, it must have length equal to the
+  (original) number of taxa in \code{physeq}
+  (\code{nspecies(physeq)}), and each element must be named
+  according to the taxa ID (that is, the result of
+  \code{species.names(physeq)}). If \code{tax} is a
+  character vector, than the \code{taxlevel} argument is
+  ignored. If \code{physeq} already contains a
+  \code{taxonomyTable} component in its \code{taxTab} slot,
+  then the \code{tax} argument is ignored.}
 
   \item{taxlevel}{A single-element character specifying the
   taxonomic level (column name) in \code{tax}, the
@@ -32,19 +34,49 @@
   default may agglomerate too broadly for a given
   experiment, and the user is strongly encouraged to try
   different taxonomic levels.}
+
+  \item{NArm}{(Optional). Logical, length equal to one.
+  Default is \code{TRUE}. CAUTION. The decision to prune
+  (or not) taxa for which you lack categorical data could
+  have a large effect on downstream analysis. You may want
+  to re-compute your analysis under both conditions, or at
+  least think carefully about what the effect might be and
+  the reasons explaining the absence of information for
+  certain taxa. In the case of taxonomy, it is often a
+  result of imprecision in taxonomic designation based on
+  short phylogenetic sequences and a patchy system of
+  nomenclature. If this seems to be an issue for your
+  analysis, think about also trying the
+  nomenclature-agnostic \code{\link{tipglom}} method if you
+  have a phylogenetic tree available.}
+
+  \item{bad_empty}{(Optional). Character vector. Default:
+  \code{c(NA, "", " ", "\t")}. Defines the bad/empty values
+  that should be ignored and/or considered unknown. They
+  will be removed from the internal agglomeration vector
+  derived from the argument to \code{tax}, and therefore
+  agglomeration will not combine taxa according to the
+  presence of these values in \code{tax}. Furthermore, the
+  corresponding taxa can be optionally pruned from the
+  output if \code{NArm} is set to \code{TRUE}.}
 }
 \value{
-  A taxonomically-agglomerated object with class matching
-  the class of \code{object}.
+  A taxonomically-agglomerated, optionally-pruned, object
+  with class matching the class of \code{physeq}.
 }
 \description{
-  This method merges species that are of the same
-  taxaonomic level, using \code{mergespecies} similar in
-  approach to \code{tipglom}, but using the categorical
-  taxonomic levels rather than patristic distances on the
-  phylogenetic tree.
+  This method merges species if, at a certain taxaonomic
+  rank, their taxonomy is the same. Its approach is
+  analogous to \code{tipglom}, but uses categorical data
+  instead of a tree. In principal, other categorical data
+  known for all taxa could also be used in place of
+  taxonomy.
 }
 \examples{
 ##
+}
+\seealso{
+  \code{\link{tipglom}}, \code{\link{prune_species}},
+  \code{\link{mergespecies}}
 }
 

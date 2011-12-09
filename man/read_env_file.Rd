@@ -22,12 +22,19 @@
 \description{
   Convenience wrapper function to read the
   environment-file, as formatted for input to the UniFrac
-  server(REF). The official format of these files is that
-  each row specifies (in order) the sequence name, source
-  sample, and (optionally) the number of times the sequence
-  was observed.
+  server (\url{http://bmf2.colorado.edu/unifrac/}). The
+  official format of these files is that each row specifies
+  (in order) the sequence name, source sample, and
+  (optionally) the number of times the sequence was
+  observed.
 }
 \examples{
 #
+}
+\references{
+  \url{http://bmf2.colorado.edu/unifrac/}
+}
+\seealso{
+  \code{\link{envHash2otuTable}}
 }
 
