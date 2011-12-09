@@ -459,11 +459,9 @@ setMethod("prune_species", signature("character", "sampleMap"), function(species
 setMethod("prune_species", signature("character", "phyloseq"), 
 		function(species, x){
 			
-	# Make allspecies the union of all species in the components
-	allspecies <- unique(unlist(lapply(splat.phyloseq.objects(x), species.names)))	
-	
-	# Save time and return if allspecies is same as species
-	if( setequal(allspecies, species.names(x)) ){
+	# Save time and return if the union of all component species names
+	# captured by species.names(x) is same as species. 
+	if( setequal(species.names(x), species) ){
 		return(x)
 	} else {	
 		# All phyloseq objects have an otuTable slot, no need to test.

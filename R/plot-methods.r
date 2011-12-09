@@ -15,11 +15,11 @@
 #' @docType methods
 #' @rdname plot-methods
 setMethod("plot", "phyloseq", function(x, ...){
-	if( all(c("otuTable", "sampleMap", "tre") %in% names(splat.phyloseq.objects(x))) ){
+	if( all(c("otuTable", "sampleMap", "tre") %in% getslots.phyloseq(x)) ){
 		plot_tree_phyloseq(x, ...)		
-	} else if( all(c("otuTable", "sampleMap", "taxTab") %in% names(splat.phyloseq.objects(x))) ){
+	} else if( all(c("otuTable", "sampleMap", "taxTab") %in% getslots.phyloseq(x) ) ){
 		taxaplot(otu=x, ...)
-	} else if( all(c("otuTable", "tre") %in% names(splat.phyloseq.objects(x))) ){
+	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(x)) ){
 		tree <- as(tre(x), "phylo")
 		ape::plot.phylo(tree, ...)	
 		nodelabels(as.character(1:max(tree$edge)),node=1:max(tree$edge))
