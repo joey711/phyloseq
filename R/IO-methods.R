@@ -22,11 +22,10 @@
 #'  other paramaters to the desired tool-specific import function.
 #'
 #' @return In most cases a \code{\link{phyloseq-class}} will be returned, though
-#'  the type of individual component data types will vary according to the 
-#'  type(s) of data created by the respective tool, and whether those files were
-#'  provided as arguments. The expected behavior of the import methods is to 
-#'  return as comprehensive an object as possible, containing all the available
-#'  data types of the arguments provided.
+#'  the included component data will vary by pipeline/tool, and also
+#'  by the types of data files provided.
+#'  The expected behavior is to return the most-comprehensive object possible,
+#'  given the provided arguments and pipeline/tool.
 #'
 #' @seealso 
 #' For mothur, see:

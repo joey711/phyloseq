@@ -85,7 +85,7 @@ phyloseq <- function(...){
 #' @return a character vector of the component objects classes, where each 
 #' element is named by the corresponding slot name in the higher-order 
 #' phyloseq objects (objects containing more than 1 phyloseq data object).
-#' @export
+#' @keywords internal
 #' @examples #
 #' #get.component.classes()
 get.component.classes <- function(){
@@ -118,7 +118,7 @@ get.component.classes <- function(){
 #' then a list of length (1) is returned, also named.
 #'
 #' @seealso merge_phyloseq
-#' @export
+#' @keywords internal
 #' @examples #
 splat.phyloseq.objects <- function(x){
 	component.classes <- get.component.classes()
@@ -139,35 +139,35 @@ splat.phyloseq.objects <- function(x){
 #' Like \code{\link{getSlots}}, but returns the class name if argument 
 #' is component data object.
 #' 
-#' @usage getslots.phyloseq(x)
+#' @usage getslots.phyloseq(physeq)
 #'
-#' @param x A \code{\link{phyloseq-class}} object. If \code{x} is a component
-#'  data class, then just returns the class of \code{x}.
+#' @param physeq A \code{\link{phyloseq-class}} object. If \code{physeq} is a component
+#'  data class, then just returns the class of \code{physeq}.
 #' 
 #' @return identical to getSlots. A named character vector of the slot classes
 #' of a particular S4 class, where each element is named by the slot name it
-#' represents. If \code{x} is a component data object,
+#' represents. If \code{physeq} is a component data object,
 #' then a vector of length (1) is returned, named according to its slot name in
 #' the higher-order objects.
 #' 
 #' @seealso merge_phyloseq
 #' @export
 #' @examples #
-getslots.phyloseq <- function(x){
-	# Check if class of x is among the component classes (not H.O.)
+getslots.phyloseq <- function(physeq){
+	# Check if class of physeq is among the component classes (not phyloseq-class)
 	component.classes <- get.component.classes()	
-	if( class(x) %in% component.classes ){
-		slotsx        <- as.character(class(x))
-		names(slotsx) <- names(component.classes)[component.classes==class(x)]
+	if( class(physeq) %in% component.classes ){
+		slotsx        <- as.character(class(physeq))
+		names(slotsx) <- names(component.classes)[component.classes==class(physeq)]
 	} else {
-		# Make sure to return only the names of non-empty slots of x
-		splatx <- splat.phyloseq.objects(x)
+		# Make sure to return only the names of non-empty slots of physeq
+		splatx <- splat.phyloseq.objects(physeq)
 		slotsx <- names(splatx)
 	}
 	return(slotsx)
 }
 ################################################################################
-#' General slot accessor function for phyloseq-class.
+#' Universal slot accessor function for phyloseq-class.
 #'
 #' This function is used internally by many accessors and in 
 #' many functions/methods that need to access a particular type of component data.
@@ -180,9 +180,9 @@ getslots.phyloseq <- function(x){
 #' In all cases this is controlled by the \code{errorIfNULL} argument, which can
 #' be set to \code{TRUE} if an error is desired. 
 #'
-#' @usage access(object, slot, errorIfNULL=FALSE)
+#' @usage access(physeq, slot, errorIfNULL=FALSE)
 #'
-#' @param object (Required). A phyloseq-class object.
+#' @param physeq (Required). \code{\link{phyloseq-class}}.
 #'
 #' @param slot (Required). A character string indicating the slot (not data class)
 #'  of the component data type that is desired.
@@ -191,10 +191,10 @@ getslots.phyloseq <- function(x){
 #'  an error if the slot is empty (\code{NULL})? Default \code{FALSE}. 
 #'
 #' @return Returns the component object specified by the argument \code{slot}. 
-#'  Returns NULL if slot does not exist. Returns \code{object} as-is 
+#'  Returns NULL if slot does not exist. Returns \code{physeq} as-is 
 #'  if it is a component class that already matches the slot name.
 #'
-#' @seealso merge_phyloseq
+#' @seealso \code{\link{getslots.phyloseq}}, \code{\link{merge_phyloseq}}
 #' @export
 #' @examples #
 #' ## data(ex1)
@@ -205,20 +205,20 @@ getslots.phyloseq <- function(x){
 #' ## access(otuTable(ex1), "sampleMap")
 #' ## access(otuTree(ex1), "sampleMap")
 #' ## access(otuSam(ex1), "tre")
-access <- function(object, slot, errorIfNULL=FALSE){
+access <- function(physeq, slot, errorIfNULL=FALSE){
 	component.classes <- get.component.classes()
 	# Check if class of x is among the component classes (not H.O.)
-	if( class(object) %in% component.classes ){
-		# if slot-name matches object, return object as-is.
-		if( component.classes[slot] == class(object) ){
-			out <- object
+	if( class(physeq) %in% component.classes ){
+		# if slot-name matches physeq, return physeq as-is.
+		if( component.classes[slot] == class(physeq) ){
+			out <- physeq
 		} else {
 			out <- NULL
 		}
-	} else if(!slot %in% slotNames(object) ){
+	} else if(!slot %in% slotNames(physeq) ){
 		out <- NULL
 	} else {
-		out <- eval(parse(text=paste("object@", slot, sep=""))) 
+		out <- eval(parse(text=paste("physeq@", slot, sep=""))) 
 	}
 	# Test if you should error upon the emptiness of the slot being accessed
 	if( errorIfNULL & is.null(out) ){
@@ -245,7 +245,7 @@ access <- function(object, slot, errorIfNULL=FALSE){
 #'  all species-describing components of \code{x}.
 #'
 #' @seealso \code{\link{reconcile_species}}, \code{\link{Reduce}}
-#' @export
+#' @keywords internal
 #' @examples #
 #' ## data(ex1)
 #' ## head(intersect_species(ex1), 10)
@@ -281,7 +281,7 @@ intersect_species <- function(x){
 #'
 #' @seealso \code{\link{reconcile_samples}}, \code{\link{Reduce}}
 #' @rdname reconcile_species-methods
-#' @export
+#' @keywords internal
 #' @examples #
 #' ## data(ex1)
 #' ## head(intersect_species(ex1), 10)
@@ -300,8 +300,9 @@ setMethod("reconcile_species", signature("phyloseq"), function(x){
 	# # # # # reconcile_species <- function(x){
 	# Make species the intersection of all species in the components
 	species    <- intersect_species(x)
-	# Make allspecies the union of all species in the components
-	allspecies <- unique(unlist(lapply(splat.phyloseq.objects(x), species.names)))	
+	# Make allspecies the union of all species in the components,
+	# the default for species.names() if argument is a phyloseq-class
+	allspecies <- species.names(x)
 	# prevent infinite recursion issues and unecessary mucking around
 	# by checking if intersection and union are already the same (same species, all)
 	if( setequal(species, allspecies) ){
@@ -330,7 +331,7 @@ setMethod("reconcile_species", signature("phyloseq"), function(x){
 #'  unchanged.
 #'
 #' @seealso \code{\link{reconcile_species}}
-#' @export
+#' @keywords internal
 #' @examples #
 #' ## data(ex1)
 #' ## reconcile_samples(ex1)

@@ -35,4 +35,5 @@
 \seealso{
   merge_phyloseq
 }
+\keyword{internal}
 

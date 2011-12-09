@@ -3,21 +3,20 @@
 \alias{getSamples}
 \alias{getSamples,otuTable-method}
 \alias{getSamples,phyloseq-method}
-\title{Returns the abundance values of species \code{i} for
-all samples in \code{x}.}
+\title{Returns all abundance values for species \code{i}.}
 \usage{
-  getSamples(x, i)
+  getSamples(physeq, i)
 }
 \arguments{
-  \item{x}{(Required). \code{\link{otuTable-class}}, or
-  \code{\link{phyloseq-class}}.}
+  \item{physeq}{(Required). \code{\link{otuTable-class}},
+  or \code{\link{phyloseq-class}}.}
 
   \item{i}{(Required). A single taxa/species/OTU ID for
   which you want to know the abundance in each sample.}
 }
 \value{
   An integer vector of the abundance values for each sample
-  in \code{x} for species \code{i}
+  in \code{physeq} for species \code{i}
 }
 \description{
   This is a simple accessor function for investigating a

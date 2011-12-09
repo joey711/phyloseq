@@ -8,29 +8,29 @@
 #' the phylogenetic tree (\code{\link{phylo4-class}}) from a \code{\link{phyloseq-class}}.
 #' Like other accessors (see See Also, below), the default behavior of this method
 #' is to stop with an
-#' error if \code{object} is a \code{phyloseq-class} but does not 
+#' error if \code{physeq} is a \code{phyloseq-class} but does not 
 #' contain a phylogenetic tree.  
 #' 
 #' Note that the tip labels should be named to match the
 #' \code{species.names} of the other objects to which it is going to be paired.
-#' The initialization methods for more complex objects automatically check for
+#' The \code{\link{phyloseq}} constructor automatically checks for
 #' exact agreement in the set of species described by the phlyogenetic tree 
-#' and the other components (taxonomyTable, otuTable). 
-#' They also trim accordingly. Thus, the tip.labels in a phylo object
+#' and the other components (taxonomyTable, otuTable),
+#' and trims as-needed. Thus, the tip.labels in a phylo object
 #' must be named to match the results of
 #' \code{\link{species.names}} of the other objects to which it will ultimately be paired.
 #'
-#' @usage tre(object, errorIfNULL=TRUE)
+#' @usage tre(physeq, errorIfNULL=TRUE)
 #' 
-#' @param object (Required). An instance of phyloseq-class
-#'  that contains a phylogenetic tree. If object is a phylogenetic
+#' @param physeq (Required). An instance of phyloseq-class
+#'  that contains a phylogenetic tree. If physeq is a phylogenetic
 #'  tree (a component data class), then it is returned as-is.
 #'
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
-#' @return The \code{\link{phylo4-class}} object contained within \code{object};
-#'  or NULL if \code{object} does not have a tree.
+#' @return The \code{\link{phylo4-class}} object contained within \code{physeq};
+#'  or NULL if \code{physeq} does not have a tree.
 #'  This method stops with an error in the latter NULL case be default, which
 #'  can be over-ridden by changing the value of \code{errorIfNULL} to \code{FALSE}.
 #'
@@ -44,25 +44,24 @@
 #' @examples
 #' # data(ex1)
 #' # tre(ex1)
-setGeneric("tre", function(object, errorIfNULL=TRUE) standardGeneric("tre"))
+setGeneric("tre", function(physeq, errorIfNULL=TRUE) standardGeneric("tre"))
 #' @rdname tre-methods
 #' @aliases tre,ANY-method
-setMethod("tre", "ANY", function(object, errorIfNULL=TRUE){
-	access(object, "tre", errorIfNULL)
+setMethod("tre", "ANY", function(physeq, errorIfNULL=TRUE){
+	access(physeq, "tre", errorIfNULL)
 })
 # Constructor; for coercing "phylo4" from a "phylo".
 #' @rdname tre-methods
 #' @aliases tre,phylo-method
-setMethod("tre", "phylo", function(object){
-	as(object, "phylo4")
+setMethod("tre", "phylo", function(physeq){
+	as(physeq, "phylo4")
 })
 ################################################################################
 #' Access speciesAreRows slot from otuTable objects.
 #'
-#' @usage speciesarerows(object)
+#' @usage speciesarerows(physeq)
 #'
-#' @param object An object among the set of classes defined by the phyloseq 
-#' package that are or contain an otuTable.
+#' @param physeq (Required). \code{\link{phyloseq-class}}, or \code{\link{otuTable-class}}.
 #'
 #' @return A logical indicating the orientation of the otuTable.
 #'
@@ -71,31 +70,29 @@ setMethod("tre", "phylo", function(object){
 #' @docType methods
 #' @export
 #' @aliases speciesAreRows speciesarerows
-setGeneric("speciesAreRows", function(object) standardGeneric("speciesAreRows"))
+setGeneric("speciesAreRows", function(physeq) standardGeneric("speciesAreRows"))
 #' @rdname speciesAreRows-methods
 #' @aliases speciesAreRows,ANY-method
-setMethod("speciesAreRows", "ANY", function(object){NULL})
+setMethod("speciesAreRows", "ANY", function(physeq){NULL})
 #' @rdname speciesAreRows-methods
 #' @aliases speciesAreRows,otuTable-method
-setMethod("speciesAreRows", "otuTable", function(object){object@speciesAreRows})
+setMethod("speciesAreRows", "otuTable", function(physeq){physeq@speciesAreRows})
 #' @rdname speciesAreRows-methods
 #' @aliases speciesAreRows,phyloseq-method
-setMethod("speciesAreRows", "phyloseq", function(object){
-	speciesAreRows(otuTable(object))
+setMethod("speciesAreRows", "phyloseq", function(physeq){
+	speciesAreRows(otuTable(physeq))
 })
 #' @aliases speciesAreRows speciesarerows
 #' @export
 speciesarerows <- speciesAreRows
 ################################################################################
-#' Get the number of taxa/species in an object.
-#' 
-#' This method works on otuTable, taxonomyTable objects, or the more
-#' complex objects that represent species, as well as phylogenetic trees ``phylo''.
+#' Get the number of taxa/species.
 #'
-#' @usage nspecies(object)
+#' @usage nspecies(physeq)
 #'
-#' @param object An object among the set of classes defined by the phyloseq 
-#' package that represent species.
+#' @param physeq \code{\link{phyloseq-class}}, \code{\link{otuTable-class}},
+#'  \code{\link{taxonomyTable-class}},
+#'  \code{\link[ape]{phylo}}, or \code{\link[phylobase]{phylo4-class}}
 #'
 #' @return An integer indicating the number of taxa / species.
 #'
@@ -110,42 +107,44 @@ speciesarerows <- speciesAreRows
 #' # data("phylocom")
 #' # tree <- phylocom$phylo
 #' # nspecies(tree)
-setGeneric("nspecies", function(object) standardGeneric("nspecies"))
+setGeneric("nspecies", function(physeq) standardGeneric("nspecies"))
+#' @rdname nspecies-methods
+#' @aliases nspecies,ANY-method
+setMethod("nspecies", "ANY", function(physeq){ return(NULL) })
+#' @rdname nspecies-methods
+#' @aliases nspecies,phyloseq-method
+setMethod("nspecies", "phyloseq", function(physeq){
+	length(species.names(physeq))
+})
 #' @rdname nspecies-methods
 #' @aliases nspecies,otuTable-method
-setMethod("nspecies", "otuTable", function(object){
-	if( speciesAreRows(object) ){
-		return( length(rownames(object)) )
+setMethod("nspecies", "otuTable", function(physeq){
+	if( speciesAreRows(physeq) ){
+		return( length(rownames(physeq)) )
 	} else {
-		return( length(colnames(object)) )
+		return( length(colnames(physeq)) )
 	}
 })
 #' @rdname nspecies-methods
 #' @aliases nspecies,taxonomyTable-method
-setMethod("nspecies", "taxonomyTable", function(object){ nrow(object) })
-#' @rdname nspecies-methods
-#' @aliases nspecies,phyloseq-method
-setMethod("nspecies", "phyloseq", function(object) nspecies(otuTable(object)) )
+setMethod("nspecies", "taxonomyTable", function(physeq){ nrow(physeq) })
 #' @rdname nspecies-methods
 #' @aliases nspecies,phylo-method
-setMethod("nspecies", "phylo", function(object) length(object$tip.label) )
+setMethod("nspecies", "phylo", function(physeq) length(physeq$tip.label) )
 #' @rdname nspecies-methods
 #' @aliases nspecies,phylo4-method
 #' @import phylobase
-setMethod("nspecies", "phylo4", function(object) length(tipLabels(object)) )
+setMethod("nspecies", "phylo4", function(physeq) length(tipLabels(physeq)) )
 ################################################################################
-#' Get the species / taxa names from an object.
+#' Get species / taxa names.
 #'
-#' This method works on otuTable, taxonomyTable objects, or the more
-#' complex objects that represent species, as well as phylogenetic trees
-#' ``phylo''.
+#' @usage species.names(physeq)
 #'
-#' @usage species.names(object)
+#' @param physeq \code{\link{phyloseq-class}}, \code{\link{otuTable-class}},
+#'  \code{\link{taxonomyTable-class}},
+#'  \code{\link[ape]{phylo}}, or \code{\link[phylobase]{phylo4-class}}
 #'
-#' @param object An object among the set of classes defined by the phyloseq 
-#' package that represent species.
-#'
-#' @return A character vector of the names of the species in \code{object}.
+#' @return A character vector of the names of the species in \code{physeq}.
 #'
 #' @seealso nspecies
 #'
@@ -162,48 +161,50 @@ setMethod("nspecies", "phylo4", function(object) length(tipLabels(object)) )
 #' # species.names(OTU1)
 #' # physeq1 <- phyloseq(OTU1, tree)
 #' # species.names(physeq1)
-setGeneric("species.names", function(object) standardGeneric("species.names"))	
+setGeneric("species.names", function(physeq) standardGeneric("species.names"))	
+#' @rdname species.names-methods
+#' @aliases species.names,ANY-method
+setMethod("species.names", "ANY", function(physeq){ return(NULL) })
+#' @rdname species.names-methods
+#' @aliases species.names,phyloseq-method
+setMethod("species.names", "phyloseq", function(physeq){
+	# Return the union of all species in the components
+	unique(unlist(lapply(splat.phyloseq.objects(physeq), species.names)))	
+})
 #' @rdname species.names-methods
 #' @aliases species.names,otuTable-method
-setMethod("species.names", "otuTable", function(object){
-	if( speciesAreRows(object) ){
-		return( rownames(object) )
+setMethod("species.names", "otuTable", function(physeq){
+	if( speciesAreRows(physeq) ){
+		return( rownames(physeq) )
 	} else {
-		return( colnames(object) )
+		return( colnames(physeq) )
 	}
 })
 #' @rdname species.names-methods
 #' @aliases species.names,taxonomyTable-method
-setMethod("species.names", "taxonomyTable", function(object) rownames(object) )
-#' @rdname species.names-methods
-#' @aliases species.names,phyloseq-method
-setMethod("species.names", "phyloseq", function(object){
-	species.names(otuTable(object))
-})
+setMethod("species.names", "taxonomyTable", function(physeq) rownames(physeq) )
 #' @rdname species.names-methods
 #' @aliases species.names,sampleMap-method
-setMethod("species.names", "sampleMap", function(object) NULL )
+setMethod("species.names", "sampleMap", function(physeq) NULL )
 #' @rdname species.names-methods
 #' @aliases species.names,phylo-method
-setMethod("species.names", "phylo", function(object) object$tip.label )
+setMethod("species.names", "phylo", function(physeq) physeq$tip.label )
 #' @rdname species.names-methods
 #' @aliases species.names,phylo4-method
 #' @import phylobase
-setMethod("species.names", "phylo4", function(object) tipLabels(object) )
+setMethod("species.names", "phylo4", function(physeq) tipLabels(physeq) )
 ################################################################################
-#' Get the number of samples described by an object.
-#' 
-#' This method works on otuTable and sampleMap objects, as well as the more
-#' complex objects that represent samples in an experiment.
+#' Get the number of samples.
 #'
-#' @usage nsamples(object)
+#' @usage nsamples(physeq)
 #'
-#' @param object An object among the set of classes defined by the phyloseq 
-#' package that represent samples.
+#' @param physeq A \code{\link{phyloseq-class}}, \code{\link{sampleMap}},
+#'  or \code{\link{otuTable-class}}.
 #'
 #' @return An integer indicating the total number of samples.
 #'
-#' @seealso nspecies sample.names
+#' @seealso \code{\link{species.names}}, \code{\link{sample.names}},
+#'  \code{\link{nspecies}}
 #'
 #' @rdname nsamples-methods
 #' @docType methods
@@ -217,35 +218,39 @@ setMethod("species.names", "phylo4", function(object) tipLabels(object) )
 #' # nsamples(OTU1)
 #' # physeq1 <- phyloseq(OTU1, tree)
 #' # nsamples(physeq1)
-setGeneric("nsamples", function(object) standardGeneric("nsamples"))
+setGeneric("nsamples", function(physeq) standardGeneric("nsamples"))
+#' @rdname nsamples-methods
+#' @aliases nsamples,ANY-method
+setMethod("nsamples", "ANY", function(physeq){ return(NULL) })
+#' @rdname nsamples-methods
+#' @aliases nsamples,phyloseq-method
+setMethod("nsamples", "phyloseq", function(physeq){
+	length(sample.names(physeq))
+})
 #' @rdname nsamples-methods
 #' @aliases nsamples,otuTable-method
-setMethod("nsamples", "otuTable", function(object){
-	if( speciesAreRows(object) ){
-		return( length(colnames(object)) )
+setMethod("nsamples", "otuTable", function(physeq){
+	if( speciesAreRows(physeq) ){
+		return( length(colnames(physeq)) )
 	} else {
-		return( length(rownames(object)) )
+		return( length(rownames(physeq)) )
 	}	
 })
 #' @rdname nsamples-methods
-#' @aliases nsamples,phyloseq-method
-setMethod("nsamples", "phyloseq", function(object){
-	nsamples(otuTable(object))
-})
+#' @aliases nsamples,sampleMap-method
+setMethod("nsamples", "sampleMap", function(physeq) nrow(physeq) )
 ################################################################################
-#' Get the sample names of the samples described by an object.
+#' Get sample names.
+#'
+#' @usage sample.names(physeq)
+#'
+#' @param physeq (Required). A \code{\link{phyloseq-class}}, \code{\link{sampleMap}},
+#'  or \code{\link{otuTable-class}}.
+#'
+#' @return A character vector. The names of the samples in \code{physeq}.
+#'
+#' @seealso \code{\link{species.names}}, \code{\link{nsamples}}
 #' 
-#' This method works on otuTable and sampleMap objects, as well as the more
-#' complex objects that represent samples in an experiment.
-#'
-#' @usage sample.names(x)
-#'
-#' @param x (Required). An object among the set of classes defined by the phyloseq 
-#' package that represent samples.
-#'
-#' @return A character vector. The names of the samples in \code{x}.
-#'
-#' @seealso species.names nsamples
 #' @aliases sample.names sampleNames
 #'
 #' @rdname sample.names-methods
@@ -260,47 +265,47 @@ setMethod("nsamples", "phyloseq", function(object){
 #' # sample.names(OTU1)
 #' # ex1 <- phyloseq(OTU1, tree)
 #' # sample.names(ex1)
-setGeneric("sample.names", function(x) standardGeneric("sample.names"))
+setGeneric("sample.names", function(physeq) standardGeneric("sample.names"))
 # Unless otherwise specified, this should return a value of NULL
 # That way, objects that do not explicitly describe samples all
 # behave in the same (returning NULL) way.
 #' @rdname sample.names-methods
 #' @aliases sample.names,ANY-method
-setMethod("sample.names", "ANY", function(x){ return(NULL) })
-#' @rdname sample.names-methods
-#' @aliases sample.names,sampleMap-method
-setMethod("sample.names", "sampleMap", function(x) rownames(x) )
-#' @rdname sample.names-methods
-#' @aliases sample.names,otuTable-method
-setMethod("sample.names", "otuTable", function(x){
-	if( speciesAreRows(x) ){
-		return( colnames(x) )
-	} else {
-		return( rownames(x) )
-	}
-})
+setMethod("sample.names", "ANY", function(physeq){ return(NULL) })
 #' @rdname sample.names-methods
 #' @aliases sample.names,phyloseq-method
-setMethod("sample.names", "phyloseq", function(x){
-	sample.names(otuTable(x))
+setMethod("sample.names", "phyloseq", function(physeq){
+	# Return the union of all samples in the components
+	unique(unlist(lapply(splat.phyloseq.objects(physeq), sample.names)))
+})
+#' @rdname sample.names-methods
+#' @aliases sample.names,sampleMap-method
+setMethod("sample.names", "sampleMap", function(physeq) rownames(physeq) )
+#' @rdname sample.names-methods
+#' @aliases sample.names,otuTable-method
+setMethod("sample.names", "otuTable", function(physeq){
+	if( speciesAreRows(physeq) ){
+		return( colnames(physeq) )
+	} else {
+		return( rownames(physeq) )
+	}
 })
 #' @aliases sample.names
 #' @export
 sampleNames <- sample.names
 ################################################################################
-#' Returns the abundance values of species \code{i} for 
-#' all samples in \code{x}.
+#' Returns all abundance values for species \code{i}.
 #'
 #' This is a simple accessor function for investigating 
 #' a single species-of-interest. 
 #'
-#' @usage getSamples(x, i)
-#' @param x (Required). \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}}.
+#' @usage getSamples(physeq, i)
+#' @param physeq (Required). \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}}.
 #' @param i (Required). A single taxa/species/OTU ID for which you want
 #'  to know the abundance in each sample.
 #'
 #' @return An integer vector of the abundance values for 
-#' each sample in \code{x} for species \code{i}
+#' each sample in \code{physeq} for species \code{i}
 #' 
 #' @seealso getSpecies species.names sample.names
 #'
@@ -309,38 +314,37 @@ sampleNames <- sample.names
 #' @export
 #'
 #' @examples #
-setGeneric("getSamples", function(x, i) standardGeneric("getSamples"))
+setGeneric("getSamples", function(physeq, i) standardGeneric("getSamples"))
 ################################################################################
 #' @aliases getSamples,otuTable-method
 #' @rdname getSamples-methods
-setMethod("getSamples", "otuTable", function(x, i){
-	if( speciesAreRows(x) ){
-		as(x, "matrix")[i, ]
+setMethod("getSamples", "otuTable", function(physeq, i){
+	if( speciesAreRows(physeq) ){
+		as(physeq, "matrix")[i, ]
 	} else {
-		as(x, "matrix")[, i]
+		as(physeq, "matrix")[, i]
 	}
 })
 ################################################################################
 #' @aliases getSamples,phyloseq-method
 #' @rdname getSamples-methods
-setMethod("getSamples", "phyloseq", function(x, i){
-	getSamples(otuTable(x), i)
+setMethod("getSamples", "phyloseq", function(physeq, i){
+	getSamples(otuTable(physeq), i)
 })
 ################################################################################
-#' Returns the abundance values of sample \code{i} for 
-#' all species in \code{x}.
+#' Returns all abundance values of sample \code{i}.
 #'
 #' This is a simple accessor function for investigating 
 #' a single sample-of-interest. 
 #'
-#' @usage getSpecies(x, i)
-#' @param x (Required). \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}}.
+#' @usage getSpecies(physeq, i)
+#' @param physeq (Required). \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}}.
 #' @param i (Required). A single sample for which you want
 #'  to know the abundance of each species. Can be integer
 #'  for index value, or sample name.
 #'
 #' @return An integer vector of the abundance values for 
-#' each species in \code{x} for sample \code{i}
+#' each species in \code{physeq} for sample \code{i}
 #' 
 #' @seealso getSpecies species.names sample.names
 #'
@@ -349,19 +353,19 @@ setMethod("getSamples", "phyloseq", function(x, i){
 #' @export
 #'
 #' @examples #
-setGeneric("getSpecies", function(x, i) standardGeneric("getSpecies"))
+setGeneric("getSpecies", function(physeq, i) standardGeneric("getSpecies"))
 #' @aliases getSpecies,otuTable-method
 #' @rdname getSpecies-methods
-setMethod("getSpecies", "otuTable", function(x, i){
-	if( speciesAreRows(x) ){
-		as(x, "matrix")[, i]
+setMethod("getSpecies", "otuTable", function(physeq, i){
+	if( speciesAreRows(physeq) ){
+		as(physeq, "matrix")[, i]
 	} else {
-		as(x, "matrix")[i, ]
+		as(physeq, "matrix")[i, ]
 	}
 })
 #' @aliases getSpecies,phyloseq-method
 #' @rdname getSpecies-methods
-setMethod("getSpecies", "phyloseq", function(x, i){
-	getSpecies(otuTable(x), i)
+setMethod("getSpecies", "phyloseq", function(physeq, i){
+	getSpecies(otuTable(physeq), i)
 })
 ################################################################################

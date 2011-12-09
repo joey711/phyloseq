@@ -19,4 +19,5 @@
 #
 #get.component.classes()
 }
+\keyword{internal}
 

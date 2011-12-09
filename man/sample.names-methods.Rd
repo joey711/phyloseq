@@ -6,21 +6,21 @@
 \alias{sample.names,phyloseq-method}
 \alias{sample.names,sampleMap-method}
 \alias{sampleNames}
-\title{Get the sample names of the samples described by an object.}
+\title{Get sample names.}
 \usage{
-  sample.names(x)
+  sample.names(physeq)
 }
 \arguments{
-  \item{x}{(Required). An object among the set of classes
-  defined by the phyloseq package that represent samples.}
+  \item{physeq}{(Required). A \code{\link{phyloseq-class}},
+  \code{\link{sampleMap}}, or
+  \code{\link{otuTable-class}}.}
 }
 \value{
-  A character vector. The names of the samples in \code{x}.
+  A character vector. The names of the samples in
+  \code{physeq}.
 }
 \description{
-  This method works on otuTable and sampleMap objects, as
-  well as the more complex objects that represent samples
-  in an experiment.
+  Get sample names.
 }
 \examples{
 #
@@ -33,6 +33,6 @@
 # sample.names(ex1)
 }
 \seealso{
-  species.names nsamples
+  \code{\link{species.names}}, \code{\link{nsamples}}
 }
 

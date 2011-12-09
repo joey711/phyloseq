@@ -1,11 +1,11 @@
 \name{access}
 \alias{access}
-\title{General slot accessor function for phyloseq-class.}
+\title{Universal slot accessor function for phyloseq-class.}
 \usage{
-  access(object, slot, errorIfNULL=FALSE)
+  access(physeq, slot, errorIfNULL=FALSE)
 }
 \arguments{
-  \item{object}{(Required). A phyloseq-class object.}
+  \item{physeq}{(Required). \code{\link{phyloseq-class}}.}
 
   \item{slot}{(Required). A character string indicating the
   slot (not data class) of the component data type that is
@@ -18,7 +18,7 @@
 \value{
   Returns the component object specified by the argument
   \code{slot}. Returns NULL if slot does not exist. Returns
-  \code{object} as-is if it is a component class that
+  \code{physeq} as-is if it is a component class that
   already matches the slot name.
 }
 \description{
@@ -48,6 +48,7 @@
 ## access(otuSam(ex1), "tre")
 }
 \seealso{
-  merge_phyloseq
+  \code{\link{getslots.phyloseq}},
+  \code{\link{merge_phyloseq}}
 }
 

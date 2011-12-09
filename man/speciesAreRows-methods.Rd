@@ -7,11 +7,11 @@
 \alias{speciesAreRows,phyloseq-method}
 \title{Access speciesAreRows slot from otuTable objects.}
 \usage{
-  speciesarerows(object)
+  speciesarerows(physeq)
 }
 \arguments{
-  \item{object}{An object among the set of classes defined
-  by the phyloseq package that are or contain an otuTable.}
+  \item{physeq}{(Required). \code{\link{phyloseq-class}},
+  or \code{\link{otuTable-class}}.}
 }
 \value{
   A logical indicating the orientation of the otuTable.

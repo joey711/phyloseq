@@ -43,4 +43,5 @@
 \seealso{
   \code{\link{reconcile_samples}}, \code{\link{Reduce}}
 }
+\keyword{internal}
 

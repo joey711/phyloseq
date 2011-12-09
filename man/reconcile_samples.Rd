@@ -30,4 +30,5 @@
 \seealso{
   \code{\link{reconcile_species}}
 }
+\keyword{internal}
 
