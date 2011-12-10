@@ -297,20 +297,12 @@ setGeneric("reconcile_species", function(x) standardGeneric("reconcile_species")
 #' @aliases reconcile_species,phyloseq-method
 #' @rdname reconcile_species-methods
 setMethod("reconcile_species", signature("phyloseq"), function(x){
-	# # # # # reconcile_species <- function(x){
 	# Make species the intersection of all species in the components
-	species    <- intersect_species(x)
-	# Make allspecies the union of all species in the components,
-	# the default for species.names() if argument is a phyloseq-class
-	allspecies <- species.names(x)
-	# prevent infinite recursion issues and unecessary mucking around
-	# by checking if intersection and union are already the same (same species, all)
-	if( setequal(species, allspecies) ){
-		return(x)
-	} else {
-		x <- prune_species(species, x)
-		return(x)
-	}
+	species <- intersect_species(x)
+	# prune_species(species, x) already checks if species and species.names(x)
+	# sets are equal, no need to re-check.
+	x       <- prune_species(species, x)
+	return(x)
 })
 ################################################################################
 #' Keep only sample-indices common to all components.
