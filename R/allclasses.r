@@ -57,6 +57,18 @@ setClass("sampleMap", contains="data.frame")
 #' @exportClass taxonomyTable
 setClass("taxonomyTable", contains = "matrix")
 ################################################################################
+#' An S4 copy of the main phylogenetic tree class from the ape package.
+#'
+#' See the \code{\link[ape]{ape}} package for details about this type of
+#' representation of a phylogenetic tree. It is used throught ape.
+#'
+#' @seealso \code{\link[ape]{phylo}}, \code{\link{setOldClass}}
+#'
+#' @name phylo-class
+#' @rdname phylo-class
+#' @exportClass phylo
+setOldClass("phylo")
+################################################################################
 # Use setClassUnion to define the unholy NULL-data union as a virtual class.
 # This is a way of dealing with the expected scenarios in which one or more of
 # the component data classes is not available, in which case NULL will be used
@@ -70,7 +82,6 @@ setClassUnion("sampleMapOrNULL", c("sampleMap", "NULL"))
 setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
 #' @keywords internal
 #' @import ape
-setOldClass("phylo")
 setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 ################################################################################
 # The actual phyloseq master class with all 4 slots. This is akin to 
