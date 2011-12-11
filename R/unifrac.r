@@ -300,7 +300,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' # # abvec <- sample(c(rep(0, 5), 1:10), Nsamp*Nspec, TRUE)
 #' # # rOTU  <- otuTable(matrix(abvec, nrow=Nsamp, ncol=Nspec), speciesAreRows=FALSE)
 #' # # ### Create random tree
-#' # # rtree <- ape::rcoal(Nspec, tip.label=species.names(rOTU))
+#' # # rtree <- rcoal(Nspec, tip.label=species.names(rOTU))
 #' # # ### Combine into one object.
 #' # # rotuTree <- phyloseq(rOTU, rtree)
 
@@ -396,10 +396,9 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
 ################################################################################
 #' @aliases UniFrac,phyloseq,ANY-method
 #' @rdname UniFrac-methods
-#' @import phylobase
 setMethod("UniFrac", signature("phyloseq"), 
 		function(OTU, tree=NULL, weighted=FALSE, normalized=TRUE, parallel=FALSE){
 	# splat and pass to core function.
-	UniFrac(OTU=otuTable(OTU), tree=suppressWarnings(as(tre(OTU), "phylo")), weighted, normalized, parallel)
+	UniFrac(OTU=otuTable(OTU), tree=tre(OTU), weighted, normalized, parallel)
 })
 ##############################################################################

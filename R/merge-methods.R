@@ -225,21 +225,11 @@ setMethod("merge_phyloseq_pair", signature("sampleMap", "sampleMap"), function(x
 	return(newx)	
 })
 ################################################################################
+#' @import ape
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
-	ape::consensus(x, y)
-})
-################################################################################
-#' @aliases merge_phyloseq_pair,phylo4,phylo4-method
-#' @rdname merge_phyloseq_pair-methods
-setMethod("merge_phyloseq_pair", signature("phylo4", "phylo4"), function(x, y){
-	x <- as(x, "phylo")
-	y <- as(y, "phylo")
-	# dispatch to the method for "phylo" trees.
-	phylo_tree <- merge_phyloseq_pair(x, y)
-	# convert back to phylo4 and return.
-	return( as(phylo_tree, "phylo4") )
+	consensus(x, y)
 })
 ################################################################################
 ################################################################################
@@ -255,7 +245,7 @@ setMethod("merge_phyloseq_pair", signature("phylo4", "phylo4"), function(x, y){
 #'
 #' @param x (Required). An object that describes species (taxa). This includes
 #'  \code{\link{phyloseq-class}}, \code{\link{otuTable-class}}, \code{\link{taxonomyTable-class}}, 
-#'  \code{\link[ape]{phylo}}, and \code{\link[phylobase]{phylo4-class}}.
+#'  \code{\link[ape]{phylo}}.
 #' 
 #' @param eqspecies (Required). The species names, or indices, that should be merged together.
 #'  If \code{length(eqspecies) < 2}, then the object \code{x} will be returned
@@ -274,7 +264,6 @@ setMethod("merge_phyloseq_pair", signature("phylo4", "phylo4"), function(x, y){
 #' @seealso \code{\link{tipglom}}, \code{\link{taxglom}}, \code{\link{merge_phyloseq}},
 #'  \code{\link{merge_samples}}
 #'
-#' @import phylobase
 #' @export
 #' @docType methods
 #' @rdname mergespecies-methods
@@ -316,6 +305,7 @@ setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
+#' @import ape
 #' @aliases mergespecies,phylo-method
 #' @rdname mergespecies-methods
 setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
@@ -330,34 +320,9 @@ setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- ape::drop.tip(x, removeIndex)
+	x           <- drop.tip(x, removeIndex)
 	return(x)
 })
-###############################################################################
-#' @aliases mergespecies,phylo4-method
-#' @rdname mergespecies-methods
-setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
-	y <- as(x, "phylo")
-	y <- mergespecies(y, eqspecies, archetype)
-	x <- as(y, "phylo4")
-	return(x)
-})
-### phlyobase approach. Issues with complicated trees.
-# # setMethod("mergespecies", "phylo4", function(x, eqspecies, archetype=1){
-	# # if( length(eqspecies) < 2 ){ return(x) }
-
-	# # if( class(eqspecies) != "character" ){
-		# # eqspecies <- tipLabels(x)[eqspecies]  # x$tip.label[eqspecies]
-	# # }
-	# # if( class(archetype) != "character" ){
-		# # keepIndex <- archetype
-	# # } else {
-		# # keepIndex <- which(eqspecies==archetype)
-	# # }
-	# # removeIndex <- which( tipLabels(x) %in% eqspecies[-keepIndex] )
-	# # x           <- subset(x, tips.exclude=removeIndex)# drop.tip(x, removeIndex)
-	# # return(x)
-# # })
 ################################################################################
 #' @aliases mergespecies,phyloseq-method
 #' @rdname mergespecies-methods
@@ -438,7 +403,7 @@ setMethod("mergespecies", "taxonomyTable", function(x, eqspecies, archetype=1){
 #' phyloseq object according to a categorical variable contained in a sampleMap
 #' or a provided factor.
 #' 
-#' NOTE: (\code{\link[phylobase]{phylo4}}) trees and \code{\link{taxonomyTable-class}}
+#' NOTE: (\code{\link[ape]{phylo}}) trees and \code{\link{taxonomyTable-class}}
 #' are not modified by this function, but returned in the output object as-is. 
 #'
 #' @usage merge_samples(x, group, fun=mean) 

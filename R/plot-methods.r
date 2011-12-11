@@ -9,21 +9,40 @@
 #'
 #' The specific plot type is chosen according to available non-empty slots.
 #'
+#' @usage plot_phyloseq(physeq, ...)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}. The actual plot type
+#'  depends on the available (non-empty) component data types contained within.
+#'
+#' @param ... (Optional). Additional parameters to be passed on to the respective
+#'  specific plotting function. See below for different plotting functions that
+#'  might be called by this generic plotting wrapper.
+#'
+#' @return A plot is created. The nature and class of the plot depends on 
+#'  the \code{physeq} argument, specifically, which component data classes
+#'  are present.
+#'
 #' @export
-#' @name plot
-#' @aliases plot,phyloseq,ANY-method
+#' @import ape
 #' @docType methods
-#' @rdname plot-methods
-setMethod("plot", "phyloseq", function(x, ...){
-	if( all(c("otuTable", "sampleMap", "tre") %in% getslots.phyloseq(x)) ){
-		plot_tree_phyloseq(x, ...)		
-	} else if( all(c("otuTable", "sampleMap", "taxTab") %in% getslots.phyloseq(x) ) ){
-		taxaplot(otu=x, ...)
-	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(x)) ){
-		tree <- as(tre(x), "phylo")
-		ape::plot.phylo(tree, ...)	
-		nodelabels(as.character(1:max(tree$edge)),node=1:max(tree$edge))
-		edgelabels(as.character(1:nrow(tree$edge)),edge=1:nrow(tree$edge))		
+#' @rdname plot_phyloseq-methods
+#' 
+#' @examples 
+#'  ## data(ex1)
+#'  ## plot_phyloseq(ex1)
+setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phyloseq") })
+#' @aliases plot_phyloseq,phyloseq-method
+#' @rdname plot_phyloseq-methods
+setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
+	if( all(c("otuTable", "sampleMap", "tre") %in% getslots.phyloseq(physeq)) ){
+		plot_tree_phyloseq(physeq, ...)		
+	} else if( all(c("otuTable", "sampleMap", "taxTab") %in% getslots.phyloseq(physeq) ) ){
+		taxaplot(otu=physeq, ...)
+	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
+		tree <- tre(physeq)
+		plot.phylo(tree, ...)	
+		nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
+		edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
 	}
 })
 ################################################################################
@@ -783,13 +802,13 @@ setMethod("makenetwork", signature("phyloseq"),
 #' @export
 #' @rdname tip-annotate
 #' 
-#' @seealso tiplabels points text
+#' @seealso \code{\link[ape]{tiplabels}}, \code{\link[graphics]{points}}, \code{\link[graphics]{text}}
 #' @examples #
 #' ## data(ex1)
 #' ## # for reproducibility
 #' ## set.seed(711)
 #' ## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
-#' ## plot(as(tre(ex2), "phylo"))
+#' ## plot( tre(ex2) )
 #' ## tipsymbols(pch=19)
 #' ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
 #' ## tiptext(2, labels="my.label")
@@ -944,8 +963,8 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 	}
 	names(shape_vec) <- sample.names(object)
 	
-	# This is based on ape-package plotting. Use phylo-class tree.
-	tree <- as(tre(object), "phylo")
+	# Access phylo-class tree. Error if its missing.
+	tree <- tre(object)
 	
 	# Now plot the initial, symbol-less tree. Must be first to get the proper
 	# x, y limits to calculate the scales of the annotation objects.

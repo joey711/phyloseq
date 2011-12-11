@@ -6,8 +6,8 @@
   \code{\link{otuTable-class}},
   \code{\link{sampleMap-class}},
   \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot),
-  and \code{\link{phylo4-class}} (\code{"tre"} slot). There
-  are several advantages to storing your phylogenetic
+  and \code{\link[ape]{phylo}}-class (\code{"tre"} slot).
+  There are several advantages to storing your phylogenetic
   sequencing experiment as an instance of the phyloseq
   class, not the least of which is that it is easy to
   return to the data later and feel confident that the

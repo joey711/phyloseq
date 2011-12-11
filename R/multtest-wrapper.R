@@ -1,7 +1,5 @@
 ####################################################################################
-# # # # Cannot do broad import of multtest. Its plot and summary export conflicts
-# # # # conflicts with phylobase
-# # # # @import multtest
+# # # # Avoiding full import of multtest to mitigate potential conflicts
 ####################################################################################
 #' Multiple testing of taxa abundancesa acccording to a sample variate
 #'

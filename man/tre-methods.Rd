@@ -3,7 +3,7 @@
 \alias{tre}
 \alias{tre,ANY-method}
 \alias{tre,phylo-method}
-\title{Access tre slot, or check/coerce to phylo4 class.}
+\title{Access tre slot.}
 \usage{
   tre(physeq, errorIfNULL=TRUE)
 }
@@ -18,17 +18,16 @@
   (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
-  The \code{\link{phylo4-class}} object contained within
-  \code{physeq}; or NULL if \code{physeq} does not have a
-  tree. This method stops with an error in the latter NULL
-  case be default, which can be over-ridden by changing the
-  value of \code{errorIfNULL} to \code{FALSE}.
+  The \code{\link[ape]{phylo}}-class object contained
+  within \code{physeq}; or NULL if \code{physeq} does not
+  have a tree. This method stops with an error in the
+  latter NULL case be default, which can be over-ridden by
+  changing the value of \code{errorIfNULL} to \code{FALSE}.
 }
 \description{
-  \code{tre()} is an accessor OR coercion method. This is
-  the main method suggested for accessing the phylogenetic
-  tree (\code{\link{phylo4-class}}) from a
-  \code{\link{phyloseq-class}}. Like other accessors (see
+  This is the main method suggested for accessing the
+  phylogenetic tree, (\code{\link[ape]{phylo}}-class) from
+  a \code{\link{phyloseq-class}}. Like other accessors (see
   See Also, below), the default behavior of this method is
   to stop with an error if \code{physeq} is a
   \code{phyloseq-class} but does not contain a phylogenetic

@@ -8,8 +8,8 @@
 #' @usage phyloseq(...)
 #'
 #' @param ... One or more component objects among the set of classes
-#'  defined by the phyloseq package, as well as \code{phylo4} objects
-#'  (defined by the phylobase package). Each argument should be a different class.
+#'  defined by the phyloseq package, as well as \code{phylo}-class
+#'  (defined by the \code{ape} package). Each argument should be a different class.
 #'  For combining multiple components of the same class, or multiple higher-order
 #'  classes, use the \code{\link{merge_phyloseq}} function. Unlike in earlier
 #'  versions, the arguments to phyloseq do not need to be named, and the order
@@ -34,13 +34,6 @@
 phyloseq <- function(...){
 	
 	arglist <- list(...)
-
-	## Check for "phylo" class objects. If present, convert them to "phylo4"
-	if( any(sapply(arglist, class)=="phylo") ){
-		for( i in which(sapply(arglist, class)=="phylo") ){
-			arglist[[i]] <- as(arglist[[i]], "phylo4")
-		}
-	}
 	
 	# Remove names from arglist. Will replace them based on their class
 	names(arglist) <- NULL
@@ -85,14 +78,16 @@ phyloseq <- function(...){
 #' @return a character vector of the component objects classes, where each 
 #' element is named by the corresponding slot name in the higher-order 
 #' phyloseq objects (objects containing more than 1 phyloseq data object).
+#'
 #' @keywords internal
+#'
 #' @examples #
 #' #get.component.classes()
 get.component.classes <- function(){
 	# define classes vector
-	component.classes <- c("otuTable", "sampleMap", "phylo4", "phylo", "taxonomyTable")
+	component.classes <- c("otuTable", "sampleMap", "phylo", "taxonomyTable")
 	# the names of component.classes needs to be the slot names to match getSlots / splat
-	names(component.classes) <- c("otuTable", "sampleMap", "tre", "old-tre", "taxTab")	
+	names(component.classes) <- c("otuTable", "sampleMap", "tre", "taxTab")	
 	return(component.classes)
 }
 ################################################################################

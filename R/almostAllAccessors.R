@@ -1,11 +1,11 @@
 ################################################################################
 ### Accessor / subset methods.
 ################################################################################
-#' Access tre slot, or check/coerce to phylo4 class.
+#' Access tre slot.
 #'
-#' \code{tre()} is an accessor OR coercion method. This is the main method suggested 
+#' This is the main method suggested 
 #' for accessing
-#' the phylogenetic tree (\code{\link{phylo4-class}}) from a \code{\link{phyloseq-class}}.
+#' the phylogenetic tree, (\code{\link[ape]{phylo}}-class) from a \code{\link{phyloseq-class}}.
 #' Like other accessors (see See Also, below), the default behavior of this method
 #' is to stop with an
 #' error if \code{physeq} is a \code{phyloseq-class} but does not 
@@ -29,7 +29,7 @@
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
-#' @return The \code{\link{phylo4-class}} object contained within \code{physeq};
+#' @return The \code{\link[ape]{phylo}}-class object contained within \code{physeq};
 #'  or NULL if \code{physeq} does not have a tree.
 #'  This method stops with an error in the latter NULL case be default, which
 #'  can be over-ridden by changing the value of \code{errorIfNULL} to \code{FALSE}.
@@ -50,12 +50,10 @@ setGeneric("tre", function(physeq, errorIfNULL=TRUE) standardGeneric("tre"))
 setMethod("tre", "ANY", function(physeq, errorIfNULL=TRUE){
 	access(physeq, "tre", errorIfNULL)
 })
-# Constructor; for coercing "phylo4" from a "phylo".
+# Return as-is if already a "phylo" object
 #' @rdname tre-methods
 #' @aliases tre,phylo-method
-setMethod("tre", "phylo", function(physeq){
-	as(physeq, "phylo4")
-})
+setMethod("tre", "phylo", function(physeq){ return(physeq) })
 ################################################################################
 #' Access speciesAreRows slot from otuTable objects.
 #'
@@ -91,8 +89,8 @@ speciesarerows <- speciesAreRows
 #' @usage nspecies(physeq)
 #'
 #' @param physeq \code{\link{phyloseq-class}}, \code{\link{otuTable-class}},
-#'  \code{\link{taxonomyTable-class}},
-#'  \code{\link[ape]{phylo}}, or \code{\link[phylobase]{phylo4-class}}
+#'  \code{\link{taxonomyTable-class}}, or
+#'  \code{\link[ape]{phylo}}
 #'
 #' @return An integer indicating the number of taxa / species.
 #'
@@ -131,18 +129,14 @@ setMethod("nspecies", "taxonomyTable", function(physeq){ nrow(physeq) })
 #' @rdname nspecies-methods
 #' @aliases nspecies,phylo-method
 setMethod("nspecies", "phylo", function(physeq) length(physeq$tip.label) )
-#' @rdname nspecies-methods
-#' @aliases nspecies,phylo4-method
-#' @import phylobase
-setMethod("nspecies", "phylo4", function(physeq) length(tipLabels(physeq)) )
 ################################################################################
 #' Get species / taxa names.
 #'
 #' @usage species.names(physeq)
 #'
 #' @param physeq \code{\link{phyloseq-class}}, \code{\link{otuTable-class}},
-#'  \code{\link{taxonomyTable-class}},
-#'  \code{\link[ape]{phylo}}, or \code{\link[phylobase]{phylo4-class}}
+#'  \code{\link{taxonomyTable-class}}, or
+#'  \code{\link[ape]{phylo}}
 #'
 #' @return A character vector of the names of the species in \code{physeq}.
 #'
@@ -189,10 +183,6 @@ setMethod("species.names", "sampleMap", function(physeq) NULL )
 #' @rdname species.names-methods
 #' @aliases species.names,phylo-method
 setMethod("species.names", "phylo", function(physeq) physeq$tip.label )
-#' @rdname species.names-methods
-#' @aliases species.names,phylo4-method
-#' @import phylobase
-setMethod("species.names", "phylo4", function(physeq) tipLabels(physeq) )
 ################################################################################
 #' Get the number of samples.
 #'

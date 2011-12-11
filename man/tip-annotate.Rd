@@ -39,12 +39,14 @@
 ## # for reproducibility
 ## set.seed(711)
 ## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
-## plot(as(tre(ex2), "phylo"))
+## plot( tre(ex2) )
 ## tipsymbols(pch=19)
 ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
 ## tiptext(2, labels="my.label")
 }
 \seealso{
-  tiplabels points text
+  \code{\link[ape]{tiplabels}},
+  \code{\link[graphics]{points}},
+  \code{\link[graphics]{text}}
 }
 

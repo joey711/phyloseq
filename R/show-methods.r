@@ -73,25 +73,6 @@ setMethod("show", "taxonomyTable", function(object){
 	tableprint(as(object, "matrix"), "Taxonomy Table", "Species", "Taxonomic Rank")		
 })
 ############################################################################
-#' @name show
-#' @aliases show,phylo4-method
-#' @docType methods
-#' @rdname show-methods
-#' @import phylobase
-setMethod("show", "phylo4", function(object){
-	cat("<<< tree >>>\n")
-	cat("\"phylo4\"-class phylogenetic tree with\n")
-	cat(length(tipLabels(object)), "tips, and ")
-	cat(length(nodeLabels(object)), "internal nodes.\n")
-	cat("Tips:", head(tipLabels(object), 3), "...\n")
-	if( isRooted(object) ){
-		cat("Rooted.\n")
-	} else {
-		cat("Unrooted.\n")
-	}
-	cat("<<< tree >>>\n")
-})
-############################################################################
 #' show method for H.O. objects.
 #'
 #' @name show

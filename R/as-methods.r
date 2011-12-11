@@ -28,10 +28,7 @@ setAs("phyloseq", "taxonomyTable", function(from){
 	taxTab(from)	
 })
 ################################################################################
-setAs("phyloseq", "phylo4", function(from){
-	tre(from)	
-})
 setAs("phyloseq", "phylo", function(from){
-	as(tre(from), "phylo")
+	tre(from)
 })
 ################################################################################

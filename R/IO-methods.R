@@ -123,7 +123,7 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #'  this is typically a tree of the representative 16S rRNA sequences from each OTU
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
 #'  Default value is \code{NULL}. ALTERNATIVELY, this argument can be a tree object
-#'  ()\code{"phylo4"} or \code{"phylo"} class), in case the tree has already been
+#'  (\code{\link[ape]{phylo}}-class), in case the tree has already been
 #'  imported, or is in a different format than NEXUS.
 #'
 #' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
@@ -138,8 +138,7 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #' @return A \code{\link{phyloseq-class}} object.
 #'
 #' @seealso \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
-#'	 \code{\link{read.tree}}, \code{\link{read.nexus}}, \code{\link{readNexus}}
-#'   \code{\link{readNewick}}
+#'	 \code{\link[ape]{read.tree}}, \code{\link[ape]{read.nexus}}
 #'
 #' @references \url{http://qiime.org/}
 #'
@@ -151,6 +150,7 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
+#' @import ape
 #' @export
 #' @examples #
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
@@ -176,16 +176,11 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	}
 
 	if( !is.null(treefilename) ){
-		if( class(treefilename) %in% c("phylo", "phylo4") ){ 
+		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
 		} else {
 			#tree <- read.tree(treefilename, ...)
-			#tree <- readNexus(treefilename, ...)
-			#tree <- readNewick(treefilename, ...)
-			tree <- ape::read.nexus(treefilename, ...)
-		}
-		if( class(tree)=="phylo"){
-			tree <- as(tree, "phylo4")
+			tree <- read.nexus(treefilename, ...)
 		}
 		argumentlist <- c(argumentlist, list(tree) )
 	}

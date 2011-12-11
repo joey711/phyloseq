@@ -2,7 +2,6 @@
 \alias{prune_species}
 \alias{prune_species,character,otuTable-method}
 \alias{prune_species,character,phylo-method}
-\alias{prune_species,character,phylo4-method}
 \alias{prune_species,character,phyloseq-method}
 \alias{prune_species,character,sampleMap-method}
 \alias{prune_species,character,taxonomyTable-method}
@@ -20,11 +19,10 @@
   object you are modifying (\code{x}).}
 
   \item{x}{(Required). A phylogenetic object, including
-  \code{phylo} and \code{phylo4} trees, as well as all
-  phyloseq classes that represent taxa / species. If the
-  function \code{\link{species.names}} returns a
-  non-\code{NULL} value, then your object can be pruned by
-  this function.}
+  \code{phylo} trees, as well as all phyloseq classes that
+  represent taxa / species. If the function
+  \code{\link{species.names}} returns a non-\code{NULL}
+  value, then your object can be pruned by this function.}
 }
 \value{
   The class of the object returned by \code{prune_species}
@@ -32,11 +30,11 @@
 }
 \description{
   An S4 Generic method for removing (pruning) unwanted taxa
-  from phylogenetic objects, including phylo and phylo4
-  trees, as well as native phyloseq package objects. This
-  is particularly useful for pruning a phyloseq object that
+  from phylogenetic objects, including phylo-class trees,
+  as well as native phyloseq package objects. This is
+  particularly useful for pruning a phyloseq object that
   has more than one component that describes species. The
-  \code{phylo} class version is adapted from
+  \code{phylo}-class version is adapted from
   \code{picante::prune.samples}.
 }
 \examples{

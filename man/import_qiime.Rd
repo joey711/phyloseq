@@ -25,9 +25,9 @@
   OTU cluster, with the number of leaves/tips equal to the
   number of taxa/species/OTUs. Default value is
   \code{NULL}. ALTERNATIVELY, this argument can be a tree
-  object ()\code{"phylo4"} or \code{"phylo"} class), in
-  case the tree has already been imported, or is in a
-  different format than NEXUS.}
+  object (\code{\link[ape]{phylo}}-class), in case the tree
+  has already been imported, or is in a different format
+  than NEXUS.}
 
   \item{biotaxonomy}{(Optional). A character vector
   indicating the name of each taxonomic level in the
@@ -85,7 +85,7 @@
 }
 \seealso{
   \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
-  \code{\link{read.tree}}, \code{\link{read.nexus}},
-  \code{\link{readNexus}} \code{\link{readNewick}}
+  \code{\link[ape]{read.tree}},
+  \code{\link[ape]{read.nexus}}
 }
 

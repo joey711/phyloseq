@@ -3,7 +3,6 @@
 \alias{mergespecies}
 \alias{mergespecies,otuTable-method}
 \alias{mergespecies,phylo-method}
-\alias{mergespecies,phylo4-method}
 \alias{mergespecies,phyloseq-method}
 \alias{mergespecies,sampleMap-method}
 \alias{mergespecies,taxonomyTable-method}
@@ -16,8 +15,7 @@
   (taxa). This includes \code{\link{phyloseq-class}},
   \code{\link{otuTable-class}},
   \code{\link{taxonomyTable-class}},
-  \code{\link[ape]{phylo}}, and
-  \code{\link[phylobase]{phylo4-class}}.}
+  \code{\link[ape]{phylo}}.}
 
   \item{eqspecies}{(Required). The species names, or
   indices, that should be merged together. If

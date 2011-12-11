@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.5.16
-Date: 2011-12-9
+Version: 0.5.17
+Date: 2011-12-10
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -10,7 +10,6 @@ Description: phyloseq is a set of classes, wrappers, and
     of phylogenetic amplicon sequencing data.
 License: AGPL-3
 Imports:
-    phylobase (>= 0.6.3),
     igraph (>= 0.5),
     multtest (>= 2.8),
     vegan (>= 2.0),
@@ -18,8 +17,8 @@ Imports:
 Depends:
     R (>= 2.13.0),
     methods,
+    ape (>= 2.8),
     picante (>= 1.3),
-    ape (>= 2.7),
     ggplot2 (>= 0.8)
 Suggests:
     adephylo,

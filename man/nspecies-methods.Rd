@@ -4,7 +4,6 @@
 \alias{nspecies,ANY-method}
 \alias{nspecies,otuTable-method}
 \alias{nspecies,phylo-method}
-\alias{nspecies,phylo4-method}
 \alias{nspecies,phyloseq-method}
 \alias{nspecies,taxonomyTable-method}
 \title{Get the number of taxa/species.}
@@ -14,9 +13,8 @@
 \arguments{
   \item{physeq}{\code{\link{phyloseq-class}},
   \code{\link{otuTable-class}},
-  \code{\link{taxonomyTable-class}},
-  \code{\link[ape]{phylo}}, or
-  \code{\link[phylobase]{phylo4-class}}}
+  \code{\link{taxonomyTable-class}}, or
+  \code{\link[ape]{phylo}}}
 }
 \value{
   An integer indicating the number of taxa / species.

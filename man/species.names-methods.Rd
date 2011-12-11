@@ -4,7 +4,6 @@
 \alias{species.names,ANY-method}
 \alias{species.names,otuTable-method}
 \alias{species.names,phylo-method}
-\alias{species.names,phylo4-method}
 \alias{species.names,phyloseq-method}
 \alias{species.names,sampleMap-method}
 \alias{species.names,taxonomyTable-method}
@@ -15,9 +14,8 @@
 \arguments{
   \item{physeq}{\code{\link{phyloseq-class}},
   \code{\link{otuTable-class}},
-  \code{\link{taxonomyTable-class}},
-  \code{\link[ape]{phylo}}, or
-  \code{\link[phylobase]{phylo4-class}}}
+  \code{\link{taxonomyTable-class}}, or
+  \code{\link[ape]{phylo}}}
 }
 \value{
   A character vector of the names of the species in

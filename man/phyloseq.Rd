@@ -7,7 +7,7 @@
 \arguments{
   \item{...}{One or more component objects among the set of
   classes defined by the phyloseq package, as well as
-  \code{phylo4} objects (defined by the phylobase package).
+  \code{phylo}-class (defined by the \code{ape} package).
   Each argument should be a different class. For combining
   multiple components of the same class, or multiple
   higher-order classes, use the

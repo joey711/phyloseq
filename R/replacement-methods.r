@@ -83,9 +83,6 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 ################################################################################
 #' Assign to tre an object/value.
 #'
-#' This will automatically convert "phylo"-class trees (ape package) to
-#' "phylo4"-class trees (phylobase package).
-#'
 #' @usage tre(x) <- value
 #' @param x (Required). The object within which you will replace something
 #' @param value (Required). The value with which you will replace that thing in x.
@@ -99,11 +96,6 @@ setGeneric("tre<-", function(x, value) standardGeneric("tre<-"))
 #' @rdname assign-tre
 #' @aliases tre<-,phyloseq,phylo-method
 setMethod("tre<-", c("phyloseq", "phylo"), function(x, value){
-	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=as(value, "phylo4"))
-})
-#' @rdname assign-tre
-#' @aliases tre<-,phyloseq,phylo4-method
-setMethod("tre<-", c("phyloseq", "phylo4"), function(x, value){
 	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=value)
 })
 ################################################################################

@@ -3,7 +3,6 @@
 \alias{merge_phyloseq_pair}
 \alias{merge_phyloseq_pair,otuTable,otuTable-method}
 \alias{merge_phyloseq_pair,phylo,phylo-method}
-\alias{merge_phyloseq_pair,phylo4,phylo4-method}
 \alias{merge_phyloseq_pair,sampleMap,sampleMap-method}
 \alias{merge_phyloseq_pair,taxonomyTable,taxonomyTable-method}
 \title{Merge pair of phyloseq component data objects of the same class.}

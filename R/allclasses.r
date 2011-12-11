@@ -69,7 +69,9 @@ setClassUnion("sampleMapOrNULL", c("sampleMap", "NULL"))
 #' @keywords internal
 setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
 #' @keywords internal
-setClassUnion("phylo4OrNULL", c("phylo4", "NULL")) # suppress warnings?
+#' @import ape
+setOldClass("phylo")
+setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 ################################################################################
 # The actual phyloseq master class with all 4 slots. This is akin to 
 # the otuSamTaxTree class of previous versions, but 
@@ -82,7 +84,7 @@ setClassUnion("phylo4OrNULL", c("phylo4", "NULL")) # suppress warnings?
 #' \code{\link{otuTable-class}},
 #' \code{\link{sampleMap-class}},
 #' \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot), and
-#' \code{\link{phylo4-class}} (\code{"tre"} slot). There are several advantages
+#' \code{\link[ape]{phylo}}-class (\code{"tre"} slot). There are several advantages
 #' to storing your phylogenetic sequencing experiment as an instance of the
 #' phyloseq class, not the least of which is that it is easy to return to the
 #' data later and feel confident that the different data types ``belong'' to
@@ -122,7 +124,7 @@ setClass(Class="phyloseq",
 		otuTable="otuTableOrNULL",
 		taxTab="taxonomyTableOrNULL",
 		sampleMap="sampleMapOrNULL",
-		tre="phylo4OrNULL"),
+		tre="phyloOrNULL"),
 	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)
 )
 ################################################################################

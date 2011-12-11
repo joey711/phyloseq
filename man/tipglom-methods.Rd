@@ -3,7 +3,6 @@
 \alias{tipglom}
 \alias{tipglom,phylo,ANY-method}
 \alias{tipglom,phylo,otuTable-method}
-\alias{tipglom,phylo4,ANY-method}
 \alias{tipglom,phyloseq,ANY-method}
 \title{Agglomerate nearby tips in tree.}
 \usage{
@@ -12,14 +11,13 @@
 \arguments{
   \item{tree}{An object of class \code{phyloseq}, in which
   case the OTU argument can be ommitted. If, alternatively,
-  \code{tree} is a \code{phylo} or \code{phylo4} object,
-  then \code{OTU} is required.}
+  \code{tree} is a \code{phylo} class, then \code{OTU} is
+  required.}
 
   \item{OTU}{An otuTable object. Optional. Ignored if
   \code{tree} is a \code{phyloseq} object. If \code{tree}
-  is a \code{phylo} or \code{phylo4} object and \code{OTU}
-  is provided, then return will be an \code{phyloseq}
-  object.}
+  is a \code{phylo} object and \code{OTU} is provided, then
+  return will be an \code{phyloseq} object.}
 
   \item{speciationMinLength}{The minimum branch length that
   separates taxa. All tips of the tree separated by a
@@ -29,9 +27,9 @@
 }
 \value{
   An object of class \code{phyloseq}. Output class matches
-  the class of \code{tree}, unless it is a
-  \code{phylo}/\code{phylo4} object, in which case
-  \code{tipglom} returns an \code{phyloseq} object.
+  the class of \code{tree}, unless it is a \code{phylo}
+  object, in which case \code{tipglom} returns an
+  \code{phyloseq} object.
 }
 \description{
   tipglom determines those groups of tips in the tree that
@@ -46,12 +44,7 @@
 #
 # # # data(phylocom)
 # # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
-# # # tree <- as(phylocom$phylo, "phylo4")
-# # # x1   <- phyloseq(otu, tree)
+# # # x1   <- phyloseq(otu, phylocom$phylo)
 # # # print(x1)
-# # # library("phylobase")
-# # # plot(tre(x1))
-# # # x2 <- tipglom(x1, speciationMinLength=2.1)
-# # # plot(tre(x2))
 }
 

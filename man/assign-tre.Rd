@@ -3,7 +3,6 @@
 \alias{assign-tre}
 \alias{tre<-}
 \alias{tre<-,phyloseq,phylo-method}
-\alias{tre<-,phyloseq,phylo4-method}
 \title{Assign to tre an object/value.}
 \usage{
   tre(x) <- value
@@ -16,8 +15,7 @@
   replace that thing in x.}
 }
 \description{
-  This will automatically convert "phylo"-class trees (ape
-  package) to "phylo4"-class trees (phylobase package).
+  Assign to tre an object/value.
 }
 \examples{
 #

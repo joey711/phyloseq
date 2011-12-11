@@ -41,7 +41,7 @@
   provided factor.
 }
 \details{
-  NOTE: (\code{\link[phylobase]{phylo4}}) trees and
+  NOTE: (\code{\link[ape]{phylo}}) trees and
   \code{\link{taxonomyTable-class}} are not modified by
   this function, but returned in the output object as-is.
 }

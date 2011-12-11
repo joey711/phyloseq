@@ -103,7 +103,7 @@
 # # abvec <- sample(c(rep(0, 5), 1:10), Nsamp*Nspec, TRUE)
 # # rOTU  <- otuTable(matrix(abvec, nrow=Nsamp, ncol=Nspec), speciesAreRows=FALSE)
 # # ### Create random tree
-# # rtree <- ape::rcoal(Nspec, tip.label=species.names(rOTU))
+# # rtree <- rcoal(Nspec, tip.label=species.names(rOTU))
 # # ### Combine into one object.
 # # rotuTree <- phyloseq(rOTU, rtree)
 # # ########################################

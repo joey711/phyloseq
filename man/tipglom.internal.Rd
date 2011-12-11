@@ -5,8 +5,8 @@
   tipglom.internal(tree, speciationMinLength)
 }
 \arguments{
-  \item{tree}{An object of class \code{phylo},
-  \code{phylo4}, or \code{phyloseq}}
+  \item{tree}{An object of class \code{phylo}, or
+  \code{phyloseq}}
 
   \item{speciationMinLength}{The minimum branch length that
   separates taxa. All tips of the tree separated by a
@@ -14,9 +14,8 @@
   \code{speciationMinLength} will be agglomerated.}
 }
 \value{
-  An object of class \code{phylo}, \code{phylo4}, or
-  \code{phyloseq}. Output class matches the class of
-  \code{tree}.
+  An object of class \code{phylo}, or \code{phyloseq}.
+  Output class matches the class of \code{tree}.
 }
 \description{
   Internal function, users should use the S4 method

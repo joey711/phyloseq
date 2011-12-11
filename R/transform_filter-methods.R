@@ -11,10 +11,10 @@
 #'
 #' @param tree An object of class \code{phyloseq}, in which case
 #' the OTU argument can be ommitted. If, alternatively, \code{tree} is a \code{phylo}
-#' or \code{phylo4} object, then \code{OTU} is required. 
+#' class, then \code{OTU} is required. 
 #'
 #' @param OTU An otuTable object. Optional. Ignored if \code{tree} is a 
-#'  \code{phyloseq} object. If \code{tree} is a \code{phylo} or \code{phylo4}
+#'  \code{phyloseq} object. If \code{tree} is a \code{phylo}
 #'  object and \code{OTU} is provided, then return will be an \code{phyloseq}
 #'  object. 
 #'
@@ -23,7 +23,7 @@
 #' \code{speciationMinLength} will be agglomerated. Default is 0.02
 #'
 #' @return An object of class \code{phyloseq}. Output class matches
-#' the class of \code{tree}, unless it is a \code{phylo}/\code{phylo4} object, in
+#' the class of \code{tree}, unless it is a \code{phylo} object, in
 #' which case \code{tipglom} returns an \code{phyloseq} object.
 #'
 #' @rdname tipglom-methods
@@ -33,13 +33,8 @@
 #' @examples #
 #' # # # data(phylocom)
 #' # # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
-#' # # # tree <- as(phylocom$phylo, "phylo4")
-#' # # # x1   <- phyloseq(otu, tree)
+#' # # # x1   <- phyloseq(otu, phylocom$phylo)
 #' # # # print(x1)
-#' # # # library("phylobase")
-#' # # # plot(tre(x1))
-#' # # # x2 <- tipglom(x1, speciationMinLength=2.1)
-#' # # # plot(tre(x2))
 setGeneric("tipglom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tipglom"))
 #' @rdname tipglom-methods
 #' @aliases tipglom,phylo,otuTable-method
@@ -57,11 +52,6 @@ setMethod("tipglom", signature("phyloseq"), function(tree, speciationMinLength=0
 setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02){
 	tipglom.internal(tree, speciationMinLength=speciationMinLength)
 })
-#' @rdname tipglom-methods
-#' @aliases tipglom,phylo4,ANY-method
-setMethod("tipglom", signature("phylo4"), function(tree, speciationMinLength=0.02){
-	tipglom.internal(tree, speciationMinLength=speciationMinLength)
-})
 ################################################################################
 #' Internal function for tiplgom.
 #' 
@@ -74,13 +64,13 @@ setMethod("tipglom", signature("phylo4"), function(tree, speciationMinLength=0.0
 #' a motivated user wants to see the internals of the implementation. By design
 #' it lacks explicit object handling. Use \code{\link{tipglom}} instead.
 #'
-#' @param tree An object of class \code{phylo}, \code{phylo4}, or \code{phyloseq} 
+#' @param tree An object of class \code{phylo}, or \code{phyloseq} 
 #'
 #' @param speciationMinLength The minimum branch length that separates taxa. All
 #' tips of the tree separated by a cophenetic distance smaller than 
 #' \code{speciationMinLength} will be agglomerated.
 #'
-#' @return An object of class \code{phylo}, \code{phylo4}, or \code{phyloseq}.
+#' @return An object of class \code{phylo}, or \code{phyloseq}.
 #'  Output class matches the class of \code{tree}.
 #'
 #' @seealso tipglom
@@ -104,7 +94,7 @@ tipglom.internal <- function(tree, speciationMinLength){
 	return(tree)
 }
 #################################################################
-#' An internal wrapper function on \code{ape::cophenetic.phylo}
+#' An internal wrapper function on \code{\link[ape]{cophenetic.phylo}}
 #' 
 #' This is useful for determining tips that should be combined.
 #' 
@@ -147,11 +137,6 @@ setMethod("getTipDistMatrix", signature("phylo"), function(tree, byRootFraction=
 	} else {
 		return(pairwiseSpecDists)
 	}
-})
-setMethod("getTipDistMatrix", signature("phylo4"),
-    function(tree, byRootFraction=FALSE){
-    # Hand off to the "phylo" dispatch, rather than re-write for "phylo4"
-	getTipDistMatrix(as(tree, "phylo"))
 })
 setMethod("getTipDistMatrix", signature("phyloseq"), function(tree, byRootFraction=FALSE){
 	getTipDistMatrix( tre(tree) )
@@ -373,10 +358,10 @@ taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\
 #' Prune unwanted species / taxa from a phylogenetic object.
 #' 
 #' An S4 Generic method for removing (pruning) unwanted taxa from phylogenetic
-#' objects, including phylo and phylo4 trees, as well as native phyloseq package
+#' objects, including phylo-class trees, as well as native phyloseq package
 #' objects. This is particularly useful for pruning a phyloseq object that has
 #' more than one component that describes species.
-#' The \code{phylo} class version is adapted from \code{picante::prune.samples}.
+#' The \code{phylo}-class version is adapted from \code{picante::prune.samples}.
 #'
 #' @param species (Required). A character vector of the species in object x that you want to
 #' keep -- OR alternatively -- a logical vector where the kept species are TRUE, and length
@@ -384,7 +369,7 @@ taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\
 #' logical, the species retained is based on those names. Make sure they are
 #' compatible with the \code{species.names} of the object you are modifying (\code{x}). 
 #'
-#' @param x (Required). A phylogenetic object, including \code{phylo} and \code{phylo4} trees,
+#' @param x (Required). A phylogenetic object, including \code{phylo} trees,
 #' as well as all phyloseq classes that represent taxa / species. If the function
 #' \code{\link{species.names}} returns a non-\code{NULL} value, then your object
 #' can be pruned by this function.
@@ -414,26 +399,13 @@ setMethod("prune_species", signature("NULL"), function(species, x){
 	return(x)
 })
 ################################################################################
+#' @import ape
 #' @aliases prune_species,character,phylo-method
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "phylo"), function(species, x){
 	trimTaxa <- setdiff(x$tip.label, species)
 	if( length(trimTaxa) > 0 ){
-		ape::drop.tip(x, trimTaxa)
-	} else x
-})
-################################################################################
-#' @aliases prune_species,character,phylo4-method
-#' @rdname prune_species-methods
-#' @import phylobase
-setMethod("prune_species", signature("character", "phylo4"), function(species, x){
-	trimTaxa <- setdiff(tipLabels(x), species)
-	if( length(trimTaxa) > 0 ){
-		## temporary hack; phylobase subset sometimes too slow or fails
-		# subset(x, tips.exclude=trimTaxa)
-		## convert to "phylo" tree, trim, then back to "phylo4".
-		x <- ape::drop.tip(suppressWarnings(as(x, "phylo")), trimTaxa)
-		as(x, "phylo4")
+		drop.tip(x, trimTaxa)
 	} else x
 })
 ################################################################################
