@@ -51,11 +51,15 @@ setMethod("sampleMap", "ANY", function(object, errorIfNULL=TRUE){
 setMethod("sampleMap", "data.frame", function(object){
 	# Make sure there are no phantom levels in categorical variables
 	object <- reconcile_categories(object)
+
+	# instantiate first to check validity
+	SM <- new("sampleMap", object)
+		
 	# Want dummy samples index names if missing
-	if( all(rownames(object) == as.character(1:nrow(object))) ){
-		rownames(object) <- paste("sa", 1:nrow(object), sep="")
+	if( all(rownames(SM) == as.character(1:nrow(SM))) ){
+		rownames(SM) <- paste("sa", 1:nrow(SM), sep="")
 	}	
-	new("sampleMap", object)
+	return(SM)
 })
 ################################################################################
 #' Cleans absent levels in sampleMap/data.frame.

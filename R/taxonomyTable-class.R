@@ -48,14 +48,17 @@ setMethod("taxTab",  "ANY", function(object, errorIfNULL=TRUE){
 #' @rdname taxTab-methods
 #' @aliases taxTab,matrix-method
 setMethod("taxTab", "matrix", function(object){
+	# instantiate first to check validity
+	TT <- new("taxonomyTable", object)
+		
 	# Want dummy species/taxa index names if missing
-	if(is.null(rownames(object))){
-		rownames(object) <- paste("sp", 1:nrow(object), sep="")
+	if(is.null(rownames(TT))){
+		rownames(TT) <- paste("sp", 1:nrow(TT), sep="")
 	}
-	if(is.null(colnames(object))){
-		colnames(object) <- paste("ta", 1:ncol(object), sep="")
+	if(is.null(colnames(TT))){
+		colnames(TT) <- paste("ta", 1:ncol(TT), sep="")
 	}	
-	new("taxonomyTable", object)
+	return(TT)
 })
 #' @rdname taxTab-methods
 #' @aliases taxTab taxtab

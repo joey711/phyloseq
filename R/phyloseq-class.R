@@ -37,8 +37,11 @@ phyloseq <- function(...){
 	
 	# Remove names from arglist. Will replace them based on their class
 	names(arglist) <- NULL
+
+	# ignore all but component data classes.
+	arglist  <- arglist[sapply(arglist, class) %in% get.component.classes()]
 	
-	# Make the name-replaced, splatted list, vetted by splat.phlyoseq.objects
+	# Make the name-replaced, splatted list
 	splatlist <- sapply(arglist, splat.phyloseq.objects)
 
 	## Need to determine which new() type to call.
@@ -121,10 +124,12 @@ splat.phyloseq.objects <- function(x){
 	if( class(x) %in% component.classes ){
 		splatx <- list(x)
 		names(splatx) <- names(component.classes)[component.classes==class(x)]
-	} else { 
-		slotnames <- names(getSlots(class(x)))
+	} else if( class(x) == "phyloseq" ){ 
+		slotnames <- names(getSlots("phyloseq"))
 		allslots  <- sapply(slotnames, function(i, x){access(x, i, FALSE)}, x)
 		splatx    <- allslots[!sapply(allslots, is.null)]
+	} else {
+		return(NULL)
 	}
 	return(splatx)
 }

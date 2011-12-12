@@ -51,25 +51,27 @@ setMethod("otuTable", "otuTable", function(object, errorIfNULL=TRUE){ return(obj
 #' @aliases otuTable,matrix-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "matrix", function(object, speciesAreRows){
+	# instantiate first to check validity
+	otutab <- new("otuTable", object, speciesAreRows=speciesAreRows)
 	# Want dummy species/sample index names if missing
 	if(speciesAreRows){
-		if(is.null(rownames(object))){
-			rownames(object) <- paste("sp", 1:nrow(object), sep="")
+		if(is.null(rownames(otutab))){
+			rownames(otutab) <- paste("sp", 1:nrow(otutab), sep="")
 		}
-		if(is.null(colnames(object))){
-			colnames(object) <- paste("sa", 1:ncol(object), sep="")
+		if(is.null(colnames(otutab))){
+			colnames(otutab) <- paste("sa", 1:ncol(otutab), sep="")
 		}
 	} else {
-		if(is.null(rownames(object))){
-			rownames(object) <- paste("sa",1:nrow(object),sep="")
+		if(is.null(rownames(otutab))){
+			rownames(otutab) <- paste("sa",1:nrow(otutab),sep="")
 		}
-		if(is.null(colnames(object))){
-			colnames(object) <- paste("sp",1:ncol(object),sep="")
+		if(is.null(colnames(otutab))){
+			colnames(otutab) <- paste("sp",1:ncol(otutab),sep="")
 		}
 	}
-	new("otuTable", object, speciesAreRows=speciesAreRows)
+	return(otutab)
 })
-# # # Convert to matrix, then instantiate otuTable.
+# # # Convert to matrix, then dispatch.
 #' @aliases otuTable,data.frame-method
 #' @rdname otuTable-methods
 setMethod("otuTable", "data.frame", function(object, speciesAreRows){
