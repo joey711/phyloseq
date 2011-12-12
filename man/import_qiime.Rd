@@ -35,9 +35,10 @@
   these levels explicitly. Default value is \code{NULL}.}
 
   \item{...}{Additional arguments passed to
-  \code{\link{read.nexus}}, as necessary. Make sure that
-  your phylogenetic tree file is readable by
-  \code{\link{read.nexus}} prior to calling this function.}
+  \code{\link[ape]{read.nexus}}, as necessary. Make sure
+  that your phylogenetic tree file is readable by
+  \code{\link[ape]{read.nexus}} prior to calling this
+  function.}
 }
 \value{
   A \code{\link{phyloseq-class}} object.

@@ -1,5 +1,5 @@
 ##############################################################################
-#' Custom version of \code{picante::internal2tips()}
+#' Custom version of \code{\link[picante]{internal2tips}}
 #'
 #' Internal function for \code{\link{UniFrac}}.
 #' 
@@ -15,7 +15,7 @@
 #'
 #' @keywords internal
 #' @return character vector
-#' @seealso internal2tips UniFrac
+#' @seealso \code{\link[picante]{internal2tips}} \code{\link{UniFrac}}
 #' 
 #' @examples #
 internal2tips.self = function (phy, int.node, return.names = TRUE){
@@ -175,7 +175,7 @@ unifracPair <- function(occ, tree, A, B){
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}. 
 #'
 #' @return A single number between 0, 1.
-#' @seealso UniFrac
+#' @seealso \code{\link{UniFrac}}
 #' 
 #' @export
 #' @examples #
@@ -243,14 +243,14 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #'
 #' @usage UniFrac(OTU, tree, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 #'
-#' @param OTU (Required). \code{otuTable}, or \code{phyloseq} object. If you have
+#' @param OTU (Required). \code{\link{phyloseq-class}} or \code{\link{otuTable}}.
+#'  If you have
 #'  instead a simple matrix of abundances, see \code{\link{otuTable}} for coercing
 #'  it to the \code{otuTable} class.
 #'
-#' @param tree (Optional). Object of class \code{phylo}. Not necessary (and ignored) 
-#'  if 
-#'  \code{OTU} is an object that also contains a tree (\code{phyloseq} class, 
-#'  or its children).
+#' @param tree (Optional). Object of class \code{\link{phylo}}. 
+#'  Not necessary (and ignored) if 
+#'  \code{OTU} is \code{phyloseq}-class and contains a tree (try \code{\link{tre}}).
 #'
 #' @param weighted (Optional). Logical. Should use weighted-UniFrac calculation?
 #'  Weighted-UniFrac takes into account the relative abundance of species/taxa
@@ -348,7 +348,7 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
 		warning("To solve, try: phyloseq(OTU, tree)    or try:  prune_species( ).\n")
 		combinedOTUtree <- phyloseq(OTU, tree)
 		OTU  <- otuTable(combinedOTUtree)
-		tree <- suppressWarnings(as(tre(combinedOTUtree), "phylo"))
+		tree <- tre(combinedOTUtree)
     }
 
 	### Some parallel-foreach housekeeping.    

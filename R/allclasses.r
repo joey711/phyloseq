@@ -81,7 +81,6 @@ setClassUnion("sampleMapOrNULL", c("sampleMap", "NULL"))
 #' @keywords internal
 setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
 #' @keywords internal
-#' @import ape
 setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 ################################################################################
 # The actual phyloseq master class with all 4 slots. This is akin to 

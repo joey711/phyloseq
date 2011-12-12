@@ -35,6 +35,6 @@
 #
 }
 \seealso{
-  UniFrac
+  \code{\link{UniFrac}}
 }
 

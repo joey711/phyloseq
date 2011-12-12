@@ -131,8 +131,8 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #'  explicitly.
 #'  Default value is \code{NULL}. 
 #'
-#' @param ... Additional arguments passed to \code{\link{read.nexus}}, as necessary.
-#'  Make sure that your phylogenetic tree file is readable by \code{\link{read.nexus}}
+#' @param ... Additional arguments passed to \code{\link[ape]{read.nexus}}, as necessary.
+#'  Make sure that your phylogenetic tree file is readable by \code{\link[ape]{read.nexus}}
 #'  prior to calling this function.
 #'
 #' @return A \code{\link{phyloseq-class}} object.
@@ -150,7 +150,6 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
-#' @import ape
 #' @export
 #' @examples #
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
@@ -179,8 +178,8 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
 		} else {
-			#tree <- read.tree(treefilename, ...)
-			tree <- read.nexus(treefilename, ...)
+			#tree <- ape::read.tree(treefilename, ...)
+			tree <- ape::read.nexus(treefilename, ...)
 		}
 		argumentlist <- c(argumentlist, list(tree) )
 	}
@@ -316,7 +315,7 @@ read_env_file <- function(envfilename, tree=NULL, sep="\t"){
 	tipSampleTable <- read.table(envfilename, sep=sep)
 	# Remove elements of tipSampleTable that aren't in the tree
 	if( class(tree) == "phylo" ){
-		tipSampleTable <- tipSampleTable[tipSampleTable[,1] %in% tree$tip.label,]
+		tipSampleTable <- tipSampleTable[tipSampleTable[, 1] %in% tree$tip.label, ]
 	}
 	return(tipSampleTable)
 }

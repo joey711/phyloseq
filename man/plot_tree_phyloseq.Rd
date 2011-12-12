@@ -1,16 +1,16 @@
 \name{plot_tree_phyloseq}
 \alias{plot_tree_phyloseq}
-\title{Function to plot phyloseq-class as tree with annotated tips.}
+\title{Plot tree with easy tip annotation.}
 \usage{
-  plot_tree_phyloseq(object, color_factor = NULL,
-  shape_factor = NULL, base_size = 1, size_scaling_factor =
-  0.2, opacity = 2/3, custom_color_scale = NULL,
-  custom_shape_scale = NULL, type_abundance_value = FALSE,
-  printTheseTaxa = NULL, ...)
+  plot_tree_phyloseq(physeq, color_factor=NULL,
+  shape_factor=NULL, base_size=1, size_scaling_factor =
+  0.2, opacity=2/3, custom_color_scale=NULL,
+  custom_shape_scale=NULL, type_abundance_value=FALSE,
+  printTheseTaxa=NULL, treeTitle="Annotated Tree", ...)
 }
 \arguments{
-  \item{object}{(Required). A phyloseq object with
-  non-empty tree, sampleMap, and otuTable components.}
+  \item{physeq}{(Required). \code{\link{phyloseq-class}}
+  with non-empty tree, sampleMap, and otuTable components.}
 
   \item{color_factor}{A character string specifying the
   column of the sampleMap that will be used for setting the
@@ -37,7 +37,7 @@
   between 0, 1. Defaul value is 2/3.}
 
   \item{custom_color_scale}{A character vector of the
-  desired custom color scale. This should be a schale, not
+  desired custom color scale. This should be a scale, not
   an aesthetic map. Therefore, it will in most-cases
   contain only unique elements, unless two different
   categories of data are supposed to have the same color.
@@ -57,9 +57,13 @@
   labels.}
 
   \item{printTheseTaxa}{a character vector of the taxa
-  names in \code{object} that should be labeled on the tree
+  names in \code{physeq} that should be labeled on the tree
   plot adjacent to the right. Default is NULL. Not yet
   implemented.}
+
+  \item{treeTitle}{(Optional). Character string, for the
+  title of the graphic. Default is \code{"Annotated
+  Tree"}.}
 
   \item{...}{Additional parameters passed on to
   \code{\link{tipsymbols}}.}
@@ -70,8 +74,10 @@
   particular taxa was observed.
 }
 \description{
-  Function to plot phyloseq-class as tree with annotated
-  tips.
+  Requires a \code{\link{phyloseq-class}} that contains a
+  tree (\code{\link{tre}}), sample data
+  (\code{\link{sampleMap}}), and abundance table
+  (\code{\link{otuTable}}).
 }
 \examples{
 # data(ex1)

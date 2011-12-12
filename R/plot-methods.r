@@ -5,9 +5,12 @@
 ################################################################################
 ################################################################################
 ################################################################################
-#' Generic plot defaults for phyloseq-objects.
+#' Generic plot defaults for phyloseq.
 #'
 #' The specific plot type is chosen according to available non-empty slots.
+#' This is mainly for syntactic convenience and quick-plotting. See links below
+#' for some examples of available graphics tools available in the
+#' \code{\link{phyloseq-package}}.  
 #'
 #' @usage plot_phyloseq(physeq, ...)
 #' 
@@ -21,12 +24,18 @@
 #' @return A plot is created. The nature and class of the plot depends on 
 #'  the \code{physeq} argument, specifically, which component data classes
 #'  are present.
+#' 
+#' @seealso 
+#'  \code{\link{taxaplot}}
+#'  \code{\link{plot_tree_phyloseq}}
+#'  \code{\link{plot_ordination_phyloseq}}
+#'  \code{\link{calcplot}}
+#'  \code{\link{makenetwork}}
 #'
 #' @export
-#' @import ape
 #' @docType methods
 #' @rdname plot_phyloseq-methods
-#' 
+#'
 #' @examples 
 #'  ## data(ex1)
 #'  ## plot_phyloseq(ex1)
@@ -40,9 +49,11 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 		taxaplot(otu=physeq, ...)
 	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
 		tree <- tre(physeq)
-		plot.phylo(tree, ...)	
-		nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
-		edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
+		ape::plot.phylo(tree, ...)	
+		ape::nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
+		ape::edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
+	} else {
+		makenetwork(physeq)
 	}
 })
 ################################################################################
@@ -839,9 +850,19 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 	text( (XX + adj[1] - 0.5), (YY + adj[2] - 0.5), ... )
 }
 ################################################################################
-#' Function to plot phyloseq-class as tree with annotated tips.
+#' Plot tree with easy tip annotation.
 #'
-#' @param object (Required). A phyloseq object with non-empty tree, sampleMap, and otuTable components.
+#' Requires a \code{\link{phyloseq-class}} that contains a tree (\code{\link{tre}}), 
+#' sample data (\code{\link{sampleMap}}),
+#' and abundance table (\code{\link{otuTable}}).
+#'
+#' @usage plot_tree_phyloseq(physeq, color_factor=NULL, shape_factor=NULL, 
+#'  base_size=1, size_scaling_factor = 0.2, opacity=2/3,
+#'  custom_color_scale=NULL, custom_shape_scale=NULL, 
+#'  type_abundance_value=FALSE, printTheseTaxa=NULL, treeTitle="Annotated Tree", ...)
+#'
+#' @param physeq (Required). \code{\link{phyloseq-class}} with non-empty 
+#'  tree, sampleMap, and otuTable components.
 #'
 #' @param color_factor A character string specifying the column
 #'  of the sampleMap that will be used for setting the color of symbols.
@@ -865,7 +886,7 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #'
 #' @param custom_color_scale A character vector of the desired custom color scale.
 #'  This should
-#'  be a schale, not an aesthetic map. Therefore, it will in most-cases 
+#'  be a scale, not an aesthetic map. Therefore, it will in most-cases 
 #'  contain only unique elements, unless two different categories of data
 #'  are supposed to have the same color. Default value is NULL, which
 #'  invokes a default color scale using the \code{\link{rainbow}} function.
@@ -880,9 +901,12 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #'  of symbols when the value is greater than one. 
 #'  Default is FALSE, indicating no labels.
 #'
-#' @param printTheseTaxa a character vector of the taxa names in \code{object}
+#' @param printTheseTaxa a character vector of the taxa names in \code{physeq}
 #'  that should be labeled on the tree plot adjacent to the right. Default is
 #'  NULL. Not yet implemented.
+#'
+#' @param treeTitle (Optional). Character string, for the title
+#'  of the graphic. Default is \code{"Annotated Tree"}.
 #'
 #' @param ... Additional parameters passed on to \code{\link{tipsymbols}}.
 #'
@@ -906,10 +930,10 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #'	# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
 #' # plot(phyloseqTree(ex2), color_factor="Gender", shape_factor="Diet", 
 #'  # size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta") )
-plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL, 
+plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL, 
 	base_size=1, size_scaling_factor = 0.2, opacity=2/3,
 	custom_color_scale=NULL, custom_shape_scale=NULL, 
-	type_abundance_value=FALSE, printTheseTaxa=NULL, ...){
+	type_abundance_value=FALSE, printTheseTaxa=NULL, treeTitle="Annotated Tree", ...){
 
 	# Initialize categories vector, giving the sampleMap index of aesthetics.
 	categories <- character(2); names(categories) <- c("color", "shape")
@@ -917,8 +941,8 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 	# Only look for default factors if color_factor AND shape_factor absent.
 	if( is.null(color_factor) & is.null(shape_factor) ){
 		# Want to use up to the first two factors in sampleMap as default.
-		smdf_factor_types <- lapply(data.frame(sampleMap(object)), class) == "factor"
-		available_factors <- colnames(sampleMap(object))[	smdf_factor_types ]
+		smdf_factor_types <- lapply(data.frame(sampleMap(physeq)), class) == "factor"
+		available_factors <- colnames(sampleMap(physeq))[	smdf_factor_types ]
 		categories["color"] <- available_factors[1]
 		if( length(available_factors) > 1 ){
 			categories["shape"] <- available_factors[2]
@@ -931,7 +955,7 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 	
 	# color
 	if( categories["color"] != "" ){
-		color_factor <- data.frame(sampleMap(object))[, categories["color"]]
+		color_factor <- data.frame(sampleMap(physeq))[, categories["color"]]
 		# determine the color scale.
 		if( is.null(custom_color_scale) ){
 			avail_colors <- rainbow(length(levels(color_factor)), alpha=opacity)
@@ -942,13 +966,13 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 		# set the color vector.
 		color_vec    <- avail_colors[color_factor]
 	} else {
-		color_vec <- rep("black", nsamples(object))
+		color_vec <- rep("black", nsamples(physeq))
 	}
-	names(color_vec) <- sample.names(object)
+	names(color_vec) <- sample.names(physeq)
 
 	# shape	 custom_shape_scale
 	if( categories["shape"] != "" ){
-		shape_factor <- data.frame(sampleMap(object))[, categories["shape"]]
+		shape_factor <- data.frame(sampleMap(physeq))[, categories["shape"]]
 		# determine the shape scale.
 		if( is.null(custom_shape_scale) ){
 			avail_shapes <- (1:(length(levels(shape_factor)))) + 20
@@ -959,16 +983,16 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 		# set the shape vector
 		shape_vec <- avail_shapes[shape_factor]
 	} else {
-		shape_vec <- rep(22, nsamples(object))
+		shape_vec <- rep(22, nsamples(physeq))
 	}
-	names(shape_vec) <- sample.names(object)
+	names(shape_vec) <- sample.names(physeq)
 	
-	# Access phylo-class tree. Error if its missing.
-	tree <- tre(object)
+	# Access phylo-class tree. Error if it is missing.
+	tree <- tre(physeq)
 	
 	# Now plot the initial, symbol-less tree. Must be first to get the proper
 	# x, y limits to calculate the scales of the annotation objects.
-	plot(tree, type="phylogram", show.tip.label=FALSE,
+	ape::plot.phylo(tree, type="phylogram", show.tip.label=FALSE,
 		xpd=NA, no.margin=TRUE, edge.width=1.5)
 
 	# Store information about the tree-plot
@@ -978,8 +1002,7 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 	ylims <- lastPP$y.lim	
 
 	# Add title of tree
-	treeTitle = "Tree Example"
-	text(x=(0.35*xlims[2]), y=(1.02*ylims[2]), labels=treeTitle, pos=4, cex=1.5)
+	text(x=(0.35*xlims[2]), y=(1.02*ylims[2]), labels=treeTitle[1], pos=4, cex=1.5)
 
 	# Add scale bar
 	add.scale.bar(x=(0.5*xlims[2]), y=0, length=0.1)
@@ -988,10 +1011,10 @@ plot_tree_phyloseq <- function(object, color_factor=NULL, shape_factor=NULL,
 	########################################
 	# Now loop over sample variables
 	########################################
-	for( i in species.names(object) ){ # i loops over species
-		#i = species.names(object)[speciesSums(object) == max(speciesSums(object))]
+	for( i in species.names(physeq) ){ # i loops over species
+		#i = species.names(physeq)[speciesSums(physeq) == max(speciesSums(physeq))]
 		# sitesi should hold the sites that are relevant to species "i"
-		sitesi <- getSamples( object, i)
+		sitesi <- getSamples( physeq, i)
 		sitesi <- sitesi[sitesi >= 1] 
 		
 		# assign to pchi / coli values if species "i" is in the associated site

@@ -1,6 +1,6 @@
 \name{internal2tips.self}
 \alias{internal2tips.self}
-\title{Custom version of \code{picante::internal2tips()}}
+\title{Custom version of \code{\link[picante]{internal2tips}}}
 \usage{
   internal2tips.self(phy, int.node, return.names = TRUE)
 }
@@ -28,7 +28,8 @@
 #
 }
 \seealso{
-  internal2tips UniFrac
+  \code{\link[picante]{internal2tips}}
+  \code{\link{UniFrac}}
 }
 \keyword{internal}
 

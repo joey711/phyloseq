@@ -9,15 +9,15 @@
   parallel=FALSE)
 }
 \arguments{
-  \item{OTU}{(Required). \code{otuTable}, or
-  \code{phyloseq} object. If you have instead a simple
+  \item{OTU}{(Required). \code{\link{phyloseq-class}} or
+  \code{\link{otuTable}}. If you have instead a simple
   matrix of abundances, see \code{\link{otuTable}} for
   coercing it to the \code{otuTable} class.}
 
-  \item{tree}{(Optional). Object of class \code{phylo}. Not
-  necessary (and ignored) if \code{OTU} is an object that
-  also contains a tree (\code{phyloseq} class, or its
-  children).}
+  \item{tree}{(Optional). Object of class
+  \code{\link{phylo}}. Not necessary (and ignored) if
+  \code{OTU} is \code{phyloseq}-class and contains a tree
+  (try \code{\link{tre}}).}
 
   \item{weighted}{(Optional). Logical. Should use
   weighted-UniFrac calculation? Weighted-UniFrac takes into
