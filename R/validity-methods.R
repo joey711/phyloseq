@@ -24,9 +24,9 @@
 ################################################################################
 ########################################
 # otuTable:
-########################################
 # # # * all values must be numeric (otuTable()-constructor should probably round values by default))
 # # # * all values must be >= 0 (no negative abundances)
+########################################
 validOTUtable <- function(object){
 	# Both dimensions must have non-zero length.
 	if( any(dim(object)==0) ){
@@ -48,7 +48,6 @@ setValidity("otuTable", validOTUtable)
 ########################################
 # sampleMap:
 ########################################
-# sampleMap validity function
 validSampleData <- function(object){
 	if( any(dim(object)==0) ){
 		return("Sample Data must have non-zero dimensions.")
@@ -64,6 +63,7 @@ setValidity("sampleMap", validSampleData)
 # # # * all values must be a character
 # # # * at least some non-NULL (or equiv) values
 # taxonomyTable validity function
+########################################
 validTaxonomyTable <- function(object){
 	# Both dimensions must have non-zero length.
 	if( any(dim(object)==0) ){
@@ -88,7 +88,8 @@ setValidity("taxonomyTable", validTaxonomyTable)
 # # (Any rules about trees appropriate in this context?)
 
 ########################################
-# phyloseq:
+########################################
+# phyloseq-class:
 ########################################
 # Because data-index complete-matching is checked/enforced by the phyloseq() constructor,
 # it should not be checked here, or the constructor will fail validity tests before
@@ -96,6 +97,7 @@ setValidity("taxonomyTable", validTaxonomyTable)
 # Instead, the validity test can check if there is any intersection of the species names
 # and/or sample names, prior to any attempt by the constructor to prune (which would end)
 # in a mysterious index error, anyway
+########################################
 validphyloseq <- function(object){
 	# There must be an otuTable
 	if( is.null(object@otuTable) ){

@@ -5,10 +5,9 @@
   intersect_species(x)
 }
 \arguments{
-  \item{x}{An object of the phyloseq package that contains
-  2 or more components data tables that in-turn describe
-  species/taxa. E.g. An otuTree object, or an otuTax
-  object.}
+  \item{x}{(Required). A \code{\link{phyloseq-class}}
+  object that contains 2 or more components that in-turn
+  describe species/taxa.}
 }
 \value{
   Returns a character vector of only those species that are

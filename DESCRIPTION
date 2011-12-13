@@ -44,3 +44,4 @@ Collate:
     'multtest-wrapper.R'
     'ordination-methods.R'
     'transform_filter-methods.R'
+    'validity-methods.R'
