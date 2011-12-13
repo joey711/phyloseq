@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.5.20
-Date: 2011-12-11
+Version: 0.5.21
+Date: 2011-12-12
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>

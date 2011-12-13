@@ -50,11 +50,9 @@ phyloseq <- function(...){
 		stop("phyloseq()-ERROR: Too many components provided\n")
 	} else if( length(names(splatlist)) > length(unique(names(splatlist))) ){
 		stop("phyloseq()-ERROR: Only one of each component type allowed.\n",
-		"For merging multiple tables of the same class, try merge_phyloseq(...)\n")
+		"For merging multiple objects of the same class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
-	} else if( !("otuTable" %in% sapply(splatlist, class)) ){
-		stop("phyloseq()-ERROR: Argument list must include an otuTable.\n")
 	# Instantiate the phyloseq-class object, ps.
 	} else {
 		ps <- do.call("new", c(list(Class="phyloseq"), splatlist) )
@@ -237,9 +235,9 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #'
 #' @usage intersect_species(x)
 #'
-#' @param x An object of the phyloseq package that contains 2 or more components
-#'  data tables that in-turn describe species/taxa. E.g. An otuTree object, or
-#'  an otuTax object.
+#' @param x (Required). A \code{\link{phyloseq-class}} object
+#'  that contains 2 or more components
+#'  that in-turn describe species/taxa.
 #'
 #' @return Returns a character vector of only those species that are present in
 #'  all species-describing components of \code{x}.
