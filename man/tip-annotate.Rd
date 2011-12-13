@@ -1,7 +1,7 @@
 \name{tipsymbols}
 \alias{tipsymbols}
 \alias{tiptext}
-\title{Annotate tips on a tree.}
+\title{Annotate tips on a tree with symbols or text.}
 \usage{
   tipsymbols(tip, adj=c(0.5, 0.5), ...)
 
@@ -17,21 +17,23 @@
 
   \item{...}{Additional plotting parameters that are passed
   to \code{\link{points}} or \code{\link{text}} in the R
-  base graphics.}
+  base graphics. Again, for \code{tiptext()}, make sure to
+  include a \code{labels=} argument.}
 }
 \value{
   No objects returned. Symbol or text is plotted on the
   available graphic device.
 }
 \description{
-  There were some unexpected behavior from the tiplabels
-  function in ape. These functions are intended to act as
-  simplified versions that act as a convenience wrapper for
-  \code{points()} or \code{text()} functions, respectively,
-  but where the tip coordinates are specified by giving the
-  tip ID (integer) as input.
-
-  Do not forget to include a \code{labels} argument.
+  There were some unexpected behavior from the
+  \code{\link[ape]{tiplabels}} function in ape. These
+  functions are intended to act as simplified versions that
+  act as a convenience wrapper for \code{points()} or
+  \code{text()} functions, respectively, but where the tip
+  coordinates are specified by giving the tip ID (integer)
+  as input. For \code{tiptext()}, make sure to include a
+  \code{labels=} argument, which will be passed on to
+  \code{\link[graphics]{text}}.
 }
 \examples{
 #

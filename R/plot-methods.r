@@ -789,15 +789,19 @@ setMethod("makenetwork", signature("phyloseq"),
 # tipsymbols and tiptext. Need to make both tipsymbols and tiptext documentation
 # point to this one.
 ################################################################################
-#' Annotate tips on a tree.
+#' Annotate tips on a tree with symbols or text.
 #'
-#' There were some unexpected behavior from the tiplabels function in ape. These
+#' There were some unexpected behavior from the \code{\link[ape]{tiplabels}}
+#' function in ape. These
 #' functions are intended to act as simplified versions that act as a convenience
 #' wrapper for \code{points()} or \code{text()} functions, respectively, 
 #' but where the tip
 #' coordinates are specified by giving the tip ID (integer) as input.
+#' For \code{tiptext()}, make sure to include a \code{labels=} argument, which
+#' will be passed on to \code{\link[graphics]{text}}.
 #'
 #' @usage tipsymbols(tip, adj=c(0.5, 0.5), ...)
+#' @usage tiptext(tip, adj=c(0.5, 0.5), ...)
 #'
 #' @param tip An integer specifying the tip ID in a tree that for which the 
 #'  base plot has already been generated and is still available to \code{R}.
@@ -806,6 +810,7 @@ setMethod("makenetwork", signature("phyloseq"),
 #' 
 #' @param ... Additional plotting parameters that are passed to 
 #'  \code{\link{points}} or \code{\link{text}} in the R base graphics.
+#'  Again, for \code{tiptext()}, make sure to include a \code{labels=} argument.
 #'
 #' @return No objects returned. Symbol or text is plotted on the available
 #'  graphic device.
@@ -834,10 +839,6 @@ tipsymbols <- function(tip, adj=c(0.5, 0.5), ...){
 }
 ################################################################################
 # Custom text plotting function
-#' Annotate the tips of a phylogenetic tree plot with text.
-#'
-#' Do not forget to include a \code{labels} argument.
-#'
 #' @export
 #' @rdname tip-annotate
 tiptext <- function(tip, adj=c(0.5, 0.5), ...){
