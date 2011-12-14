@@ -48,7 +48,7 @@ setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", ...) standardGene
 setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", ...){
 	# If sampleMap slot is non-empty, and the classlabel is a character-class
 	# length(classlabel) == 1
-	if( !is.null(sampleMap(ex1, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
+	if( !is.null(sampleMap(physeq, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
 		rawFactor  <- as(sampleMap(physeq), "data.frame")[, classlabel[1]]
 		if( class(rawFactor) != "factor" ){
 			rawFactor <- factor(rawFactor)
@@ -66,10 +66,17 @@ setMethod("mt", c("otuTable", "integer"), function(physeq, classlabel, minPmaxT=
 	mt.phyloseq.internal(as(physeq, "matrix"), classlabel, minPmaxT, ...)
 })
 ################################################################################
-# Force numeric classlabel to be integer, pass-on
+# Coerce numeric classlabel to be integer, pass-on
 #' @aliases mt,otuTable,numeric-method
 #' @rdname mt-methods
 setMethod("mt", c("otuTable", "numeric"), function(physeq, classlabel, minPmaxT="minP", ...){
+	mt(physeq, as(classlabel, "integer"), minPmaxT="minP", ...)
+})
+################################################################################
+# Coerce logical to integer, pass-on
+#' @aliases mt,otuTable,logical-method
+#' @rdname mt-methods
+setMethod("mt", c("otuTable", "logical"), function(physeq, classlabel, minPmaxT="minP", ...){
 	mt(physeq, as(classlabel, "integer"), minPmaxT="minP", ...)
 })
 ################################################################################

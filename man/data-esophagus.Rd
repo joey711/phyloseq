@@ -1,15 +1,15 @@
 \docType{data}
-\name{data-ex2}
-\alias{data-ex2}
-\alias{ex2}
-\title{Small example dataset from a human esophageal community}
+\name{data-esophagus}
+\alias{data-esophagus}
+\alias{esophagus}
+\title{Small example dataset from a human esophageal community (2004)}
 \description{
   Includes just 3 samples, 1 each from 3 subjects. Although
   the research article mentions 4 subjects, only 3 are
   included in this dataset.
 }
 \details{
-  abstract from research article:
+  abstract from research article (quoted):
 
   The esophagus, like other luminal organs of the digestive
   system, provides a potential environment for bacterial
@@ -30,12 +30,14 @@
   Prevotella (17\%), and Veilonella (14\%) were most
   prevalent. The present study identified 56-79\% of SLOTU
   in this bacterial ecosystem. Most SLOTU of esophageal
-  biota are similar or identical to residents of the up-
-  stream oral biota, but the major distinction is that a
+  biota are similar or identical to residents of the
+  upstream oral biota, but the major distinction is that a
   large majority (82\%) of the esophageal bacteria are
   known and cultivable. These findings provide evidence for
   a complex but conserved bacterial population in the
   normal distal esophagus.
+
+  (end quote)
 
   A description of the 16S rRNA sequence processing can be
   found on the mothur-wiki at the link below. A cutoff of
@@ -45,19 +47,19 @@
   function.
 }
 \examples{
-## # Example using ex2 in a UniFrac calculation.
-## data(ex2)
-## UniFrac(ex2, weighted=TRUE)
-## UniFrac(ex2, weighted=FALSE)
-## unifrac(t(as(otuTable(ex2), "matrix")), tre(ex2) )
-# # Example importing the mothur example files to create ex2.
+## # Example using esophagus-data in a UniFrac calculation.
+## data(esophagus)
+## UniFrac(esophagus, weighted=TRUE)
+## UniFrac(esophagus, weighted=FALSE)
+## unifrac(t(as(otuTable(esophagus), "matrix")), tre(esophagus) )
+# # Example importing the mothur example files to create esophagus.
 # show_mothur_list_cutoffs("~/Dropbox/R/esophagus_example/esophagus.fn.list")
 # mothlist  <- "~/esophagus_example/esophagus.fn.list"
 ### mothgroup <- "~/esophagus_example/esophagus.groups"
 # mothgroup <- "~/esophagus_example/esophagus.good.groups"
 # mothtree  <- "~/esophagus_example/esophagus.tree"
 # cutoff    <- "0.10"
-# ex2       <- import_mothur(mothlist, mothgroup, mothtree, cutoff)
+# esophagus <- import_mothur(mothlist, mothgroup, mothtree, cutoff)
 }
 \author{
   Pei et al. \email{zhiheng.pei@med.nyu.edu}

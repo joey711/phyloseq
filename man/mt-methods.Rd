@@ -4,6 +4,7 @@
 \alias{mt,otuTable,character-method}
 \alias{mt,otuTable,factor-method}
 \alias{mt,otuTable,integer-method}
+\alias{mt,otuTable,logical-method}
 \alias{mt,otuTable,numeric-method}
 \alias{mt,phyloseq,ANY-method}
 \title{Multiple testing of taxa abundancesa acccording to a sample variate}
