@@ -42,9 +42,9 @@
   A description of the 16S rRNA sequence processing can be
   found on the mothur-wiki at the link below. A cutoff of
   0.10 was used for OTU clustering in that example, and it
-  is taken here as well to create example data, \code{ex2},
-  which was easily imported with the \code{import_mothur()}
-  function.
+  is taken here as well to create example data,
+  \code{esophagus}, which was easily imported with the
+  \code{import_mothur()} function.
 }
 \examples{
 ## # Example using esophagus-data in a UniFrac calculation.

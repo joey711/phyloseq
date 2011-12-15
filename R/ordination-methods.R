@@ -7,18 +7,21 @@
 # Whether-or-not to transpose needs to be a check, based on the 
 #   "SpeciesAreRows" slot value
 ################################################################################
-#' phyloseq package extension for \code{\link[vegan]{cca}}.
+#' Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.
 #'
 #' A formula is main input to \code{\link[vegan]{cca}}. This complicates dispatch based
 #' on object signature. A new method with a separate name is defined instead.
 #'
 #' @usage cca.phyloseq(X, ...)
+#' @usage rda.phyloseq(X, ...)
 #' 
-#' @param X (Required). A formula-class object, specifying the input.
-#'  No need to splat higher-order
-#'  objects. \code{cca.phyloseq} understands where to find the abundance table
-#'  and sample characteristics. Alternatively, \code{X} can be an otuTable, or any
-#'  more complex phyloseq-package class that contains an otuTable. 
+#' @param X (Required). A \code{\link{formula}}, specifying the input.
+#'  No need to directly access components.
+#'  \code{cca.phyloseq} understands where to find the abundance table
+#'  and sample data. Alternatively, \code{X} can be an 
+#'  \code{\link{otuTable-class}} or \code{\link{phyloseq-class}} (without
+#'  the \code{~} signifying a formula), in which case an unconstrained ordination
+#'  is performed. 
 #'
 #' @param ... (Optional). E.g. \code{data=DF}, where \code{DF} is a \code{data.frame}
 #'  containing information equivalent to
@@ -26,25 +29,38 @@
 #'  does not already contain \code{sampleMap} or you are keeping the data 
 #'  separate for some reason.
 #'
-#' @return same output as \code{\link[vegan]{cca}}.
+#' @return same output as \code{\link[vegan]{cca}} or \code{\link[vegan]{rda}}, respectively.
 #'
-#' @seealso \code{\link{rda.phyloseq}}, \code{\link[vegan]{cca}}
+#' @seealso \code{\link{plot_ordination_phyloseq}}, \code{\link{calcplot}},
+#'  \code{\link[vegan]{rda}}, \code{\link[vegan]{cca}}
 #'
-#' @rdname cca.phyloseq-methods
+#' @aliases cca.phyloseq rda.phyloseq
+#' @rdname cca-rda-phyloseq-methods
 #' @docType methods
 #'
 #' @export
 #' @import vegan
 #' @examples #
-#' ## data(ex1)
-#' ## cca.phyloseq(ex1 ~ Diet + Gender)
+#' # data(ex1)
+#' # # For RDA, use thresholded-rank
+#' # ex4  <- transformsamplecounts(ex1, threshrankfun(500))
+#' # # RDA
+#' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
+#' # # CCA
+#' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
+#' # plot_ordination_phyloseq(modr, ex1)
+#' # plot_ordination_phyloseq(modc, ex1)
+#' # # Perform unconstrained ordination
+#' # mod1 <- cca.phyloseq(ex1)
+#' # # unconstrained plot using vegan plotting
+#' # vegan:::plot.cca(mod1)
 setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
 ################################################################################
 #' @aliases cca.phyloseq,formula-method
-#' @rdname cca.phyloseq-methods
+#' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "formula", function(X, data=NULL){
-	phylobject <- get( as.character(X)[2] )
-	OTU        <- otuTable( phylobject )
+	physeq <- get( as.character(X)[2] )
+	OTU    <- otuTable( physeq )
 	if( speciesAreRows(OTU) ){
 		OTU <- t(as(OTU, "matrix"))
 	} else {
@@ -54,73 +70,41 @@ setMethod("cca.phyloseq", "formula", function(X, data=NULL){
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
 	# If an alternative table is not provided, assume it is from the sampleMap slot
 	if( is.null(data) ){
-		data <- data.frame(sampleMap(phylobject))
+		data <- data.frame(sampleMap(physeq))
 	}
+	# Good idea to qualify, as ade4 also has a conflicting "cca"
+	# and might be a dependency in the future.	
 	vegan::cca(newFormula, data=data)	
 })
 ################################################################################
 #' @aliases cca.phyloseq,otuTable-method
-#' @rdname cca.phyloseq-methods
+#' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "otuTable", function(X){
 	if( speciesAreRows(X) ){
 		X <- t(as(X, "matrix"))
 	} else {
 		X <- as(X, "matrix")
 	}
+	# Good idea to qualify, as ade4 also has a conflicting "cca"
+	# and might be a dependency in the future.
 	vegan::cca(X)	
 })
 ################################################################################
 #' @aliases cca.phyloseq,phyloseq-method
-#' @rdname cca.phyloseq-methods
+#' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "phyloseq", function(X){
 	cca.phyloseq(otuTable(X))
 })
 ################################################################################
-####################################################################################
-#' phyloseq package extension for \code{vegan::rda}.
-#'
-#' A formula is main input to \code{vegan::cca}. This complicates dispatch based
-#' on object signature. A new method with a separate name is defined instead.
-#' 
-#' @usage rda.phyloseq(X, ...)
-#' 
-#' @param X formula-class object specifying the input. No need to splat higher-order
-#'  objects. \code{rda.phyloseq} understands where to find the abundance table
-#'  and sample characteristics. The left-hand side should specify a single 
-#'  phyloseq object that contains (at minimum) an \code{otuTable} and a 
-#'  \code{sampleMap}. The right-hand side expects at least two different
-#'  variates, present in the \code{sampleMap} of the LHS. For available
-#'  variate names in your object, try \code{colnames(sampleMap(ex1))}, where
-#'  \code{ex1} is the phyloseq object containing your data. Because this is
-#'  a formula object, quotes should not be used. See \code{\link{formula}}
-#'  for details about writing a formula in R. Alternatively, X can be an otuTable-class,
-#'  or any more complex phyloseq-package class that contains an otuTable.
-#'
-#' @param ... (Optional). In most cases, if additional parameter needs to be 
-#'  specified, it will have the form \code{data=DF}, where \code{DF} is a
-#'  \code{data.frame} containing information equivalent to
-#'  a \code{sampleMap} object / component. Only necessary if complex object
-#'  does not already contain \code{sampleMap} or you are keeping the data 
-#'  separate for some reason.
-#'
-#' @return same output as \code{vegan::\link{rda}}
-#'
-#' @rdname rda.phyloseq-methods
-#' @docType methods
-#'
-#' @seealso \code{\link{cca.phyloseq}}
-#' @export
-#' @import vegan
-#' @examples #
-#' ## data(ex1)
-#' ## rda.phyloseq(ex1 ~ Diet + Gender)
+#' @rdname cca-rda-phyloseq-methods
+#' @aliases cca.phyloseq rda.phyloseq
 setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
 #' @aliases rda.phyloseq,formula-method
-#' @rdname rda.phyloseq-methods
+#' @rdname cca-rda-phyloseq-methods
 setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	#require(vegan)
-	phylobject <- get( as.character(X)[2] )
-	OTU        <- otuTable( phylobject )
+	physeq <- get( as.character(X)[2] )
+	OTU    <- otuTable( physeq )
 	if( speciesAreRows(OTU) ){
 		OTU <- t(OTU)@.Data
 	} else {
@@ -130,24 +114,24 @@ setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
 	# If an alternative table is not provided, assume it is from the sampleMap slot
 	if( is.null(data) ){
-		data <- data.frame(sampleMap(phylobject))
+		data <- data.frame(sampleMap(physeq))
 	}
-	vegan::rda(newFormula, data=data)	
+	rda(newFormula, data=data)	
 })
 ################################################################################
 #' @aliases rda.phyloseq,otuTable-method
-#' @rdname rda.phyloseq-methods
+#' @rdname cca-rda-phyloseq-methods
 setMethod("rda.phyloseq", "otuTable", function(X){
 	if( speciesAreRows(X) ){
 		X <- t(as(X, "matrix"))
 	} else {
 		X <- as(X, "matrix")
 	}
-	vegan::cca(X)	
+	rda(X)	
 })
 ################################################################################
 #' @aliases rda.phyloseq,phyloseq-method
-#' @rdname rda.phyloseq-methods
+#' @rdname cca-rda-phyloseq-methods
 setMethod("rda.phyloseq", "phyloseq", function(X){
 	rda.phyloseq(otuTable(X))
 })
