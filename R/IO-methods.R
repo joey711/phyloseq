@@ -293,31 +293,36 @@ import_qiime_sampleMap <- function(mapfilename){
 #' each row specifies (in order) the sequence name, source sample, and (optionally)
 #' the number of times the sequence was observed. 
 #'
-#' @usage read_env_file(envfilename, tree=NULL, sep="\t")
+#' @usage import_env_file(envfilename, tree=NULL, sep="\t", ...)
 #'
 #' @param envfilename (Required). A charater string of the ENV filename (relative or absolute)
 #'
-#' @param tree (Optional). A phylo object that will be used to prune elements in the
-#'  ENV hash table once it is read. Taxa not present as tip.labels in \code{tree}
-#'  will be excluded from the output.
+#' @param tree (Optional). \code{\link{phylo-class}} object to be paired with
+#'  the output otuTable. 
 #'
 #' @param sep A character string indicating the delimiter used in the file.
 #'  The default is \code{"\t"}.
 #'
-#' @return A two- or three- column hash table (matrix).
+#' @param ... Additional parameters passed on to \code{\link{read.table}}.
+#'
+#' @return An \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}} if 
+#'  a \code{\link{phylo-class}} argument is provided to \code{tree}.
 #'
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{envHash2otuTable}}
+#' @seealso \code{\link{import}}, \code{\link{tipglom}}
 #' @export
 #' @examples #
-read_env_file <- function(envfilename, tree=NULL, sep="\t"){
-	tipSampleTable <- read.table(envfilename, sep=sep)
-	# Remove elements of tipSampleTable that aren't in the tree
+import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
+	tipSampleTable <- read.table(envfilename, sep=sep, ...)
+	# Convert to otuTable-class table (trivial table)
+	physeq <- envHash2otuTable(tipSampleTable)
+	# If tree is provided, combine it with the OTU Table
 	if( class(tree) == "phylo" ){
-		tipSampleTable <- tipSampleTable[tipSampleTable[, 1] %in% tree$tip.label, ]
+		# Create phyloseq-class with a tree and OTU Table (will perform any needed pruning)
+		physeq <- phyloseq(physeq, tree)
 	}
-	return(tipSampleTable)
+	return(physeq)
 }
 ################################################################################  
 #' Convert a sequence-sample hash (like ENV file) into an OTU table.
@@ -332,23 +337,17 @@ read_env_file <- function(envfilename, tree=NULL, sep="\t"){
 #' @usage envHash2otuTable(tipSampleTable)
 #'
 #' @param tipSampleTable (Required). A two-column character table (matrix or data.frame), 
-#' where each row specifies the sequence name and source sample. This format 
-#' mirrors the output from \code{\link{read_env_file}}, consistent with the 
+#' where each row specifies the sequence name and source sample, consistent with the 
 #' env-file for the UniFrac server (\url{http://bmf2.colorado.edu/unifrac/}). 
 #'
-#' @return Trivial (sparse) OTU table. Object of class \code{otuTable}. 
-#' The 2- (or 3-) column hash table is parsed into a sparse matrix of 
-#' species-by-sample, where
-#' each species-row has only one non-zero value. We call this sparse abundance
-#' table the trivial OTU table, where every sequence is treated as a separate 
-#' species.
+#' @return \code{\link{otuTable}}. A trivial OTU table where each sequence 
+#'  is treated as a separate OTU. 
 #' 
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{read_env_file}}, \code{\link{tipglom}}, \code{\link{otuTable}}
+#' @seealso \code{\link{import_env_file}}, \code{\link{tipglom}}, \code{\link{otuTable}}
 #'
-#' @keywords OTU trivial environment file
-#' @export
+#' @keywords internal
 #' @examples #
 #' ## fakeSeqNameVec <- paste("seq_", 1:8, sep="")
 #' ## fakeSamNameVec <- c(rep("A", 4), rep("B", 4))
@@ -370,9 +369,8 @@ envHash2otuTable <- function(tipSampleTable){
 		trivialOTU <- table(as.data.frame(tipSampleTable))
 		trivialOTU <- as(trivialOTU, "matrix")	
 	}
-	otuTable(trivialOTU, speciesAreRows=TRUE)
+	return( otuTable(trivialOTU, speciesAreRows=TRUE) )
 }
-envhash2otutable <- envHash2otuTable
 ################################################################################
 ################################################################################
 ################################################################################

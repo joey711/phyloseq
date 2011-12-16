@@ -2,7 +2,7 @@
 \name{data-esophagus}
 \alias{data-esophagus}
 \alias{esophagus}
-\title{Small example dataset from a human esophageal community (2004)}
+\title{(Data) Small example dataset from a human esophageal community (2004)}
 \description{
   Includes just 3 samples, 1 each from 3 subjects. Although
   the research article mentions 4 subjects, only 3 are

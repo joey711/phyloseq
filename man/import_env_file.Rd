@@ -1,23 +1,27 @@
-\name{read_env_file}
-\alias{read_env_file}
+\name{import_env_file}
+\alias{import_env_file}
 \title{Read a UniFrac-formatted ENV file.}
 \usage{
-  read_env_file(envfilename, tree=NULL, sep="\t")
+  import_env_file(envfilename, tree=NULL, sep="\t", ...)
 }
 \arguments{
   \item{envfilename}{(Required). A charater string of the
   ENV filename (relative or absolute)}
 
-  \item{tree}{(Optional). A phylo object that will be used
-  to prune elements in the ENV hash table once it is read.
-  Taxa not present as tip.labels in \code{tree} will be
-  excluded from the output.}
+  \item{tree}{(Optional). \code{\link{phylo-class}} object
+  to be paired with the output otuTable.}
 
   \item{sep}{A character string indicating the delimiter
   used in the file. The default is \code{"\t"}.}
+
+  \item{...}{Additional parameters passed on to
+  \code{\link{read.table}}.}
 }
 \value{
-  A two- or three- column hash table (matrix).
+  An \code{\link{otuTable-class}}, or
+  \code{\link{phyloseq-class}} if a
+  \code{\link{phylo-class}} argument is provided to
+  \code{tree}.
 }
 \description{
   Convenience wrapper function to read the
@@ -35,6 +39,6 @@
   \url{http://bmf2.colorado.edu/unifrac/}
 }
 \seealso{
-  \code{\link{envHash2otuTable}}
+  \code{\link{import}}, \code{\link{tipglom}}
 }
 

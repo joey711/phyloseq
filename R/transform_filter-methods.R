@@ -1,20 +1,24 @@
 ################################################################################
-#' Agglomerate nearby tips in tree.
+#' Agglomerate closely-related taxa using single-linkage clustering.
 #' 
-#' tipglom determines those groups of tips in the tree that are closer than the
-#'   threshold provided as \code{speciationMinLength}. That is, all
-#' tips of the tree separated by a cophenetic distance smaller than 
-#' \code{speciationMinLength} will be agglomerated using \code{mergespecies}.
-#' Can be used to create non-trivial OTU table, by agglomerating nearby tips.
+#' All tips of the tree separated by a cophenetic distance smaller than 
+#' \code{speciationMinLength} will be agglomerated into one taxa using \code{mergespecies}.
+#' 
+#' Can be used to create a non-trivial OTU Table, if a phylogenetic tree is available.
+#'
+#' For now, a simple, ``greedy'', single-linkage clustering is used. In future releases
+#' it should be possible to specify different clustering approaches available in \code{R},
+#' in particular, complete-linkage clustering appears to be used more commonly for OTU
+#' clustering applications.
 #'
 #' @usage tipglom(tree, OTU, speciationMinLength=0.02)
 #'
-#' @param tree An object of class \code{phyloseq}, in which case
-#' the OTU argument can be ommitted. If, alternatively, \code{tree} is a \code{phylo}
-#' class, then \code{OTU} is required. 
+#' @param tree \code{\link{phyloseq-class}}, containing an OTU Table and
+#'  phylogenetic tree. If, alternatively, \code{tree} is a \code{\link{phylo-class}},
+#'  then \code{OTU} is required.
 #'
 #' @param OTU An otuTable object. Optional. Ignored if \code{tree} is a 
-#'  \code{phyloseq} object. If \code{tree} is a \code{phylo}
+#'  \code{\link{phyloseq-class}} object. If \code{tree} is a \code{phylo}
 #'  object and \code{OTU} is provided, then return will be an \code{phyloseq}
 #'  object. 
 #'
@@ -34,7 +38,17 @@
 #' # # # data(phylocom)
 #' # # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
 #' # # # x1   <- phyloseq(otu, phylocom$phylo)
-#' # # # print(x1)
+#' # # # print(x1); par(mfrow=c(2, 1)); plot(tre(x1))
+#' # # # x2 <- tipglom(x1, speciationMinLength = 2.5)
+#' # # # plot(tre(x2))
+#' # # # ## Try on example datset 1
+#' # # # data(ex1); nspecies(ex1)
+#' # # # ex7 <- tipglom(ex1, speciationMinLength = 0.05)
+#' # # # nspecies(ex7)
+#' # data(esophagus); nspecies(esophagus); par(mfrow=c(2, 1)); plot(tre(esophagus))
+#' # tre(esophagus)$edge.length
+#' # x3 <- tipglom(esophagus, speciationMinLength = 0.20)
+#' # nspecies(x3); plot(tre(x3))
 setGeneric("tipglom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tipglom"))
 #' @rdname tipglom-methods
 #' @aliases tipglom,phylo,otuTable-method
@@ -75,6 +89,7 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #'
 #' @seealso tipglom
 #' @import igraph
+#' @keywords internal
 #'
 #' @examples #
 tipglom.internal <- function(tree, speciationMinLength){
@@ -159,7 +174,7 @@ gettipdistmatrix <- getTipDistMatrix
 #' @return A list, where each element is a character vector of tips that should
 #' are in the same clique.
 #'
-#' @export
+#' @keywords internal
 #' @examples #
 #' # edgelist2clique(get.edgelist(ig))
 edgelist2clique = function(EdgeList){
@@ -574,17 +589,17 @@ threshrankfun <- function(thresh, keep0s=FALSE, ...){
 #transformsamplecounts( otuTable(ex1), threshrankfun(500))
 #transformsamplecounts( ex1, threshrankfun(500))
 ##############################################################################
-#' Extension of the (base) transpose function for otuTable
+#' Transpose \code{\link{otuTable-class}} or \code{\link{phyloseq-class}}
 #'
-#' Only the otuTable of a more complex object is transposed.	
+#' Extends the base transpose method, \code{\link[base]{t}}.
 #'
 #' @usage t(x)
 #'
-#' @param x An \code{otuTable}, or a higher-order class that contains an \code{otuTable}.
+#' @param x An \code{otuTable} or \code{\link{phyloseq-class}}.
 #'
 #' @return The class of the object returned by \code{t} matches
-#' the class of the argument, \code{x}. The \code{otuTable} is now
-#' transposed, and \code{speciesAreRows} is toggled.
+#' the class of the argument, \code{x}. The \code{otuTable} is
+#' transposed, and \code{\link{speciesAreRows}} value is toggled.
 #'
 #' @name t
 #' @rdname transpose-methods
@@ -659,21 +674,21 @@ TransformSampleCounts <- transformsamplecounts
 transformSampleCounts <- transformsamplecounts
 ####################################################################################
 ############################################################
-#' Filter OTUs sample-wise.
+#' Filter OTUs with arbitrary function, sample-wise.
 #' 
-#' A general OTU trim function for selecting OTUs that satisfy
+#' A general OTU trimming function for selecting OTUs that satisfy
 #'  some criteria within the distribution of each sample, and then
-#'  also an additional criteria for number of samples that pass.
+#'  also an additional criteria for number of samples that must pass.
 #' By contrast, \code{genefilter}, of the genefilter package in Bioconductor,
 #' works only on the rows of a matrix.
 #'
-#' Here we want a genefilter function that considers sample-wide (column-wide)
-#' criteria and determines which rows are acceptable
-#' within each column. The number of acceptable samples (columns) is then used
+#' Here we want a genefilter function that considers sample-wise
+#' criteria and determines which taxa are acceptable
+#' within each sample. The number of acceptable samples is then used
 #' as the final criteria
 #' to determine whether or not the taxa should
 #' be TRUE or FALSE. Just like with genefilter, a 
-#' logical having length equal to nrow()/nspecies is returned, indicating which
+#' logical having length equal to nrow()/\code{\link{nspecies}} is returned, indicating which
 #' should be kept. This output can be provided
 #' directly to OTU trimming function, \code{\link{prune_species}}.
 #'
@@ -729,9 +744,11 @@ setMethod("genefilterSample", signature("phyloseq"), function(X, flist, A=1){
 	genefilterSample(otuTable(X), flist, A)
 })
 ################################################################################
-#' A sample-wise generic filter function, analogous to filterfun from the 
-#' genefilter package. 
+#' A sample-wise filter function builder, analogous to \code{\link[genefilter]{filterfun}}.
 #'
+#' See the \code{\link[genefilter]{filterfun}}, from the Bioconductor repository,
+#' for a taxa-/gene-wise filter (and further examples).
+#' 
 #' @usage filterfunSample(...)
 #'
 #' @param ... A comma-separated list of functions.
@@ -743,8 +760,16 @@ setMethod("genefilterSample", signature("phyloseq"), function(X, flist, A=1){
 #'  genefilterSample method.
 #' 
 #' @export
-#' @seealso genefilter genefilterSample
-#' @examples #
+#' @seealso \code{\link[genefilter]{filterfun}}, \code{\link{genefilterSample}}
+#' @examples
+#' ## Use simulated abundance matrix
+#' # set.seed(711)
+#' # testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+#' # f1  <- filterfunSample(topk(2))
+#' # wh1 <- genefilterSample(testOTU, f1, A=2)
+#' # wh2 <- c(T, T, T, F, F)
+#' # prune_species(wh1, testOTU)
+#' # prune_species(wh2, testOTU)
 filterfunSample = function(...){
     flist <- list(...)
     if( length(flist) == 1 && is.list(flist[[1]])) { flist <- flist[[1]] }
@@ -762,7 +787,7 @@ filterfunSample = function(...){
 	return(f)
 }
 ############################################################
-#' The most abundant \code{k} taxa
+#' Make filter fun. the most abundant \code{k} taxa
 #'
 #' @usage topk(k, na.rm=TRUE)
 #'
@@ -773,7 +798,20 @@ filterfunSample = function(...){
 #' @return Returns a function (enclosure) that will return TRUE
 #'  for each element in the most abundant k values.
 #'
+#' @seealso \code{\link{topk}}, \code{\link{topf}},
+#'  \code{\link{topp}}, \code{\link{rm_outlierf}}
+#'
 #' @export
+#' 
+#' @examples
+#' ## Use simulated abundance matrix
+#' # set.seed(711)
+#' # testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+#' # f1  <- filterfunSample(topk(2))
+#' # wh1 <- genefilterSample(testOTU, f1, A=2)
+#' # wh2 <- c(T, T, T, F, F)
+#' # prune_species(wh1, testOTU)
+#' # prune_species(wh2, testOTU)
 topk = function(k, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
@@ -781,7 +819,7 @@ topk = function(k, na.rm=TRUE){
     }
 }
 ############################################################
-#' The most abundant \code{p} fraction of taxa
+#' Make filter fun. that returns the most abundant \code{p} fraction of taxa
 #'
 #' @usage topp(p, na.rm=TRUE)
 #'
@@ -793,15 +831,29 @@ topk = function(k, na.rm=TRUE){
 #'  that will return \code{TRUE}
 #'  for each element in the most abundant p fraction of taxa.
 #'
+#' @seealso \code{\link{topk}}, \code{\link{topf}},
+#'  \code{\link{topp}}, \code{\link{rm_outlierf}}
+#'
 #' @export
-topp = function(p, na.rm=TRUE){
+#'
+#' @examples
+#' ## Use simulated abundance matrix
+#' # set.seed(711)
+#' # testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+#' # sampleSums(testOTU)
+#' # f1  <- filterfunSample(topp(0.2))
+#' # (wh1 <- genefilterSample(testOTU, f1, A=1))
+#' # wh2 <- c(T, T, T, F, F)
+#' # prune_species(wh1, testOTU)
+#' # prune_species(wh2, testOTU)
+topp <- function(p, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
 		x >= sort(x, decreasing=TRUE)[ceiling(length(x)*p)]
     }
 }
 ################################################################################
-#' The top f fraction of observations in a sample.
+#' Make filter fun. that returns the top f fraction of taxa in a sample.
 #'
 #' As opposed to \code{\link{topp}}, which gives the
 #' most abundant p fraction of observed taxa (richness, instead of cumulative
@@ -817,10 +869,22 @@ topp = function(p, na.rm=TRUE){
 #'  that will return \code{TRUE}
 #'  for each element in the taxa comprising the most abundant f fraction of individuals.
 #'
+#' @seealso \code{\link{topk}}, \code{\link{topf}},
+#'  \code{\link{topp}}, \code{\link{rm_outlierf}}
+#'
 #' @export
+#' 
 #' @examples
-#' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
-#' topf(0.6)(t1)
+#' # t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
+#' # topf(0.6)(t1)
+#' ## Use simulated abundance matrix
+#' # set.seed(711)
+#' # testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+#' # f1  <- filterfunSample(topf(0.4))
+#' # (wh1 <- genefilterSample(testOTU, f1, A=1))
+#' # wh2 <- c(T, T, T, F, F)
+#' # prune_species(wh1, testOTU)
+#' # prune_species(wh2, testOTU)
 topf <- function(f, na.rm=TRUE){
     function(x){
         if (na.rm){
@@ -847,10 +911,22 @@ topf <- function(f, na.rm=TRUE){
 #'
 #' @return A function (enclosure), suitable for \code{\link{filterfunSample}}.
 #'
+#' @seealso \code{\link{topk}}, \code{\link{topf}},
+#'  \code{\link{topp}}, \code{\link{rm_outlierf}}
+#'
 #' @export
 #' @examples
 #' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
 #' rm_outlierf(0.15)(t1)
+#' ## Use simulated abundance matrix
+#' # set.seed(711)
+#' # testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+#' # speciesSums(testOTU)
+#' # f1  <- filterfunSample(rm_outlierf(0.1))
+#' # (wh1 <- genefilterSample(testOTU, f1, A=1))
+#' # wh2 <- c(T, T, T, F, F)
+#' # prune_species(wh1, testOTU)
+#' # prune_species(wh2, testOTU) 
 rm_outlierf <- function(f, na.rm=TRUE){
 	function(x){
 		if(na.rm){

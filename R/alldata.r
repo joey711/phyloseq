@@ -1,5 +1,11 @@
 ################################################################################
-#' Example data set 1 for the phyloseq package.
+#' (Data) Example data set 1 for the phyloseq package. (2011)
+#'
+#' This is a small preliminary dataset of human gut microbial communities from
+#' subjects of different gender and diet. The exact meaning of diet and gender
+#' has been obscured because the larger study to which it belongs has not yet
+#' been published. For a more complete and already-published example dataset,
+#' try the \code{\link{enterotype}} data.
 #'
 #' @name data-ex1
 #' @aliases ex1
@@ -14,7 +20,7 @@
 # example data, ex1, for the phyloseq package.
 NA
 ################################################################################
-#' Small example dataset from a human esophageal community (2004)
+#' (Data) Small example dataset from a human esophageal community (2004)
 #'
 #' Includes just 3 samples, 1 each from 3 subjects. Although the research article mentions 4 subjects,
 #' only 3 are included in this dataset.

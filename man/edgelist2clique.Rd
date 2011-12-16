@@ -26,4 +26,5 @@
 #
 # edgelist2clique(get.edgelist(ig))
 }
+\keyword{internal}
 

@@ -1,9 +1,9 @@
 ################################################################################
-#' Assign to otuTable an object/value.
+#' Assign a new OTU Table to \code{x}
 #'
 #' @usage otuTable(x) <- value
-#' @param x (Required). The object within which you will replace something
-#' @param value (Required). The value with which you will replace that thing in x.
+#' @param x (Required). \code{\link{phyloseq-class}}
+#' @param value (Required). \code{\link{otuTable-class}}
 #'
 #' @export
 #' @docType methods
@@ -11,6 +11,15 @@
 #' @aliases assign-otuTable otuTable<-
 #'
 #' @examples #
+#' # data(ex1)
+#' # # An example of pruning to just the first 100 taxa in ex1.
+#' # ex2a <- prune_species(species.names(ex1)[1:100], ex1)
+#' # # The following 3 lines produces an ex2b that is equal to ex2a
+#' # ex2b <- ex1
+#' # OTU <- otuTable(ex1)[1:100, ]
+#' # otuTable(ex2b) <- OTU
+#' # identical(ex2a, ex2b)
+#' # print(ex2b)
 setGeneric("otuTable<-", function(x, value) standardGeneric("otuTable<-"))
 #' @rdname assign-otuTable
 #' @aliases otuTable<-,phyloseq,otuTable-method
@@ -25,7 +34,7 @@ setMethod("otuTable<-", c("phyloseq", "otuTable"), function(x, value){
 #'
 #' @usage speciesarerows(x) <- value
 #'
-#' @param x An otuTable-class or higher-order object that contains an otuTable.
+#' @param x \code{\link{otuTable-class}} or \code{\link{phyloseq-class}}
 #'
 #' @param value A logical of length equal to 1. If \code{length(value) > 1}, 
 #'  the additional elements will be ignored. Only the first element is assigned
@@ -37,6 +46,9 @@ setMethod("otuTable<-", c("phyloseq", "otuTable"), function(x, value){
 #' @aliases assign-speciesarerows speciesarerows<-
 #'
 #' @examples #
+#' # data(ex1)
+#' # speciesarerows(ex1)
+#' # speciesarerows(otuTable(ex1))
 setGeneric("speciesarerows<-", function(x, value){
 	standardGeneric("speciesarerows<-")
 })
@@ -53,30 +65,48 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 	return(x)
 })
 ################################################################################
-#' Assign to sampleMap an object/value.
+#' Assign a new sampleMap to \code{x}
 #'
 #' @usage sampleMap(x) <- value
-#' @param x (Required). The object within which you will replace something
-#' @param value (Required). The value with which you will replace that thing in x.
+#' @param x (Required). \code{\link{phyloseq-class}}
+#' @param value (Required). \code{\link{sampleMap-class}}
 #'
 #' @export
 #' @rdname assign-sampleMap
 #' @aliases assign-sampleMap sampleMap<-
 #' @examples #
+#' # data(ex1)
+#' # # An example of pruning to just the first 10 samples in ex1
+#' # ex2a <- prune_samples(sample.names(ex1)[1:10], ex1)
+#' # # The following 3 lines produces an ex2b that is equal to ex2a
+#' # ex2b <- ex1
+#' # SD <- sampleMap(ex1)[1:10, ]
+#' # sampleMap(ex2b) <- SD
+#' # identical(ex2a, ex2b)
+#' # print(ex2b)
 "sampleMap<-" <- function(x, value){
 	phyloseq(otuTable=x@otuTable, sampleMap=value, taxTab=x@taxTab, tre=x@tre)
 }
 ################################################################################
-#' Assign to taxTab an object/value.
+#' Assign a new Taxonomy Table to \code{x}
 #'
 #' @usage taxTab(x) <- value
-#' @param x (Required). The object within which you will replace something
-#' @param value (Required). The value with which you will replace that thing in x.
+#' @param x (Required). \code{\link{phyloseq-class}}
+#' @param value (Required). \code{\link{taxonomyTable-class}}
 #'
 #' @export
 #' @rdname assign-taxTab
 #' @aliases assign-taxTab taxTab<-
 #' @examples #
+#' # data(ex1)
+#' # # An example of pruning to just the first 100 taxa in ex1.
+#' # ex2a <- prune_species(species.names(ex1)[1:100], ex1)
+#' # # The following 3 lines produces an ex2b that is equal to ex2a
+#' # ex2b <- ex1
+#' # TT <- taxTab(ex1)[1:100, ]
+#' # taxTab(ex2b) <- TT
+#' # identical(ex2a, ex2b)
+#' # print(ex2b)
 "taxTab<-" <- function(x, value){
 	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=value, tre=x@tre)
 }
@@ -84,14 +114,23 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 #' Assign to tre an object/value.
 #'
 #' @usage tre(x) <- value
-#' @param x (Required). The object within which you will replace something
-#' @param value (Required). The value with which you will replace that thing in x.
+#' @param x (Required). \code{\link{phyloseq-class}}
+#' @param value (Required). \code{\link{phylo-class}}
 #'
 #' @export
 #' @docType methods
 #' @rdname assign-tre
 #' @aliases assign-tre tre<-
 #' @examples #
+#' # data(ex1)
+#' # # An example of pruning to just the first 100 taxa in ex1.
+#' # ex2a <- prune_species(species.names(ex1)[1:100], ex1)
+#' # # The following 3 lines produces an ex2b that is equal to ex2a
+#' # ex2b <- ex1
+#' # tree <- prune_species(species.names(ex1)[1:100], tre(ex1))
+#' # tre(ex2b) <- tree
+#' # identical(ex2a, ex2b)
+#' # print(ex2b)
 setGeneric("tre<-", function(x, value) standardGeneric("tre<-"))
 #' @rdname assign-tre
 #' @aliases tre<-,phyloseq,phylo-method
