@@ -63,6 +63,6 @@
 # # # identical(t1, otuTable(t3))
 }
 \seealso{
-  \code{\link{mergespecies}}, code{\link{merge_phyloseq}}
+  \code{\link{merge_species}}, code{\link{merge_phyloseq}}
 }
 

@@ -2,7 +2,7 @@
 #' Agglomerate closely-related taxa using single-linkage clustering.
 #' 
 #' All tips of the tree separated by a cophenetic distance smaller than 
-#' \code{speciationMinLength} will be agglomerated into one taxa using \code{mergespecies}.
+#' \code{speciationMinLength} will be agglomerated into one taxa using \code{merge_species}.
 #' 
 #' Can be used to create a non-trivial OTU Table, if a phylogenetic tree is available.
 #'
@@ -71,7 +71,7 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #' 
 #' Internal function, users should use the S4 method \code{\link{tipglom}}.
 #' Tree can be higher-order object that contains a phylogenetic tree, 
-#'   e.g. phyloseq, etc. This is because \code{\link{mergespecies}} can
+#'   e.g. phyloseq, etc. This is because \code{\link{merge_species}} can
 #' handle all the relevant objects, as can \code{\link{getTipDistMatrix}}.
 #' Create Non-trivial OTU table, by agglomerating nearby tips.
 #' tipglom.internal is called by the S4 \code{tipglom} methods. It is useful if 
@@ -102,7 +102,7 @@ tipglom.internal <- function(tree, speciationMinLength){
 	spCliques   <- edgelist2clique( get.edgelist(ig) )
 	# successively merge
 	for( i in 1:length(spCliques)){
-		tree <- mergespecies(tree, eqspecies=spCliques[[i]])
+		tree <- merge_species(tree, eqspecies=spCliques[[i]])
 	}
 	# Test if you missed anything:
 	# graph.adjacency( getTipDistMatrix(tree) < speciationMinLength, diag=FALSE )
@@ -294,7 +294,7 @@ edgelist2clique = function(EdgeList){
 #' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
 #' the class of \code{physeq}.
 #'
-#' @seealso \code{\link{tipglom}}, \code{\link{prune_species}}, \code{\link{mergespecies}}
+#' @seealso \code{\link{tipglom}}, \code{\link{prune_species}}, \code{\link{merge_species}}
 #' 
 #' @rdname taxglom-methods
 #' @docType methods
@@ -332,7 +332,7 @@ setMethod("taxglom", "phyloseq",
 #' taxglom core internal function.
 #'
 #' taxglom.internal makes all the glomming happen, and delegates the
-#' object-handling issues to \code{mergespecies()}.
+#' object-handling issues to \code{merge_species()}.
 #'
 #' @param physeq the object on which agglomeration is to take place.
 #'
@@ -361,7 +361,7 @@ taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\
 	# successively merge taxa in physeq.
 	for( i in names(spCliques)){
 		# print(i)
-		physeq <- mergespecies(physeq, eqspecies=spCliques[[i]])
+		physeq <- merge_species(physeq, eqspecies=spCliques[[i]])
 	}
 	return(physeq)
 }

@@ -873,7 +873,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	for( i in names(otulist) ){
 		# i <- names(otulist)[1]
 		# First merge the reads that are in the same OTU ("eqspecies" argument)
-		tree <- mergespecies(tree, otulist[[i]])
+		tree <- merge_species(tree, otulist[[i]])
 		# Rename the tip that was kept to the otuID.
 		# By default, the first element of eqspecies is used as archetype.
 		# This also ensures reliable behavior in the instances of singleton OTUs

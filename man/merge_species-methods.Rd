@@ -1,14 +1,14 @@
 \docType{methods}
-\name{mergespecies}
-\alias{mergespecies}
-\alias{mergespecies,otuTable-method}
-\alias{mergespecies,phylo-method}
-\alias{mergespecies,phyloseq-method}
-\alias{mergespecies,sampleMap-method}
-\alias{mergespecies,taxonomyTable-method}
+\name{merge_species}
+\alias{merge_species}
+\alias{merge_species,otuTable-method}
+\alias{merge_species,phylo-method}
+\alias{merge_species,phyloseq-method}
+\alias{merge_species,sampleMap-method}
+\alias{merge_species,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \usage{
-  mergespecies(x, eqspecies, archetype=1)
+  merge_species(x, eqspecies, archetype=1)
 }
 \arguments{
   \item{x}{(Required). An object that describes species
@@ -36,11 +36,14 @@
   components.
 }
 \description{
-  \code{mergespecies} is a method that takes as input an
-  otuTable (or higher object) and a vector of species that
-  should be merged. It is intended to be able to operate at
-  a low-level such that related methods, such as tipglom
-  and taxglom can both reliably call mergespecies for their
+  Takes as input an object that describes species/taxa
+  (e.g. \code{\link{phyloseq-class}},
+  \code{\link{otuTable-class}}, \code{\link{phylo-class}},
+  \code{\link{taxonomyTable-class}}), as well as a vector
+  of species that should be merged. It is intended to be
+  able to operate at a low-level such that related methods,
+  such as \code{\link{tipglom}} and \code{\link{taxglom}}
+  can both reliably call \code{merge_species} for their
   respective purposes.
 }
 \examples{
@@ -50,7 +53,7 @@
 # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
 # # otutree0 <- phyloseq(otu, tree)
 # # plot(otutree0)
-# # otutree1 <- mergespecies(otutree0, tree$tip.label[1:8], 2)
+# # otutree1 <- merge_species(otutree0, tree$tip.label[1:8], 2)
 # # plot(otutree1)
 }
 \seealso{

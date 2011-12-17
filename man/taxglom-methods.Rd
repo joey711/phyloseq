@@ -77,6 +77,6 @@
 }
 \seealso{
   \code{\link{tipglom}}, \code{\link{prune_species}},
-  \code{\link{mergespecies}}
+  \code{\link{merge_species}}
 }
 

@@ -122,7 +122,7 @@ merge_phyloseq <- function(...){
 #' for those elements that describe the same species and sample in \code{x}
 #' and \code{y}. 
 #'
-#' @seealso \code{\link{merge_phyloseq}} \code{\link{mergespecies}}
+#' @seealso \code{\link{merge_phyloseq}} \code{\link{merge_species}}
 #'
 #' @rdname merge_phyloseq_pair-methods
 #' @docType methods
@@ -235,13 +235,16 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 ################################################################################
 #' Merge a subset of the species in \code{x} into one species/taxa/OTU.
 #'
-#' \code{mergespecies} is a method that takes as input an otuTable 
-#' (or higher object) and a vector of species that should be merged.
+#' Takes as input an object that describes species/taxa
+#' (e.g. \code{\link{phyloseq-class}}, \code{\link{otuTable-class}}, 
+#'  \code{\link{phylo-class}}, \code{\link{taxonomyTable-class}}),
+#' as well as 
+#' a vector of species that should be merged.
 #' It is intended to be able to operate at a low-level such that 
-#' related methods, such as tipglom and taxglom can both reliably
-#' call mergespecies for their respective purposes.
+#' related methods, such as \code{\link{tipglom}} and \code{\link{taxglom}}
+#' can both reliably call \code{merge_species} for their respective purposes.
 #'
-#' @usage mergespecies(x, eqspecies, archetype=1)
+#' @usage merge_species(x, eqspecies, archetype=1)
 #'
 #' @param x (Required). An object that describes species (taxa). This includes
 #'  \code{\link{phyloseq-class}}, \code{\link{otuTable-class}}, \code{\link{taxonomyTable-class}}, 
@@ -266,20 +269,20 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #'
 #' @export
 #' @docType methods
-#' @rdname mergespecies-methods
+#' @rdname merge_species-methods
 #' @examples #
 #' # # data(phylocom)
 #' # # tree <- phylocom$phylo
 #' # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
 #' # # otutree0 <- phyloseq(otu, tree)
 #' # # plot(otutree0)
-#' # # otutree1 <- mergespecies(otutree0, tree$tip.label[1:8], 2)
+#' # # otutree1 <- merge_species(otutree0, tree$tip.label[1:8], 2)
 #' # # plot(otutree1)
-setGeneric("mergespecies", function(x, eqspecies, archetype=1) standardGeneric("mergespecies"))
+setGeneric("merge_species", function(x, eqspecies, archetype=1) standardGeneric("merge_species"))
 ###############################################################################
-#' @aliases mergespecies,otuTable-method
-#' @rdname mergespecies-methods
-setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
+#' @aliases merge_species,otuTable-method
+#' @rdname merge_species-methods
+setMethod("merge_species", "otuTable", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
@@ -306,9 +309,9 @@ setMethod("mergespecies", "otuTable", function(x, eqspecies, archetype=1){
 })
 ###############################################################################
 #' @import ape
-#' @aliases mergespecies,phylo-method
-#' @rdname mergespecies-methods
-setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
+#' @aliases merge_species,phylo-method
+#' @rdname merge_species-methods
+setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
@@ -324,26 +327,26 @@ setMethod("mergespecies", "phylo", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ################################################################################
-#' @aliases mergespecies,phyloseq-method
-#' @rdname mergespecies-methods
-setMethod("mergespecies", "phyloseq", function(x, eqspecies, archetype=1){
+#' @aliases merge_species,phyloseq-method
+#' @rdname merge_species-methods
+setMethod("merge_species", "phyloseq", function(x, eqspecies, archetype=1){
 	comp_list   <- splat.phyloseq.objects(x)
-	merged_list <- lapply(comp_list, mergespecies, eqspecies, archetype)
+	merged_list <- lapply(comp_list, merge_species, eqspecies, archetype)
 	# the element names can wreak havoc on do.call
 	names(merged_list) <- NULL
 	# Re-instantiate the combined object using the species-merged object.
 	do.call("phyloseq", merged_list)
 })
 ###############################################################################
-#' @aliases mergespecies,sampleMap-method
-#' @rdname mergespecies-methods
-setMethod("mergespecies", "sampleMap", function(x, eqspecies, archetype=1){
+#' @aliases merge_species,sampleMap-method
+#' @rdname merge_species-methods
+setMethod("merge_species", "sampleMap", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
-#' @aliases mergespecies,taxonomyTable-method
-#' @rdname mergespecies-methods
-setMethod("mergespecies", "taxonomyTable", function(x, eqspecies, archetype=1){
+#' @aliases merge_species,taxonomyTable-method
+#' @rdname merge_species-methods
+setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
@@ -362,25 +365,25 @@ setMethod("mergespecies", "taxonomyTable", function(x, eqspecies, archetype=1){
 })
 ################################################################################
 # # Example of higher-order phyloseq object species merge
-# mergespecies(ex4, species.names(ex4)[1:5])
-# mergespecies(phyloseqTree(ex4), species.names(ex4)[1:5])
-# mergespecies(phyloseq(ex4), 1:5)
+# merge_species(ex4, species.names(ex4)[1:5])
+# merge_species(phyloseqTree(ex4), species.names(ex4)[1:5])
+# merge_species(phyloseq(ex4), 1:5)
 # ################################################################################
 # # Example of otuTree species merge
 # otutree  = otuTree(ex4)
-# otutree1 = mergespecies(otutree, tre(otutree)$tip.label[1:9300])
+# otutree1 = merge_species(otutree, tre(otutree)$tip.label[1:9300])
 # plot(tre(otutree1))
 # # Not run, species indices not equivalent between phylo and otuTable.
 # # Must use names (character):
-# otutree2 = mergespecies(otutree, 1:9300)
+# otutree2 = merge_species(otutree, 1:9300)
 ################################################################################
 # # Examples of tree species merge:
 # tree = tre(ex4)
-# tree1 = mergespecies(tree, tree$tip.label[1:500], 2)
-# tree2 = mergespecies(tree, 12:15, 1)
-# tree3 = mergespecies(tree, 12:15, 2)
+# tree1 = merge_species(tree, tree$tip.label[1:500], 2)
+# tree2 = merge_species(tree, 12:15, 1)
+# tree3 = merge_species(tree, 12:15, 2)
 # # Not run, won't know what merged:
-# #tree3 = mergespecies(tree, sample(1:32,15), 2)
+# #tree3 = merge_species(tree, sample(1:32,15), 2)
 # par(mfcol=c(2,2))
 # plot(tree,  main="Tree 0")
 # plot(tree1, main="Tree 1")
@@ -389,12 +392,12 @@ setMethod("mergespecies", "taxonomyTable", function(x, eqspecies, archetype=1){
 ################################################################################
 # # Example of otuTable species merge
 # x4 = otuTable(matrix(sample(0:15,100,TRUE),40,10), speciesAreRows=TRUE)
-# mergespecies(x4, c("sp1", "sp3", "sp10", "sp28"), "sp10")
-# mergespecies(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )
-# mergespecies(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )@.Data
-# mergespecies(x4, 5:25)@.Data
+# merge_species(x4, c("sp1", "sp3", "sp10", "sp28"), "sp10")
+# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )
+# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )@.Data
+# merge_species(x4, 5:25)@.Data
 # Not run:
-# mergespecies(x4, c("sp1", "sp3", "sp10", "sp28", "sp35", "") )
+# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35", "") )
 ################################################################################
 ################################################################################
 #' Merge samples based on a sample variable or factor.
@@ -426,7 +429,7 @@ setMethod("mergespecies", "taxonomyTable", function(x, eqspecies, archetype=1){
 #'  the factor indicated by the \code{group} argument. The output class
 #'  matches \code{x}.  
 #'
-#' @seealso \code{\link{mergespecies}}, code{\link{merge_phyloseq}}
+#' @seealso \code{\link{merge_species}}, code{\link{merge_phyloseq}}
 #'
 #' @rdname merge_samples-methods
 #' @docType methods

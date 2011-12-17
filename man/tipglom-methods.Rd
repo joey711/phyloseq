@@ -34,7 +34,7 @@
 \description{
   All tips of the tree separated by a cophenetic distance
   smaller than \code{speciationMinLength} will be
-  agglomerated into one taxa using \code{mergespecies}.
+  agglomerated into one taxa using \code{merge_species}.
 }
 \details{
   Can be used to create a non-trivial OTU Table, if a

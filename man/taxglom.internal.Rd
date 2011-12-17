@@ -20,7 +20,7 @@
 \description{
   taxglom.internal makes all the glomming happen, and
   delegates the object-handling issues to
-  \code{mergespecies()}.
+  \code{merge_species()}.
 }
 \keyword{internal}
 
