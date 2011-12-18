@@ -21,6 +21,8 @@
   Extends the base transpose method, \code{\link[base]{t}}.
 }
 \examples{
-#
+data(ex1)
+otuTable(ex1)
+t( otuTable(ex1) )
 }
 

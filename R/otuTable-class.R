@@ -78,25 +78,26 @@ setMethod("otuTable", "data.frame", function(object, speciesAreRows){
 	otuTable(as(object, "matrix"), speciesAreRows)
 })
 ################################################################################
-#' Returns the total number of individuals observed from each species.
+#' Returns the total number of individuals observed from each species/taxa/OTU.
 #' 
 #' A convenience function equivalent to rowSums or colSums, but where
-#' the orientation of the otuTable is automatically handled. Can take 
-#' more complex phyloseq objects, not just otuTable. Result always derived
-#' from the abundance values in the associated otuTable, not other phyloseq
-#' tables
+#' the orientation of the otuTable is automatically handled.
 #'
 #' @usage speciesSums(x)
 #'
-#' @param x Any phyloseq object that is or contains an otuTable.
+#' @param x \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}}.
 #' 
-#' @return A named integer vector with length equal to the number of species
+#' @return A \code{\link{numeric-class}} with length equal to the number of species
 #'  in the table, name indicated the taxa ID, and value equal to the sum of
 #'  all individuals observed for each taxa in \code{x}.
 #'
-#' @seealso sampleSums rowSums colSums
+#' @seealso \code{\link{sampleSums}}, \code{\link{rowSums}}, \code{\link{colSums}}
 #' @export
-#' @examples #
+#' @examples
+#' data(enterotype)
+#' speciesSums(enterotype)
+#' data(esophagus)
+#' speciesSums(esophagus)
 speciesSums <- function(x){
 	x <- otuTable(x)
 	if( speciesAreRows(x) ){
@@ -110,23 +111,24 @@ speciessums <- speciesSums
 #' Returns the total number of individuals observed from each sample.
 #' 
 #' A convenience function equivalent to rowSums or colSums, but where
-#' the orientation of the otuTable is automatically handled. Can take 
-#' more complex phyloseq objects, not just otuTable. Result always derived
-#' from the abundance values in the associated otuTable, not other phyloseq
-#' tables.
+#' the orientation of the otuTable is automatically handled.
 #'
 #' @usage sampleSums(x)
 #'
-#' @param x Any phyloseq-package object that is or contains an otuTable.
+#' @param x \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}}.
 #' 
-#' @return the total number of individuals present in each sample. A named 
-#'  integer vector with length equal to the number of samples
-#'  in the table, name indicated the sample ID, and value equal to the sum of
+#' @return A named \code{\link{numeric-class}}
+#'  length equal to the number of samples
+#'  in the \code{x}, name indicating the sample ID, and value equal to the sum of
 #'  all individuals observed for each sample in \code{x}.
 #'
-#' @seealso speciesSums rowSums colSums sum
+#' @seealso \code{\link{speciesSums}}, \code{\link{rowSums}}, \code{\link{colSums}}
 #' @export
-#' @examples #
+#' @examples
+#' data(enterotype)
+#' sampleSums(enterotype)
+#' data(esophagus)
+#' sampleSums(esophagus)
 sampleSums <- function(x){
 	x <- otuTable(x)
 	if( speciesAreRows(x) ){

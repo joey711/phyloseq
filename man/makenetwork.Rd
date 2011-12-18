@@ -1,15 +1,13 @@
 \docType{methods}
 \name{makenetwork}
 \alias{makenetwork}
-\alias{makenetwork,otuTable-method}
-\alias{makenetwork,phyloseq-method}
 \title{Create a taxa graph adjacency matrix from an \code{otuTable}.}
 \usage{
-  makenetwork(abund, plotgraph=TRUE, community=TRUE,
+  makenetwork(physeq, plotgraph=TRUE, community=TRUE,
   threshold=0, incommon=0.4, method="jaccard")
 }
 \arguments{
-  \item{abund}{(Required). An \code{\link{otuTable-class}}
+  \item{physeq}{(Required). An \code{\link{otuTable-class}}
   or \code{\link{phyloseq-class}} object.}
 
   \item{plotgraph}{A logical. Default TRUE. Indicates
@@ -38,14 +36,14 @@
   returns the community groups.
 }
 \description{
-  Function that inputs an abundance table as a matrix and
-  makes a graph adjacency matrix ready to plot with the
-  igraph package.
+  By default, this uses a presence/absence criteria for
+  taxa to determine if samples (vertices) are connected by
+  edges, and then plot the result using the
+  \code{\link[igraph]{igraph-package}}.
 }
 \examples{
-#
-## data(ex1)
-## makenetwork(otuTable(ex1), TRUE)
+## data(enterotype)
+## makenetwork(enterotype)
 }
 \author{
   Susan Holmes

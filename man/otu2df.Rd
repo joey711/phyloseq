@@ -31,10 +31,5 @@ in the ggplot2 framework.}
   Convert an otuTable object into a data.frame useful for
   plotting in the ggplot2 framework.
 }
-\examples{
-#
-}
-\seealso{
-  taxaplot
-}
+\keyword{internal}
 

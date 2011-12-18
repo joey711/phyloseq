@@ -19,9 +19,6 @@
   For converting color name to color hex and providing an
   optional opacity parameter (alpha)
 }
-\examples{
-#
-}
 \seealso{
   col2rgb rgb2hsv colors
 }

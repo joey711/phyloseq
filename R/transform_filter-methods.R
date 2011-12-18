@@ -90,8 +90,6 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #' @seealso tipglom
 #' @import igraph
 #' @keywords internal
-#'
-#' @examples #
 tipglom.internal <- function(tree, speciationMinLength){
 	# Create adjacency matrix, where tips are adjacent
 	# if their distance is below the threshold speciationMinLength
@@ -126,7 +124,6 @@ tipglom.internal <- function(tree, speciationMinLength){
 #' @seealso tipglom
 #' @keywords internal
 #' @aliases gettipdistmatrix getTipDistMatrix
-#' @examples #
 setGeneric("getTipDistMatrix", function(tree, byRootFraction=FALSE) standardGeneric("getTipDistMatrix"))
 setMethod("getTipDistMatrix", signature("phylo"), function(tree, byRootFraction=FALSE){
 	### require("picante") # picante is a "depends"-level dependency of phyloseq.
@@ -301,7 +298,17 @@ edgelist2clique = function(EdgeList){
 #' @export
 #'
 #' @examples
-#' ##
+#' # data(ex1)
+#' # ## print the available taxonomic ranks
+#' # colnames(taxTab(ex1))
+#' # ## agglomerate at the Family taxonomic rank
+#' # (x1 <- taxglom(ex1, taxlevel="Family") )
+#' # ## How many taxa before/after agglomeration?
+#' # nspecies(ex1); nspecies(x1)
+#' # ## Look at enterotype dataset...
+#' # data(enterotype)
+#' # ## print the available taxonomic ranks. Shows only 1 rank available, not useful for taxglom
+#' # colnames(taxTab(enterotype))
 setGeneric("taxglom", 
 	function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
 	standardGeneric("taxglom")
@@ -547,7 +554,7 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 #'
 #' @usage threshrank(x, thresh, keep0s=FALSE, ...)
 #'
-#' @param x The numeric vector to transform
+#' @param x (Required). Numeric vector to transform.
 #' @param thresh A single numeric value giving the threshold.
 #' @param keep0s A logical determining whether 0's in \code{x} should remain 
 #'  a zero-value in the output. If FALSE, zeros are treated as any other value.
@@ -557,10 +564,18 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 #'  \code{x}. Default arguments to \code{rank} are used, unless provided as
 #'  additional arguments. 
 #'
-#' @seealso \code{\link{rank}}, \code{\link{threshrankfun}}
+#' @seealso \code{\link{transformsamplecounts}}, \code{\link{rank}}, \code{\link{threshrankfun}}
 #' @export 
 #' @examples #
-#' threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
+#' (a_vector <- sample(0:10, 100, TRUE))
+#' threshrank(a_vector, 5, keep0s=TRUE)
+#' data(ex1)
+#' ## These three approaches result in identical otuTable
+#' (x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
+#' (x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+#' identical(x1, x2)
+#' (x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+#' identical(x1, x3)
 threshrank <- function(x, thresh, keep0s=FALSE, ...){
 	if( keep0s ){ index0 <- which(x == 0) }
 	x <- rank(x, ...)
@@ -574,31 +589,35 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #'
 #' Takes the same arguments as \code{\link{threshrank}}, except for \code{x}, 
 #' because the output is a single-argument function rather than a rank-transformed numeric. 
-#' This approach is useful for creating an input to a higher-order function,
-#' like \code{\link[genefilter]{filterfun}}, that require a single-argument function as input. 
+#' This is useful for higher-order functions that require a single-argument function as input,
+#' like \code{\link{transformsamplecounts}}.
 #'
 #' @usage threshrankfun(thresh, keep0s=FALSE, ...)
+#' 
 #' @param thresh A single numeric value giving the threshold.
 #' @param keep0s A logical determining whether 0's in \code{x} should remain 
 #'  a zero-value in the output. If FALSE, zeros are treated as any other value.
 #' @param ... Further arguments passes to the \code{\link{rank}} function.
 #' 
-#' @return A single-argument function with the options to threshrank set. 
-#' @seealso topk
+#' @return A single-argument function with the options to \code{\link{threshrank}} set.
+#'  
+#' @seealso \code{\link{transformsamplecounts}}, \code{\link{threshrankfun}},
+#'  \code{\link{threshrank}}
 #' @export
-#' @examples #
+#' @examples
+#' data(ex1)
+#' ## These three approaches result in identical otuTable
+#' (x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
+#' (x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+#' identical(x1, x2)
+#' (x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+#' identical(x1, x3)
 threshrankfun <- function(thresh, keep0s=FALSE, ...){
 	function(x){
 		threshrank(x, thresh, keep0s=FALSE, ...)
 	}
 }
-####################################################################################
-# example
-# threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
-# transformsamplecounts( otuTable(ex4), threshrankfun(500))
-#transformsamplecounts( otuTable(ex1), threshrankfun(500))
-#transformsamplecounts( ex1, threshrankfun(500))
-##############################################################################
+################################################################################
 #' Transpose \code{\link{otuTable-class}} or \code{\link{phyloseq-class}}
 #'
 #' Extends the base transpose method, \code{\link[base]{t}}.
@@ -615,7 +634,10 @@ threshrankfun <- function(thresh, keep0s=FALSE, ...){
 #' @rdname transpose-methods
 #' @docType methods
 #' @export
-#' @examples #
+#' @examples
+#' data(ex1)
+#' otuTable(ex1)
+#' t( otuTable(ex1) )
 setGeneric("t")
 #' @aliases t,otuTable-method
 #' @rdname transpose-methods
@@ -624,31 +646,31 @@ setMethod("t", signature("otuTable"), function(x){
 	x <- otuTable( t(as(x, "matrix")), speciesAreRows=(!speciesAreRows(x)) )
 	return(x)
 })
-##############################################################################
+################################################################################
 #' @aliases t,phyloseq-method
 #' @rdname transpose-methods
 setMethod("t", signature("phyloseq"), function(x){
 	x@otuTable <- t( otuTable(x) )
 	return(x)
 })
-##############################################################################
-####################################################################################
+################################################################################
 #' Transform the abundance count data in an \code{otuTable}, sample-by-sample.
 #' 
-#' This higher-order function transforms the sample counts of a species
-#' abundance matrix according to a user-provided function or list of functions.
+#' This function transforms the sample counts of a species
+#' abundance matrix according to a user-provided function.
 #' The counts of each sample will be transformed individually. No sample-sample 
 #' interaction/comparison is possible by this method. 
 #'
-#' @usage transformsamplecounts(physeq, flist)
+#' @usage transformsamplecounts(physeq, fun)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} of \code{\link{otuTable-class}}.
 #'
-#' @param flist (Required). A list of functions that will be applied
-#'  to the abundance counts of each sample.
+#' @param fun (Required). A single-argument function that will be applied
+#'  to the abundance counts of each sample. Can be an anonymous \code{\link[base]{function}}.
 #' 
 #' @return A transformed \code{otuTable} -- or \code{phyloseq} object with its
-#'  transformed \code{otuTable}. In general, trimming is not expected by this 
+#'  transformed \code{otuTable}. 
+#'  In general, trimming is not expected by this 
 #'  method, so it is suggested that the user provide only functions that return
 #'  a full-length vector. Filtering/trimming can follow, for which the 
 #'  \code{\link{genefilterSample}} and \code{\link{prune_species}} functions
@@ -662,13 +684,18 @@ setMethod("t", signature("phyloseq"), function(x){
 #' @export
 #'
 #' @examples #
-#' ## data(ex1)
-#' ## ex1r <- transformsamplecounts(ex1, rank)
-transformsamplecounts <- function(physeq, flist){
+#' data(ex1)
+#' ## transformsamplecounts can work on phyloseq-class, modifying otuTable only
+#' (ex1r <- transformsamplecounts(ex1, rank) )
+#' ## These two approaches result in identical otuTable
+#' (x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
+#' (x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+#' identical(x1, x2)
+transformsamplecounts <- function(physeq, fun){
 	if( speciesarerows(physeq) ){
-		newphyseq <- apply(as(otuTable(physeq), "matrix"), 2, flist)
+		newphyseq <- apply(as(otuTable(physeq), "matrix"), 2, fun)
 	} else {
-		newphyseq <- apply(as(otuTable(physeq), "matrix"), 1, flist)
+		newphyseq <- apply(as(otuTable(physeq), "matrix"), 1, fun)
 	}
 	otuTable(physeq) <- otuTable(newphyseq, speciesAreRows=speciesarerows(physeq))
 	return(physeq)
@@ -690,20 +717,23 @@ transformSampleCounts <- transformsamplecounts
 #' Filter OTUs with arbitrary function, sample-wise.
 #' 
 #' A general OTU trimming function for selecting OTUs that satisfy
-#'  some criteria within the distribution of each sample, and then
-#'  also an additional criteria for number of samples that must pass.
-#' By contrast, \code{genefilter}, of the genefilter package in Bioconductor,
-#' works only on the rows of a matrix.
-#'
-#' Here we want a genefilter function that considers sample-wise
-#' criteria and determines which taxa are acceptable
-#' within each sample. The number of acceptable samples is then used
-#' as the final criteria
+#' some criteria within the distribution of each sample, and then
+#' also an additional criteria for number of samples that must pass.
+#' This is a genefilter-like function that only considers sample-wise
+#' criteria. The number of acceptable samples is used
+#' as the final criteria (set by the argument \code{A})
 #' to determine whether or not the taxa should
-#' be TRUE or FALSE. Just like with genefilter, a 
+#' be retained (\code{TRUE}) or not (\code{FALSE}). Just like with genefilter, a 
 #' logical having length equal to nrow()/\code{\link{nspecies}} is returned, indicating which
 #' should be kept. This output can be provided
 #' directly to OTU trimming function, \code{\link{prune_species}}.
+#' By contrast, \code{\link[genefilter]{genefilter}}, 
+#' of the genefilter package in Bioconductor,
+#' works only on the rows of a matrix. Note that, because \code{\link{otuTable-class}}
+#' inherits directly from the \code{\link{matrix-class}}, an unmodified
+#' otuTable can be provided to \code{genefilter}, but be mindful of the orientation
+#' of the otuTable (use \code{\link{speciesAreRows}}),
+#' and transpose (\code{\link[phyloseq]{t}}) if needed.
 #'
 #' @usage genefilterSample(X, flist, A=1)
 #'
@@ -717,7 +747,9 @@ transformSampleCounts <- transformsamplecounts
 #'
 #' @return A logical vector with names equal to species.names (or rownames, if matrix).
 #'
-#' @seealso \code{\link{prune_species}}
+#' @seealso \code{\link[genefilter]{genefilter}}, \code{\link{filterfunSample}},
+#'  \code{\link[phyloseq]{t}},
+#'  \code{\link{prune_species}}
 #' @keywords agglomerate OTU cluster tree
 #'
 #' @rdname genefilterSample-methods
@@ -950,22 +982,3 @@ rm_outlierf <- function(f, na.rm=TRUE){
     }
 }
 ################################################################################
-# ################################################################################
-# # A generic extension of the genefilter method from the genefilter package. 
-# #
-# # @param expr A phyloseq object that is or contains an otuTable.
-# # @param flist A filterfun class object, a function, that is itself often
-# # constructred from a list of functions. It takes a single argument, and
-# # returns a logical vector with length equal to the number of rows in
-# # \code{expr}.
-# # 
-# # @return A logical. See genefilter from the genefilter package.
-# # 
-# # @seealso genefilter genefilterSample
-# # @keywords genefilter trim filter
-# # @importFrom genefilter genefilter
-# # @examples #
-# setGeneric("genefilter")
-# setMethod("genefilter", signature("phyloseq"),function(expr, flist){
-	# genefilter(otuTable(expr), flist)
-# })

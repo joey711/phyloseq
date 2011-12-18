@@ -3,7 +3,7 @@
 \alias{tre}
 \alias{tre,ANY-method}
 \alias{tre,phylo-method}
-\title{Access tre slot.}
+\title{Get phylogenetic tree from object.}
 \usage{
   tre(physeq, errorIfNULL=TRUE)
 }

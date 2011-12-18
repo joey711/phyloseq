@@ -420,9 +420,7 @@ calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
-#' @seealso taxaplot
-#' @export
-#' @examples #
+#' @keywords internal
 otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 	########################################
 	# sample_i - A sample name. A single character string.
@@ -667,17 +665,16 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	return(p)
 })
 ################################################################################
-###############################################################################
 #' Create a taxa graph adjacency matrix from an \code{otuTable}.
 #' 
-#' Function that inputs an abundance table as a matrix 
-#' and makes a graph adjacency matrix ready to plot 
-#' with the igraph package.
+#' By default, this uses a presence/absence criteria for taxa to determine
+#' if samples (vertices) are connected by edges, and then plot the result
+#' using the \code{\link[igraph]{igraph-package}}.
 #'
-#' @usage makenetwork(abund, plotgraph=TRUE, 
+#' @usage makenetwork(physeq, plotgraph=TRUE, 
 #'			community=TRUE, threshold=0, incommon=0.4, method="jaccard")
 #'
-#' @param abund (Required). An \code{\link{otuTable-class}}
+#' @param physeq (Required). An \code{\link{otuTable-class}}
 #'  or \code{\link{phyloseq-class}} object.
 #'
 #' @param plotgraph A logical. Default TRUE. Indicates whether or 
@@ -704,35 +701,21 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 #' @author Susan Holmes
 #'
 #' @export
-#' @rdname makenetwork-methods
 #' @docType methods
 #'
-#' @examples #
-#' ## data(ex1)
-#' ## makenetwork(otuTable(ex1), TRUE)
-setGeneric("makenetwork", function(abund, plotgraph=TRUE, 
-			community=TRUE, threshold=0, incommon=0.4, method="jaccard"){
-	standardGeneric("makenetwork")				
-})
-###############################################################################
-# Creates a taxa network from an otuTable.
-#' @import igraph vegan
-#' @aliases makenetwork,otuTable-method
-#' @rdname makenetwork-methods
-setMethod("makenetwork", "otuTable", function(abund, plotgraph=TRUE, 
-	community=TRUE, threshold=0, incommon=0.4, method="jaccard"){
-	# abundance is the abundance table with no rows that are all zero
-	# plotgraph is a toggle for whether a plotted network is requested
-	# if commun=TRUE the function will also output the community groups	
-	# threshold is the number that is fixed for when prsence occurs
-	# for instance, threshold>1 means that species with 2 or more reads
-	# are considered present	
+#' @examples
+#' ## data(enterotype)
+#' ## makenetwork(enterotype)
+makenetwork <- function(physeq, plotgraph=TRUE, community=TRUE, threshold=0, incommon=0.4, method="jaccard"){	
 	#require(vegan); require(igraph)
-	### Keep the original row numbers as labels
-	### this is for the later analysis of groups
-	if (is.na(dimnames(abund)[[1]][1])) dimnames(abund)=list(1:nrow(abund),1:ncol(abund))
+
+	abund <- otuTable(physeq)
+
+	# transpose if speciesAreRows (vegan orientation)
+	if( speciesAreRows(abund) ){ abund <- t(abund) }
+
 	### Only take the rows where there are at least one value over threshold
-	abundance <- abund[rowSums(abund)>threshold,]
+	abundance <- abund[rowSums(abund) > threshold, ]
 	n         <- nrow(abundance)
 
 	# Convert to 1,0 binary matrix for input to vegdist. -0 converts to numeric
@@ -744,7 +727,7 @@ setMethod("makenetwork", "otuTable", function(abund, plotgraph=TRUE,
 	jaccpa <- vegdist(presenceAbsence, method)
 	###Distances in R are vectors by default, we make them into matrices	
 	jaacm <- as.matrix(jaccpa)
-	coinc <- matrix(0,n,n)
+	coinc <- matrix(0, n, n)
 	ind1  <- which((jaacm>0 & jaacm<(1-incommon)),arr.ind=TRUE)
 	coinc[ind1] <- 1
 	dimnames(coinc) <- list(dimnames(abundance)[[1]],dimnames(abundance)[[1]])	
@@ -752,6 +735,7 @@ setMethod("makenetwork", "otuTable", function(abund, plotgraph=TRUE,
 	###	g<-as.network.matrix(coinc,matrix.type="adjacency")
 	####Here I use the igraph adjacency command
 	ig=graph.adjacency(coinc)
+
 	###Take out the isolates
 	isolates=V(ig)[ degree(ig)==0 ]
 	ignoisol=delete.vertices(ig, V(ig)[ degree(ig)==0 ])
@@ -773,18 +757,7 @@ setMethod("makenetwork", "otuTable", function(abund, plotgraph=TRUE,
 		groups=list(group0,group1)
 		return(groups)
 	}
-})
-###############################################################################
-# Extend for PhyloSeq data class
-###############################################################################
-# Creates a taxa network from an otuTable.
-#' @aliases makenetwork,phyloseq-method
-#' @rdname makenetwork-methods
-setMethod("makenetwork", signature("phyloseq"),
-	function(abund,plotgraph=TRUE,community=TRUE,threshold=0,incommon=0.4,method="jaccard"){
-		makenetwork(t(otuTable(abund)), plotgraph, community, threshold, incommon, method)
-})
-###############################################################################
+}
 ################################################################################
 # tipsymbols and tiptext. Need to make both tipsymbols and tiptext documentation
 # point to this one.
@@ -1055,18 +1028,6 @@ plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL,
 
 }
 ################################################################################
-# library("phyloseq")
-# data(ex1)
-# ex2 <- ex1
-# species.names(ex2) <- sample(species.names(ex1), 50)
-# plot_tree_phyloseq(ex2)
-# plot_tree_phyloseq(ex2, shape_factor="Diet")
-# plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet")
-# plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet", 
-	# size_scaling_factor=0.6, type_abundance_value=TRUE)
-# plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet", 
-	# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
-################################################################################
 # colname2hex
 ################################################################################
 #' Convert color name to hex value.
@@ -1079,10 +1040,9 @@ plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL,
 #' @param alpha The standard alpha parameter specifying opacity/transparency.
 #'
 #' @return A color hex value of length equal to length of \code{colname}.
+#' @seealso col2rgb rgb2hsv colors
 #'
 #' @keywords internal 
-#' @seealso col2rgb rgb2hsv colors
-#' @examples #
 colname2hex <- function(colname, alpha=1){
 	if( length(colname) == 1){
 		do.call("hsv", c(as.list(rgb2hsv(col2rgb(colname))[, 1]), alpha=alpha))

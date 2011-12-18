@@ -73,7 +73,17 @@
   taxonomy.
 }
 \examples{
-##
+# data(ex1)
+# ## print the available taxonomic ranks
+# colnames(taxTab(ex1))
+# ## agglomerate at the Family taxonomic rank
+# (x1 <- taxglom(ex1, taxlevel="Family") )
+# ## How many taxa before/after agglomeration?
+# nspecies(ex1); nspecies(x1)
+# ## Look at enterotype dataset...
+# data(enterotype)
+# ## print the available taxonomic ranks. Shows only 1 rank available, not useful for taxglom
+# colnames(taxTab(enterotype))
 }
 \seealso{
   \code{\link{tipglom}}, \code{\link{prune_species}},

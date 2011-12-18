@@ -33,7 +33,7 @@
   observed.
 }
 \examples{
-#
+# import_env_file(myEnvFile, myTree)
 }
 \references{
   \url{http://bmf2.colorado.edu/unifrac/}

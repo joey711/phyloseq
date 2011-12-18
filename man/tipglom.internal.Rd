@@ -30,9 +30,6 @@
   implementation. By design it lacks explicit object
   handling. Use \code{\link{tipglom}} instead.
 }
-\examples{
-#
-}
 \seealso{
   tipglom
 }

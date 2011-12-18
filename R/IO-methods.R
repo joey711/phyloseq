@@ -151,7 +151,8 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
 #' @export
-#' @examples #
+#' @examples
+#'  # import_qiime(myOtuTaxFilePath, myMapFilePath)
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	treefilename=NULL, biotaxonomy=NULL, ...){
 
@@ -211,7 +212,6 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #'   \code{\link{import_qiime_sampleMap}}
 #'
 #' @keywords internal
-#' @examples #
 import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	if( is.null(biotaxonomy) ){
 	 	biotaxonomy=c("Root", "Domain", "Phylum", "Class", "Order",
@@ -275,7 +275,6 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 #'	 \code{\link{import_qiime_otu_tax}}
 #'
 #' @keywords internal
-#' @examples #
 import_qiime_sampleMap <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,
@@ -312,7 +311,8 @@ import_qiime_sampleMap <- function(mapfilename){
 #' 
 #' @seealso \code{\link{import}}, \code{\link{tipglom}}
 #' @export
-#' @examples #
+#' @examples 
+#' # import_env_file(myEnvFile, myTree)
 import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 	tipSampleTable <- read.table(envfilename, sep=sep, ...)
 	# Convert to otuTable-class table (trivial table)

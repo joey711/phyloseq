@@ -1,7 +1,7 @@
 ################################################################################
 ### Accessor / subset methods.
 ################################################################################
-#' Access tre slot.
+#' Get phylogenetic tree from object.
 #'
 #' This is the main method suggested 
 #' for accessing
@@ -303,7 +303,10 @@ sampleNames <- sample.names
 #' @docType methods
 #' @export
 #'
-#' @examples #
+#' @examples
+#' data(esophagus)
+#' species.names(esophagus)
+#' getSamples(esophagus, "59_5_19")
 setGeneric("getSamples", function(physeq, i) standardGeneric("getSamples"))
 ################################################################################
 #' @aliases getSamples,otuTable-method
@@ -342,7 +345,10 @@ setMethod("getSamples", "phyloseq", function(physeq, i){
 #' @docType methods
 #' @export
 #'
-#' @examples #
+#' @examples
+#' data(esophagus)
+#' sample.names(esophagus)
+#' getSpecies(esophagus, "B")
 setGeneric("getSpecies", function(physeq, i) standardGeneric("getSpecies"))
 #' @aliases getSpecies,otuTable-method
 #' @rdname getSpecies-methods

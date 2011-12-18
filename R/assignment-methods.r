@@ -10,7 +10,7 @@
 #' @rdname assign-otuTable
 #' @aliases assign-otuTable otuTable<-
 #'
-#' @examples #
+#' @examples
 #' # data(ex1)
 #' # # An example of pruning to just the first 100 taxa in ex1.
 #' # ex2a <- prune_species(species.names(ex1)[1:100], ex1)
@@ -26,6 +26,9 @@ setGeneric("otuTable<-", function(x, value) standardGeneric("otuTable<-"))
 setMethod("otuTable<-", c("phyloseq", "otuTable"), function(x, value){
 	phyloseq(otuTable=value, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=x@tre)
 })
+#' @rdname assign-otuTable
+#' @aliases otuTable<-,otuTable,otuTable-method
+setMethod("otuTable<-", c("otuTable", "otuTable"), function(x, value){ value })
 ################################################################################
 #' Manually change speciesAreRows through assignment.
 #'

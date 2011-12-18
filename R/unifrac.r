@@ -16,8 +16,6 @@
 #' @keywords internal
 #' @return character vector
 #' @seealso \code{\link[picante]{internal2tips}} \code{\link{UniFrac}}
-#' 
-#' @examples #
 internal2tips.self = function (phy, int.node, return.names = TRUE){
 	#require(picante); require(ape)	
     Ntaxa = length(phy$tip.label)
@@ -69,8 +67,6 @@ internal2tips.self = function (phy, int.node, return.names = TRUE){
 #' @keywords internal
 #' @return character vector
 #' @seealso UniFrac
-#' 
-#' @examples #
 ufnum <- function(edge, samples, occ, tree){
 	A <- samples[1]
 	B <- samples[2]
@@ -105,8 +101,6 @@ ufnum <- function(edge, samples, occ, tree){
 #' @keywords internal
 #' @return character vector
 #' @seealso UniFrac
-#' 
-#' @examples #
 UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[samples[2],])){
 	A <- samples[1]
 	B <- samples[2]
@@ -137,9 +131,7 @@ UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[s
 #'
 #' @return A single number between 0, 1.
 #' @seealso See the main function, \code{\link{UniFrac}}.
-#' 
-#' @export
-#' @examples #
+#' @keywords internal
 unifracPair <- function(occ, tree, A, B){
 	
 	# Prune tree to just those species present in either A or B
@@ -176,9 +168,7 @@ unifracPair <- function(occ, tree, A, B){
 #'
 #' @return A single number between 0, 1.
 #' @seealso \code{\link{UniFrac}}
-#' 
-#' @export
-#' @examples #
+#' @keywords internal
 wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 	#require(picante); require(ape)
 	# outer loop

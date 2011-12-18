@@ -19,9 +19,6 @@
   This is useful for determining tips that should be
   combined.
 }
-\examples{
-#
-}
 \seealso{
   tipglom
 }

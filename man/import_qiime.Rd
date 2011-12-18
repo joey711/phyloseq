@@ -67,7 +67,7 @@
   directory.
 }
 \examples{
-#
+# import_qiime(myOtuTaxFilePath, myMapFilePath)
 }
 \references{
   \url{http://qiime.org/}

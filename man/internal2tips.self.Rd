@@ -24,9 +24,6 @@
   which returns NULL. This is currently used in
   \code{\link{UniFrac}}.
 }
-\examples{
-#
-}
 \seealso{
   \code{\link[picante]{internal2tips}}
   \code{\link{UniFrac}}

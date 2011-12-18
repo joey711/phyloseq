@@ -24,7 +24,9 @@
   single sample-of-interest.
 }
 \examples{
-#
+data(esophagus)
+sample.names(esophagus)
+getSpecies(esophagus, "B")
 }
 \seealso{
   getSpecies species.names sample.names

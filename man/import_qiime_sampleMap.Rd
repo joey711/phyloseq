@@ -29,9 +29,6 @@
   QIIME. It is also the suggested function for importing
   QIIME-produced data files.
 }
-\examples{
-#
-}
 \seealso{
   \code{\link{import_qiime}}, \code{\link{merge_phyloseq}},
   \code{\link{phyloseq}},

@@ -2,6 +2,7 @@
 \name{otuTable<-}
 \alias{assign-otuTable}
 \alias{otuTable<-}
+\alias{otuTable<-,otuTable,otuTable-method}
 \alias{otuTable<-,phyloseq,otuTable-method}
 \title{Assign a new OTU Table to \code{x}}
 \usage{
@@ -16,7 +17,6 @@
   Assign a new OTU Table to \code{x}
 }
 \examples{
-#
 # data(ex1)
 # # An example of pruning to just the first 100 taxa in ex1.
 # ex2a <- prune_species(species.names(ex1)[1:100], ex1)

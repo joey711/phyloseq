@@ -31,10 +31,8 @@
   between many different samples. Returns a single numeric
   value, between 0 and 1 if normalized
 }
-\examples{
-#
-}
 \seealso{
   \code{\link{UniFrac}}
 }
+\keyword{internal}
 
