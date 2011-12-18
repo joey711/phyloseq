@@ -5,25 +5,27 @@
 \alias{TransformSampleCounts}
 \title{Transform the abundance count data in an \code{otuTable}, sample-by-sample.}
 \usage{
-  transformsamplecounts(x, flist)
+  transformsamplecounts(physeq, flist)
 
-  TransformSampleCounts(x, flist)
+  TransformSampleCounts(physeq, flist)
 
-  transformSampleCounts(x, flist)
+  transformSampleCounts(physeq, flist)
 }
 \arguments{
-  \item{x}{(Required). the \code{otuTable} or higher-order
-  object that contains an \code{otutable}.}
+  \item{physeq}{(Required). \code{\link{phyloseq-class}} of
+  \code{\link{otuTable-class}}.}
 
   \item{flist}{(Required). A list of functions that will be
   applied to the abundance counts of each sample.}
 }
 \value{
-  The transformed \code{otuTable} or higher-order object
-  with its \code{otuTable} transformed. In general,
+  A transformed \code{otuTable} -- or \code{phyloseq}
+  object with its transformed \code{otuTable}. In general,
   trimming is not expected by this method, so it is
   suggested that the user provide only functions that
-  return a full-length vector.
+  return a full-length vector. Filtering/trimming can
+  follow, for which the \code{\link{genefilterSample}} and
+  \code{\link{prune_species}} functions are suggested.
 }
 \description{
   This higher-order function transforms the sample counts
@@ -41,5 +43,9 @@
 #
 ## data(ex1)
 ## ex1r <- transformsamplecounts(ex1, rank)
+}
+\seealso{
+  \code{\link{threshrankfun}}, \code{\link{rank}},
+  \code{\link{log}}
 }
 

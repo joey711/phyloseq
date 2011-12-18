@@ -29,9 +29,9 @@
 }
 \examples{
 #
-## threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
+threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
 }
 \seealso{
-  rank threshrankfun
+  \code{\link{rank}}, \code{\link{threshrankfun}}
 }
 

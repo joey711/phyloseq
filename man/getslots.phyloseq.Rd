@@ -15,7 +15,7 @@
   is named by the slot name it represents. If \code{physeq}
   is a component data object, then a vector of length (1)
   is returned, named according to its slot name in the
-  higher-order objects.
+  \code{\link{phyloseq-class}}.
 }
 \description{
   Like \code{\link{getSlots}}, but returns the class name
@@ -23,6 +23,10 @@
 }
 \examples{
 #
+data(ex1)
+getslots.phyloseq(ex1)
+data(esophagus)
+getslots.phyloseq(esophagus)
 }
 \seealso{
   merge_phyloseq

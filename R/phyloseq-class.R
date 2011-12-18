@@ -2,24 +2,27 @@
 #' Build phyloseq-class objects from their components.
 #'
 #' \code{phyloseq()} is a constructor method, This is the main method
-#' suggested for constructing \code{phyloseq} higher-order
-#' objects from their components.
+#' suggested for constructing an experiment-level (\code{\link{phyloseq-class}})
+#' object from its component data 
+#' (component data classes: \code{\link{otuTable-class}}, \code{\link{sampleMap-class}}, 
+#'  \code{\link{taxonomyTable-class}}, \code{\link{phylo-class}}).
 #'
 #' @usage phyloseq(...)
 #'
 #' @param ... One or more component objects among the set of classes
 #'  defined by the phyloseq package, as well as \code{phylo}-class
-#'  (defined by the \code{ape} package). Each argument should be a different class.
-#'  For combining multiple components of the same class, or multiple higher-order
-#'  classes, use the \code{\link{merge_phyloseq}} function. Unlike in earlier
+#'  (defined by the \code{\link{ape-package}}). Each argument should be a different class.
+#'  For combining multiple components of the same class, or multiple phyloseq-class
+#'  objects, use the \code{\link{merge_phyloseq}} function. Unlike in earlier
 #'  versions, the arguments to phyloseq do not need to be named, and the order
 #'  of the arguments does not matter.
 #'
 #' @return The class of the returned object depends on the argument 
-#'  class(es). To construct a H.O. object, two or more component data objects
-#'  must be provided in the argument list.
-#'  Otherwise, the order of arguments does not matter. If a single component-class
-#'  object is provided, it is simply returned as-is. 
+#'  class(es). For an experiment-level object, two or more component data objects
+#'  must be provided.
+#'  Otherwise, if a single component-class
+#'  is provided, it is simply returned as-is. 
+#'  The order of arguments does not matter. 
 #'
 #' @seealso \code{\link{merge_phyloseq}}
 #' @export
@@ -77,8 +80,7 @@ phyloseq <- function(...){
 #' @usage get.component.classes()
 #' 
 #' @return a character vector of the component objects classes, where each 
-#' element is named by the corresponding slot name in the higher-order 
-#' phyloseq objects (objects containing more than 1 phyloseq data object).
+#' element is named by the corresponding slot name in the phyloseq-class.
 #'
 #' @keywords internal
 #'
@@ -92,7 +94,7 @@ get.component.classes <- function(){
 	return(component.classes)
 }
 ################################################################################
-#' Convert phyloseq-class into a named list of its non-empty components.
+#' Convert \code{\link{phyloseq-class}} into a named list of its non-empty components.
 #'
 #' This is used in internal handling functions, and one of its key features
 #' is that the names in the returned-list match the slot-names, which is useful
@@ -118,7 +120,7 @@ get.component.classes <- function(){
 #' @examples #
 splat.phyloseq.objects <- function(x){
 	component.classes <- get.component.classes()
-	# Check if class of x is among the component classes (not H.O.)
+	# Check if class of x is among the component classes (not phyloseq-class)
 	if( class(x) %in% component.classes ){
 		splatx <- list(x)
 		names(splatx) <- names(component.classes)[component.classes==class(x)]
@@ -146,11 +148,15 @@ splat.phyloseq.objects <- function(x){
 #' of a particular S4 class, where each element is named by the slot name it
 #' represents. If \code{physeq} is a component data object,
 #' then a vector of length (1) is returned, named according to its slot name in
-#' the higher-order objects.
+#' the \code{\link{phyloseq-class}}.
 #' 
 #' @seealso merge_phyloseq
 #' @export
 #' @examples #
+#'  data(ex1)
+#'  getslots.phyloseq(ex1)
+#'  data(esophagus)
+#'  getslots.phyloseq(esophagus)
 getslots.phyloseq <- function(physeq){
 	# Check if class of physeq is among the component classes (not phyloseq-class)
 	component.classes <- get.component.classes()	

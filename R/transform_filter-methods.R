@@ -70,8 +70,8 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #' Internal function for tiplgom.
 #' 
 #' Internal function, users should use the S4 method \code{\link{tipglom}}.
-#' Tree can be higher-order object that contains a phylogenetic tree, 
-#'   e.g. phyloseq, etc. This is because \code{\link{merge_species}} can
+#' Tree can be a \code{\link{phyloseq-class}} that contains a phylogenetic tree, 
+#' This is because \code{\link{merge_species}} can
 #' handle all the relevant objects, as can \code{\link{getTipDistMatrix}}.
 #' Create Non-trivial OTU table, by agglomerating nearby tips.
 #' tipglom.internal is called by the S4 \code{tipglom} methods. It is useful if 
@@ -500,10 +500,20 @@ setMethod("prune_species", signature("logical", "ANY"), function(species, x){
 #' @return The class of the object returned by \code{prune_samples} matches
 #' the class of the phyloseq object, \code{x}.
 #'
+#' @seealso \code{\link{subset_samples}}
+#' 
 #' @rdname prune_samples-methods
 #' @docType methods
 #' @export
 #' @examples #
+#'  # data(ex1)
+#'  # B_only_sample_names <- sample.names(sampleMap(ex1)[(sampleMap(ex1)[, "Gender"]=="B"),])
+#'  # ex2 <- prune_samples(B_only_sample_names, ex1)
+#'  # ex3 <- subset_samples(ex1, Gender=="B")
+#'  # ## This should be TRUE.
+#'  # identical(ex2, ex3)
+#'  # ## Here is a simpler example: Make new object with only the first 5 samples
+#'  # ex4 <- prune_samples(sample.names(ex1)[1:5], ex1)
 setGeneric("prune_samples", function(samples, x) standardGeneric("prune_samples"))
 ################################################################################
 #' @aliases prune_samples,character,otuTable-method
@@ -547,10 +557,10 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 #'  \code{x}. Default arguments to \code{rank} are used, unless provided as
 #'  additional arguments. 
 #'
-#' @seealso rank threshrankfun
+#' @seealso \code{\link{rank}}, \code{\link{threshrankfun}}
 #' @export 
 #' @examples #
-#' ## threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
+#' threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
 threshrank <- function(x, thresh, keep0s=FALSE, ...){
 	if( keep0s ){ index0 <- which(x == 0) }
 	x <- rank(x, ...)
@@ -565,7 +575,7 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #' Takes the same arguments as \code{\link{threshrank}}, except for \code{x}, 
 #' because the output is a single-argument function rather than a rank-transformed numeric. 
 #' This approach is useful for creating an input to a higher-order function,
-#' like "filterfun", that require a single-argument function as input. 
+#' like \code{\link[genefilter]{filterfun}}, that require a single-argument function as input. 
 #'
 #' @usage threshrankfun(thresh, keep0s=FALSE, ...)
 #' @param thresh A single numeric value giving the threshold.
@@ -630,18 +640,21 @@ setMethod("t", signature("phyloseq"), function(x){
 #' The counts of each sample will be transformed individually. No sample-sample 
 #' interaction/comparison is possible by this method. 
 #'
-#' @usage transformsamplecounts(x, flist)
+#' @usage transformsamplecounts(physeq, flist)
 #'
-#' @param x (Required). the \code{otuTable} or higher-order object that 
-#'  contains an \code{otutable}.
+#' @param physeq (Required). \code{\link{phyloseq-class}} of \code{\link{otuTable-class}}.
 #'
 #' @param flist (Required). A list of functions that will be applied
 #'  to the abundance counts of each sample.
 #' 
-#' @return The transformed \code{otuTable} or higher-order object with its
-#'  \code{otuTable} transformed. In general, trimming is not expected by this 
+#' @return A transformed \code{otuTable} -- or \code{phyloseq} object with its
+#'  transformed \code{otuTable}. In general, trimming is not expected by this 
 #'  method, so it is suggested that the user provide only functions that return
-#'  a full-length vector.
+#'  a full-length vector. Filtering/trimming can follow, for which the 
+#'  \code{\link{genefilterSample}} and \code{\link{prune_species}} functions
+#'  are suggested.
+#'
+#' @seealso \code{\link{threshrankfun}}, \code{\link{rank}}, \code{\link{log}}
 #'
 #' @docType methods
 #' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts
@@ -651,14 +664,14 @@ setMethod("t", signature("phyloseq"), function(x){
 #' @examples #
 #' ## data(ex1)
 #' ## ex1r <- transformsamplecounts(ex1, rank)
-transformsamplecounts <- function(x, flist){
-	if( speciesarerows(x) ){
-		newx <- apply(as(otuTable(x), "matrix"), 2, flist)
+transformsamplecounts <- function(physeq, flist){
+	if( speciesarerows(physeq) ){
+		newphyseq <- apply(as(otuTable(physeq), "matrix"), 2, flist)
 	} else {
-		newx <- apply(as(otuTable(x), "matrix"), 1, flist)
+		newphyseq <- apply(as(otuTable(physeq), "matrix"), 1, flist)
 	}
-	otuTable(x) <- otuTable(newx, speciesAreRows=speciesarerows(x))
-	return(x)
+	otuTable(physeq) <- otuTable(newphyseq, speciesAreRows=speciesarerows(physeq))
+	return(physeq)
 }
 ####################################################################################
 # # #' @aliases transformsamplecounts TransformSampleCounts transformSampleCounts

@@ -473,7 +473,7 @@ The phyloseq-class can be considered an ``experiment-level class'' and should co
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.8\textwidth]{phyloseq_classes_3_clipped.pdf}
-\caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order object contains a slot with the associated class as one of its components.}
+\caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order class contains a slot with the associated data class as one of its components.}
 \label{fig:phyloseqclasses}
 \end{center}
 \end{figure}

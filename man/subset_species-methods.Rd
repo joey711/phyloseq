@@ -1,14 +1,16 @@
+\docType{methods}
 \name{subset_species}
 \alias{subset_species}
 \title{Subset species by taxonomic expression}
 \usage{
-  subset_species(x, ...)
+  subset_species(physeq, ...)
 }
 \arguments{
-  \item{x}{A taxonomyTable class, or \code{phyloseq-class}
-  that contains a taxonomyTable. If the \code{taxTab} slot
-  is missing in \code{x}, then \code{x} will be returned
-  as-is and a warning will be printed to screen.}
+  \item{physeq}{A \code{\link{taxonomyTable-class}}, or
+  \code{\link{phyloseq-class}} that contains a
+  taxonomyTable. If the \code{taxTab} slot is missing in
+  \code{physeq}, then \code{physeq} will be returned as-is
+  and a warning will be printed to screen.}
 
   \item{...}{The subsetting expression that should be
   applied to the \code{taxonomyTable}. This is passed on to
@@ -16,7 +18,7 @@
   how it functions can be found in its documentation.}
 }
 \value{
-  A subsetted object with the same class as \code{x}.
+  A subsetted object with the same class as \code{physeq}.
 }
 \description{
   This is a convenience wrapper around the
@@ -25,7 +27,7 @@
   call. In the case of \code{subset_species}, the
   subsetting will be based on an expression related to the
   columns and values within the \code{taxTab}
-  (\code{taxonomyTable} component) slot of \code{x}.
+  (\code{taxonomyTable} component) slot of \code{physeq}.
 }
 \examples{
 ## ex3 <- subset_species(ex1, Phylum=="Bacteroidetes")

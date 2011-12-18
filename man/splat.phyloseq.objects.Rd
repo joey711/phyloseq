@@ -1,6 +1,6 @@
 \name{splat.phyloseq.objects}
 \alias{splat.phyloseq.objects}
-\title{Convert phyloseq-class into a named list of its non-empty components.}
+\title{Convert \code{\link{phyloseq-class}} into a named list of its non-empty components.}
 \usage{
   splat.phyloseq.objects(x)
 }
