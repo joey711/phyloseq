@@ -43,8 +43,8 @@
 ## access(ex1, "tre")
 ## access(otuTable(ex1), "otuTable")
 ## # Should return NULL:
-## access(otuTable(ex1), "sampleMap")
-## access(otuTree(ex1), "sampleMap")
+## access(otuTable(ex1), "sampleData")
+## access(otuTree(ex1), "sampleData")
 ## access(otuSam(ex1), "tre")
 }
 \seealso{

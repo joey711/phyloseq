@@ -3,7 +3,7 @@
 \alias{merge_phyloseq_pair}
 \alias{merge_phyloseq_pair,otuTable,otuTable-method}
 \alias{merge_phyloseq_pair,phylo,phylo-method}
-\alias{merge_phyloseq_pair,sampleMap,sampleMap-method}
+\alias{merge_phyloseq_pair,sampleData,sampleData-method}
 \alias{merge_phyloseq_pair,taxonomyTable,taxonomyTable-method}
 \title{Merge pair of phyloseq component data objects of the same class.}
 \usage{
@@ -57,13 +57,13 @@
 ## x <- taxTab(matrix("abc", 20, 6))
 ## y <- taxTab(matrix("def", 30, 8))
 ## xy <- merge_phyloseq_pair(x, y)
-## # merge two simulated sampleMap objects
+## # merge two simulated sampleData objects
 ## x <- data.frame( matrix(sample(0:3,250,TRUE),25,10),
 ##   matrix(sample(c("a","b","c"),150,TRUE),25,6) )
-## x <- sampleMap(x)
+## x <- sampleData(x)
 ## y <- data.frame( matrix(sample(4:6,200,TRUE),20,10),
 ##   matrix(sample(c("d","e","f"),120,TRUE),20,8) )
-## y <- sampleMap(y)
+## y <- sampleData(y)
 ## merge_phyloseq_pair(x, y)
 ## data.frame(merge_phyloseq_pair(x, y))
 ## data.frame(merge_phyloseq_pair(y, x))

@@ -4,7 +4,7 @@
 \alias{sample.names,ANY-method}
 \alias{sample.names,otuTable-method}
 \alias{sample.names,phyloseq-method}
-\alias{sample.names,sampleMap-method}
+\alias{sample.names,sampleData-method}
 \alias{sampleNames}
 \title{Get sample names.}
 \usage{
@@ -12,7 +12,7 @@
 }
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}},
-  \code{\link{sampleMap}}, or
+  \code{\link{sampleData}}, or
   \code{\link{otuTable-class}}.}
 }
 \value{

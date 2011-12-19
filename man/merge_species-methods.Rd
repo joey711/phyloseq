@@ -4,7 +4,7 @@
 \alias{merge_species,otuTable-method}
 \alias{merge_species,phylo-method}
 \alias{merge_species,phyloseq-method}
-\alias{merge_species,sampleMap-method}
+\alias{merge_species,sampleData-method}
 \alias{merge_species,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \usage{

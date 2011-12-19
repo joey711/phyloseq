@@ -48,7 +48,7 @@
 # taxTab(ex1)
 }
 \seealso{
-  \code{\link{tre}}, \code{\link{sampleMap}},
+  \code{\link{tre}}, \code{\link{sampleData}},
   \code{\link{otuTable}} \code{\link{phyloseq}},
   \code{\link{merge_phyloseq}}
 }

@@ -30,7 +30,7 @@
 }
 \seealso{
   \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-  \code{\link{import_qiime_sampleMap}}
+  \code{\link{import_qiime_sampleData}}
 }
 \keyword{internal}
 

@@ -24,7 +24,7 @@ setGeneric("otuTable<-", function(x, value) standardGeneric("otuTable<-"))
 #' @rdname assign-otuTable
 #' @aliases otuTable<-,phyloseq,otuTable-method
 setMethod("otuTable<-", c("phyloseq", "otuTable"), function(x, value){
-	phyloseq(otuTable=value, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=x@tre)
+	phyloseq(otuTable=value, samData=x@samData, taxTab=x@taxTab, tre=x@tre)
 })
 #' @rdname assign-otuTable
 #' @aliases otuTable<-,otuTable,otuTable-method
@@ -68,27 +68,34 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 	return(x)
 })
 ################################################################################
-#' Assign a new sampleMap to \code{x}
+#' Assign a new sampleData to \code{x}
 #'
-#' @usage sampleMap(x) <- value
+#' @usage sampleData(x) <- value
 #' @param x (Required). \code{\link{phyloseq-class}}
-#' @param value (Required). \code{\link{sampleMap-class}}
+#' @param value (Required). \code{\link{sampleData-class}}
 #'
 #' @export
-#' @rdname assign-sampleMap
-#' @aliases assign-sampleMap sampleMap<-
+#' @rdname assign-sampleData
+#' @aliases assign-sampleData sampleData<- samData<-
 #' @examples #
 #' # data(ex1)
 #' # # An example of pruning to just the first 10 samples in ex1
 #' # ex2a <- prune_samples(sample.names(ex1)[1:10], ex1)
 #' # # The following 3 lines produces an ex2b that is equal to ex2a
 #' # ex2b <- ex1
-#' # SD <- sampleMap(ex1)[1:10, ]
-#' # sampleMap(ex2b) <- SD
+#' # SD <- sampleData(ex1)[1:10, ]
+#' # sampleData(ex2b) <- SD
 #' # identical(ex2a, ex2b)
 #' # print(ex2b)
-"sampleMap<-" <- function(x, value){
-	phyloseq(otuTable=x@otuTable, sampleMap=value, taxTab=x@taxTab, tre=x@tre)
+"sampleData<-" <- function(x, value){
+	phyloseq(otuTable=x@otuTable, samData=value, taxTab=x@taxTab, tre=x@tre)
+}
+#' @export
+#' @rdname assign-sampleData
+#' @aliases assign-sampleData sampleData<- samData<-
+#' @usage samData(x) <- value
+"samData<-" <- function(x, value){
+	phyloseq(otuTable=x@otuTable, samData=value, taxTab=x@taxTab, tre=x@tre)
 }
 ################################################################################
 #' Assign a new Taxonomy Table to \code{x}
@@ -111,7 +118,7 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 #' # identical(ex2a, ex2b)
 #' # print(ex2b)
 "taxTab<-" <- function(x, value){
-	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=value, tre=x@tre)
+	phyloseq(otuTable=x@otuTable, samData=x@samData, taxTab=value, tre=x@tre)
 }
 ################################################################################
 #' Assign to tre an object/value.
@@ -138,7 +145,7 @@ setGeneric("tre<-", function(x, value) standardGeneric("tre<-"))
 #' @rdname assign-tre
 #' @aliases tre<-,phyloseq,phylo-method
 setMethod("tre<-", c("phyloseq", "phylo"), function(x, value){
-	phyloseq(otuTable=x@otuTable, sampleMap=x@sampleMap, taxTab=x@taxTab, tre=value)
+	phyloseq(otuTable=x@otuTable, samData=x@samData, taxTab=x@taxTab, tre=value)
 })
 ################################################################################
 # # # # # assign.internal <- function(x, value, slot){

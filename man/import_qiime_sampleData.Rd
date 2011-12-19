@@ -1,8 +1,8 @@
-\name{import_qiime_sampleMap}
-\alias{import_qiime_sampleMap}
-\title{Import just \code{sampleMap} file from QIIME pipeline.}
+\name{import_qiime_sampleData}
+\alias{import_qiime_sampleData}
+\title{Import just \code{sampleData} file from QIIME pipeline.}
 \usage{
-  import_qiime_sampleMap(mapfilename)
+  import_qiime_sampleData(mapfilename)
 }
 \arguments{
   \item{mapfilename}{(Required). A character string. The
@@ -14,14 +14,14 @@
   manually once it has worked properly in QIIME.}
 }
 \value{
-  A \code{sampleMap} object.
+  A \code{sampleData} object.
 }
 \description{
   QIIME produces several files that can be analyzed in the
   phyloseq-package, This includes the map-file, which is an
   important \emph{input} to QIIME that can also indicate
   sample covariates. It is converted naturally to the
-  sampleMap component data type in phyloseq-package, based
+  sampleData component data type in phyloseq-package, based
   on the R data.frame.
 }
 \details{

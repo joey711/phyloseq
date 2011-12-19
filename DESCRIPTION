@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 0.5.30
+Version: 0.5.38
 Date: 2011-12-12
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
@@ -37,7 +37,6 @@ Collate:
     'almostAllAccessors.R'
     'otuTable-class.R'
     'phyloseq-class.R'
-    'sampleMap-class.R'
     'taxonomyTable-class.R'
     'IO-methods.R'
     'merge-methods.R'
@@ -46,3 +45,4 @@ Collate:
     'transform_filter-methods.R'
     'validity-methods.R'
     'assignment-methods.r'
+    'sampleData-class.R'

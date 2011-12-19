@@ -12,13 +12,13 @@ setMethod("[", "otuTable", function(x, i, j, ...){
 	otuTable(newx, speciesAreRows(x) )
 })
 ################################################################################
-#' extract parts of sampleMap
+#' extract parts of sampleData
 #'
 #' @export
-#' @aliases [,sampleMap-method
+#' @aliases [,sampleData-method
 #' @rdname extract-methods
-setMethod("[", "sampleMap", function(x, i, j, ...){
-	sampleMap( data.frame(x)[i, j, drop=FALSE] )
+setMethod("[", "sampleData", function(x, i, j, ...){
+	sampleData( data.frame(x)[i, j, drop=FALSE] )
 })
 ################################################################################
 #' extract parts of taxonomyTable

@@ -3,7 +3,7 @@
 \alias{show}
 \alias{show,otuTable-method}
 \alias{show,phyloseq-method}
-\alias{show,sampleMap-method}
+\alias{show,sampleData-method}
 \alias{show,taxonomyTable-method}
 \title{show method for H.O. objects.}
 \description{

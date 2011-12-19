@@ -50,6 +50,9 @@
   (end quote)
 }
 \examples{
+# # Try simple network-analysis plot
+# data(enterotype)
+# makenetwork(enterotype)
 # # Filter samples that don't have Enterotype
 # x <- subset_samples(enterotype, !is.na(Enterotype))
 # # Create correspondence analysis plot, constrained on the Enterotype category.
@@ -58,7 +61,7 @@
 # ent.cca <- cca.phyloseq(x ~ Enterotype)
 # plot_ordination_phyloseq(ent.cca, x, site_color_category="Enterotype")
 # # multiple testing of genera correlating with enterotype 2
-# mt(x, data.frame(sampleMap(x))[, "Enterotype"]==2)
+# mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
 # # Should return a data.frame, with the following head()
 # # # # # index     teststat   rawp   adjp plower
 # # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001

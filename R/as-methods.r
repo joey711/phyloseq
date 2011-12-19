@@ -11,14 +11,14 @@ setAs("phyloseq", "otuTable", function(from){
 	otuTable(from)	
 })
 ################################################################################
-setAs("data.frame", "sampleMap", function(from){
-	new("sampleMap", from)
+setAs("data.frame", "sampleData", function(from){
+	new("sampleData", from)
 })
-setAs("sampleMap", "data.frame", function(from){
+setAs("sampleData", "data.frame", function(from){
 	data.frame(from)
 })
-setAs("phyloseq", "sampleMap", function(from){
-	sampleMap(from)	
+setAs("phyloseq", "sampleData", function(from){
+	sampleData(from)	
 })
 ################################################################################
 setAs("taxonomyTable", "matrix", function(from){

@@ -50,7 +50,7 @@
 #' ## tax1 <- taxTab(matrix("abc", 30, 8))
 #' ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
 #' ##   matrix(sample(c("a","b","c"),150,TRUE), 25, 6) ) 
-#' ## map1 <- sampleMap(map1)
+#' ## map1 <- sampleData(map1)
 #' ## ex1 <- phyloseq(OTU1, map1, tax1)
 #' ## x <- ex1
 #' ## x <- phyloseq(ex1)
@@ -59,7 +59,7 @@
 #' ## merge_phyloseq(y, y, y, y)
 #' ## # Try the simple example dataset, ex1
 #' ## data(ex1)
-#' ## merge_phyloseq( otutree(ex1), sampleMap(ex1))
+#' ## merge_phyloseq( otutree(ex1), sampleData(ex1))
 #' ## merge_phyloseq( otuSam(ex1), tre(ex1), taxTab(ex1))
 merge_phyloseq <- function(...){
 	arguments <- list(...)
@@ -138,13 +138,13 @@ merge_phyloseq <- function(...){
 #' ## x <- taxTab(matrix("abc", 20, 6))
 #' ## y <- taxTab(matrix("def", 30, 8))
 #' ## xy <- merge_phyloseq_pair(x, y)
-#' ## # merge two simulated sampleMap objects
+#' ## # merge two simulated sampleData objects
 #' ## x <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
 #' ##   matrix(sample(c("a","b","c"),150,TRUE),25,6) )
-#' ## x <- sampleMap(x)
+#' ## x <- sampleData(x)
 #' ## y <- data.frame( matrix(sample(4:6,200,TRUE),20,10), 
 #' ##   matrix(sample(c("d","e","f"),120,TRUE),20,8) )
-#' ## y <- sampleMap(y)
+#' ## y <- sampleData(y)
 #' ## merge_phyloseq_pair(x, y)
 #' ## data.frame(merge_phyloseq_pair(x, y))
 #' ## data.frame(merge_phyloseq_pair(y, x))
@@ -197,9 +197,9 @@ setMethod("merge_phyloseq_pair", signature("taxonomyTable", "taxonomyTable"), fu
 	return(newx)
 })
 ################################################################################
-#' @aliases merge_phyloseq_pair,sampleMap,sampleMap-method
+#' @aliases merge_phyloseq_pair,sampleData,sampleData-method
 #' @rdname merge_phyloseq_pair-methods
-setMethod("merge_phyloseq_pair", signature("sampleMap", "sampleMap"), function(x, y){
+setMethod("merge_phyloseq_pair", signature("sampleData", "sampleData"), function(x, y){
 	new.sa.names <- union(rownames(x), rownames(y))
 	new.va.names <- union(colnames(x), colnames(y))
 	
@@ -221,7 +221,7 @@ setMethod("merge_phyloseq_pair", signature("sampleMap", "sampleMap"), function(x
 	newx <- newx[,names(newx)!="X0"]
 	
 	# Create the new otuTable object
-	newx <- sampleMap(newx)
+	newx <- sampleData(newx)
 	return(newx)	
 })
 ################################################################################
@@ -338,9 +338,9 @@ setMethod("merge_species", "phyloseq", function(x, eqspecies, archetype=1){
 	do.call("phyloseq", merged_list)
 })
 ###############################################################################
-#' @aliases merge_species,sampleMap-method
+#' @aliases merge_species,sampleData-method
 #' @rdname merge_species-methods
-setMethod("merge_species", "sampleMap", function(x, eqspecies, archetype=1){
+setMethod("merge_species", "sampleData", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
@@ -403,7 +403,7 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #' Merge samples based on a sample variable or factor.
 #'
 #' The purpose of this method is to merge/agglomerate the sample indices of a 
-#' phyloseq object according to a categorical variable contained in a sampleMap
+#' phyloseq object according to a categorical variable contained in a sampleData
 #' or a provided factor.
 #' 
 #' NOTE: (\code{\link[ape]{phylo}}) trees and \code{\link{taxonomyTable-class}}
@@ -412,10 +412,10 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #' @usage merge_samples(x, group, fun=mean) 
 #'
 #' @param x (Required). An instance of a phyloseq class that has sample indices. This includes 
-#'  \code{\link{sampleMap-class}}, \code{\link{otuTable-class}}, and \code{\link{phyloseq-class}}. 
+#'  \code{\link{sampleData-class}}, \code{\link{otuTable-class}}, and \code{\link{phyloseq-class}}. 
 #'
 #' @param group (Required). Either the a single character string matching a variable name in
-#'  the corresponding sampleMap of \code{x}, or a factor with the same length as
+#'  the corresponding sampleData of \code{x}, or a factor with the same length as
 #'  the number of samples in \code{x}.
 #'
 #' @param fun (Optional). The function that will be used to merge the values that
@@ -437,11 +437,11 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #'
 #' @examples #
 #' # # # data(ex1)
-#' # # # t1 <- merge_samples(sampleMap(ex1), "Gender")
+#' # # # t1 <- merge_samples(sampleData(ex1), "Gender")
 #' # # # t4 <- merge_samples(ex1, "Gender")
-#' # # # identical(t1, sampleMap(t4))
+#' # # # identical(t1, sampleData(t4))
 #' # # # t0 <- merge_samples(ex1, "Diet")
-#' # # # grp <- as(data.frame(sampleMap(ex1))[, "Diet"], "vector")
+#' # # # grp <- as(data.frame(sampleData(ex1))[, "Diet"], "vector")
 #' # # # t4 <- merge_samples(ex1, grp)
 #' # # # identical(t0, t4)
 #' # # # t1 <- merge_samples(otuTable(ex1), grp)
@@ -452,9 +452,9 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #' # # # identical(t1, otuTable(t3))
 setGeneric("merge_samples", function(x, group, fun=mean) standardGeneric("merge_samples"))
 ################################################################################
-#' @aliases merge_samples,sampleMap-method
+#' @aliases merge_samples,sampleData-method
 #' @rdname merge_samples-methods
-setMethod("merge_samples", signature("sampleMap"), function(x, group, fun=mean){
+setMethod("merge_samples", signature("sampleData"), function(x, group, fun=mean){
 	x1    <- data.frame(x)
 
 	# Check class of group and modify if "character"
@@ -482,7 +482,7 @@ setMethod("merge_samples", signature("sampleMap"), function(x, group, fun=mean){
 	# "pop" the first column
 	outdf <- outdf[, -1, drop=FALSE]
 
-	return( sampleMap(outdf) )
+	return( sampleData(outdf) )
 })
 ################################################################################
 #' @aliases merge_samples,otuTable-method
@@ -504,11 +504,11 @@ setMethod("merge_samples", signature("otuTable"), function(x, group){
 #' @rdname merge_samples-methods
 setMethod("merge_samples", signature("phyloseq"), function(x, group, fun=mean){
 
-	# Check if phyloseq object has a sampleMap
-	if( !is.null(access(x, "sampleMap")) ){
+	# Check if phyloseq object has a sampleData
+	if( !is.null(access(x, "sampleData")) ){
 		# Check class of group and modify if single "character" (column name)
 		if( class(group)=="character" & length(group)==1 ){
-			x1 <- data.frame(sampleMap(x))		
+			x1 <- data.frame(sampleData(x))		
 			if( !group %in% colnames(x1) ){stop("group not found among sample variable names.")}
 			group <- x1[, group]
 		}
@@ -516,7 +516,7 @@ setMethod("merge_samples", signature("phyloseq"), function(x, group, fun=mean){
 			# attempt to coerce to factor
 			group <- factor(group)
 		}
-		newSM <- merge_samples(sampleMap(x), group, fun)
+		newSM <- merge_samples(sampleData(x), group, fun)
 		newOT <- merge_samples(otuTable(x), group)
 		phyloseqList <- list(newOT, newSM)
 		

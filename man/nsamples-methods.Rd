@@ -4,14 +4,14 @@
 \alias{nsamples,ANY-method}
 \alias{nsamples,otuTable-method}
 \alias{nsamples,phyloseq-method}
-\alias{nsamples,sampleMap-method}
+\alias{nsamples,sampleData-method}
 \title{Get the number of samples.}
 \usage{
   nsamples(physeq)
 }
 \arguments{
   \item{physeq}{A \code{\link{phyloseq-class}},
-  \code{\link{sampleMap}}, or
+  \code{\link{sampleData}}, or
   \code{\link{otuTable-class}}.}
 }
 \value{

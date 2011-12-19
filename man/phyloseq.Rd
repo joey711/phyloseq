@@ -28,19 +28,19 @@
   experiment-level (\code{\link{phyloseq-class}}) object
   from its component data (component data classes:
   \code{\link{otuTable-class}},
-  \code{\link{sampleMap-class}},
+  \code{\link{sampleData-class}},
   \code{\link{taxonomyTable-class}},
   \code{\link{phylo-class}}).
 }
 \examples{
 #
 # # data(ex1)
-# # phyloseq(sampleMap(ex1), otuTable(ex1))
+# # phyloseq(sampleData(ex1), otuTable(ex1))
 # # phyloseq(otuTable(ex1), tre(ex1))
 # # phyloseq(taxTab(ex1), otuTable(ex1))
-# # phyloseq(tre(ex1), otuTable(ex1), sampleMap(ex1))
-# # phyloseq(otuTable(ex1), taxTab(ex1), sampleMap(ex1))
-# # phyloseq(otuTable(ex1), tre(ex1), taxTab(ex1), sampleMap(ex1))
+# # phyloseq(tre(ex1), otuTable(ex1), sampleData(ex1))
+# # phyloseq(otuTable(ex1), taxTab(ex1), sampleData(ex1))
+# # phyloseq(otuTable(ex1), tre(ex1), taxTab(ex1), sampleData(ex1))
 }
 \seealso{
   \code{\link{merge_phyloseq}}

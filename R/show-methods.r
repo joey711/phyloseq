@@ -58,11 +58,11 @@ setMethod("show", "otuTable", function(object){
 })
 ############################################################################
 #' @name show
-#' @aliases show,sampleMap-method
+#' @aliases show,sampleData-method
 #' @docType methods
 #' @rdname show-methods
-setMethod("show", "sampleMap", function(object){
-	tableprint(object, "Sample Map", "Samples", "Variables")
+setMethod("show", "sampleData", function(object){
+	tableprint(object, "Sample Data", "Samples", "Variables")
 })
 ############################################################################
 #' @name show
@@ -80,7 +80,7 @@ setMethod("show", "taxonomyTable", function(object){
 #' @docType methods
 #' @rdname show-methods
 setMethod("show", "phyloseq", function(object){
-	cat( class(object), "Object \n", fill=TRUE )
+	cat( "phyloseq-class experiment-level object \n", fill=TRUE )
 	slot_list <- splat.phyloseq.objects(object)
 	lapply(slot_list, function(i){show(i);cat("\n")})
 })

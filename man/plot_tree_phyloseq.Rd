@@ -10,15 +10,16 @@
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}}
-  with non-empty tree, sampleMap, and otuTable components.}
+  with non-empty tree, sampleData, and otuTable
+  components.}
 
   \item{color_factor}{A character string specifying the
-  column of the sampleMap that will be used for setting the
-  color of symbols.}
+  column of the sampleData that will be used for setting
+  the color of symbols.}
 
   \item{shape_factor}{A character string specifying the
-  column of the sampleMap that will be used for setting the
-  shape of symbols.}
+  column of the sampleData that will be used for setting
+  the shape of symbols.}
 
   \item{base_size}{The minimum size expansion factor of
   symbols plotted next to tips. The default value is 1.}
@@ -76,7 +77,7 @@
 \description{
   Requires a \code{\link{phyloseq-class}} that contains a
   tree (\code{\link{tre}}), sample data
-  (\code{\link{sampleMap}}), and abundance table
+  (\code{\link{sampleData}}), and abundance table
   (\code{\link{otuTable}}).
 }
 \examples{

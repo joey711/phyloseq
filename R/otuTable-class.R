@@ -25,7 +25,7 @@
 #'
 #' @return An \code{\link{otuTable-class}} object. 
 #'
-#' @seealso \code{\link{tre}}, \code{\link{sampleMap}}, \code{\link{taxTab}}
+#' @seealso \code{\link{tre}}, \code{\link{sampleData}}, \code{\link{taxTab}}
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #' 
 #' @docType methods

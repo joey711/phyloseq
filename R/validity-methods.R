@@ -46,7 +46,7 @@ validOTUtable <- function(object){
 setValidity("otuTable", validOTUtable)
 ########################################
 ########################################
-# sampleMap:
+# sampleData:
 ########################################
 validSampleData <- function(object){
 	if( any(dim(object)==0) ){
@@ -54,8 +54,8 @@ validSampleData <- function(object){
 	}
 	return(TRUE)
 }
-## assign the function as the validity method for the sampleMap class
-setValidity("sampleMap", validSampleData)
+## assign the function as the validity method for the sampleData class
+setValidity("sampleData", validSampleData)
 ########################################
 ########################################
 # taxonomyTable:
@@ -79,7 +79,7 @@ validTaxonomyTable <- function(object){
 	}	
 	return(TRUE)
 }
-## assign the function as the validity method for the sampleMap class
+## assign the function as the validity method for the sampleData class
 setValidity("taxonomyTable", validTaxonomyTable)
 ########################################
 ########################################
@@ -109,8 +109,8 @@ validphyloseq <- function(object){
 			" Taxa indices are critical to analysis.\n Try species.names()"))
 	}
 	# If there is sample data, check that sample-names overlap
-	if( !is.null(object@sampleMap) ){
-		if( length(intersect(sample.names(object@sampleMap), sample.names(object@otuTable))) <= 0 ){
+	if( !is.null(object@samData) ){
+		if( length(intersect(sample.names(object@samData), sample.names(object@otuTable))) <= 0 ){
 			return("\n Component sample names do not match.\n Try sample.names()")
 		}
 	}

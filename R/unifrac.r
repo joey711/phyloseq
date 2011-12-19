@@ -369,9 +369,9 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
 		A <- i[1]
 		B <- i[2]
 		if( weighted ){
-			return( phyloseq::wUniFracPair(OTU, tree, A, B, normalized) )
+			return( phyloseq:::wUniFracPair(OTU, tree, A, B, normalized) )
 		} else {
-			return( phyloseq::unifracPair(occ, tree, A, B) )
+			return( phyloseq:::unifracPair(occ, tree, A, B) )
 		}
 	}
 	

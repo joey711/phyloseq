@@ -4,7 +4,7 @@
 \description{
   Contains all component classes:
   \code{\link{otuTable-class}},
-  \code{\link{sampleMap-class}},
+  \code{\link{sampleData-class}},
   \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot),
   and \code{\link[ape]{phylo}}-class (\code{"tre"} slot).
   There are several advantages to storing your phylogenetic
@@ -35,8 +35,8 @@
   downstream analyses.
 
   slots: \describe{ \item{otuTable}{a single object of
-  class otuTable.} \item{sampleMap}{ a single object of
-  class sampleMap.} \item{taxTab}{ a single object of class
+  class otuTable.} \item{samData}{ a single object of class
+  sampleData.} \item{taxTab}{ a single object of class
   taxonomyTable.} \item{tre}{ a single object of class
   phylo, from the package ape} }
 }
@@ -44,7 +44,7 @@
   The constructor, \code{\link{phyloseq}}, the merger
   \code{\link{merge_phyloseq}}, and also the component
   constructor/accessors \code{\link{otuTable}},
-  \code{\link{sampleMap}}, \code{\link{taxTab}}, and
+  \code{\link{sampleData}}, \code{\link{taxTab}}, and
   \code{\link{tre}}.
 }
 

@@ -12,7 +12,7 @@ in the ggplot2 framework.}
   \item{taxavec}{A character vector of the desired
   taxonomic names to categorize each species in otu.}
 
-  \item{map}{The corresponding sampleMap object for
+  \item{map}{The corresponding sampleData object for
   \code{otu}.}
 
   \item{keepOnlyTheseTaxa}{A vector of the taxonomic labels

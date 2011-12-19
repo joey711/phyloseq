@@ -18,7 +18,7 @@
   (hypotheses), and samples to observations.}
 
   \item{classlabel}{(Required). A single character index of
-  the sample-variable in the \code{\link{sampleMap}} of
+  the sample-variable in the \code{\link{sampleData}} of
   \code{physeq} that will be used for multiple testing.
   Alternatively, \code{classlabel} can be a custom integer,
   character, or factor with length equal to
@@ -51,7 +51,7 @@
 ## data(ex1)
 ## mt(ex1, "Diet")
 ## # Alternatively
-## dietfac <- factor(data.frame(sampleMap(ex1))[, "Diet"])
+## dietfac <- factor(data.frame(sampleData(ex1))[, "Diet"])
 ## mt(ex1, dietfac)
 }
 \seealso{

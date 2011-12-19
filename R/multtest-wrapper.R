@@ -10,7 +10,7 @@
 #'  (hypotheses), and samples to observations.
 #'
 #' @param classlabel (Required). A single character index of the sample-variable
-#'  in the \code{\link{sampleMap}} of \code{physeq} that will be used for multiple testing. 
+#'  in the \code{\link{sampleData}} of \code{physeq} that will be used for multiple testing. 
 #'  Alternatively, \code{classlabel} can be a custom integer, character, or factor with
 #'  length equal to \code{nsamples(physeq)}. In either scenario -- a sample variable
 #'  within the phyloseq-class object or a custom vector -- \code{classlabel} must
@@ -39,17 +39,17 @@
 #' ## data(ex1)
 #' ## mt(ex1, "Diet")
 #' ## # Alternatively
-#' ## dietfac <- factor(data.frame(sampleMap(ex1))[, "Diet"])
+#' ## dietfac <- factor(data.frame(sampleData(ex1))[, "Diet"])
 #' ## mt(ex1, dietfac)
 setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", ...) standardGeneric("mt") )
 ################################################################################
 #' @aliases mt,phyloseq,ANY-method
 #' @rdname mt-methods
 setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", ...){
-	# If sampleMap slot is non-empty, and the classlabel is a character-class
+	# If sampleData slot is non-empty, and the classlabel is a character-class
 	# length(classlabel) == 1
-	if( !is.null(sampleMap(physeq, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
-		rawFactor  <- as(sampleMap(physeq), "data.frame")[, classlabel[1]]
+	if( !is.null(sampleData(physeq, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
+		rawFactor  <- as(sampleData(physeq), "data.frame")[, classlabel[1]]
 		if( class(rawFactor) != "factor" ){
 			rawFactor <- factor(rawFactor)
 		}
@@ -97,7 +97,7 @@ setMethod("mt", c("otuTable", "character"), function(physeq, classlabel, minPmax
 #' @rdname mt-methods
 setMethod("mt", c("otuTable", "factor"), function(physeq, classlabel, minPmaxT="minP", ...){
 	if( length(levels(classlabel)) != 2 ){
-		stop("classlabel argument should be (or specify in sampleMap) a two-level factor.\n",
+		stop("classlabel argument should be (or specify in sampleData) a two-level factor.\n",
 		"In this case, the classlabel had ", length(levels(classlabel)), " levels (after coercion)."
 		)
 	}

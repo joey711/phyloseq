@@ -68,7 +68,7 @@
 
   \item{add_sites_data}{A \code{data.frame} object
   providing additional data about the samples/sites that is
-  not already available in the \code{sampleMap} of your
+  not already available in the \code{sampleData} of your
   phyloseq object specified by \code{object}. As such, it
   must have the same number of rows as as there are samples
   in \code{object}. Default is \code{NULL}.}

@@ -50,7 +50,7 @@
 # tre(ex1)
 }
 \seealso{
-  \code{\link{otuTable}}, \code{\link{sampleMap}},
+  \code{\link{otuTable}}, \code{\link{sampleData}},
   \code{\link{taxTab}} \code{\link{phyloseq}},
   \code{\link{merge_phyloseq}}
 }

@@ -11,7 +11,7 @@
 \arguments{
   \item{otu}{(Required). An \code{otuTable} object, or
   higher-order object that contains an otuTable and
-  sampleMap (e.g. ``otuSam'' class and its superclasses.).
+  sampleData (e.g. ``otuSam'' class and its superclasses.).
   If \code{otu} does not contain a taxTab slot (is a class
   that does not have ``Tax'' in its title), then the second
   argument, \code{taxavec}, is required and should have
@@ -39,14 +39,14 @@
   taxonomic groups are included.}
 
   \item{x_category}{A character string indicating which
-  sampleMap column should be used to define the horizontal
+  sampleData column should be used to define the horizontal
   axis categories. Default is \code{"sample"}. Note that a
   few column-names are added by default and are available
   as options. They are ``sample'', ``Abundance'', and
   ``TaxaGroup''.}
 
   \item{fill_category}{A character string indicating which
-  sampleMap column should be used to define the fill color
+  sampleData column should be used to define the fill color
   of the bars. This does not have to match
   \code{x_category}, but does so by default. Note that a
   few column-names are added by default and are available
@@ -78,7 +78,7 @@
   The vertical axis is always relative abundance, but the
   data can be further organized at the horizontal axis and
   faceting grid by any combination of variates present in
-  the sampleMap component of \code{otu}.
+  the sampleData component of \code{otu}.
 }
 \examples{
 #

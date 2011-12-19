@@ -1,5 +1,5 @@
-\name{sampleMap-class}
-\alias{sampleMap-class}
+\name{sampleData-class}
+\alias{sampleData-class}
 \title{The S4 for storing sample variables.}
 \description{
   Row indices represent samples, while column indices

@@ -34,7 +34,7 @@
 #'  This method stops with an error in the latter NULL case be default, which
 #'  can be over-ridden by changing the value of \code{errorIfNULL} to \code{FALSE}.
 #'
-#' @seealso \code{\link{otuTable}}, \code{\link{sampleMap}}, \code{\link{taxTab}}
+#' @seealso \code{\link{otuTable}}, \code{\link{sampleData}}, \code{\link{taxTab}}
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #' 
 #' @export
@@ -178,8 +178,8 @@ setMethod("species.names", "otuTable", function(physeq){
 #' @aliases species.names,taxonomyTable-method
 setMethod("species.names", "taxonomyTable", function(physeq) rownames(physeq) )
 #' @rdname species.names-methods
-#' @aliases species.names,sampleMap-method
-setMethod("species.names", "sampleMap", function(physeq) NULL )
+#' @aliases species.names,sampleData-method
+setMethod("species.names", "sampleData", function(physeq) NULL )
 #' @rdname species.names-methods
 #' @aliases species.names,phylo-method
 setMethod("species.names", "phylo", function(physeq) physeq$tip.label )
@@ -188,7 +188,7 @@ setMethod("species.names", "phylo", function(physeq) physeq$tip.label )
 #'
 #' @usage nsamples(physeq)
 #'
-#' @param physeq A \code{\link{phyloseq-class}}, \code{\link{sampleMap}},
+#' @param physeq A \code{\link{phyloseq-class}}, \code{\link{sampleData}},
 #'  or \code{\link{otuTable-class}}.
 #'
 #' @return An integer indicating the total number of samples.
@@ -227,14 +227,14 @@ setMethod("nsamples", "otuTable", function(physeq){
 	}	
 })
 #' @rdname nsamples-methods
-#' @aliases nsamples,sampleMap-method
-setMethod("nsamples", "sampleMap", function(physeq) nrow(physeq) )
+#' @aliases nsamples,sampleData-method
+setMethod("nsamples", "sampleData", function(physeq) nrow(physeq) )
 ################################################################################
 #' Get sample names.
 #'
 #' @usage sample.names(physeq)
 #'
-#' @param physeq (Required). A \code{\link{phyloseq-class}}, \code{\link{sampleMap}},
+#' @param physeq (Required). A \code{\link{phyloseq-class}}, \code{\link{sampleData}},
 #'  or \code{\link{otuTable-class}}.
 #'
 #' @return A character vector. The names of the samples in \code{physeq}.
@@ -269,8 +269,8 @@ setMethod("sample.names", "phyloseq", function(physeq){
 	unique(unlist(lapply(splat.phyloseq.objects(physeq), sample.names)))
 })
 #' @rdname sample.names-methods
-#' @aliases sample.names,sampleMap-method
-setMethod("sample.names", "sampleMap", function(physeq) rownames(physeq) )
+#' @aliases sample.names,sampleData-method
+setMethod("sample.names", "sampleData", function(physeq) rownames(physeq) )
 #' @rdname sample.names-methods
 #' @aliases sample.names,otuTable-method
 setMethod("sample.names", "otuTable", function(physeq){

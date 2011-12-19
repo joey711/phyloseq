@@ -43,9 +43,9 @@ setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phylose
 #' @aliases plot_phyloseq,phyloseq-method
 #' @rdname plot_phyloseq-methods
 setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
-	if( all(c("otuTable", "sampleMap", "tre") %in% getslots.phyloseq(physeq)) ){
+	if( all(c("otuTable", "sampleData", "tre") %in% getslots.phyloseq(physeq)) ){
 		plot_tree_phyloseq(physeq, ...)		
-	} else if( all(c("otuTable", "sampleMap", "taxTab") %in% getslots.phyloseq(physeq) ) ){
+	} else if( all(c("otuTable", "sampleData", "taxTab") %in% getslots.phyloseq(physeq) ) ){
 		taxaplot(otu=physeq, ...)
 	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
 		tree <- tre(physeq)
@@ -137,7 +137,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  Default is \code{NULL}.
 #'
 #' @param add_sites_data A \code{data.frame} object providing additional data
-#'  about the samples/sites that is not already available in the \code{sampleMap} of
+#'  about the samples/sites that is not already available in the \code{sampleData} of
 #'  your phyloseq object specified by \code{object}. As such, it must have 
 #'  the same number of rows as as there are samples in \code{object}. 
 #'  Default is \code{NULL}. 
@@ -206,9 +206,9 @@ plot_ordination_phyloseq <- function(mod, object,
 	# object specified as argument 'object' add it
 	# automatically to the respective data.frame
 	########################################
-	# if there is a sampleMap, cbind it to the sites data
-	if( !is.null(sampleMap(object)) ){
-		sitesdata <- cbind(sitesdata, data.frame(sampleMap(object)))
+	# if there is a sampleData, cbind it to the sites data
+	if( !is.null(sampleData(object)) ){
+		sitesdata <- cbind(sitesdata, data.frame(sampleData(object)))
 	}
 	
 	# if there is a taxTab, cbind it to the species data
@@ -320,8 +320,8 @@ plot_ordination_phyloseq <- function(mod, object,
 #'
 #' @param X (Required). A formula object. The left-hand side specifying a single 
 #'  phyloseq object that contains (at minimum) an \code{otuTable} and a 
-#'  \code{sampleMap}. The right-hand side should contain the label of at least
-#'  one variate present in the \code{sampleMap} of the LHS object. There is
+#'  \code{sampleData}. The right-hand side should contain the label of at least
+#'  one variate present in the \code{sampleData} of the LHS object. There is
 #'  one supported alternative, the special \code{"."} for the RHS, in which case
 #'  all available variates will be specified as constraints in the constrained
 #'  ordination, but not shaded. This behavior is less explicit and may depend
@@ -340,7 +340,7 @@ plot_ordination_phyloseq <- function(mod, object,
 #'  if you only wanted to constrain on the Diet variable, for example.
 #'
 #'  For available
-#'  variate names in your object, try \code{colnames(sampleMap(ex1))}, where
+#'  variate names in your object, try \code{colnames(sampleData(ex1))}, where
 #'  \code{ex1} is the phyloseq object containing your data. Because this is
 #'  a formula object, quotes should not be used. See \code{\link{formula}}
 #'  for details about writing a formula in \code{R}.
@@ -408,7 +408,7 @@ calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 #' @param taxavec A character vector of the desired taxonomic names to 
 #'  categorize each species in otu. 
 #' 
-#' @param map The corresponding sampleMap object for \code{otu}.
+#' @param map The corresponding sampleData object for \code{otu}.
 #' 
 #' @param keepOnlyTheseTaxa A vector of the taxonomic labels that you want
 #'  included. If NULL, the default, then all taxonomic labels are used, except
@@ -492,14 +492,14 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' The vertical axis is always relative abundance, but the data
 #' can be further organized at the horizontal axis and faceting grid
 #' by any combination of variates present in
-#' the sampleMap component of \code{otu}.
+#' the sampleData component of \code{otu}.
 #'
 #' @usage taxaplot(otu, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
 #'	facet_formula = . ~ TaxaGroup)
 #'
 #' @param otu (Required). An \code{otuTable} object, or higher-order object that contains
-#'  an otuTable and sampleMap (e.g. ``otuSam'' class and its superclasses.).
+#'  an otuTable and sampleData (e.g. ``otuSam'' class and its superclasses.).
 #'  If \code{otu} does not contain a taxTab slot (is a class that does not
 #'  have ``Tax'' in its title), then the second argument, \code{taxavec}, is
 #'  required and should have length equal to the number of species/taxa in
@@ -522,12 +522,12 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
-#' @param x_category A character string indicating which sampleMap column should be
+#' @param x_category A character string indicating which sampleData column should be
 #'  used to define the horizontal axis categories. Default is \code{"sample"}. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
 #' 
-#' @param fill_category A character string indicating which sampleMap column
+#' @param fill_category A character string indicating which sampleData column
 #'  should be used to define the fill color of the bars. This does not have to 
 #'  match \code{x_category}, but does so by default. Note
 #'  that a few column-names are added by default and are available as options. 
@@ -564,8 +564,8 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula = . ~ TaxaGroup){
 
-	# Some preliminary assignments. Assumes otu has non-empty sampleMap slot.
-	map <- sampleMap(otu)
+	# Some preliminary assignments. Assumes otu has non-empty sampleData slot.
+	map <- sampleData(otu)
 	if( length(taxavec) == 1 ){ 
 		taxavec <- as(taxTab(otu), "matrix")[, taxavec, drop=TRUE]
 	}
@@ -827,7 +827,7 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #' Plot tree with easy tip annotation.
 #'
 #' Requires a \code{\link{phyloseq-class}} that contains a tree (\code{\link{tre}}), 
-#' sample data (\code{\link{sampleMap}}),
+#' sample data (\code{\link{sampleData}}),
 #' and abundance table (\code{\link{otuTable}}).
 #'
 #' @usage plot_tree_phyloseq(physeq, color_factor=NULL, shape_factor=NULL, 
@@ -836,13 +836,13 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #'  type_abundance_value=FALSE, printTheseTaxa=NULL, treeTitle="Annotated Tree", ...)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} with non-empty 
-#'  tree, sampleMap, and otuTable components.
+#'  tree, sampleData, and otuTable components.
 #'
 #' @param color_factor A character string specifying the column
-#'  of the sampleMap that will be used for setting the color of symbols.
+#'  of the sampleData that will be used for setting the color of symbols.
 #'
 #' @param shape_factor A character string specifying the column
-#'  of the sampleMap that will be used for setting the shape of symbols.
+#'  of the sampleData that will be used for setting the shape of symbols.
 #'  
 #' @param base_size The minimum size expansion factor of symbols plotted next
 #'  to tips. The default value is 1. 
@@ -909,14 +909,14 @@ plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL,
 	custom_color_scale=NULL, custom_shape_scale=NULL, 
 	type_abundance_value=FALSE, printTheseTaxa=NULL, treeTitle="Annotated Tree", ...){
 
-	# Initialize categories vector, giving the sampleMap index of aesthetics.
+	# Initialize categories vector, giving the sampleData index of aesthetics.
 	categories <- character(2); names(categories) <- c("color", "shape")
 	
 	# Only look for default factors if color_factor AND shape_factor absent.
 	if( is.null(color_factor) & is.null(shape_factor) ){
-		# Want to use up to the first two factors in sampleMap as default.
-		smdf_factor_types <- lapply(data.frame(sampleMap(physeq)), class) == "factor"
-		available_factors <- colnames(sampleMap(physeq))[	smdf_factor_types ]
+		# Want to use up to the first two factors in sampleData as default.
+		smdf_factor_types <- lapply(data.frame(sampleData(physeq)), class) == "factor"
+		available_factors <- colnames(sampleData(physeq))[	smdf_factor_types ]
 		categories["color"] <- available_factors[1]
 		if( length(available_factors) > 1 ){
 			categories["shape"] <- available_factors[2]
@@ -929,7 +929,7 @@ plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL,
 	
 	# color
 	if( categories["color"] != "" ){
-		color_factor <- data.frame(sampleMap(physeq))[, categories["color"]]
+		color_factor <- data.frame(sampleData(physeq))[, categories["color"]]
 		# determine the color scale.
 		if( is.null(custom_color_scale) ){
 			avail_colors <- rainbow(length(levels(color_factor)), alpha=opacity)
@@ -946,7 +946,7 @@ plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL,
 
 	# shape	 custom_shape_scale
 	if( categories["shape"] != "" ){
-		shape_factor <- data.frame(sampleMap(physeq))[, categories["shape"]]
+		shape_factor <- data.frame(sampleData(physeq))[, categories["shape"]]
 		# determine the shape scale.
 		if( is.null(custom_shape_scale) ){
 			avail_shapes <- (1:(length(levels(shape_factor)))) + 20

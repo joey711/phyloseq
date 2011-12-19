@@ -27,7 +27,7 @@
 #' character matrix representing the taxonomic classification of species in the
 #' experiment.
 #'
-#' @seealso \code{\link{tre}}, \code{\link{sampleMap}}, \code{\link{otuTable}}
+#' @seealso \code{\link{tre}}, \code{\link{sampleData}}, \code{\link{otuTable}}
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #'
 #' @rdname taxTab-methods

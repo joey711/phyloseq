@@ -4,7 +4,7 @@
 #' \code{phyloseq()} is a constructor method, This is the main method
 #' suggested for constructing an experiment-level (\code{\link{phyloseq-class}})
 #' object from its component data 
-#' (component data classes: \code{\link{otuTable-class}}, \code{\link{sampleMap-class}}, 
+#' (component data classes: \code{\link{otuTable-class}}, \code{\link{sampleData-class}}, 
 #'  \code{\link{taxonomyTable-class}}, \code{\link{phylo-class}}).
 #'
 #' @usage phyloseq(...)
@@ -28,12 +28,12 @@
 #' @export
 #' @examples #
 #' # # data(ex1)
-#' # # phyloseq(sampleMap(ex1), otuTable(ex1))
+#' # # phyloseq(sampleData(ex1), otuTable(ex1))
 #' # # phyloseq(otuTable(ex1), tre(ex1))
 #' # # phyloseq(taxTab(ex1), otuTable(ex1))
-#' # # phyloseq(tre(ex1), otuTable(ex1), sampleMap(ex1))
-#' # # phyloseq(otuTable(ex1), taxTab(ex1), sampleMap(ex1))
-#' # # phyloseq(otuTable(ex1), tre(ex1), taxTab(ex1), sampleMap(ex1))
+#' # # phyloseq(tre(ex1), otuTable(ex1), sampleData(ex1))
+#' # # phyloseq(otuTable(ex1), taxTab(ex1), sampleData(ex1))
+#' # # phyloseq(otuTable(ex1), tre(ex1), taxTab(ex1), sampleData(ex1))
 phyloseq <- function(...){
 	
 	arglist <- list(...)
@@ -88,9 +88,9 @@ phyloseq <- function(...){
 #' #get.component.classes()
 get.component.classes <- function(){
 	# define classes vector
-	component.classes <- c("otuTable", "sampleMap", "phylo", "taxonomyTable")
+	component.classes <- c("otuTable", "sampleData", "phylo", "taxonomyTable")
 	# the names of component.classes needs to be the slot names to match getSlots / splat
-	names(component.classes) <- c("otuTable", "sampleMap", "tre", "taxTab")	
+	names(component.classes) <- c("otuTable", "samData", "tre", "taxTab")	
 	return(component.classes)
 }
 ################################################################################
@@ -206,8 +206,8 @@ getslots.phyloseq <- function(physeq){
 #' ## access(ex1, "tre")
 #' ## access(otuTable(ex1), "otuTable")
 #' ## # Should return NULL:
-#' ## access(otuTable(ex1), "sampleMap")
-#' ## access(otuTree(ex1), "sampleMap")
+#' ## access(otuTable(ex1), "sampleData")
+#' ## access(otuTree(ex1), "sampleData")
 #' ## access(otuSam(ex1), "tre")
 access <- function(physeq, slot, errorIfNULL=FALSE){
 	component.classes <- get.component.classes()
@@ -255,7 +255,7 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' ## head(intersect_species(ex1), 10)
 intersect_species <- function(x){
 	component_list  <- splat.phyloseq.objects(x)
-	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("sampleMap") )
+	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("samData") )
 	if( length(doesnt_have_species) > 0 ){
 		species_vectors <- lapply(component_list[-doesnt_have_species], species.names)		
 	} else {
@@ -333,11 +333,11 @@ setMethod("reconcile_species", signature("phyloseq"), function(x){
 #' ## reconcile_samples(ex1)
 reconcile_samples <- function(x){
 	# prevent infinite recursion issues by checking if intersection already satisfied
-	if( setequal(sample.names(sampleMap(x)), sample.names(otuTable(x))) ){
+	if( setequal(sample.names(sampleData(x)), sample.names(otuTable(x))) ){
 		return(x)
 	} else {
-		samples <- intersect(sample.names(sampleMap(x)), sample.names(otuTable(x)))		
-		x@sampleMap <- prune_samples(samples, x@sampleMap)
+		samples <- intersect(sample.names(sampleData(x)), sample.names(otuTable(x)))		
+		x@samData <- prune_samples(samples, x@samData)
 		x@otuTable  <- prune_samples(samples, x@otuTable)
 		return(x)
 	}

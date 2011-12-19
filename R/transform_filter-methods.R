@@ -442,9 +442,9 @@ setMethod("prune_species", signature("character", "otuTable"), function(species,
 	}	
 })
 ################################################################################
-#' @aliases prune_species,character,sampleMap-method
+#' @aliases prune_species,character,sampleData-method
 #' @rdname prune_species-methods
-setMethod("prune_species", signature("character", "sampleMap"), function(species, x){
+setMethod("prune_species", signature("character", "sampleData"), function(species, x){
 	return(x)
 })
 ################################################################################
@@ -514,7 +514,7 @@ setMethod("prune_species", signature("logical", "ANY"), function(species, x){
 #' @export
 #' @examples #
 #'  # data(ex1)
-#'  # B_only_sample_names <- sample.names(sampleMap(ex1)[(sampleMap(ex1)[, "Gender"]=="B"),])
+#'  # B_only_sample_names <- sample.names(sampleData(ex1)[(sampleData(ex1)[, "Gender"]=="B"),])
 #'  # ex2 <- prune_samples(B_only_sample_names, ex1)
 #'  # ex3 <- subset_samples(ex1, Gender=="B")
 #'  # ## This should be TRUE.
@@ -533,17 +533,17 @@ setMethod("prune_samples", signature("character", "otuTable"), function(samples,
 	}
 })
 ################################################################################
-#' @aliases prune_samples,character,sampleMap-method
+#' @aliases prune_samples,character,sampleData-method
 #' @rdname prune_samples-methods
-setMethod("prune_samples", signature("character", "sampleMap"), function(samples, x){
+setMethod("prune_samples", signature("character", "sampleData"), function(samples, x){
 	x[samples, ]
 })
 ################################################################################
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	x@sampleMap <- prune_samples(samples, sampleMap(x) )
-	x@otuTable  <- prune_samples(samples, otuTable(x) )
+	x@samData  <- prune_samples(samples, sampleData(x) )
+	x@otuTable <- prune_samples(samples, otuTable(x) )
 	return(x)
 })
 ################################################################################

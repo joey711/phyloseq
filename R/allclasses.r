@@ -38,10 +38,10 @@ setClass("otuTable", representation(speciesAreRows="logical"), contains = "matri
 #' 
 #'  }
 #' 
-#' @name sampleMap-class
-#' @rdname sampleMap-class
-#' @exportClass sampleMap
-setClass("sampleMap", contains="data.frame")
+#' @name sampleData-class
+#' @rdname sampleData-class
+#' @exportClass sampleData
+setClass("sampleData", contains="data.frame")
 ################################################################################
 #' An S4 class that holds taxonomic classification data as a character
 #' matrix.
@@ -77,7 +77,7 @@ setOldClass("phylo")
 #' @keywords internal
 setClassUnion("otuTableOrNULL", c("otuTable", "NULL"))
 #' @keywords internal
-setClassUnion("sampleMapOrNULL", c("sampleMap", "NULL"))
+setClassUnion("sampleDataOrNULL", c("sampleData", "NULL"))
 #' @keywords internal
 setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
 #' @keywords internal
@@ -92,7 +92,7 @@ setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 #'
 #' Contains all component classes: 
 #' \code{\link{otuTable-class}},
-#' \code{\link{sampleMap-class}},
+#' \code{\link{sampleData-class}},
 #' \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot), and
 #' \code{\link[ape]{phylo}}-class (\code{"tre"} slot). There are several advantages
 #' to storing your phylogenetic sequencing experiment as an instance of the
@@ -117,13 +117,13 @@ setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 #' slots:
 #' \describe{
 #'    \item{otuTable}{a single object of class otuTable.}
-#'    \item{sampleMap}{ a single object of class sampleMap.}
+#'    \item{samData}{ a single object of class sampleData.}
 #'    \item{taxTab}{ a single object of class taxonomyTable.}
 #'    \item{tre}{ a single object of class phylo, from the package ape}
 #' }
 #' @seealso The constructor, \code{\link{phyloseq}}, 
 #'  the merger \code{\link{merge_phyloseq}}, and also the component 
-#'  constructor/accessors \code{\link{otuTable}}, \code{\link{sampleMap}},
+#'  constructor/accessors \code{\link{otuTable}}, \code{\link{sampleData}},
 #'  \code{\link{taxTab}}, and \code{\link{tre}}.
 #' 
 #' @name phyloseq-class
@@ -133,8 +133,8 @@ setClass(Class="phyloseq",
 	representation=representation(
 		otuTable="otuTableOrNULL",
 		taxTab="taxonomyTableOrNULL",
-		sampleMap="sampleMapOrNULL",
+		samData="sampleDataOrNULL",
 		tre="phyloOrNULL"),
-	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)
+	prototype=prototype(otuTable=NULL, taxTab=NULL, samData=NULL, tre=NULL)
 )
 ################################################################################

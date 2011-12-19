@@ -3,7 +3,7 @@
 \alias{prune_species,character,otuTable-method}
 \alias{prune_species,character,phylo-method}
 \alias{prune_species,character,phyloseq-method}
-\alias{prune_species,character,sampleMap-method}
+\alias{prune_species,character,sampleData-method}
 \alias{prune_species,character,taxonomyTable-method}
 \alias{prune_species,logical,ANY-method}
 \alias{prune_species,NULL,ANY-method}

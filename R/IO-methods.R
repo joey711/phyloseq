@@ -93,7 +93,8 @@ setMethod("import", signature("character"), function(pipelineName, ...){
 #' including especially an OTU file that typically contains both OTU-abundance
 #' and taxonomic identity information. The map-file is also an important input
 #' to QIIME that stores sample covariates, converted naturally to the 
-#' sampleMap component data type in the phyloseq-package. QIIME may also produce a
+#' \code{\link{sampleData-class}} component data type in the phyloseq-package. 
+#' QIIME may also produce a
 #' phylogenetic tree with a tip for each OTU, which can also be imported by this
 #' function.
 #' 
@@ -166,7 +167,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 
 	if( !is.null(mapfilename) ){	
 		# Process mapfile. Name rows as samples.
-		QiimeMap     <- import_qiime_sampleMap(mapfilename)
+		QiimeMap     <- import_qiime_sampleData(mapfilename)
 		argumentlist <- c(argumentlist, list(QiimeMap))
 	}
 
@@ -209,7 +210,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' @return An \code{otuTax} object.
 #'
 #' @seealso \code{\link{merge_phyloseq}}, \code{\link{phyloseq}}, 
-#'   \code{\link{import_qiime_sampleMap}}
+#'   \code{\link{import_qiime_sampleData}}
 #'
 #' @keywords internal
 import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
@@ -250,17 +251,17 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	return( phyloseq(otutab, taxtab) )
 }
 ######################################################################################
-#' Import just \code{sampleMap} file from QIIME pipeline.
+#' Import just \code{sampleData} file from QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
 #' This includes the map-file, which is an important \emph{input}
 #' to QIIME that can also indicate sample covariates. It is converted naturally to the 
-#' sampleMap component data type in phyloseq-package, based on the R data.frame.   
+#' sampleData component data type in phyloseq-package, based on the R data.frame.   
 #' 
 #' See \code{\link{import_qiime}} for more information about QIIME. It is also the
 #' suggested function for importing QIIME-produced data files. 
 #'
-#' @usage import_qiime_sampleMap(mapfilename)
+#' @usage import_qiime_sampleData(mapfilename)
 #'
 #' @param mapfilename (Required). A character string. The name of the QIIME map
 #'  file required for processing pyrosequencing tags
@@ -269,18 +270,18 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 #'  this function, do not attempt to modify it manually once it has worked properly
 #'  in QIIME. 
 #'
-#' @return A \code{sampleMap} object.
+#' @return A \code{sampleData} object.
 #'
 #' @seealso \code{\link{import_qiime}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
 #'	 \code{\link{import_qiime_otu_tax}}
 #'
 #' @keywords internal
-import_qiime_sampleMap <- function(mapfilename){
+import_qiime_sampleData <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,
 		sep="\t", comment.char="")
 	rownames(QiimeMap) <- as.character(QiimeMap[,1])
-	return( sampleMap(QiimeMap) )
+	return( sampleData(QiimeMap) )
 }
 ######################################################################################
 ################################################################################

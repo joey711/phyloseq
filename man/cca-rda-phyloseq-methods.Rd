@@ -26,10 +26,10 @@
 
   \item{...}{(Optional). E.g. \code{data=DF}, where
   \code{DF} is a \code{data.frame} containing information
-  equivalent to a \code{sampleMap} object / component. Only
-  necessary if complex object does not already contain
-  \code{sampleMap} or you are keeping the data separate for
-  some reason.}
+  equivalent to a \code{sampleData} object / component.
+  Only necessary if complex object does not already contain
+  \code{sampleData} or you are keeping the data separate
+  for some reason.}
 }
 \value{
   same output as \code{\link[vegan]{cca}} or

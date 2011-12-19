@@ -24,8 +24,8 @@
 #'
 #' @param ... (Optional). E.g. \code{data=DF}, where \code{DF} is a \code{data.frame}
 #'  containing information equivalent to
-#'  a \code{sampleMap} object / component. Only necessary if complex object
-#'  does not already contain \code{sampleMap} or you are keeping the data 
+#'  a \code{sampleData} object / component. Only necessary if complex object
+#'  does not already contain \code{sampleData} or you are keeping the data 
 #'  separate for some reason.
 #'
 #' @return same output as \code{\link[vegan]{cca}} or \code{\link[vegan]{rda}}, respectively.
@@ -67,9 +67,9 @@ setMethod("cca.phyloseq", "formula", function(X, data=NULL){
 	}
 	# Create the new formula
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
-	# If an alternative table is not provided, assume it is from the sampleMap slot
+	# If an alternative table is not provided, assume it is from the sampleData slot
 	if( is.null(data) ){
-		data <- data.frame(sampleMap(physeq))
+		data <- data.frame(sampleData(physeq))
 	}
 	# Good idea to qualify, as ade4 also has a conflicting "cca"
 	# and might be a dependency in the future.	
@@ -96,6 +96,8 @@ setMethod("cca.phyloseq", "phyloseq", function(X){
 })
 ################################################################################
 #' @usage rda.phyloseq(X, ...)
+#' @export
+#' @import vegan
 #' @rdname cca-rda-phyloseq-methods
 #' @aliases cca.phyloseq rda.phyloseq
 setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
@@ -112,9 +114,9 @@ setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	}
 	# Create the new formula
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
-	# If an alternative table is not provided, assume it is from the sampleMap slot
+	# If an alternative table is not provided, assume it is from the sampleData slot
 	if( is.null(data) ){
-		data <- data.frame(sampleMap(physeq))
+		data <- data.frame(sampleData(physeq))
 	}
 	rda(newFormula, data=data)	
 })
