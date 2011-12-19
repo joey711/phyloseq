@@ -13,7 +13,6 @@
 #' on object signature. A new method with a separate name is defined instead.
 #'
 #' @usage cca.phyloseq(X, ...)
-#' @usage rda.phyloseq(X, ...)
 #' 
 #' @param X (Required). A \code{\link{formula}}, specifying the input.
 #'  No need to directly access components.
@@ -96,6 +95,7 @@ setMethod("cca.phyloseq", "phyloseq", function(X){
 	cca.phyloseq(otuTable(X))
 })
 ################################################################################
+#' @usage rda.phyloseq(X, ...)
 #' @rdname cca-rda-phyloseq-methods
 #' @aliases cca.phyloseq rda.phyloseq
 setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
@@ -106,9 +106,9 @@ setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	physeq <- get( as.character(X)[2] )
 	OTU    <- otuTable( physeq )
 	if( speciesAreRows(OTU) ){
-		OTU <- t(OTU)@.Data
+		OTU <- as(t(OTU), "matrix")
 	} else {
-		OTU <- OTU@.Data
+		OTU <- as(OTU, "matrix")
 	}
 	# Create the new formula
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))

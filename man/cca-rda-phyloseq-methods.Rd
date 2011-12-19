@@ -11,6 +11,8 @@
 \title{Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.}
 \usage{
   cca.phyloseq(X, ...)
+
+  rda.phyloseq(X, ...)
 }
 \arguments{
   \item{X}{(Required). A \code{\link{formula}}, specifying
