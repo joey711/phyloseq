@@ -35,10 +35,10 @@
   cutoff in the \emph{mothur} list file.
 }
 \description{
-  The \code{ape::read.tree()} function is sufficient for
-  importing a \emph{mothur}-produced tree into \code{R} in
-  \code{"phylo"} format. This function further requires a
-  list file as input, and prunes / renames the tree such
+  The \code{\link[ape]{read.tree}} function is sufficient
+  for importing a \emph{mothur}-produced tree into \code{R}
+  in \code{"phylo"} format. This function further requires
+  a list file as input, and prunes / renames the tree such
   that it is compatible with the associated abundance data.
   The expected tree output from \emph{mothur} will contain
   a tip for each sequence in the original dataset, even if
@@ -51,9 +51,8 @@
   This is a user-available module of a more comprehensive
   function for importing output files from the
   \emph{mothur} package, \code{link{import_mothur}}. The
-  \code{link{import_mothur}} function is suggested if the
-  goal is to import more than just the tree from
-  \emph{mothur}.
+  \code{import_mothur} function is suggested if the goal is
+  to import more than just the tree from \emph{mothur}.
 }
 \seealso{
   \code{\link{import_mothur}}

@@ -7,13 +7,7 @@ matrix.}
   classifiers.
 }
 \details{
-  \describe{ \item{nspecies}{A single positive integer
-  specifying the number of distinct species/taxa.
-  \code{nspecies} should not be assigned directly by user,
-  but is assessed internally during instantiation of
-  \code{taxonomyTable} objects.}
-
-  \item{.Data}{This slot is inherited from the
+  \describe{ \item{.Data}{This slot is inherited from the
   \code{\link{matrix}} class.} }
 }
 

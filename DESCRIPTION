@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.4.9
-Date: 2011-11-28
+Version: 0.5.38
+Date: 2011-12-12
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -10,7 +10,6 @@ Description: phyloseq is a set of classes, wrappers, and
     of phylogenetic amplicon sequencing data.
 License: AGPL-3
 Imports:
-    phylobase (>= 0.6.3),
     igraph (>= 0.5),
     multtest (>= 2.8),
     vegan (>= 2.0),
@@ -18,54 +17,32 @@ Imports:
 Depends:
     R (>= 2.13.0),
     methods,
+    ape (>= 2.8),
     picante (>= 1.3),
-    ape (>= 2.7),
     ggplot2 (>= 0.8)
 Suggests:
     adephylo,
-    ade4
+    ade4,
+    genefilter
 Enhances: doMC (>= 1.2), doSMP (>= 1.0), doSNOW (>= 1.0)
 Collate:
-    'allclasses.r'
-    'allpackage.r'
-    'alldata.r'
-    'initialize-methods.r'
-    'accessor-methods.r'
+    'allClasses.R'
+    'allPackage.R'
+    'allData.R'
     'as-methods.r'
-    'phyloseq.r'
-    'merge_phyloseq.r'
-    'transpose-methods.r'
-    'replacement-methods.r'
     'show-methods.r'
     'plot-methods.r'
-    'calcplot.r'
-    'taxaplot.r'
-    'prune_species.r'
-    'mergespecies.r'
-    'edgelist2clique.r'
-    'tipglom.r'
-    'taxglom.r'
-    'getvalues.r'
-    'tip.annotate.r'
-    'colname2hex.r'
-    'geneFilterSample.R'
     'unifrac.r'
-    'transformSampleCounts.R'
-    'threshrank.r'
-    'cca.phyloseq.r'
-    'rda.phyloseq.r'
-    'mt.r'
-    'envhash2otutable.r'
-    'sums.r'
-    'makenetwork.r'
-    'prune_samples.r'
-    'reconcile.r'
     'extract-methods.r'
-    'subset.r'
-    'reconcile_categories.r'
-    'import_mothur.r'
-    'import_pyrotagger_tab.r'
-    'import_RDP_cluster.r'
-    'import_qiime.r'
-    'merge_samples.r'
-    'export_mothur_dist.r'
+    'almostAllAccessors.R'
+    'otuTable-class.R'
+    'phyloseq-class.R'
+    'taxonomyTable-class.R'
+    'IO-methods.R'
+    'merge-methods.R'
+    'multtest-wrapper.R'
+    'ordination-methods.R'
+    'transform_filter-methods.R'
+    'validity-methods.R'
+    'assignment-methods.r'
+    'sampleData-class.R'

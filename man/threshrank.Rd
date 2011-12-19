@@ -5,7 +5,7 @@
   threshrank(x, thresh, keep0s=FALSE, ...)
 }
 \arguments{
-  \item{x}{The numeric vector to transform}
+  \item{x}{(Required). Numeric vector to transform.}
 
   \item{thresh}{A single numeric value giving the
   threshold.}
@@ -29,9 +29,18 @@
 }
 \examples{
 #
-## threshrank(sample(0:10, 100, TRUE), 50, keep0s=TRUE)
+(a_vector <- sample(0:10, 100, TRUE))
+threshrank(a_vector, 5, keep0s=TRUE)
+data(ex1)
+## These three approaches result in identical otuTable
+(x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
+(x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+identical(x1, x2)
+(x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+identical(x1, x3)
 }
 \seealso{
-  rank threshrankfun
+  \code{\link{transformsamplecounts}}, \code{\link{rank}},
+  \code{\link{threshrankfun}}
 }
 

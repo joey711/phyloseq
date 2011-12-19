@@ -2,10 +2,11 @@
 \alias{taxglom.internal}
 \title{taxglom core internal function.}
 \usage{
-  taxglom.internal(object, tax)
+  taxglom.internal(physeq, tax, NArm = TRUE, bad_empty =
+  c(NA, "", " ", "\t"))
 }
 \arguments{
-  \item{object}{the object on which agglomeration is to
+  \item{physeq}{the object on which agglomeration is to
   take place.}
 
   \item{tax}{for this internal function, tax must be a
@@ -14,12 +15,12 @@
 }
 \value{
   the agglomerated object. Class matches argument
-  \code{object}.
+  \code{physeq}.
 }
 \description{
   taxglom.internal makes all the glomming happen, and
   delegates the object-handling issues to
-  \code{mergespecies()}.
+  \code{merge_species()}.
 }
 \keyword{internal}
 

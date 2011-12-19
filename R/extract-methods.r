@@ -5,44 +5,43 @@
 #' Extract parts of otuTable
 #'
 #' @export
-#' @aliases [,otuTable,ANY,ANY,ANY-method
+#' @aliases [,otuTable-method
 #' @rdname extract-methods
-setMethod("[", "otuTable", function(x,i,j,...){
-	newx <- callNextMethod(x@.Data,i,j,drop=FALSE,...)
-	new("otuTable", x@speciesAreRows, newx)
+setMethod("[", "otuTable", function(x, i, j, ...){
+	newx <- as(x, "matrix")[i, j, drop=FALSE]
+	otuTable(newx, speciesAreRows(x) )
 })
 ################################################################################
-#' extract parts of sampleMap
+#' extract parts of sampleData
 #'
 #' @export
-#' @aliases [,sampleMap,ANY,ANY,ANY-method
+#' @aliases [,sampleData-method
 #' @rdname extract-methods
-setMethod("[", "sampleMap", function(x,i,j,...){
-	new("sampleMap", callNextMethod(data.frame(x),i,j,drop=FALSE,...))
+setMethod("[", "sampleData", function(x, i, j, ...){
+	sampleData( data.frame(x)[i, j, drop=FALSE] )
 })
 ################################################################################
 #' extract parts of taxonomyTable
 #'
 #' @export
-#' @aliases [,taxonomyTable,ANY,ANY,ANY-method
+#' @aliases [,taxonomyTable-method
 #' @rdname extract-methods
-setMethod("[", "taxonomyTable", function(x,i,j,...){
-	new("taxonomyTable", callNextMethod(x@.Data,i,j,drop=FALSE,...))
+setMethod("[", "taxonomyTable", function(x, i, j, ...){
+	taxTab( as(x, "matrix")[i, j, drop=FALSE] )
 })
 ################################################################################
 ################################################################################
 #' Generic extraction from higher-order object
 #'
 #' @export
-#' @aliases [,phyloseqFather,ANY,ANY,ANY-method
+#' @aliases [,phyloseq-method
 #' @rdname extract-methods
-setMethod("[", "phyloseqFather", function(x, i, j, ...){
+setMethod("[", "phyloseq", function(x, i, j, ...){
 	argslist <- list(...)
 	# # # return(argslist)
 	goodComponents <- c(get.component.classes(), names(get.component.classes()))
 	goodComponents <- unique(goodComponents)
-	goodComponents <- goodComponents[!goodComponents %in%
-						c("tre", "old-tre", "phylo", "phylo4")]
+	goodComponents <- goodComponents[!goodComponents %in% c("tre", "phylo")]
 
 	# If there is an argument labeled "component", use that. Else, search among unlabled
 	if(any( names(argslist)=="component" )){

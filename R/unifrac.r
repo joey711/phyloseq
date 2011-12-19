@@ -1,5 +1,5 @@
 ##############################################################################
-#' Custom version of \code{picante::internal2tips()}
+#' Custom version of \code{\link[picante]{internal2tips}}
 #'
 #' Internal function for \code{\link{UniFrac}}.
 #' 
@@ -15,9 +15,7 @@
 #'
 #' @keywords internal
 #' @return character vector
-#' @seealso internal2tips UniFrac
-#' 
-#' @examples #
+#' @seealso \code{\link[picante]{internal2tips}} \code{\link{UniFrac}}
 internal2tips.self = function (phy, int.node, return.names = TRUE){
 	#require(picante); require(ape)	
     Ntaxa = length(phy$tip.label)
@@ -69,8 +67,6 @@ internal2tips.self = function (phy, int.node, return.names = TRUE){
 #' @keywords internal
 #' @return character vector
 #' @seealso UniFrac
-#' 
-#' @examples #
 ufnum <- function(edge, samples, occ, tree){
 	A <- samples[1]
 	B <- samples[2]
@@ -105,8 +101,6 @@ ufnum <- function(edge, samples, occ, tree){
 #' @keywords internal
 #' @return character vector
 #' @seealso UniFrac
-#' 
-#' @examples #
 UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[samples[2],])){
 	A <- samples[1]
 	B <- samples[2]
@@ -137,9 +131,7 @@ UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[s
 #'
 #' @return A single number between 0, 1.
 #' @seealso See the main function, \code{\link{UniFrac}}.
-#' 
-#' @export
-#' @examples #
+#' @keywords internal
 unifracPair <- function(occ, tree, A, B){
 	
 	# Prune tree to just those species present in either A or B
@@ -167,18 +159,16 @@ unifracPair <- function(occ, tree, A, B){
 #'
 #' @usage wUniFracPair(OTU, tree, A, B, normalized=TRUE)
 #'
-#' @param OTU An abundance matrix in samples-by-species orientation.
-#' @param tree object of class \code{phylo}
-#' @param A single character string matching the first sample ID in the pair
-#' @param B single character string matching the second sample ID in the pair
-#' @param normalized Logical. Should the output be normalized such that values 
+#' @param OTU (Required). An abundance matrix in samples-by-species orientation.
+#' @param tree (Required). Object of class \code{\link[ape]{phylo}}
+#' @param A (Required). single character string matching the first sample ID in the pair
+#' @param B (Required). single character string matching the second sample ID in the pair
+#' @param normalized (Optional). Logical. Should the output be normalized such that values 
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}. 
 #'
 #' @return A single number between 0, 1.
-#' @seealso UniFrac
-#' 
-#' @export
-#' @examples #
+#' @seealso \code{\link{UniFrac}}
+#' @keywords internal
 wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 	#require(picante); require(ape)
 	# outer loop
@@ -218,7 +208,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' has been added to further protect users from encountering this issue unknowingly.
 #' The easiest solution is to combine the \code{OTU} and \code{tree} objects 
 #' using the \code{\link{phyloseq}} function. E.g. \code{phyloseq(OTU, tree)}
-#' will return an \code{otuTree}-class object that has been pruned and comprises
+#' will return an \code{phyloseq}-class object that has been pruned and comprises
 #' the minimum arguments necessary for \code{UniFrac()}. 
 #'
 #' Parallelization is possible, and encouraged for this computing-intensive calculation.
@@ -243,14 +233,14 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #'
 #' @usage UniFrac(OTU, tree, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 #'
-#' @param OTU (Required). \code{otuTable}, or an \code{otuTree}. If you have
+#' @param OTU (Required). \code{\link{phyloseq-class}} or \code{\link{otuTable}}.
+#'  If you have
 #'  instead a simple matrix of abundances, see \code{\link{otuTable}} for coercing
 #'  it to the \code{otuTable} class.
 #'
-#' @param tree (Optional). Object of class \code{phylo}. Not necessary (and ignored) 
-#'  if 
-#'  \code{OTU} is an object that also contains a tree (\code{otuTree} class, 
-#'  or its children).
+#' @param tree (Optional). Object of class \code{\link{phylo}}. 
+#'  Not necessary (and ignored) if 
+#'  \code{OTU} is \code{phyloseq}-class and contains a tree (try \code{\link{tre}}).
 #'
 #' @param weighted (Optional). Logical. Should use weighted-UniFrac calculation?
 #'  Weighted-UniFrac takes into account the relative abundance of species/taxa
@@ -300,7 +290,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' # # abvec <- sample(c(rep(0, 5), 1:10), Nsamp*Nspec, TRUE)
 #' # # rOTU  <- otuTable(matrix(abvec, nrow=Nsamp, ncol=Nspec), speciesAreRows=FALSE)
 #' # # ### Create random tree
-#' # # rtree <- ape::rcoal(Nspec, tip.label=species.names(rOTU))
+#' # # rtree <- rcoal(Nspec, tip.label=species.names(rOTU))
 #' # # ### Combine into one object.
 #' # # rotuTree <- phyloseq(rOTU, rtree)
 
@@ -348,7 +338,7 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
 		warning("To solve, try: phyloseq(OTU, tree)    or try:  prune_species( ).\n")
 		combinedOTUtree <- phyloseq(OTU, tree)
 		OTU  <- otuTable(combinedOTUtree)
-		tree <- suppressWarnings(as(tre(combinedOTUtree), "phylo"))
+		tree <- tre(combinedOTUtree)
     }
 
 	### Some parallel-foreach housekeeping.    
@@ -379,9 +369,9 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
 		A <- i[1]
 		B <- i[2]
 		if( weighted ){
-			return( phyloseq::wUniFracPair(OTU, tree, A, B, normalized) )
+			return( phyloseq:::wUniFracPair(OTU, tree, A, B, normalized) )
 		} else {
-			return( phyloseq::unifracPair(occ, tree, A, B) )
+			return( phyloseq:::unifracPair(occ, tree, A, B) )
 		}
 	}
 	
@@ -394,12 +384,11 @@ setMethod("UniFrac", signature("otuTable", "phylo"),
     return(as.dist(UniFracMat))
 })
 ################################################################################
-#' @aliases UniFrac,otuTree,ANY-method
+#' @aliases UniFrac,phyloseq,ANY-method
 #' @rdname UniFrac-methods
-#' @import phylobase
-setMethod("UniFrac", signature("otuTree"), 
+setMethod("UniFrac", signature("phyloseq"), 
 		function(OTU, tree=NULL, weighted=FALSE, normalized=TRUE, parallel=FALSE){
 	# splat and pass to core function.
-	UniFrac(OTU=otuTable(OTU), tree=suppressWarnings(as(tre(OTU), "phylo")), weighted, normalized, parallel)
+	UniFrac(OTU=otuTable(OTU), tree=tre(OTU), weighted, normalized, parallel)
 })
 ##############################################################################

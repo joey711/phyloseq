@@ -1,48 +1,58 @@
 \docType{methods}
 \name{mt}
 \alias{mt}
-\alias{mt,ANY,factor-method}
-\alias{mt,ANY,integer-method}
-\alias{mt,ANY,numeric-method}
-\alias{mt,otuSam,character-method}
-\title{Wrapper of mt.maxT and mt.minP for the phyloseq package.}
+\alias{mt,otuTable,character-method}
+\alias{mt,otuTable,factor-method}
+\alias{mt,otuTable,integer-method}
+\alias{mt,otuTable,logical-method}
+\alias{mt,otuTable,numeric-method}
+\alias{mt,phyloseq,ANY-method}
+\title{Multiple testing of taxa abundancesa acccording to a sample variate}
 \usage{
-  mt(X, classlabel, minPmaxT="minP", ...)
+  mt(physeq, classlabel, minPmaxT="minP", ...)
 }
 \arguments{
-  \item{X}{An \code{otuTable} or an object that contains an
-  \code{otuTable}. In this multiple testing framework,
-  different taxa correspond to variables (hypotheses), and
-  samples to observations.}
+  \item{physeq}{(Required). \code{\link{otuTable-class}} or
+  \code{\link{phyloseq-class}}. In this multiple testing
+  framework, different taxa correspond to variables
+  (hypotheses), and samples to observations.}
 
-  \item{classlabel}{Either a single character string
-  indicating the column in the \code{sampleMap} of X, or,
-  alternatively, an integer vector of length equal to the
-  number of samples of X. The latter option is equivalent
-  to \code{classlabel} of \code{mt.maxT} in
-  \code{multtest}. A third option is for classlabel to be a
-  2-level factor, with length equal to the number of
-  samples of X.}
+  \item{classlabel}{(Required). A single character index of
+  the sample-variable in the \code{\link{sampleData}} of
+  \code{physeq} that will be used for multiple testing.
+  Alternatively, \code{classlabel} can be a custom integer,
+  character, or factor with length equal to
+  \code{nsamples(physeq)}. In either scenario -- a sample
+  variable within the phyloseq-class object or a custom
+  vector -- \code{classlabel} must be coercable to a
+  logical (i.e. two-level factor). A variable with more
+  than two states is not appropriate for this category of
+  test.}
 
-  \item{minPmaxT}{(Optional). Whether to use \code{mt.minP}
-  or \code{mt.maxT}. Default is to use \code{mt.minP}}
+  \item{minPmaxT}{(Optional). Character string.
+  \code{"mt.minP"} or \code{"mt.maxT"}. Default is to use
+  \code{\link[multtest]{mt.minP}}.}
 
-  \item{...}{Additional arguments, forwarded to
-  \code{mt.maxT}}
+  \item{...}{(Optional). Additional arguments, forwarded to
+  \code{\link[multtest]{mt.maxT}} or
+  \code{\link[multtest]{mt.minP}}}
 }
 \value{
   A dataframe with components specified in the
-  documentation for \code{mt.maxT} or \code{mt.minP}
-  respectively.
+  documentation for \code{\link[multtest]{mt.maxT}} or
+  \code{\link[multtest]{mt.minP}}, respectively.
 }
 \description{
-  Wrapper of mt.maxT and mt.minP for the phyloseq package.
+  Multiple testing of taxa abundancesa acccording to a
+  sample variate
 }
 \examples{
 #
 ## data(ex1)
 ## mt(ex1, "Diet")
-## mt(otuSamTax(ex1), "Diet", minPmaxT="minsldzxc")
+## # Alternatively
+## dietfac <- factor(data.frame(sampleData(ex1))[, "Diet"])
+## mt(ex1, dietfac)
 }
 \seealso{
   \code{\link[multtest]{mt.maxT}},

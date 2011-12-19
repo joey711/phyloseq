@@ -3,8 +3,8 @@
 \alias{genefilterSample}
 \alias{genefilterSample,matrix-method}
 \alias{genefilterSample,otuTable-method}
-\alias{genefilterSample,phyloseqFather-method}
-\title{Filter OTUs sample-wise.}
+\alias{genefilterSample,phyloseq-method}
+\title{Filter OTUs with arbitrary function, sample-wise.}
 \usage{
   genefilterSample(X, flist, A=1)
 }
@@ -25,24 +25,28 @@
   rownames, if matrix).
 }
 \description{
-  A general OTU trim function for selecting OTUs that
+  A general OTU trimming function for selecting OTUs that
   satisfy some criteria within the distribution of each
   sample, and then also an additional criteria for number
-  of samples that pass. By contrast, \code{genefilter}, of
-  the genefilter package in Bioconductor, works only on the
-  rows of a matrix.
-}
-\details{
-  Here we want a genefilter function that considers
-  sample-wide (column-wide) criteria and determines which
-  rows are acceptable within each column. The number of
-  acceptable samples (columns) is then used as the final
-  criteria to determine whether or not the taxa should be
-  TRUE or FALSE. Just like with genefilter, a logical
-  having length equal to nrow()/nspecies is returned,
-  indicating which should be kept. This output can be
-  provided directly to OTU trimming function,
-  \code{\link{prune_species}}.
+  of samples that must pass. This is a genefilter-like
+  function that only considers sample-wise criteria. The
+  number of acceptable samples is used as the final
+  criteria (set by the argument \code{A}) to determine
+  whether or not the taxa should be retained (\code{TRUE})
+  or not (\code{FALSE}). Just like with genefilter, a
+  logical having length equal to
+  nrow()/\code{\link{nspecies}} is returned, indicating
+  which should be kept. This output can be provided
+  directly to OTU trimming function,
+  \code{\link{prune_species}}. By contrast,
+  \code{\link[genefilter]{genefilter}}, of the genefilter
+  package in Bioconductor, works only on the rows of a
+  matrix. Note that, because \code{\link{otuTable-class}}
+  inherits directly from the \code{\link{matrix-class}}, an
+  unmodified otuTable can be provided to \code{genefilter},
+  but be mindful of the orientation of the otuTable (use
+  \code{\link{speciesAreRows}}), and transpose
+  (\code{\link[phyloseq]{t}}) if needed.
 }
 \examples{
 #
@@ -58,6 +62,8 @@
 ## prune_species(wh2, taxtab1)
 }
 \seealso{
+  \code{\link[genefilter]{genefilter}},
+  \code{\link{filterfunSample}}, \code{\link[phyloseq]{t}},
   \code{\link{prune_species}}
 }
 \keyword{agglomerate}

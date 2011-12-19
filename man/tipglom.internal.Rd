@@ -5,8 +5,8 @@
   tipglom.internal(tree, speciationMinLength)
 }
 \arguments{
-  \item{tree}{An object of class \code{phylo},
-  \code{phylo4}, \code{otuTree} or its superclasses.}
+  \item{tree}{An object of class \code{phylo}, or
+  \code{phyloseq}}
 
   \item{speciationMinLength}{The minimum branch length that
   separates taxa. All tips of the tree separated by a
@@ -14,16 +14,15 @@
   \code{speciationMinLength} will be agglomerated.}
 }
 \value{
-  An object of class \code{phylo}, \code{phylo4},
-  \code{otuTree} or its superclasses. Output class matches
-  the class of \code{tree}.
+  An object of class \code{phylo}, or \code{phyloseq}.
+  Output class matches the class of \code{tree}.
 }
 \description{
   Internal function, users should use the S4 method
-  \code{\link{tipglom}}. Tree can be higher-order object
-  that contains a phylogenetic tree, e.g. otuTree, etc.
-  This is because \code{\link{mergespecies}} can handle all
-  the relevant objects, as can
+  \code{\link{tipglom}}. Tree can be a
+  \code{\link{phyloseq-class}} that contains a phylogenetic
+  tree, This is because \code{\link{merge_species}} can
+  handle all the relevant objects, as can
   \code{\link{getTipDistMatrix}}. Create Non-trivial OTU
   table, by agglomerating nearby tips. tipglom.internal is
   called by the S4 \code{tipglom} methods. It is useful if
@@ -31,10 +30,8 @@
   implementation. By design it lacks explicit object
   handling. Use \code{\link{tipglom}} instead.
 }
-\examples{
-#
-}
 \seealso{
   tipglom
 }
+\keyword{internal}
 

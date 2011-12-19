@@ -67,7 +67,7 @@
 ## tax1 <- taxTab(matrix("abc", 30, 8))
 ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10),
 ##   matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )
-## map1 <- sampleMap(map1)
+## map1 <- sampleData(map1)
 ## ex1 <- phyloseq(OTU1, map1, tax1)
 ## x <- ex1
 ## x <- phyloseq(ex1)
@@ -76,7 +76,7 @@
 ## merge_phyloseq(y, y, y, y)
 ## # Try the simple example dataset, ex1
 ## data(ex1)
-## merge_phyloseq( otutree(ex1), sampleMap(ex1))
+## merge_phyloseq( otutree(ex1), sampleData(ex1))
 ## merge_phyloseq( otuSam(ex1), tre(ex1), taxTab(ex1))
 }
 

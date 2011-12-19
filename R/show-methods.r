@@ -58,11 +58,11 @@ setMethod("show", "otuTable", function(object){
 })
 ############################################################################
 #' @name show
-#' @aliases show,sampleMap-method
+#' @aliases show,sampleData-method
 #' @docType methods
 #' @rdname show-methods
-setMethod("show", "sampleMap", function(object){
-	tableprint(object, "Sample Map", "Samples", "Variables")
+setMethod("show", "sampleData", function(object){
+	tableprint(object, "Sample Data", "Samples", "Variables")
 })
 ############################################################################
 #' @name show
@@ -70,36 +70,17 @@ setMethod("show", "sampleMap", function(object){
 #' @docType methods
 #' @rdname show-methods
 setMethod("show", "taxonomyTable", function(object){
-	tableprint(as(object, "matrix"), "Taxonomy Table", "Species", "Taxonomic Level")		
-})
-############################################################################
-#' @name show
-#' @aliases show,phylo4-method
-#' @docType methods
-#' @rdname show-methods
-#' @import phylobase
-setMethod("show", "phylo4", function(object){
-	cat("<<< tree >>>\n")
-	cat("\"phylo4\"-class phylogenetic tree with\n")
-	cat(length(tipLabels(object)), "tips, and ")
-	cat(length(nodeLabels(object)), "internal nodes.\n")
-	cat("Tips:", head(tipLabels(object), 3), "...\n")
-	if( isRooted(object) ){
-		cat("Rooted.\n")
-	} else {
-		cat("Unrooted.\n")
-	}
-	cat("<<< tree >>>\n")
+	tableprint(as(object, "matrix"), "Taxonomy Table", "Species", "Taxonomic Rank")		
 })
 ############################################################################
 #' show method for H.O. objects.
 #'
 #' @name show
-#' @aliases show,phyloseqFather-method
+#' @aliases show,phyloseq-method
 #' @docType methods
 #' @rdname show-methods
-setMethod("show", "phyloseqFather", function(object){
-	cat( class(object), "Object \n", fill=TRUE )
+setMethod("show", "phyloseq", function(object){
+	cat( "phyloseq-class experiment-level object \n", fill=TRUE )
 	slot_list <- splat.phyloseq.objects(object)
 	lapply(slot_list, function(i){show(i);cat("\n")})
 })
