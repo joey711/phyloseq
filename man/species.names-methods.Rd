@@ -1,28 +1,28 @@
 \docType{methods}
 \name{species.names}
 \alias{species.names}
+\alias{species.names,ANY-method}
 \alias{species.names,otuTable-method}
 \alias{species.names,phylo-method}
-\alias{species.names,phylo4-method}
-\alias{species.names,phyloseqFather-method}
-\alias{species.names,sampleMap-method}
+\alias{species.names,phyloseq-method}
+\alias{species.names,sampleData-method}
 \alias{species.names,taxonomyTable-method}
-\title{Get the species / taxa names from an object.}
+\title{Get species / taxa names.}
 \usage{
-  species.names(object)
+  species.names(physeq)
 }
 \arguments{
-  \item{object}{An object among the set of classes defined
-  by the phyloseq package that represent species.}
+  \item{physeq}{\code{\link{phyloseq-class}},
+  \code{\link{otuTable-class}},
+  \code{\link{taxonomyTable-class}}, or
+  \code{\link[ape]{phylo}}}
 }
 \value{
   A character vector of the names of the species in
-  \code{object}.
+  \code{physeq}.
 }
 \description{
-  This method works on otuTable, taxonomyTable objects, or
-  the more complex objects that represent species, as well
-  as phylogenetic trees ``phylo''.
+  Get species / taxa names.
 }
 \examples{
 #

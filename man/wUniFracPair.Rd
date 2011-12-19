@@ -5,20 +5,22 @@
   wUniFracPair(OTU, tree, A, B, normalized=TRUE)
 }
 \arguments{
-  \item{OTU}{An abundance matrix in samples-by-species
-  orientation.}
+  \item{OTU}{(Required). An abundance matrix in
+  samples-by-species orientation.}
 
-  \item{tree}{object of class \code{phylo}}
+  \item{tree}{(Required). Object of class
+  \code{\link[ape]{phylo}}}
 
-  \item{A}{single character string matching the first
-  sample ID in the pair}
+  \item{A}{(Required). single character string matching the
+  first sample ID in the pair}
 
-  \item{B}{single character string matching the second
-  sample ID in the pair}
+  \item{B}{(Required). single character string matching the
+  second sample ID in the pair}
 
-  \item{normalized}{Logical. Should the output be
-  normalized such that values range from 0 to 1 independent
-  of branch length values? Default is \code{TRUE}.}
+  \item{normalized}{(Optional). Logical. Should the output
+  be normalized such that values range from 0 to 1
+  independent of branch length values? Default is
+  \code{TRUE}.}
 }
 \value{
   A single number between 0, 1.
@@ -29,10 +31,8 @@
   between many different samples. Returns a single numeric
   value, between 0 and 1 if normalized
 }
-\examples{
-#
-}
 \seealso{
-  UniFrac
+  \code{\link{UniFrac}}
 }
+\keyword{internal}
 

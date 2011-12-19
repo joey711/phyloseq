@@ -12,16 +12,16 @@
   add_sites_data = NULL, add_taxa_data = NULL)
 }
 \arguments{
-  \item{mod}{A \code{cca} or \code{rda} results object. See
-  \code{\link{cca.object}}. For phyloseq objects, you
-  probably want to see \code{\link{cca.phyloseq}} or
+  \item{mod}{(Required). A \code{cca} or \code{rda} results
+  object. See \code{\link{cca.object}}. For phyloseq
+  objects, you probably want to see
+  \code{\link{cca.phyloseq}} or
   \code{\link{rda.phyloseq}}.}
 
-  \item{object}{A \code{phyloseq} object or one of its
-  child classes (superclasses). Required. Necessary because
-  ordination result objects will only refer to the
-  abundance table, not the phyloseq object used to create
-  them.}
+  \item{object}{(required). A \code{\link{phyloseq-class}}
+  object. Necessary because ordination result objects will
+  only refer to the abundance table, not the phyloseq
+  object used to create them.}
 
   \item{plot_title}{Default is to use the name of the
   ordination method, stored in the ordination result
@@ -68,7 +68,7 @@
 
   \item{add_sites_data}{A \code{data.frame} object
   providing additional data about the samples/sites that is
-  not already available in the \code{sampleMap} of your
+  not already available in the \code{sampleData} of your
   phyloseq object specified by \code{object}. As such, it
   must have the same number of rows as as there are samples
   in \code{object}. Default is \code{NULL}.}
@@ -82,7 +82,7 @@
   Default is \code{NULL}.}
 }
 \value{
-  A ggplot2 plot object.
+  A graphic object from the ggplot2 package.
 }
 \description{
   This convenience function includes many useful defaults
@@ -101,7 +101,34 @@
   the phyloseq vignette, or the more comprehensive
   documentation available for the ggplot2 package itself.
 }
+\examples{
+# data(ex1)
+# ex4  <- transformsamplecounts(ex1, threshrankfun(500))
+# # RDA
+# modr <- rda.phyloseq(ex4 ~ Diet + Gender)
+# # CCA
+# modc <- cca.phyloseq(ex1 ~ Diet + Gender)
+# plot_ordination_phyloseq(modr, ex1)
+# plot_ordination_phyloseq(modc, ex1)
+# plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
+# plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+# site_shape_category="Diet", site_color_category="Gender", species_alpha=1)
+# plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+# site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
+# species_alpha=0.4, sites_alpha=2/3,
+# add_sites_data=data.frame(total.reads=sampleSums(ex1))
+# site.colors <- c("darkorchid1", "blue3")
+# species.col.groups <- unique(as(taxTab(ex1), "matrix")[,"Phylum"])
+# man.colors <- c(site.colors, rainbow((1+length(species.col.groups)),start=11/12, end=5/12))
+# p<-plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+# site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
+# species_alpha=0.4, sites_alpha=2/3,
+# add_sites_data=data.frame(total.reads=sampleSums(ex1)),
+# man.colors=man.colors)
+# print(p)
+}
 \seealso{
-  plot.cca cca.object
+  \code{\link{calcplot}}, \code{\link[vegan]{plot.cca}},
+  \code{\link[vegan]{cca.object}}
 }
 

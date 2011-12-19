@@ -1,7 +1,6 @@
 \name{filterfunSample}
 \alias{filterfunSample}
-\title{A sample-wise generic filter function, analogous to filterfun from the
-genefilter package.}
+\title{A sample-wise filter function builder, analogous to \code{\link[genefilter]{filterfun}}.}
 \usage{
   filterfunSample(...)
 }
@@ -16,13 +15,22 @@ genefilter package.}
   to the genefilterSample method.
 }
 \description{
-  A sample-wise generic filter function, analogous to
-  filterfun from the genefilter package.
+  See the \code{\link[genefilter]{filterfun}}, from the
+  Bioconductor repository, for a taxa-/gene-wise filter
+  (and further examples).
 }
 \examples{
-#
+## Use simulated abundance matrix
+# set.seed(711)
+# testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+# f1  <- filterfunSample(topk(2))
+# wh1 <- genefilterSample(testOTU, f1, A=2)
+# wh2 <- c(T, T, T, F, F)
+# prune_species(wh1, testOTU)
+# prune_species(wh2, testOTU)
 }
 \seealso{
-  genefilter genefilterSample
+  \code{\link[genefilter]{filterfun}},
+  \code{\link{genefilterSample}}
 }
 

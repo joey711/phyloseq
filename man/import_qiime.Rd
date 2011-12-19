@@ -25,9 +25,9 @@
   OTU cluster, with the number of leaves/tips equal to the
   number of taxa/species/OTUs. Default value is
   \code{NULL}. ALTERNATIVELY, this argument can be a tree
-  object ()\code{"phylo4"} or \code{"phylo"} class), in
-  case the tree has already been imported, or is in a
-  different format than NEXUS.}
+  object (\code{\link[ape]{phylo}}-class), in case the tree
+  has already been imported, or is in a different format
+  than NEXUS.}
 
   \item{biotaxonomy}{(Optional). A character vector
   indicating the name of each taxonomic level in the
@@ -35,16 +35,13 @@
   these levels explicitly. Default value is \code{NULL}.}
 
   \item{...}{Additional arguments passed to
-  \code{\link{read.nexus}}, as necessary. Make sure that
-  your phylogenetic tree file is readable by
-  \code{\link{read.nexus}} prior to calling this function.}
+  \code{\link[ape]{read.nexus}}, as necessary. Make sure
+  that your phylogenetic tree file is readable by
+  \code{\link[ape]{read.nexus}} prior to calling this
+  function.}
 }
 \value{
-  The class of the object returned by \code{import_qiime}
-  depends upon which filenames are provided. The most
-  comprehensive class is chosen automatically, based on the
-  input files listed as arguments. \code{import_qiime()}
-  will return nothing.
+  A \code{\link{phyloseq-class}} object.
 }
 \description{
   QIIME produces several files that can be analyzed in the
@@ -52,10 +49,10 @@
   typically contains both OTU-abundance and taxonomic
   identity information. The map-file is also an important
   input to QIIME that stores sample covariates, converted
-  naturally to the sampleMap component data type in the
-  phyloseq-package. QIIME may also produce a phylogenetic
-  tree with a tip for each OTU, which can also be imported
-  by this function.
+  naturally to the \code{\link{sampleData-class}} component
+  data type in the phyloseq-package. QIIME may also produce
+  a phylogenetic tree with a tip for each OTU, which can
+  also be imported by this function.
 }
 \details{
   See \code{"http://www.qiime.org/"} for details on using
@@ -70,7 +67,7 @@
   directory.
 }
 \examples{
-#
+# import_qiime(myOtuTaxFilePath, myMapFilePath)
 }
 \references{
   \url{http://qiime.org/}
@@ -88,8 +85,8 @@
   Methods, 2010; doi:10.1038/nmeth.f.303
 }
 \seealso{
-  \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-  \code{\link{read.tree}}, \code{\link{read.nexus}},
-  \code{\link{readNexus}} \code{\link{readNewick}}
+  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
+  \code{\link[ape]{read.tree}},
+  \code{\link[ape]{read.nexus}}
 }
 

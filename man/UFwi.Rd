@@ -24,9 +24,6 @@
   edge-index as input, and returns the edge-weight term for
   weighted \code{\link{UniFrac}}.
 }
-\examples{
-#
-}
 \seealso{
   UniFrac
 }

@@ -2,24 +2,27 @@
 \name{t}
 \alias{t}
 \alias{t,otuTable-method}
-\alias{t,phyloseqFather-method}
-\title{Extension of the (base) transpose function for otuTable}
+\alias{t,phyloseq-method}
+\title{Transpose \code{\link{otuTable-class}} or \code{\link{phyloseq-class}}}
 \usage{
   t(x)
 }
 \arguments{
-  \item{x}{An \code{otuTable}, or a higher-order class that
-  contains an \code{otuTable}.}
+  \item{x}{An \code{otuTable} or
+  \code{\link{phyloseq-class}}.}
 }
 \value{
   The class of the object returned by \code{t} matches the
   class of the argument, \code{x}. The \code{otuTable} is
-  now transposed, and \code{speciesAreRows} is toggled.
+  transposed, and \code{\link{speciesAreRows}} value is
+  toggled.
 }
 \description{
-  Only the otuTable of a more complex object is transposed.
+  Extends the base transpose method, \code{\link[base]{t}}.
 }
 \examples{
-#
+data(ex1)
+otuTable(ex1)
+t( otuTable(ex1) )
 }
 

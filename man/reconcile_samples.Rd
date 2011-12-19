@@ -5,10 +5,9 @@
   reconcile_samples(x)
 }
 \arguments{
-  \item{x}{An object of the phyloseq package that contains
-  2 or more components data tables that in-turn describe
-  samples. At present this is limited to the otuSam class
-  (otuTable and SampleMap) and its children.}
+  \item{x}{An instance of phyloseq-class that contains 2 or
+  more component data tables that in-turn describe
+  samples.}
 }
 \value{
   A trimmed version of the argument, \code{x}, in which
@@ -31,4 +30,5 @@
 \seealso{
   \code{\link{reconcile_species}}
 }
+\keyword{internal}
 

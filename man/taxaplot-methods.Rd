@@ -1,24 +1,22 @@
 \docType{methods}
 \name{taxaplot}
 \alias{taxaplot}
-\alias{taxaplot,otuSam-method}
-\alias{taxaplot,otuSamTax-method}
-\alias{taxaplot,otuTable-method}
+\alias{taxaplot,phyloseq-method}
 \title{Create a structured barplot graphic of the taxonomic groups.}
 \usage{
-  taxaplot(otu, taxavec="Domain", map,
-  showOnlyTheseTaxa=NULL, threshold=NULL,
-  x_category="sample", fill_category=x_category,
-  facet_formula = . ~ TaxaGroup)
+  taxaplot(otu, taxavec="Domain", showOnlyTheseTaxa=NULL,
+  threshold=NULL, x_category="sample",
+  fill_category=x_category, facet_formula = . ~ TaxaGroup)
 }
 \arguments{
-  \item{otu}{An \code{otuTable} object, or higher-order
-  object that contains an otuTable and sampleMap (e.g.
-  ``otuSam'' class and its superclasses.). If \code{otu}
-  does not contain a taxTab slot (is a class that does not
-  have ``Tax'' in its title), then the second argument,
-  \code{taxavec}, is required and should have length equal
-  to the number of species/taxa in \code{otu}.}
+  \item{otu}{(Required). An \code{otuTable} object, or
+  higher-order object that contains an otuTable and
+  sampleData (e.g. ``otuSam'' class and its superclasses.).
+  If \code{otu} does not contain a taxTab slot (is a class
+  that does not have ``Tax'' in its title), then the second
+  argument, \code{taxavec}, is required and should have
+  length equal to the number of species/taxa in
+  \code{otu}.}
 
   \item{taxavec}{A character vector of the desired
   taxonomic names to categorize each species in \code{otu}.
@@ -27,10 +25,6 @@
   desired taxonomic level as a character string of length
   1. E.g. \code{taxavec = "Phylum"}. Default value is
   \code{"Domain"}.}
-
-  \item{map}{The corresponding sampleMap object for
-  \code{otu}. This is ignored for higher-order objects,
-  where the sampleMap component is used instead.}
 
   \item{showOnlyTheseTaxa}{A vector of the taxonomic labels
   that you want included. If NULL, the default, then all
@@ -44,19 +38,20 @@
   groups are included. If NULL (or 1), the default, all
   taxonomic groups are included.}
 
-  \item{x_category}{A character string indicating which map
-  column should be used to define the horizontal axis
-  categories. Default is \code{"sample"}. Note that a few
-  column-names are added by default and are available as
-  options. They are ``sample'', ``Abundance'', and
+  \item{x_category}{A character string indicating which
+  sampleData column should be used to define the horizontal
+  axis categories. Default is \code{"sample"}. Note that a
+  few column-names are added by default and are available
+  as options. They are ``sample'', ``Abundance'', and
   ``TaxaGroup''.}
 
   \item{fill_category}{A character string indicating which
-  map column should be used to define the fill color of the
-  bars. This does not have to match \code{x_category}, but
-  does so by default. Note that a few column-names are
-  added by default and are available as options. They are
-  ``sample'', ``Abundance'', and ``TaxaGroup''.}
+  sampleData column should be used to define the fill color
+  of the bars. This does not have to match
+  \code{x_category}, but does so by default. Note that a
+  few column-names are added by default and are available
+  as options. They are ``sample'', ``Abundance'', and
+  ``TaxaGroup''.}
 
   \item{facet_formula}{A formula object as used by
   \code{\link{facet_grid}} in \code{\link{ggplot}} or
@@ -83,8 +78,7 @@
   The vertical axis is always relative abundance, but the
   data can be further organized at the horizontal axis and
   faceting grid by any combination of variates present in
-  the sampleMap component of \code{otu}, or the \code{map}
-  argument if \code{otu} is a simple \code{otuTable}.
+  the sampleData component of \code{otu}.
 }
 \examples{
 #

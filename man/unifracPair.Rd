@@ -26,10 +26,8 @@
   distances between many different samples. Returns a
   single numeric value, between 0 and 1.
 }
-\examples{
-#
-}
 \seealso{
   See the main function, \code{\link{UniFrac}}.
 }
+\keyword{internal}
 

@@ -1,28 +1,32 @@
 \name{getslots.phyloseq}
 \alias{getslots.phyloseq}
-\title{return the slot names of phyloseq objects.}
+\title{Return the non-empty slot names of a phyloseq object.}
 \usage{
-  getslots.phyloseq(x)
+  getslots.phyloseq(physeq)
 }
 \arguments{
-  \item{x}{An object of a class defined by the
-  phyloseq-package. Component data and complex classes are
-  both acceptable.}
+  \item{physeq}{A \code{\link{phyloseq-class}} object. If
+  \code{physeq} is a component data class, then just
+  returns the class of \code{physeq}.}
 }
 \value{
   identical to getSlots. A named character vector of the
   slot classes of a particular S4 class, where each element
-  is named by the slot name it represents. If \code{x} is a
-  component data object, then a vector of length (1) is
-  returned, named according to its slot name in the
-  higher-order objects.
+  is named by the slot name it represents. If \code{physeq}
+  is a component data object, then a vector of length (1)
+  is returned, named according to its slot name in the
+  \code{\link{phyloseq-class}}.
 }
 \description{
-  Like getSlots, but returns the class name if argument is
-  component data object.
+  Like \code{\link{getSlots}}, but returns the class name
+  if argument is component data object.
 }
 \examples{
 #
+data(ex1)
+getslots.phyloseq(ex1)
+data(esophagus)
+getslots.phyloseq(esophagus)
 }
 \seealso{
   merge_phyloseq

@@ -2,22 +2,23 @@
 \name{nsamples}
 \alias{nsamples}
 \alias{nsamples,ANY-method}
-\alias{nsamples,phyloseqFather-method}
-\title{Get the number of samples described by an object.}
+\alias{nsamples,otuTable-method}
+\alias{nsamples,phyloseq-method}
+\alias{nsamples,sampleData-method}
+\title{Get the number of samples.}
 \usage{
-  nsamples(object)
+  nsamples(physeq)
 }
 \arguments{
-  \item{object}{An object among the set of classes defined
-  by the phyloseq package that represent samples.}
+  \item{physeq}{A \code{\link{phyloseq-class}},
+  \code{\link{sampleData}}, or
+  \code{\link{otuTable-class}}.}
 }
 \value{
   An integer indicating the total number of samples.
 }
 \description{
-  This method works on otuTable and sampleMap objects, as
-  well as the more complex objects that represent samples
-  in an experiment.
+  Get the number of samples.
 }
 \examples{
 #
@@ -30,6 +31,7 @@
 # nsamples(physeq1)
 }
 \seealso{
-  nspecies sample.names
+  \code{\link{species.names}}, \code{\link{sample.names}},
+  \code{\link{nspecies}}
 }
 

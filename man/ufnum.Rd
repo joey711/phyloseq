@@ -23,9 +23,6 @@
   edge-index as input, and returns the edge-weight term for
   unweighted UniFrac.
 }
-\examples{
-#
-}
 \seealso{
   UniFrac
 }

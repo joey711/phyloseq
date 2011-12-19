@@ -3,14 +3,14 @@
 \alias{assign-speciesarerows}
 \alias{speciesarerows<-}
 \alias{speciesarerows<-,otuTable,logical-method}
-\alias{speciesarerows<-,phyloseqFather,logical-method}
+\alias{speciesarerows<-,phyloseq,logical-method}
 \title{Manually change speciesAreRows through assignment.}
 \usage{
   speciesarerows(x) <- value
 }
 \arguments{
-  \item{x}{An otuTable-class or higher-order object that
-  contains an otuTable.}
+  \item{x}{\code{\link{otuTable-class}} or
+  \code{\link{phyloseq-class}}}
 
   \item{value}{A logical of length equal to 1. If
   \code{length(value) > 1}, the additional elements will be
@@ -24,5 +24,8 @@
 }
 \examples{
 #
+# data(ex1)
+# speciesarerows(ex1)
+# speciesarerows(otuTable(ex1))
 }
 

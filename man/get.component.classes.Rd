@@ -7,8 +7,7 @@
 \value{
   a character vector of the component objects classes,
   where each element is named by the corresponding slot
-  name in the higher-order phyloseq objects (objects
-  containing more than 1 phyloseq data object).
+  name in the phyloseq-class.
 }
 \description{
   There are no arguments to this function. It returns a
@@ -19,4 +18,5 @@
 #
 #get.component.classes()
 }
+\keyword{internal}
 

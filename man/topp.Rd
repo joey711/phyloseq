@@ -1,6 +1,6 @@
 \name{topp}
 \alias{topp}
-\title{The most abundant \code{p} fraction of taxa}
+\title{Make filter fun. that returns the most abundant \code{p} fraction of taxa}
 \usage{
   topp(p, na.rm=TRUE)
 }
@@ -18,6 +18,22 @@
   fraction of taxa.
 }
 \description{
-  The most abundant \code{p} fraction of taxa
+  Make filter fun. that returns the most abundant \code{p}
+  fraction of taxa
+}
+\examples{
+## Use simulated abundance matrix
+# set.seed(711)
+# testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+# sampleSums(testOTU)
+# f1  <- filterfunSample(topp(0.2))
+# (wh1 <- genefilterSample(testOTU, f1, A=1))
+# wh2 <- c(T, T, T, F, F)
+# prune_species(wh1, testOTU)
+# prune_species(wh2, testOTU)
+}
+\seealso{
+  \code{\link{topk}}, \code{\link{topf}},
+  \code{\link{topp}}, \code{\link{rm_outlierf}}
 }
 

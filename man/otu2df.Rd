@@ -12,7 +12,7 @@ in the ggplot2 framework.}
   \item{taxavec}{A character vector of the desired
   taxonomic names to categorize each species in otu.}
 
-  \item{map}{The corresponding sampleMap object for
+  \item{map}{The corresponding sampleData object for
   \code{otu}.}
 
   \item{keepOnlyTheseTaxa}{A vector of the taxonomic labels
@@ -22,7 +22,7 @@ in the ggplot2 framework.}
 
   \item{threshold}{A [0,1] numeric. Fraction of abundance
   of the taxonomic groups to keep for each sample. The
-  higher the value, the larger the diversity of taxonomica
+  higher the value, the larger the diversity of taxonomic
   groups included. That is, a greater number of the rare
   groups are included. If NULL (or 1), the default, all
   taxonomic groups are included.}
@@ -31,10 +31,5 @@ in the ggplot2 framework.}
   Convert an otuTable object into a data.frame useful for
   plotting in the ggplot2 framework.
 }
-\examples{
-#
-}
-\seealso{
-  taxaplot
-}
+\keyword{internal}
 

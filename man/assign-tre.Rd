@@ -2,24 +2,29 @@
 \name{tre<-}
 \alias{assign-tre}
 \alias{tre<-}
-\alias{tre<-,otuTree,phylo-method}
-\alias{tre<-,otuTree,phylo4-method}
+\alias{tre<-,phyloseq,phylo-method}
 \title{Assign to tre an object/value.}
 \usage{
   tre(x) <- value
 }
 \arguments{
-  \item{x}{(Required). The object within which you will
-  replace something}
+  \item{x}{(Required). \code{\link{phyloseq-class}}}
 
-  \item{value}{(Required). The value with which you will
-  replace that thing in x.}
+  \item{value}{(Required). \code{\link{phylo-class}}}
 }
 \description{
-  This will automatically convert "phylo"-class trees (ape
-  package) to "phylo4"-class trees (phylobase package).
+  Assign to tre an object/value.
 }
 \examples{
 #
+# data(ex1)
+# # An example of pruning to just the first 100 taxa in ex1.
+# ex2a <- prune_species(species.names(ex1)[1:100], ex1)
+# # The following 3 lines produces an ex2b that is equal to ex2a
+# ex2b <- ex1
+# tree <- prune_species(species.names(ex1)[1:100], tre(ex1))
+# tre(ex2b) <- tree
+# identical(ex2a, ex2b)
+# print(ex2b)
 }
 
