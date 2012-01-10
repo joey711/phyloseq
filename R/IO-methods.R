@@ -1096,6 +1096,86 @@ export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 	}
 }
 ################################################################################
+#' Export environment (ENV) file for UniFrac Server.
+#'
+#' Creates the environment table that is needed for the original UniFrac
+#' algorithm. Useful for cross-checking, or if want to use UniFrac server.
+#' Optionally the ENV-formatted table can be returned to the \code{R}
+#' workspace, and the tree component can be exported as Nexus format
+#' (Recommended). 
+#'
+#' @param physeq (Required). Experiment-level (\code{\link{phyloseq-class}}) object.
+#'  Ideally this also contains the phylogenetic tree, which is also exported by default.
+#'
+#' @param file (Optional). The file path for export. If not-provided, the 
+#'  expectation is that you will want to set \code{return} to \code{TRUE},
+#'  and manipulate the ENV table on your own. Default is \code{""}, skipping 
+#'  the ENV file from being written to a file.
+#'
+#' @param writeTree (Optional). Write the phylogenetic tree as well as the 
+#'  the ENV table. Default is \code{TRUE}.
+#'
+#' @param return (Optional). Should the ENV table be returned to the R workspace?
+#'  Default is \code{FALSE}.
+#'
+#' @export
+#' 
+#' @examples
+#' # # Load example data
+#' # data(esophagus)
+#' # export_env_file(esophagus, "~/Desktop/esophagus.txt")
+export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
+	# data(esophagus)
+	# physeq <- esophagus
+
+	# Create otuTable matrix and force orientation
+	OTU     <- as(otuTable(physeq), "matrix")
+	if( !speciesAreRows(physeq) ){ OTU <- t(OTU) }
+	
+	# initialize sequence/sample names
+	seqs    <- species.names(physeq)
+	samples <- sample.names(physeq)	
+	
+	# initialize output table as matrix
+	ENV <- matrix("", nrow=sum(OTU >= 1), ncol=3)
+	
+	# i counts the row of the output , ENV
+	i=1
+	while( i < nrow(ENV) ){
+		for( j in seqs){ 
+			for( k in which(OTU[j, ]>0) ){
+					ENV[i, 1] <- j
+					ENV[i, 2] <- samples[k]
+					ENV[i, 3] <- OTU[j, k]
+					i <- i + 1
+			}
+		}
+	}
+	# If a file path is provided, write the table to that file
+	if(file != ""){
+		write.table(ENV, file=file, quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+	}
+	
+	# If needed, also write the associated tree-file. 
+	if( writeTree ){
+		fileTree <- ps(file, ".nex")
+		ape::write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
+	}
+
+	# If return argument is TRUE, return the environment table
+	if(return){ return(ENV) }
+}
+################################################################################
+# UniFrac ENV files have the form:
+# 
+# SEQ1        ENV1        1
+# SEQ1        ENV2        2
+# SEQ2        ENV1        15
+# SEQ3        ENV1        2
+# SEQ4        ENV2        8
+# SEQ5        ENV1        4
+# http://128.138.212.43/unifrac/help.psp#env_file
+################################################################################
 ################################################################################
 ################################################################################
 ################################################################################

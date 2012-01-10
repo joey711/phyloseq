@@ -5,8 +5,14 @@
   See the \code{\link[ape]{ape}} package for details about
   this type of representation of a phylogenetic tree. It is
   used throught ape.
+
+  See the \code{\link[ape]{ape}} package for details about
+  this type of representation of a phylogenetic tree. It is
+  used throught ape.
 }
 \seealso{
+  \code{\link[ape]{phylo}}, \code{\link{setOldClass}}
+
   \code{\link[ape]{phylo}}, \code{\link{setOldClass}}
 }
 

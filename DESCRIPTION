@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.99.0
-Date: 2011-12-12
+Version: 0.99.1
+Date: 2012-01-09
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -26,9 +26,9 @@ Suggests:
     genefilter
 Enhances: doMC (>= 1.2), doSMP (>= 1.0), doSNOW (>= 1.0)
 Collate:
-    'allClasses.R'
-    'allPackage.R'
-    'allData.R'
+    'allclasses.r'
+    'allpackage.r'
+    'alldata.r'
     'as-methods.r'
     'show-methods.r'
     'plot-methods.r'

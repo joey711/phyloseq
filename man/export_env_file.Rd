@@ -1,0 +1,39 @@
+\name{export_env_file}
+\alias{export_env_file}
+\title{Export environment (ENV) file for UniFrac Server.}
+\usage{
+  export_env_file(physeq, file = "", writeTree = TRUE,
+  return = FALSE)
+}
+\arguments{
+  \item{physeq}{(Required). Experiment-level
+  (\code{\link{phyloseq-class}}) object. Ideally this also
+  contains the phylogenetic tree, which is also exported by
+  default.}
+
+  \item{file}{(Optional). The file path for export. If
+  not-provided, the expectation is that you will want to
+  set \code{return} to \code{TRUE}, and manipulate the ENV
+  table on your own. Default is \code{""}, skipping the ENV
+  file from being written to a file.}
+
+  \item{writeTree}{(Optional). Write the phylogenetic tree
+  as well as the the ENV table. Default is \code{TRUE}.}
+
+  \item{return}{(Optional). Should the ENV table be
+  returned to the R workspace? Default is \code{FALSE}.}
+}
+\description{
+  Creates the environment table that is needed for the
+  original UniFrac algorithm. Useful for cross-checking, or
+  if want to use UniFrac server. Optionally the
+  ENV-formatted table can be returned to the \code{R}
+  workspace, and the tree component can be exported as
+  Nexus format (Recommended).
+}
+\examples{
+# # Load example data
+# data(esophagus)
+# export_env_file(esophagus, "~/Desktop/esophagus.txt")
+}
+
