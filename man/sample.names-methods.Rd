@@ -7,9 +7,6 @@
 \alias{sample.names,sampleData-method}
 \alias{sampleNames}
 \title{Get sample names.}
-\usage{
-  sample.names(physeq)
-}
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}},
   \code{\link{sampleData}}, or

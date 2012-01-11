@@ -6,9 +6,6 @@
 \alias{speciesAreRows,otuTable-method}
 \alias{speciesAreRows,phyloseq-method}
 \title{Access speciesAreRows slot from otuTable objects.}
-\usage{
-  speciesarerows(physeq)
-}
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
   or \code{\link{otuTable-class}}.}

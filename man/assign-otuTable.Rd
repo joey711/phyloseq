@@ -5,9 +5,6 @@
 \alias{otuTable<-,otuTable,otuTable-method}
 \alias{otuTable<-,phyloseq,otuTable-method}
 \title{Assign a new OTU Table to \code{x}}
-\usage{
-  otuTable(x) <- value
-}
 \arguments{
   \item{x}{(Required). \code{\link{phyloseq-class}}}
 

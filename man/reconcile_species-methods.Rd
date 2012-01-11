@@ -2,9 +2,6 @@
 \alias{reconcile_species}
 \alias{reconcile_species,phyloseq-method}
 \title{Keep only species-indices common to all components.}
-\usage{
-  reconcile_species(x)
-}
 \arguments{
   \item{x}{(Required). A phyloseq object. Only meaningful
   if \code{x} has at least two non-empty slots of the

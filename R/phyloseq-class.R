@@ -42,17 +42,17 @@ phyloseq <- function(...){
 	names(arglist) <- NULL
 
 	# ignore all but component data classes.
-	arglist  <- arglist[sapply(arglist, class) %in% get.component.classes()]
+	arglist  <- arglist[sapply(arglist, class) %in% phyloseq:::get.component.classes()]
 	
 	# Make the name-replaced, splatted list
-	splatlist <- sapply(arglist, splat.phyloseq.objects)
+	splatlist <- sapply(arglist, phyloseq:::splat.phyloseq.objects)
 
 	## Need to determine which new() type to call.
 	# First some quality-control checks:
 	if( length(splatlist) > 4){
-		stop("phyloseq()-ERROR: Too many components provided\n")
+		stop("Too many components provided\n")
 	} else if( length(names(splatlist)) > length(unique(names(splatlist))) ){
-		stop("phyloseq()-ERROR: Only one of each component type allowed.\n",
+		stop("Only one of each component type allowed.\n",
 		"For merging multiple objects of the same class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
@@ -61,13 +61,35 @@ phyloseq <- function(...){
 		ps <- do.call("new", c(list(Class="phyloseq"), splatlist) )
 	}
 	# Verify there is more than one component that describes species before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), species.names), is.null)) >= 2 ){	
-		ps <- reconcile_species(ps)
+	if( sum(!sapply(lapply(phyloseq:::splat.phyloseq.objects(ps), species.names), is.null)) >= 2 ){	
+		ps <- phyloseq:::reconcile_species(ps)
 	}
 	# Verify there is more than one component that describes samples before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
-		ps <- reconcile_samples(ps)		
+	if( sum(!sapply(lapply(phyloseq:::splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
+		ps <- phyloseq:::reconcile_samples(ps)		
 	}
+	# ENFORCE CONSISTENT ORDER OF TAXA INDICES.
+	# If there is a phylogenetic tree included, re-order the otuTable based 
+	# according to the order of taxa-names on the tree, and optionally for
+	# the taxonomyTable, if present.
+	if( !is.null(tre(ps, FALSE)) ){
+		otu <- as(otuTable(ps), "matrix")
+		# Re-order the matrix order matches tree
+		if( speciesAreRows(ps) ){
+			otu <- otu[species.names(tre(ps)), ]
+		} else {
+			otu <- otu[, species.names(tre(ps))]
+		}
+		ps@otuTable <- otuTable(otu, speciesAreRows(ps))
+		
+		# If there is a taxonomyTable, re-order that too.
+		if( !is.null(taxTab(ps, FALSE)) ){
+			tax <- as(taxtab(ps), "matrix")
+			tax <- tax[species.names(tre(ps)), ]
+			ps@taxTab <- taxTab(tax)
+		}
+	}
+	
 	return(ps)
 }
 ################################################################################

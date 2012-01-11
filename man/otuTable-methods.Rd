@@ -6,9 +6,6 @@
 \alias{otuTable,otuTable-method}
 \alias{otuTable,phyloseq-method}
 \title{Build or access the otuTable.}
-\usage{
-  otuTable(object, speciesAreRows, errorIfNULL=TRUE)
-}
 \arguments{
   \item{object}{(Required). An integer matrix,
   \code{\link{otuTable-class}}, or

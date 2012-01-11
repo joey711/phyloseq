@@ -7,9 +7,6 @@
 \alias{nspecies,phyloseq-method}
 \alias{nspecies,taxonomyTable-method}
 \title{Get the number of taxa/species.}
-\usage{
-  nspecies(physeq)
-}
 \arguments{
   \item{physeq}{\code{\link{phyloseq-class}},
   \code{\link{otuTable-class}},

@@ -2,8 +2,9 @@
 \alias{UFwi}
 \title{Internal function for weighted UniFrac edge-weight.}
 \usage{
-  UFwi(edge, samples, OTU, tree, AT = sum(OTU[samples[1],
-  ]), BT = sum(OTU[samples[2], ]))
+  UFwi(edge, samples, OTU, tree,
+    AT = sum(OTU[samples[1], ]),
+    BT = sum(OTU[samples[2], ]))
 }
 \arguments{
   \item{edge}{The edge index}

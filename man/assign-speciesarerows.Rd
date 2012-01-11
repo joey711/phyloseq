@@ -5,9 +5,6 @@
 \alias{speciesarerows<-,otuTable,logical-method}
 \alias{speciesarerows<-,phyloseq,logical-method}
 \title{Manually change speciesAreRows through assignment.}
-\usage{
-  speciesarerows(x) <- value
-}
 \arguments{
   \item{x}{\code{\link{otuTable-class}} or
   \code{\link{phyloseq-class}}}

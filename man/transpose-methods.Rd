@@ -4,9 +4,6 @@
 \alias{t,otuTable-method}
 \alias{t,phyloseq-method}
 \title{Transpose \code{\link{otuTable-class}} or \code{\link{phyloseq-class}}}
-\usage{
-  t(x)
-}
 \arguments{
   \item{x}{An \code{otuTable} or
   \code{\link{phyloseq-class}}.}
