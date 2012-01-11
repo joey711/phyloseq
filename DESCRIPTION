@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.99.2
-Date: 2012-01-10
+Version: 0.99.3
+Date: 2012-01-11
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
@@ -24,7 +24,7 @@ Suggests:
     adephylo,
     ade4,
     genefilter
-Enhances: doParallel (>= 1.0), doSNOW (>= 1.0)
+Enhances: doParallel (>= 1.0)
 Collate:
     'allclasses.r'
     'allpackage.r'
