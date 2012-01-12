@@ -421,13 +421,12 @@ setMethod("prune_species", signature("NULL"), function(species, x){
 	return(x)
 })
 ################################################################################
-#' @import ape
 #' @aliases prune_species,character,phylo-method
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "phylo"), function(species, x){
 	trimTaxa <- setdiff(x$tip.label, species)
 	if( length(trimTaxa) > 0 ){
-		drop.tip(x, trimTaxa)
+		ape::drop.tip(x, trimTaxa)
 	} else x
 })
 ################################################################################

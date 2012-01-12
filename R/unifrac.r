@@ -271,7 +271,8 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #'  so that \code{foreach::\%dopar\%} does not throw a warning.
 #' 
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
-#' @seealso \code{vegan::vegdist}
+#' 
+#' @seealso \code{\link[vegan]{vegdist}}, \code{\link[picante]{unifrac}}
 #'
 #' @references \url{http://bmf.colorado.edu/unifrac/}
 #'

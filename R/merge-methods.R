@@ -225,11 +225,10 @@ setMethod("merge_phyloseq_pair", signature("sampleData", "sampleData"), function
 	return(newx)	
 })
 ################################################################################
-#' @import ape
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
-	consensus(x, y)
+	ape::consensus(x, y)
 })
 ################################################################################
 ################################################################################
@@ -308,7 +307,7 @@ setMethod("merge_species", "otuTable", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
-#' @import ape
+# require(ape)
 #' @aliases merge_species,phylo-method
 #' @rdname merge_species-methods
 setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
@@ -323,7 +322,7 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- drop.tip(x, removeIndex)
+	x           <- ape::drop.tip(x, removeIndex)
 	return(x)
 })
 ################################################################################
