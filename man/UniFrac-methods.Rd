@@ -164,6 +164,7 @@
   Environ Microbiol. 2005 71 (12):8228-35.
 }
 \seealso{
-  \code{vegan::vegdist}
+  \code{\link[vegan]{vegdist}},
+  \code{\link[picante]{unifrac}}
 }
 
