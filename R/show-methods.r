@@ -44,9 +44,7 @@ tableprint = function(y,
 	}			
 }
 ############################################################################
-#' @name show
 #' @aliases show,otuTable-method
-#' @docType methods
 #' @rdname show-methods
 setMethod("show", "otuTable", function(object){
 	y <- as(object, "matrix")
@@ -57,28 +55,33 @@ setMethod("show", "otuTable", function(object){
 	}			 
 })
 ############################################################################
-#' @name show
 #' @aliases show,sampleData-method
-#' @docType methods
 #' @rdname show-methods
 setMethod("show", "sampleData", function(object){
 	tableprint(object, "Sample Data", "Samples", "Variables")
 })
 ############################################################################
-#' @name show
 #' @aliases show,taxonomyTable-method
-#' @docType methods
 #' @rdname show-methods
 setMethod("show", "taxonomyTable", function(object){
 	tableprint(as(object, "matrix"), "Taxonomy Table", "Species", "Taxonomic Rank")		
 })
 ############################################################################
-#' show method for H.O. objects.
+#' method extensions to show for phyloseq classes.
 #'
-#' @name show
+#' See the general documentation of \code{\link[methods]{show}} method for
+#' expected behavior. 
+#'
+#' @seealso \code{\link[methods]{show}}
+#' 
+#' @export
 #' @aliases show,phyloseq-method
 #' @docType methods
 #' @rdname show-methods
+#' @examples
+#' # data(ex1)
+#' # print(ex1)
+#' # ex1
 setMethod("show", "phyloseq", function(object){
 	cat( "phyloseq-class experiment-level object \n", fill=TRUE )
 	slot_list <- splat.phyloseq.objects(object)
