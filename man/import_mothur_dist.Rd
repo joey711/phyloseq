@@ -1,0 +1,33 @@
+\name{import_mothur_dist}
+\alias{import_mothur_dist}
+\title{Import mothur-formatted distance file}
+\usage{
+  import_mothur_dist(mothur_dist_file)
+}
+\arguments{
+  \item{mothur_dist_file}{Required. The distance file name
+  / location produced by \emph{mothur}.}
+}
+\value{
+  A distance matrix object describing all sequences in a
+  dataset.
+}
+\description{
+  The mothur application will produce a file containing the
+  pairwise distances between all sequences in a dataset.
+  This distance matrix can be the basis for OTU cluster
+  designations. R also has many built-in or off-the-shelf
+  tools for dealing with distance matrices.
+}
+\examples{
+# # Take a look at the dataset shown here as an example:
+# # "http://www.mothur.org/wiki/Esophageal_community_analysis"
+# # find the file ending with extension ".dist", download to your system
+# # The location of your file may vary
+# mothur_dist_file <- "~/Downloads/mothur/Esophagus/esophagus.dist"
+# myNewDistObject  <- import_mothur_dist(mothur_dist_file)
+}
+\seealso{
+  \code{\link{import_mothur}}
+}
+

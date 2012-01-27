@@ -1,0 +1,27 @@
+Package: phyloseq
+Version: 0.99.5
+Date: 2012-01-13
+Title: Handling and analysis of high-throughput phylogenetic sequence
+        data.
+Description: phyloseq is a set of classes, wrappers, and
+    tools to facilitate the import, storage, and analysis
+    of phylogenetic sequencing data. 
+Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
+Author: Paul J. McMurdie <mcmurdie@stanford.edu>
+License: AGPL-3
+Imports: igraph (>= 0.5), multtest (>= 2.8), vegan (>= 2.0), foreach
+        (>= 1.3)
+Depends: R (>= 2.14.0), methods, ape (>= 2.8), picante (>= 1.3),
+        ggplot2 (>= 0.8)
+Suggests: adephylo, ade4, genefilter
+Enhances: doParallel (>= 1.0)
+biocViews: Clustering, Classification, MultipleComparisons,
+        QualityControl, GeneticVariability, HighThroughputSequencing
+Collate: 'allclasses.r' 'allpackage.r' 'alldata.r' 'as-methods.r'
+        'show-methods.r' 'plot-methods.r' 'unifrac.r'
+        'extract-methods.r' 'almostAllAccessors.R' 'otuTable-class.R'
+        'phyloseq-class.R' 'taxonomyTable-class.R' 'IO-methods.R'
+        'merge-methods.R' 'multtest-wrapper.R' 'ordination-methods.R'
+        'transform_filter-methods.R' 'validity-methods.R'
+        'assignment-methods.r' 'sampleData-class.R'
+Packaged: 2012-01-13 22:32:26 UTC; joeyMP

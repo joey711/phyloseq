@@ -1,0 +1,44 @@
+phyloseq 0.4.2 - 0.4.7
+===========
+
+* Improvements to import_mothur() via import_mothur_otulist().
+* merge_samples() function added, in preparation for hypergeometric (fisher.test) test wrapper.
+* Fixed bug in merge_phyloseq() for certain combinations of objects. 
+* Various other fixes and improvements.
+
+phyloseq 0.4.1
+===========
+
+* First official submission to Bioconductor
+* Includes many build-fixes, bug-fixes
+* Final tweaks to conform to Bioconductor guidelines
+
+phyloseq 0.3
+===========
+
+* Added Importers for mothur, RDP-pipeline, and PyroTagger
+* Lots of new plotting and analysis support
+* Parallelized UniFrac calculations using foreach package
+* Some improvements to the class inheritance structure to simplify method extension and future development.
+* Function-level documentation
+* Vignette-level documentation
+* Package dependencies achieved via import for all packages with a namespace. Depends (full load) otherwise.
+
+phyloseq 0.2.4
+===========
+
+* Added ordination and plotting pipeline, calcplot() and plot.ordination.phyloseq()
+* All trees converted to phylo4 by default. Support for phyla achieved by coercion to phylo4.
+
+phyloseq 0.2
+===========
+
+* Modifications for proper build, and bug tests.
+
+phyloseq 0.1
+===========
+
+* basic data structure in place.
+* some support for phylo4 objects
+* import_qiime(): A Qiime input wrapper
+

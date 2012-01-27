@@ -1,0 +1,9 @@
+phyloseq is under very active development. 
+
+Planned feature improvements are publicly catalogued at the main phyloseq development site on github. 
+
+Specifically on the "Issues" page for phyloseq:
+
+https://github.com/joey711/phyloseq/issues
+
+If the feature you are hoping for is not listed, you are welcome to add it as a feature request "issue" on this page. 

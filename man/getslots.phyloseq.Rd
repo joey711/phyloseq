@@ -1,0 +1,34 @@
+\name{getslots.phyloseq}
+\alias{getslots.phyloseq}
+\title{Return the non-empty slot names of a phyloseq object.}
+\usage{
+  getslots.phyloseq(physeq)
+}
+\arguments{
+  \item{physeq}{A \code{\link{phyloseq-class}} object. If
+  \code{physeq} is a component data class, then just
+  returns the class of \code{physeq}.}
+}
+\value{
+  identical to getSlots. A named character vector of the
+  slot classes of a particular S4 class, where each element
+  is named by the slot name it represents. If \code{physeq}
+  is a component data object, then a vector of length (1)
+  is returned, named according to its slot name in the
+  \code{\link{phyloseq-class}}.
+}
+\description{
+  Like \code{\link{getSlots}}, but returns the class name
+  if argument is component data object.
+}
+\examples{
+#
+ data(ex1)
+ getslots.phyloseq(ex1)
+ data(esophagus)
+ getslots.phyloseq(esophagus)
+}
+\seealso{
+  merge_phyloseq
+}
+

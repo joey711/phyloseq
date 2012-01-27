@@ -1,0 +1,46 @@
+\name{threshrank}
+\alias{threshrank}
+\title{Thresholded rank transformation.}
+\usage{
+  threshrank(x, thresh, keep0s=FALSE, ...)
+}
+\arguments{
+  \item{x}{(Required). Numeric vector to transform.}
+
+  \item{thresh}{A single numeric value giving the
+  threshold.}
+
+  \item{keep0s}{A logical determining whether 0's in
+  \code{x} should remain a zero-value in the output. If
+  FALSE, zeros are treated as any other value.}
+
+  \item{...}{Further arguments passes to the
+  \code{\link{rank}} function.}
+}
+\value{
+  A ranked, (optionally) thresholded numeric vector with
+  length equal to \code{x}. Default arguments to
+  \code{rank} are used, unless provided as additional
+  arguments.
+}
+\description{
+  The lowest \code{thresh} values in \code{x} all get the
+  value 'thresh'.
+}
+\examples{
+#
+(a_vector <- sample(0:10, 100, TRUE))
+threshrank(a_vector, 5, keep0s=TRUE)
+data(ex1)
+## These three approaches result in identical otuTable
+(x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
+(x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+identical(x1, x2)
+(x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+identical(x1, x3)
+}
+\seealso{
+  \code{\link{transformsamplecounts}}, \code{\link{rank}},
+  \code{\link{threshrankfun}}
+}
+

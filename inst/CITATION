@@ -1,0 +1,12 @@
+citHeader("To cite phyloseq in publications, please use:")
+
+citEntry(entry = "proceedings",
+  author = "{{Paul J. McMurdie} and {Susan Holmes}}",
+  Organization = "{Pacific Symposium on Biocomputing}",
+  Pages = "235-246",
+  title = "{{phyloseq: A Bioconductor Package for Handling and Analysis of High-Throughput Phylogenetic Sequence Data}}",
+  Volume = "17",
+  year = "2011",
+  Url = "{http://psb.stanford.edu/psb-online/proceedings/psb12/mcmurdie.pdf}",
+  textVersion = "phyloseq: A Bioconductor Package for Handling and Analysis of High-Throughput Phylogenetic Sequence Data. Paul J. McMurdie and Susan Holmes; Pacific Symposium on Biocomputing 17:235-246 (2012)."
+)

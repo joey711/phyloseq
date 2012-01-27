@@ -1,0 +1,170 @@
+\docType{methods}
+\name{UniFrac}
+\alias{UniFrac}
+\alias{UniFrac,phyloseq-method}
+\title{Calculate weighted or unweighted UniFrac distance for all sample pairs.}
+\arguments{
+  \item{physeq}{(Required). \code{\link{phyloseq-class}},
+  containing at minimum a phylogenetic tree
+  (\code{\link{phylo-class}}) and contingency table
+  (\code{\link{otuTable-class}}). See examples below for
+  coercions that might be necessary.}
+
+  \item{weighted}{(Optional). Logical. Should use
+  weighted-UniFrac calculation?  Weighted-UniFrac takes
+  into account the relative abundance of species/taxa
+  shared between samples, whereas unweighted-UniFrac only
+  considers presence/absence. Default is \code{FALSE},
+  meaning the unweighted-UniFrac distance is calculated for
+  all pairs of samples.}
+
+  \item{normalized}{(Optional). Logical. Should the output
+  be normalized such that values range from 0 to 1
+  independent of branch length values? Default is
+  \code{TRUE}.  Note that (unweighted) \code{UniFrac} is
+  always normalized by total branch-length, and so this
+  value is ignored when \code{weighted == FALSE}.}
+
+  \item{parallel}{(Optional). Logical. Should execute
+  calculation in parallel, using multiple CPU cores
+  simultaneously? This can dramatically hasten the
+  computation time for this function. However, it also
+  requires that the user has registered a parallel
+  ``backend'' prior to calling this function.  Default is
+  \code{FALSE}. If FALSE, UniFrac will register a serial
+  backend so that \code{foreach::\%dopar\%} does not throw
+  a warning.}
+}
+\value{
+  a sample-by-sample distance matrix, suitable for NMDS,
+  etc.
+}
+\description{
+  This function calculates the UniFrac distance for all
+  sample-pairs in a \code{\link{phyloseq-class}} object.
+}
+\details{
+  \code{UniFrac()} accesses the abundance
+  (\code{\link{otuTable-class}}) and a phylogenetic tree
+  (\code{\link{phylo-class}}) data within an
+  experiment-level (\code{\link{phyloseq-class}}) object.
+  If the tree and contingency table are separate objects,
+  suggested solution is to combine them into an
+  experiment-level class using the \code{\link{phyloseq}}
+  function. For example, the following code
+
+  \code{phyloseq(myOTUtable, myTree)}
+
+  returns a \code{phyloseq}-class object that has been
+  pruned and comprises the minimum arguments necessary for
+  \code{UniFrac()}.
+
+  Parallelization is possible for UniFrac calculated with
+  the \code{\link{phyloseq-package}}, and is encouraged in
+  the instances of large trees, many samples, or both.
+  Parallelization has been implemented via the
+  \code{\link{foreach-package}}. This means that parallel
+  calls need to be preceded by 2 or more commands that
+  register the parallel ``backend''. This is acheived via
+  your choice of helper packages. One of the simplest seems
+  to be the \emph{doParallel} package.
+
+  For more information, see the following links on
+  registering the ``backend'':
+
+  \emph{foreach} package manual:
+
+  \url{http://cran.r-project.org/web/packages/foreach/index.html}
+
+  Notes on parallel computing in \code{R}. Skip to the
+  section describing the \emph{foreach Framework}. It gives
+  off-the-shelf examples for registering a parallel backend
+  using the \emph{doMC}, \emph{doSNOW}, or \emph{doMPI}
+  packages:
+
+  \url{http://trg.apbionet.org/euasiagrid/docs/parallelR.notes.pdf}
+
+  Furthermore, as of \code{R} version \code{2.14.0} and
+  higher, a parallel package is included as part of the
+  core installation, \code{\link{parallel-package}}, and
+  this can be used as the parallel backend with the
+  \code{\link{foreach-package}} using the adaptor package
+  ``doParallel''.
+  \url{http://cran.r-project.org/web/packages/doParallel/index.html}
+
+  See the vignette for some simple examples for using
+  doParallel.
+  \url{http://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf}
+
+  UniFrac-specific examples for doParallel are provided in
+  the example code below.
+}
+\examples{
+# ################################################################################
+# # Perform UniFrac on esophagus data
+# ################################################################################
+# data("esophagus")
+# (y <- UniFrac(esophagus, TRUE))
+# UniFrac(esophagus, TRUE, FALSE)
+# UniFrac(esophagus, FALSE)
+# picante::unifrac(as(t(otuTable(esophagus)), "matrix"), tre(esophagus))
+# ################################################################################
+# # Try phylocom example data from picante package
+# # It comes as a list, so you must construct the phyloseq object first.
+# ################################################################################
+# data("phylocom")
+# (x1 <- phyloseq(otuTable(phylocom$sample, FALSE), phylocom$phylo))
+# UniFrac(x1, TRUE)
+# UniFrac(x1, TRUE, FALSE)
+# UniFrac(x1, FALSE)
+# picante::unifrac(phylocom$sample, phylocom$phylo)
+# ################################################################################
+# # Now try a parallel implementation using doParallel, which leverages the
+# # new 'parallel' core package in R 2.14.0+
+# # Note that simply loading the 'doParallel' package is not enough, you must
+# # call a function that registers the backend. In general, this is pretty easy
+# # with the 'doParallel package' (or one of the alternative 'do*' packages)
+# #
+# # Also note that the esophagus example has only 3 samples, and a relatively small
+# # tree. This is fast to calculate even sequentially and does not warrant
+# # parallelized computation, but provides a good quick example for using UniFrac()
+# # in a parallel fashion. The number of cores you should specify during the
+# # backend registration, using registerDoParallel(), depends on your system and
+# # needs. 3 is chosen here for convenience. If your system has only 2 cores, this
+# # will probably fault or run slower than necessary.
+# ################################################################################
+# library(doParallel)
+# data(esophagus)
+# # For SNOW-like functionality (works on Windows):
+# cl <- makeCluster(3)
+# registerDoParallel(cl)
+# UniFrac(esophagus, TRUE)
+# # Force to sequential backed:
+# registerDoSEQ()
+# # For multicore-like functionality (will probably not work on windows),
+# # register the backend like this:
+# registerDoParallel(cores=3)
+# UniFrac(esophagus, TRUE)
+################################################################################
+}
+\references{
+  \url{http://bmf.colorado.edu/unifrac/}
+
+  Lozupone, Hamady and Knight, ``UniFrac - An Online Tool
+  for Comparing Microbial Community Diversity in a
+  Phylogenetic Context.'', BMC Bioinformatics 2006, 7:371
+
+  Lozupone, Hamady, Kelley and Knight, ``Quantitative and
+  qualitative (beta) diversity measures lead to different
+  insights into factors that structure microbial
+  communities.'' Appl Environ Microbiol. 2007
+
+  Lozupone C, Knight R. ``UniFrac: a new phylogenetic
+  method for comparing microbial communities.'' Appl
+  Environ Microbiol. 2005 71 (12):8228-35.
+}
+\seealso{
+  \code{\link[vegan]{vegdist}},
+  \code{\link[picante]{unifrac}}
+}
+

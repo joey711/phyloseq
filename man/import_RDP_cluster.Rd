@@ -1,0 +1,54 @@
+\name{import_RDP_cluster}
+\alias{import_RDP_cluster}
+\title{Import RDP cluster file and return otuTable (abundance table).}
+\usage{
+  import_RDP_cluster(RDP_cluster_file)
+}
+\arguments{
+  \item{RDP_cluster_file}{A character string. The name of
+  the \code{".clust"} file produced by the the complete
+  linkage clustering step of the RDP pipeline.}
+}
+\value{
+  An \code{\link{otuTable}} object parsed from the
+  \code{".clust"} file.
+}
+\description{
+  The RDP cluster pipeline (specifically, the output of the
+  complete linkage clustering step) has no formal
+  documentation for the \code{".clust"} file or its
+  apparent sequence naming convention.
+}
+\details{
+  \code{http://pyro.cme.msu.edu/index.jsp}
+
+  The cluster file itself contains the names of all
+  sequences contained in input alignment. If the upstream
+  barcode and aligment processing steps are also done with
+  the RDP pipeline, then the sequence names follow a
+  predictable naming convention wherein each sequence is
+  named by its sample and sequence ID, separated by a
+  \code{"_"} as delimiter:
+
+  \code{"sampleName_sequenceIDnumber"}
+
+  This import function assumes that the sequence names in
+  the cluster file follow this convention, and that the
+  sample name does not contain any \code{"_"}. It is
+  unlikely to work if this is not the case. It is likely to
+  work if you used the upstream steps in the RDP pipeline
+  to process your raw (barcoded, untrimmed) fasta/fastq
+  data.
+
+  This function first loops through the \code{".clust"}
+  file and collects all of the sample names that appear. It
+  secondly loops through each OTU (\code{"cluster"}; each
+  row of the cluster file) and sums the number of sequences
+  (reads) from each sample. The resulting abundance table
+  of OTU-by-sample is trivially coerced to an
+  \code{\link{otuTable}} object, and returned.
+}
+\references{
+  \url{http://pyro.cme.msu.edu/index.jsp}
+}
+

@@ -1,0 +1,44 @@
+\name{import_env_file}
+\alias{import_env_file}
+\title{Read a UniFrac-formatted ENV file.}
+\usage{
+  import_env_file(envfilename, tree=NULL, sep="\t", ...)
+}
+\arguments{
+  \item{envfilename}{(Required). A charater string of the
+  ENV filename (relative or absolute)}
+
+  \item{tree}{(Optional). \code{\link{phylo-class}} object
+  to be paired with the output otuTable.}
+
+  \item{sep}{A character string indicating the delimiter
+  used in the file.  The default is \code{"\t"}.}
+
+  \item{...}{Additional parameters passed on to
+  \code{\link{read.table}}.}
+}
+\value{
+  An \code{\link{otuTable-class}}, or
+  \code{\link{phyloseq-class}} if a
+  \code{\link{phylo-class}} argument is provided to
+  \code{tree}.
+}
+\description{
+  Convenience wrapper function to read the
+  environment-file, as formatted for input to the UniFrac
+  server (\url{http://bmf2.colorado.edu/unifrac/}). The
+  official format of these files is that each row specifies
+  (in order) the sequence name, source sample, and
+  (optionally) the number of times the sequence was
+  observed.
+}
+\examples{
+# import_env_file(myEnvFile, myTree)
+}
+\references{
+  \url{http://bmf2.colorado.edu/unifrac/}
+}
+\seealso{
+  \code{\link{import}}, \code{\link{tipglom}}
+}
+
