@@ -392,9 +392,9 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
 		A <- i[1]
 		B <- i[2]
 		if( weighted ){
-			return( wUniFracPair(OTU, tree, A, B, normalized) )
+			return( phyloseq:::wUniFracPair(OTU, tree, A, B, normalized) )
 		} else {
-			return( unifracPair(occ, tree, A, B) )
+			return( phyloseq:::unifracPair(occ, tree, A, B) )
 		}
 	}
 	

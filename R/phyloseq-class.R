@@ -92,9 +92,12 @@ phyloseq <- function(...){
 
 	# ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
 	# Other errors have been detected for when sample indices do not match.
-	if( !all(sample.names(otuTable(ps)) == rownames(sampleData(ps))) ){
-		# Reorder the sampleData rows so that they match the otuTable order.
-		ps@samData <- sampleData(ps)[sample.names(otuTable(ps)), ]
+	# check first that ps has sampleData
+	if( !is.null(sampleData(ps, FALSE)) ){
+		if( !all(sample.names(otuTable(ps)) == rownames(sampleData(ps))) ){
+			# Reorder the sampleData rows so that they match the otuTable order.
+			ps@samData <- sampleData(ps)[sample.names(otuTable(ps)), ]
+		}		
 	}
 	
 	return(ps)
