@@ -2,7 +2,7 @@
 \name{UniFrac}
 \alias{UniFrac}
 \alias{UniFrac,phyloseq-method}
-\title{Calculate weighted or unweighted UniFrac distance for all sample pairs.}
+\title{Calculate weighted or unweighted (Fast) UniFrac distance for all sample pairs.}
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
   containing at minimum a phylogenetic tree
@@ -34,14 +34,30 @@
   \code{FALSE}. If FALSE, UniFrac will register a serial
   backend so that \code{foreach::\%dopar\%} does not throw
   a warning.}
+
+  \item{fast}{(Optional). Logical. Do you want to use the
+  ``Fast UniFrac'' algorithm? Implemented natively in the
+  \code{phyloseq-package}.  This is the default and the
+  recommended option. There should be no difference in the
+  output between the two algorithms.  Moreover, the
+  original UniFrac algorithm only outperforms this
+  implementation of fast-UniFrac if the datasets are so
+  small (approximated by the value of
+  \code{nspecies(physeq) * nsamples(physeq)}) that the
+  difference in time is inconsequential (less than 1
+  second). In practice it does not appear that this
+  parameter should ever be set to \code{FALSE}, but the
+  option is nevertheless included in the package for
+  comparisons and instructional purposes.}
 }
 \value{
   a sample-by-sample distance matrix, suitable for NMDS,
   etc.
 }
 \description{
-  This function calculates the UniFrac distance for all
-  sample-pairs in a \code{\link{phyloseq-class}} object.
+  This function calculates the (Fast) UniFrac distance for
+  all sample-pairs in a \code{\link{phyloseq-class}}
+  object.
 }
 \details{
   \code{UniFrac()} accesses the abundance
@@ -149,6 +165,20 @@
 }
 \references{
   \url{http://bmf.colorado.edu/unifrac/}
+
+  The main implementation (Fast UniFrac) is adapted from
+  the algorithm's description in:
+
+  Hamady, Lozupone, and Knight, ``Fast UniFrac:
+  facilitating high-throughput phylogenetic analyses of
+  microbial communities including analysis of
+  pyrosequencing and PhyloChip data.'' The ISME Journal
+  (2010) 4, 17--27.
+
+  \url{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}
+
+  See also additional descriptions of UniFrac in the
+  following articles:
 
   Lozupone, Hamady and Knight, ``UniFrac - An Online Tool
   for Comparing Microbial Community Diversity in a
