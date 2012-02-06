@@ -515,6 +515,15 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 		edge_occ <- (edge_array > 0) - 0
 	}
 
+	if( normalized ){
+		# For denominator in the normalized distance, we need the age of each tip.
+		# Get the tip ages from their associated edges (node.age gives the age of edges, ironically)
+		### Note: this picante:node.age function is a computational bottleneck.
+		### It could be vectorized/parallelized 
+		tipAges <- picante::node.age(tree)$ages[ which(tree$edge[, 2] %in% 1:length(tree$tip.label)) ]
+		names(tipAges) <- tree$tip.label		
+	}
+
 	########################################	
    	# optionally-parallel implementation with foreach
 	########################################
@@ -537,10 +546,6 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 			if(!normalized){
 				return(numerator)
 			} else {
-				# For denominator, we need the age of each tip
-				# Get the tip ages from their associated edges (node.age gives the age of edges, ironically)
-				tipAges <- picante::node.age(tree)$ages[which(tree$edge[, 2] %in% 1:length(tree$tip.label))]
-				names(tipAges) <- tree$tip.label
 				# denominator (assumes tree-indices and otuTable indices are same order)
 				denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
 				# return the normalized weighted UniFrac values
