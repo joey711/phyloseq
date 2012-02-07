@@ -515,7 +515,8 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 		edge_occ <- (edge_array > 0) - 0
 	}
 
-	if( normalized ){
+	if( weighted & normalized ){
+		# This is only relevant to weighted-UniFrac.
 		# For denominator in the normalized distance, we need the age of each tip.
 		# Get the tip ages from their associated edges (node.age gives the age of edges, ironically)
 		### Note: this picante:node.age function is a computational bottleneck.
