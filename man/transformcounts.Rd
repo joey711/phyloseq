@@ -21,7 +21,7 @@
 }
 \value{
   A transformed \code{otuTable} -- or \code{phyloseq}
-  object with its transformed \code{otuTable}.  In general,
+  object with its transformed \code{otuTable}. In general,
   trimming is not expected by this method, so it is
   suggested that the user provide only functions that
   return a full-length vector. Filtering/trimming can

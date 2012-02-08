@@ -9,9 +9,14 @@
 \alias{rda.phyloseq,otuTable-method}
 \alias{rda.phyloseq,phyloseq-method}
 \title{Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.}
+\usage{
+  cca.phyloseq(X, ...)
+
+  rda.phyloseq(X, ...)
+}
 \arguments{
   \item{X}{(Required). A \code{\link{formula}}, specifying
-  the input.  No need to directly access components.
+  the input. No need to directly access components.
   \code{cca.phyloseq} understands where to find the
   abundance table and sample data. Alternatively, \code{X}
   can be an \code{\link{otuTable-class}} or

@@ -23,10 +23,10 @@
 }
 \examples{
 #
- data(ex1)
- getslots.phyloseq(ex1)
- data(esophagus)
- getslots.phyloseq(esophagus)
+data(ex1)
+getslots.phyloseq(ex1)
+data(esophagus)
+getslots.phyloseq(esophagus)
 }
 \seealso{
   merge_phyloseq

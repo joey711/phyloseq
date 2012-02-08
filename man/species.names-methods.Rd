@@ -8,6 +8,9 @@
 \alias{species.names,sampleData-method}
 \alias{species.names,taxonomyTable-method}
 \title{Get species / taxa names.}
+\usage{
+  species.names(physeq)
+}
 \arguments{
   \item{physeq}{\code{\link{phyloseq-class}},
   \code{\link{otuTable-class}},

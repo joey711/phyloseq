@@ -3,7 +3,7 @@
 \title{Import mothur list and group files and return an otuTable}
 \usage{
   import_mothur_otutable(mothur_list_file,
-    mothur_group_file, cutoff=NULL)
+  mothur_group_file, cutoff=NULL)
 }
 \arguments{
   \item{mothur_list_file}{The list file name and/or

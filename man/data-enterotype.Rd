@@ -63,7 +63,7 @@
 # # multiple testing of genera correlating with enterotype 2
 # mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
 # # Should return a data.frame, with the following head()
-                             # # # # # index     teststat   rawp   adjp plower
+# # # # # index     teststat   rawp   adjp plower
 # # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001
 # # # Bacteroides                     203 -9.015717540 0.0001 0.0088 0.0001
 # # # Holdemania                      201 -5.810081084 0.0001 0.0088 0.0001
@@ -84,5 +84,4 @@
   http://www.bork.embl.de/Docu/Arumugam_et_al_2011/downloads.html
 }
 \keyword{data}
-\keyword{datasets}
 

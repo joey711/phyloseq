@@ -13,7 +13,7 @@
 }
 \details{
   \describe{ \item{speciesAreRows}{ A single logical
-  specifying the orientation of the abundance table.  }
+  specifying the orientation of the abundance table. }
 
   \item{.Data}{This slot is inherited from the
   \code{\link{matrix}} class.} }

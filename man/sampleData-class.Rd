@@ -13,7 +13,7 @@
   data.frame class.}
 
   \item{row.names}{ Also inherited from the data.frame
-  class; it should contain the sample names.  }
+  class; it should contain the sample names. }
 
   \item{names}{Inherited from the data.frame class.}
 

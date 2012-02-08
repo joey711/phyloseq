@@ -17,9 +17,9 @@
 }
 \value{
   Returns the component object specified by the argument
-  \code{slot}.  Returns NULL if slot does not exist.
-  Returns \code{physeq} as-is if it is a component class
-  that already matches the slot name.
+  \code{slot}. Returns NULL if slot does not exist. Returns
+  \code{physeq} as-is if it is a component class that
+  already matches the slot name.
 }
 \description{
   This function is used internally by many accessors and in

@@ -4,6 +4,9 @@
 \alias{tre<-}
 \alias{tre<-,phyloseq,phylo-method}
 \title{Assign to tre an object/value.}
+\usage{
+  tre(x) <- value
+}
 \arguments{
   \item{x}{(Required). \code{\link{phyloseq-class}}}
 

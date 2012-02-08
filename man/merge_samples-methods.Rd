@@ -5,6 +5,9 @@
 \alias{merge_samples,phyloseq-method}
 \alias{merge_samples,sampleData-method}
 \title{Merge samples based on a sample variable or factor.}
+\usage{
+  merge_samples(x, group, fun=mean)
+}
 \arguments{
   \item{x}{(Required). An instance of a phyloseq class that
   has sample indices. This includes
@@ -21,7 +24,7 @@
   merge the values that correspond to the same group for
   each variable. It must take a numeric vector as first
   argument and return a single value. Default is
-  \code{\link[base]{mean}}.  Note that this is (currently)
+  \code{\link[base]{mean}}. Note that this is (currently)
   ignored for the otuTable, where the equivalent function
   is \code{\link[base]{sum}}, but evaluated via
   \code{\link[base]{rowsum}} for efficiency.}

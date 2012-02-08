@@ -5,6 +5,10 @@
 \alias{taxglom,otuTable,taxonomyTable-method}
 \alias{taxglom,phyloseq,ANY-method}
 \title{Agglomerate taxa of the same type.}
+\usage{
+  taxglom(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE,
+  bad_empty=c(NA, "", " ", "\t"))
+}
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} or
   \code{\link{otuTable}}.}
@@ -32,7 +36,7 @@
   different taxonomic levels.}
 
   \item{NArm}{(Optional). Logical, length equal to one.
-  Default is \code{TRUE}.  CAUTION. The decision to prune
+  Default is \code{TRUE}. CAUTION. The decision to prune
   (or not) taxa for which you lack categorical data could
   have a large effect on downstream analysis. You may want
   to re-compute your analysis under both conditions, or at
@@ -47,15 +51,14 @@
   have a phylogenetic tree available.}
 
   \item{bad_empty}{(Optional). Character vector. Default:
-  \code{c(NA, "", " ", "\t")}.  Defines the bad/empty
-  values that should be ignored and/or considered unknown.
-  They will be removed from the internal agglomeration
-  vector derived from the argument to \code{tax}, and
-  therefore agglomeration will not combine taxa according
-  to the presence of these values in \code{tax}.
-  Furthermore, the corresponding taxa can be optionally
-  pruned from the output if \code{NArm} is set to
-  \code{TRUE}.}
+  \code{c(NA, "", " ", "\t")}. Defines the bad/empty values
+  that should be ignored and/or considered unknown. They
+  will be removed from the internal agglomeration vector
+  derived from the argument to \code{tax}, and therefore
+  agglomeration will not combine taxa according to the
+  presence of these values in \code{tax}. Furthermore, the
+  corresponding taxa can be optionally pruned from the
+  output if \code{NArm} is set to \code{TRUE}.}
 }
 \value{
   A taxonomically-agglomerated, optionally-pruned, object

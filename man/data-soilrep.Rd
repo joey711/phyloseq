@@ -139,13 +139,12 @@
 }
 \references{
   Zhou, J., Wu, L., Deng, Y., Zhi, X., Jiang, Y.-H., Tu,
-  Q., Xie, J., et al.  Reproducibility and quantitation of
-  amplicon sequencing-based detection.  The ISME Journal.
+  Q., Xie, J., et al. Reproducibility and quantitation of
+  amplicon sequencing-based detection. The ISME Journal.
   (2011) 5(8):1303-1313. \code{doi:10.1038/ismej.2011.11}
 
   The article can be accessed online at
   \url{http://www.nature.com/ismej/journal/v5/n8/full/ismej201111a.html}
 }
 \keyword{data}
-\keyword{datasets}
 

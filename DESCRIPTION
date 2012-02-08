@@ -1,7 +1,8 @@
 Package: phyloseq
-Version: 0.99.15
-Date: 2012-02-07
-Title: Handling and analysis of high-throughput phylogenetic sequence data.
+Version: 0.99.16
+Date: 2012-02-08
+Title: Handling and analysis of high-throughput
+    phylogenetic sequence data.
 Description: phyloseq is a set of classes, wrappers, and
     tools to facilitate the import, storage, and analysis
     of phylogenetic sequencing data.
@@ -24,8 +25,9 @@ Suggests:
     ade4,
     genefilter
 Enhances: doParallel (>= 1.0)
-biocViews: Clustering, Classification, MultipleComparisons, QualityControl,
-    GeneticVariability, HighThroughputSequencing
+biocViews: Clustering, Classification, MultipleComparisons,
+    QualityControl, GeneticVariability,
+    HighThroughputSequencing
 Collate:
     'allclasses.r'
     'allpackage.r'

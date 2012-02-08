@@ -3,7 +3,7 @@
 \title{Export a distance object as \code{.names} and \code{.dist} files for mothur}
 \usage{
   export_mothur_dist(x, out=NULL,
-    makeTrivialNamesFile=NULL)
+  makeTrivialNamesFile=NULL)
 }
 \arguments{
   \item{x}{(Required). A \code{"dist"} object, or a
@@ -21,7 +21,7 @@
 }
 \value{
   A character vector of the different cutoff values
-  contained in the file.  For a given set of arguments to
+  contained in the file. For a given set of arguments to
   the \code{cluster()} command from within \emph{mothur}, a
   number of OTU-clustering results are returned in the same
   list file. The exact cutoff values used by \emph{mothur}

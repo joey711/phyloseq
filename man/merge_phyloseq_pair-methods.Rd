@@ -6,6 +6,9 @@
 \alias{merge_phyloseq_pair,sampleData,sampleData-method}
 \alias{merge_phyloseq_pair,taxonomyTable,taxonomyTable-method}
 \title{Merge pair of phyloseq component data objects of the same class.}
+\usage{
+  merge_phyloseq_pair(x, y)
+}
 \arguments{
   \item{x}{A character vector of the species in object x
   that you want to keep -- OR alternatively -- a logical

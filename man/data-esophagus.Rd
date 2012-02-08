@@ -78,5 +78,4 @@
   \url{http://www.mothur.org/wiki/Esophageal_community_analysis}
 }
 \keyword{data}
-\keyword{datasets}
 

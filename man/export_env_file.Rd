@@ -3,11 +3,11 @@
 \title{Export environment (ENV) file for UniFrac Server.}
 \usage{
   export_env_file(physeq, file = "", writeTree = TRUE,
-    return = FALSE)
+  return = FALSE)
 }
 \arguments{
   \item{physeq}{(Required). Experiment-level
-  (\code{\link{phyloseq-class}}) object.  Ideally this also
+  (\code{\link{phyloseq-class}}) object. Ideally this also
   contains the phylogenetic tree, which is also exported by
   default.}
 
@@ -21,7 +21,7 @@
   as well as the the ENV table. Default is \code{TRUE}.}
 
   \item{return}{(Optional). Should the ENV table be
-  returned to the R workspace?  Default is \code{FALSE}.}
+  returned to the R workspace? Default is \code{FALSE}.}
 }
 \description{
   Creates the environment table that is needed for the
