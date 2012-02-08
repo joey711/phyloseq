@@ -1,3 +1,12 @@
+phyloseq 0.99.x
+===========
+* Bioconductor development release updates.
+* Lots of documentation updates.
+* Parallel Fast UniFrac
+* Extension to vegan::vegdist()
+* General importer: import()
+* Lots and lots of fixes and improvements.
+
 phyloseq 0.4.2 - 0.4.7
 ===========
 
