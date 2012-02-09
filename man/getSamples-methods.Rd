@@ -4,6 +4,9 @@
 \alias{getSamples,otuTable-method}
 \alias{getSamples,phyloseq-method}
 \title{Returns all abundance values for species \code{i}.}
+\usage{
+  getSamples(physeq, i)
+}
 \arguments{
   \item{physeq}{(Required). \code{\link{otuTable-class}},
   or \code{\link{phyloseq-class}}.}

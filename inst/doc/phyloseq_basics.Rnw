@@ -191,11 +191,22 @@ This import function assumes that the sequence names in the cluster file follow 
 
 \clearpage
 \subsection{Example Data (included)}
-An example data set is included in \emph{phyloseq}, called ``\code{ex1}''. It is derived from a preliminary investigation of human intestinal microbiome. The user need only invoke the \code{data()} command to bring this object into the environment:
+There are multiple example data sets included in \emph{phyloseq}. Many are from published investigations and include documentation with a summary and references, as well as some example code representing some aspect of analysis available in \emph{phyloseq}. In the package index, go to the names beginning with ``data-'' to see the documentation of currently available example datasets.
+
+To load example data into the working environment, use the \code{data()} command:
 
 <<>>=
-data(ex1)
+  data(ex1)
+  data(esophagus)
+  data(enterotype)
+  data(soilrep)  
 @
+
+Similarly, entering \code{?enterotype} will reveal the documentation for the so-called ``enterotype'' dataset.
+
+See the Example Data page on the phyloseq GitHub wiki at:
+
+\url{https://github.com/joey711/phyloseq/wiki/Example-Data}
 
 \subsection{phyloseq object summaries}
 In small font, the following is the summary of object \code{ex1} that prints to the terminal. These summaries are consistent among all object classes defined by \emph{phyloseq}. Although the components of \code{ex1} have many thousands of elements, the command-line returns only a short summary of each by default. This encourages you to check that an object is still what you expect, without needing to let thousands of elements scroll across the terminal. In the cases in which you do want to see all elements of an object, use \code{print()}.
@@ -472,7 +483,7 @@ The phyloseq-class can be considered an ``experiment-level class'' and should co
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.8\textwidth]{phyloseq_classes_3_clipped.pdf}
+\includegraphics[width=0.8\textwidth]{phyloseq_classes_4.pdf}
 \caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order class contains a slot with the associated data class as one of its components.}
 \label{fig:phyloseqclasses}
 \end{center}
@@ -483,30 +494,59 @@ The phyloseq-class can be considered an ``experiment-level class'' and should co
 % Installation of development version.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-\section{Install Development Version}\label{sec:install}
-For development version of the \emph{phyloseq} package when it is not yet available from Bioconductor, see the development homepage on GitHub (\code{https://github.com/joey711/phyloseq}). This is also the best place to post issues, bug reports, feature requests, etc. The most convenient way to install this and other R packages available on GitHub is to first make sure you have the latest R development tools installed (\emph{devtools} package), and then using the special github variant of the \code{install()} command, \code{install\_{}github()}. Step-by-step:
+\section{Installation}\label{sec:install}
+\subsection{Bioconductor Version}
+The main release version of \emph{phyloseq} is available from Bioconductor (\url{http://bioconductor.org/packages/devel/bioc/html/phyloseq.html}), and can be installed from the \code{R} console with the following two commands:
 
 <<eval=FALSE>>=
-  install.packages("devtools")
-  library("devtools")
-  install_github("devtools"); library("devtools")
-  install("ape")
-  install("ggplot2")
-  install("igraph")
-  source("http://bioconductor.org/biocLite.R")
-  biocLite("multtest")
-  install("phylobase")
-  install("picante")
-  install("vegan")
-  install("foreach")
-  install_github("phyloseq", "joey711")
+	source("http://bioconductor.org/biocLite.R")
+	biocLite("phyloseq")
 @
 
-Note that the above instructions include installation of a number of additional packages upon which \emph{phyloseq} is dependent. This may take some time to install. If there is a portion of these initial instructions not working as listed, please notify me by e-mail or at the github page. For running parallel implementation of functions/methods in \emph{phyloseq} (e.g. \texttt{UniFrac(ex1, parallel=TRUE)}), you will need also to install a function for registering a parallel ``backend''. Only one working parallel backend is needed, but there are several options, depending on the details of your particular system:
+If the above fails it is probably because of a mismatch with your current version of R and that required. One option is to update your version of R; not necessarily recommended if this means jumping out of the current stable version. You can always install the development version from GitHub (see below).
+
+\subsection{GitHub Development Version}
+\code{R} has tools to install packages directly from GitHub. The GitHub repository of \emph{phyloseq} is the most frequently updated development version, and also the place to suggest or contribute code. Use the following command(s) from within \code{R} to perform the installation:
+
+Install the Bioconductor dependencies (genefilter is optional):
+
 <<eval=FALSE>>=
-  install("doMC")
-  install("doSNOW")
-  install("doMPI")
+	source("http://bioconductor.org/biocLite.R")
+	biocLite("multtest")
+	biocLite("genefilter")
+@
+
+Install the CRAN dependencies (doParallel is optional):
+
+<<eval=FALSE>>=
+  install.packages("ape")
+  install.packages("doParallel")
+  install.packages("foreach")
+  install.packages("ggplot2")
+  install.packages("igraph")
+  install.packages("picante")
+  install.packages("vegan")
+@
+
+Finally, install phyloseq using GitHub as an alternative repository with the \code{install{\textunderscore}github} command in the devtools package.
+
+<<eval=FALSE>>=
+  # Make sure you have devtools installed
+  install.packages("devtools")
+  # Load the devtools package
+  library("devtools")
+  # Build and install phyloseq
+  install_github("phyloseq", "joey711")
+@
+  
+Also, make sure to check the ``Installation'' page on the phyloseq wiki at GitHub: \url{https://github.com/joey711/phyloseq/wiki/Installation} if you have any problems, as this is likely to be the first place news about installation will be posted. Also check out the rest of the development homepage on GitHub (\url{https://github.com/joey711/phyloseq}), as this is the best place to post issues, bug reports, feature requests, contribute code, etc.
+
+For running parallel implementation of functions/methods in \emph{phyloseq} (e.g. \texttt{UniFrac(ex1, parallel=TRUE)}), you will need also to install a function for registering a parallel ``backend''. Only one working parallel backend is needed, but there are several options, depending on the details of your particular system any one of the following may be sufficient:
+<<eval=FALSE>>=
+  install.packages("doParallel")
+  install.packages("doMC")
+  install.packages("doSNOW")
+  install.packages("doMPI")
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

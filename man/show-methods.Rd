@@ -5,8 +5,17 @@
 \alias{show,phyloseq-method}
 \alias{show,sampleData-method}
 \alias{show,taxonomyTable-method}
-\title{show method for H.O. objects.}
+\title{method extensions to show for phyloseq classes.}
 \description{
-  show method for H.O. objects.
+  See the general documentation of
+  \code{\link[methods]{show}} method for expected behavior.
+}
+\examples{
+# data(ex1)
+# print(ex1)
+# ex1
+}
+\seealso{
+  \code{\link[methods]{show}}
 }
 

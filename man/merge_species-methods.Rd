@@ -7,6 +7,9 @@
 \alias{merge_species,sampleData-method}
 \alias{merge_species,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
+\usage{
+  merge_species(x, eqspecies, archetype=1)
+}
 \arguments{
   \item{x}{(Required). An object that describes species
   (taxa). This includes \code{\link{phyloseq-class}},
@@ -15,7 +18,7 @@
   \code{\link[ape]{phylo}}.}
 
   \item{eqspecies}{(Required). The species names, or
-  indices, that should be merged together.  If
+  indices, that should be merged together. If
   \code{length(eqspecies) < 2}, then the object \code{x}
   will be returned safely unchanged.}
 

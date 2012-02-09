@@ -1,0 +1,150 @@
+\docType{data}
+\name{data-soilrep}
+\alias{data-soilrep}
+\alias{soilrep}
+\title{(Data) Reproducibility of soil microbiome data (2011)}
+\description{
+  Published in early 2011, this work compared 24 separate
+  soil microbial communities under four treatment
+  conditions via multiplexed/barcoded 454-pyrosequencing of
+  PCR-amplified 16S rRNA gene fragments. The authors found
+  differences in the composition and structure of microbial
+  communities between soil treatments. As expected, the
+  soil microbial communities were highly diverse, with a
+  staggering 16,825 different OTUs (species) observed in
+  the included dataset. Interestingly, this study used a
+  larger number of replicates than previous studies of this
+  type, for a total of 56 samples, and the putatively low
+  resampling rate of species between replicated sequencing
+  trials (``OTU overlap'') was a major concern by the
+  authors.
+}
+\details{
+  This dataset contains an experiment-level
+  (\code{\link{phyloseq-class}}) object, which in turn
+  contains the taxa-contingency table and soil-treatment
+  table as \code{\link{otuTable-class}} and
+  \code{\link{sampleData-class}} components, respectively.
+
+  This data was imported from raw files supplied directly
+  by the authors via personal communication for the
+  purposes of including as an example in the
+  \code{\link{phyloseq-package}}. As this data is sensitive
+  to choices in OTU-clustering parameters, attempts to
+  recreate the \code{otuTable} from the raw sequencing data
+  may give slightly different results than the table
+  provided here.
+
+  abstract from research article (quoted):
+
+  To determine the reproducibility and quantitation of the
+  amplicon sequencing-based detection approach for
+  analyzing microbial community structure, a total of 24
+  microbial communities from a long-term global change
+  experimental site were examined. Genomic DNA obtained
+  from each community was used to amplify 16S rRNA genes
+  with two or three barcode tags as technical replicates in
+  the presence of a small quantity (0.1\% wt/wt) of genomic
+  DNA from Shewanella oneidensis MR-1 as the control. The
+  technical reproducibility of the amplicon
+  sequencing-based detection approach is quite low, with an
+  average operational taxonomic unit (OTU) overlap of
+  17.2\%\code{+/-}2.3\% between two technical replicates,
+  and 8.2\%\code{+/-}2.3\% among three technical
+  replicates, which is most likely due to problems
+  associated with random sampling processes. Such
+  variations in technical replicates could have substantial
+  effects on estimating beta-diversity but less on
+  alpha-diversity. A high variation was also observed in
+  the control across different samples (for example,
+  66.7-fold for the forward primer), suggesting that the
+  amplicon sequencing-based detection approach could not be
+  quantitative. In addition, various strategies were
+  examined to improve the comparability of amplicon
+  sequencing data, such as increasing biological
+  replicates, and removing singleton sequences and
+  less-representative OTUs across biological replicates.
+  Finally, as expected, various statistical analyses with
+  preprocessed experimental data revealed clear differences
+  in the composition and structure of microbial communities
+  between warming and non-warming, or between clipping and
+  non-clipping. Taken together, these results suggest that
+  amplicon sequencing-based detection is useful in
+  analyzing microbial community structure even though it is
+  not reproducible and quantitative. However, great caution
+  should be taken in experimental design and data
+  interpretation when the amplicon sequencing-based
+  detection approach is used for quantitative analysis of
+  the beta-diversity of microbial communities.
+
+  (end quote)
+}
+\examples{
+# ################################################################################
+# # Load the data
+# ################################################################################
+# data(soilrep)
+
+# ################################################################################
+# # Richness and sequencing effort example. Accept null hypothesis:
+# # No convincing difference in species richness between warmed/unwarmed soils.
+# ################################################################################
+# # Build data.frame with total sequencing reads and soil covariates
+# DF <- data.frame(total.reads=sampleSums(soilrep), as(sampleData(soilrep), "data.frame"))
+# # Calculate total (estimated) species richness for each sample and combine with DF
+# DF <- data.frame(DF, t(round(estimateR(t(otuTable(soilrep))))))
+
+# # Initialize ggplot data and color layers
+# mancol <- c(no="blue", yes="red")
+# p      <- ggplot(DF) + scale_fill_manual(values=mancol) + scale_colour_manual(values=mancol)
+
+# # Build faceted histogram of the total-reads for each treatment type.
+# p + geom_histogram(aes(x=total.reads, y=..count.., fill=warmed)) + facet_wrap(~ Treatment, 2)
+
+# # Plot (estimated) richness versus sequencing effort (total reads)
+# p + geom_point(aes(x=total.reads, y=S.chao1, color=warmed, shape=clipped), size=3.5)
+
+# # Plot (estimated) richness versus observed richness
+# p + geom_point(aes(x=S.obs, y=S.chao1, color=warmed, shape=clipped), size=3.5)
+
+# # Did the warming or clipping treatments affect observed or estimated richness?
+# par(mfcol=c(2, 2))
+# boxplot(S.obs ~ warmed, DF, main="Did warming affect observed richness?", xlab="Warmed?")
+# boxplot(S.chao1 ~ warmed, DF, main="Did warming affect estimated richness (Chao1)?", xlab="Warmed?")
+# boxplot(S.obs ~ clipped, DF, main="Did clipping affect observed richness?", xlab="Clipped?")
+# boxplot(S.chao1 ~ clipped, DF, main="Did clipping affect estimated richness (Chao1)?", xlab="Clipped?")
+# # (For reference, here's a ggplot2 approach to making the boxplot):
+# p + geom_boxplot(aes(Treatment, S.chao1, color=warmed))
+
+# # The treatments do not appear to have affected the
+# # estimated total richness between warmed/unwarmed soil samples
+# t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
+
+# ################################################################################
+# # A beta diversity comparison.
+# ################################################################################
+# jaccdist <- vegdist(t(otuTable(soilrep)), "jaccard")
+
+# # soilMDS <- metaMDS(t(otuTable(soilrep)), "jaccard" )
+# soilMDS <- metaMDS(jaccdist, "jaccard" )
+
+# # Add the NMDS coordinates to the soil sample data.frame, DF
+# DF <- data.frame(DF, scores(soilMDS))
+
+# # plot the MDS of jaccard-distances, and shade points by soil treatments
+# ggplot(DF) + geom_point(aes(x=NMDS1, y=NMDS2, color=Treatment), size=3)
+}
+\author{
+  Jizhong Zhou, et al.
+}
+\references{
+  Zhou, J., Wu, L., Deng, Y., Zhi, X., Jiang, Y.-H., Tu,
+  Q., Xie, J., et al. Reproducibility and quantitation of
+  amplicon sequencing-based detection. The ISME Journal.
+  (2011) 5(8):1303-1313. \code{doi:10.1038/ismej.2011.11}
+
+  The article can be accessed online at
+  \url{http://www.nature.com/ismej/journal/v5/n8/full/ismej201111a.html}
+}
+\keyword{data}
+

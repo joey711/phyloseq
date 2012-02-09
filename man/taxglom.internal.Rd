@@ -2,8 +2,8 @@
 \alias{taxglom.internal}
 \title{taxglom core internal function.}
 \usage{
-  taxglom.internal(physeq, tax, NArm = TRUE,
-    bad_empty = c(NA, "", " ", "\t"))
+  taxglom.internal(physeq, tax, NArm = TRUE, bad_empty =
+  c(NA, "", " ", "\t"))
 }
 \arguments{
   \item{physeq}{the object on which agglomeration is to

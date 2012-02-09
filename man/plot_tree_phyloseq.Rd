@@ -3,10 +3,10 @@
 \title{Plot tree with easy tip annotation.}
 \usage{
   plot_tree_phyloseq(physeq, color_factor=NULL,
-    shape_factor=NULL, base_size=1, size_scaling_factor =
-    0.2, opacity=2/3, custom_color_scale=NULL,
-    custom_shape_scale=NULL, type_abundance_value=FALSE,
-    printTheseTaxa=NULL, treeTitle="Annotated Tree", ...)
+  shape_factor=NULL, base_size=1, size_scaling_factor =
+  0.2, opacity=2/3, custom_color_scale=NULL,
+  custom_shape_scale=NULL, type_abundance_value=FALSE,
+  printTheseTaxa=NULL, treeTitle="Annotated Tree", ...)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}}
@@ -35,10 +35,10 @@
   scaling symbol size by the abundance value.}
 
   \item{opacity}{The opacity (or alpha value). Numeric
-  between 0, 1.  Defaul value is 2/3.}
+  between 0, 1. Defaul value is 2/3.}
 
   \item{custom_color_scale}{A character vector of the
-  desired custom color scale.  This should be a scale, not
+  desired custom color scale. This should be a scale, not
   an aesthetic map. Therefore, it will in most-cases
   contain only unique elements, unless two different
   categories of data are supposed to have the same color.
@@ -54,7 +54,7 @@
   \item{type_abundance_value}{Logical. Whether or not the
   otuTable value (the number of individuals, typically)
   should be added to the center of symbols when the value
-  is greater than one.  Default is FALSE, indicating no
+  is greater than one. Default is FALSE, indicating no
   labels.}
 
   \item{printTheseTaxa}{a character vector of the taxa
@@ -90,10 +90,10 @@
 # plot_tree_phyloseq(ex2, shape_factor="Diet")
 # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet")
 # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet",
-	# size_scaling_factor=0.6, type_abundance_value=TRUE)
+# size_scaling_factor=0.6, type_abundance_value=TRUE)
 # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet",
-	# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
+# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
 # plot(phyloseqTree(ex2), color_factor="Gender", shape_factor="Diet",
- # size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta") )
+# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta") )
 }
 

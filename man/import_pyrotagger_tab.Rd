@@ -3,7 +3,7 @@
 \title{Imports a tab-delimited version of the pyrotagger output file.}
 \usage{
   import_pyrotagger_tab(pyrotagger_tab_file,
-    strict_taxonomy=FALSE, keep_potential_chimeras=FALSE)
+  strict_taxonomy=FALSE, keep_potential_chimeras=FALSE)
 }
 \arguments{
   \item{pyrotagger_tab_file}{(Required). A character
@@ -19,7 +19,7 @@
   Default \code{FALSE}. The pyrotagger output also includes
   OTUs that are tagged by pyrotagger as likely chimeras.
   These putative chimeric OTUs can be retained if set to
-  \code{TRUE}.  The putative chimeras are excluded by
+  \code{TRUE}. The putative chimeras are excluded by
   default.}
 }
 \value{

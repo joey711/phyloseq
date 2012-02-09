@@ -7,6 +7,8 @@
 \alias{sampleMap}
 \title{Build or access sampleData.}
 \usage{
+  sampleData(object, errorIfNULL=TRUE)
+
   samData(object, errorIfNULL=TRUE)
 
   sampleMap(object, errorIfNULL=TRUE)

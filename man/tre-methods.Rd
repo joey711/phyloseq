@@ -4,6 +4,9 @@
 \alias{tre,ANY-method}
 \alias{tre,phylo-method}
 \title{Get phylogenetic tree from object.}
+\usage{
+  tre(physeq, errorIfNULL=TRUE)
+}
 \arguments{
   \item{physeq}{(Required). An instance of phyloseq-class
   that contains a phylogenetic tree. If physeq is a
@@ -17,7 +20,7 @@
 \value{
   The \code{\link[ape]{phylo}}-class object contained
   within \code{physeq}; or NULL if \code{physeq} does not
-  have a tree.  This method stops with an error in the
+  have a tree. This method stops with an error in the
   latter NULL case be default, which can be over-ridden by
   changing the value of \code{errorIfNULL} to \code{FALSE}.
 }

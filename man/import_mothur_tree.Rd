@@ -3,12 +3,12 @@
 \title{Import and prune mothur-produced tree.}
 \usage{
   import_mothur_tree(mothur_tree_file, mothur_list_file,
-    cutoff=NULL)
+  cutoff=NULL)
 }
 \arguments{
   \item{mothur_tree_file}{The tree file name that was
-  output from \emph{mothur}.  Probably a file that ends
-  with the suffix \code{".tree"}.}
+  output from \emph{mothur}. Probably a file that ends with
+  the suffix \code{".tree"}.}
 
   \item{mothur_list_file}{The list file name and/or
   location as produced by \emph{mothur}.}

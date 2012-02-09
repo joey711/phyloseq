@@ -3,6 +3,9 @@
 \alias{plot_phyloseq}
 \alias{plot_phyloseq,phyloseq-method}
 \title{Generic plot defaults for phyloseq.}
+\usage{
+  plot_phyloseq(physeq, ...)
+}
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}}.
   The actual plot type depends on the available (non-empty)
@@ -27,7 +30,7 @@
 }
 \examples{
 ## data(ex1)
- ## plot_phyloseq(ex1)
+## plot_phyloseq(ex1)
 }
 \seealso{
   \code{\link{taxaplot}} \code{\link{plot_tree_phyloseq}}

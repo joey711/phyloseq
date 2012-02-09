@@ -6,6 +6,8 @@
 \alias{taxTab,matrix-method}
 \title{Build or access the taxonomyTable.}
 \usage{
+  taxTab(object, errorIfNULL=TRUE)
+
   taxtab(object, errorIfNULL = TRUE)
 }
 \arguments{

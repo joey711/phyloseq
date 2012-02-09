@@ -12,7 +12,7 @@
   to be paired with the output otuTable.}
 
   \item{sep}{A character string indicating the delimiter
-  used in the file.  The default is \code{"\t"}.}
+  used in the file. The default is \code{"\t"}.}
 
   \item{...}{Additional parameters passed on to
   \code{\link{read.table}}.}

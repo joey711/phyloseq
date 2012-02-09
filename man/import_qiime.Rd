@@ -3,27 +3,27 @@
 \title{Import function to read files created by the QIIME pipeline.}
 \usage{
   import_qiime(otufilename=NULL, mapfilename=NULL,
-    treefilename=NULL, biotaxonomy=NULL, ...)
+  treefilename=NULL, biotaxonomy=NULL, ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
   indicating the file location of the OTU file. The
   combined OTU abundance and taxonomic identification file,
   tab-delimited, as produced by QIIME under default output
-  settings.  Default value is \code{NULL}.}
+  settings. Default value is \code{NULL}.}
 
   \item{mapfilename}{(Optional). The QIIME map file
   required for processing pyrosequencing tags in QIIME as
   well as some of the post-clustering analysis. This is a
   required input file for running QIIME. Its strict
   formatting specification should be followed for correct
-  parsing by this function.  Default value is \code{NULL}.}
+  parsing by this function. Default value is \code{NULL}.}
 
   \item{treefilename}{(Optional). A phylogenetic tree in
   NEXUS format. For the QIIME pipeline this is typically a
   tree of the representative 16S rRNA sequences from each
   OTU cluster, with the number of leaves/tips equal to the
-  number of taxa/species/OTUs.  Default value is
+  number of taxa/species/OTUs. Default value is
   \code{NULL}. ALTERNATIVELY, this argument can be a tree
   object (\code{\link[ape]{phylo}}-class), in case the tree
   has already been imported, or is in a different format
@@ -32,10 +32,10 @@
   \item{biotaxonomy}{(Optional). A character vector
   indicating the name of each taxonomic level in the
   taxonomy-portion of the otu-file, which may not specify
-  these levels explicitly.  Default value is \code{NULL}.}
+  these levels explicitly. Default value is \code{NULL}.}
 
   \item{...}{Additional arguments passed to
-  \code{\link[ape]{read.nexus}}, as necessary.  Make sure
+  \code{\link[ape]{read.nexus}}, as necessary. Make sure
   that your phylogenetic tree file is readable by
   \code{\link[ape]{read.nexus}} prior to calling this
   function.}

@@ -197,9 +197,73 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 	}
 }
 ##############################################################################
-#' Calculate weighted or unweighted UniFrac distance for all sample pairs.
+#' @keywords internal
+originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE){
+	# # # require(picante); require(ape); require(foreach)
+	# Access the needed components. Note, will error if missing in physeq.
+	OTU  <- otuTable(physeq)
+	tree <- tre(physeq)
+
+	# Some important checks.
+    if( is.null(tree$edge.length) ) {
+        stop("Tree has no branch lengths, cannot compute UniFrac")
+    }
+    if( !is.rooted(tree) ) {
+        stop("Rooted phylogeny required for UniFrac calculation")
+    }
+
+	### Some parallel-foreach housekeeping.    
+    # If user specifies not-parallel run (the default), register the sequential "back-end"
+    if( !parallel ){ registerDoSEQ() }
+    
+	# create N x 2 matrix of all pairwise combinations of samples.
+    spn <- combn(sample.names(OTU), 2, simplify=FALSE)
+    # initialize UniFracMat with NAs
+    UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
+    # define the rows/cols of UniFracMat with the sample names (rownames)    
+    rownames(UniFracMat) <- sample.names(OTU)
+    colnames(UniFracMat) <- sample.names(OTU)
+    
+	## Format coercion
+	# Coerce to the picante orientation, with species as columns
+	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
+   	# Coerce OTU to matrix for calculations.
+    OTU <- as(OTU, "matrix")
+   	# Enforce that tree and otuTable indices are the same order, 
+   	# by re-ordering OTU if needed
+	if( !all(colnames(OTU) == species.names(tree)) ){
+		OTU <- OTU[, species.names(tree)]
+	}    
+	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
+	if(!weighted){
+		# Coerce OTU to occurrence matrix for unweighted-UF calculations
+		occ <- (OTU > 0) - 0
+	}
+	
+   	# optionally-parallel implementation with foreach
+  	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
+		A <- i[1]
+		B <- i[2]
+		if( weighted ){
+			return( phyloseq:::wUniFracPair(OTU, tree, A, B, normalized) )
+		} else {
+			return( phyloseq:::unifracPair(occ, tree, A, B) )
+		}
+	}
+	
+    # This is in serial, but it is quick.
+    distlist2distmat <- function(i, spn, DL){
+    	UniFracMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
+    }
+	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
+    
+    return(as.dist(UniFracMat))
+
+}
+##############################################################################
+#' Calculate weighted or unweighted (Fast) UniFrac distance for all sample pairs.
 #'
-#' This function calculates the UniFrac distance for all sample-pairs
+#' This function calculates the (Fast) UniFrac distance for all sample-pairs
 #' in a \code{\link{phyloseq-class}} object.
 #'
 #' \code{UniFrac()} accesses the abundance
@@ -245,7 +309,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' UniFrac-specific examples for doParallel are provided in the example
 #' code below.  
 #'
-#' @usage UniFrac(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
+#' @usage UniFrac(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}}, containing at minimum
 #'  a phylogenetic tree (\code{\link{phylo-class}}) and 
@@ -270,11 +334,36 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #'  Default is \code{FALSE}. If FALSE, UniFrac will register a serial backend
 #'  so that \code{foreach::\%dopar\%} does not throw a warning.
 #' 
+#' @param fast (Optional). Logical. Do you want to use the ``Fast UniFrac''
+#'  algorithm? Implemented natively in the \code{phyloseq-package}.
+#'  This is the default and the recommended option. There should be no difference
+#'  in the output between the two algorithms.
+#'  Moreover, the original UniFrac algorithm
+#'  only outperforms this implementation of fast-UniFrac if the datasets are so
+#'  small 
+#'  (approximated by the value of \code{nspecies(physeq) * nsamples(physeq)}) 
+#'  that the difference in time is inconsequential (less than 1 second). In practice
+#'  it does not appear that this parameter should ever be set to \code{FALSE}, but
+#'  the option is nevertheless included in the package for comparisons and 
+#'  instructional purposes.
+#'
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' 
 #' @seealso \code{\link[vegan]{vegdist}}, \code{\link[picante]{unifrac}}
 #'
 #' @references \url{http://bmf.colorado.edu/unifrac/}
+#'
+#' The main implementation (Fast UniFrac) is adapted from the algorithm's
+#' description in:
+#' 
+#' Hamady, Lozupone, and Knight,
+#' ``Fast UniFrac: facilitating high-throughput phylogenetic analyses of 
+#' microbial communities including analysis of pyrosequencing and PhyloChip data.''
+#' The ISME Journal (2010) 4, 17--27.
+#' 
+#' \url{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}
+#'
+#' See also additional descriptions of UniFrac in the following articles:
 #'
 #' Lozupone, Hamady and Knight, ``UniFrac - An Online Tool for Comparing Microbial 
 #' Community Diversity in a Phylogenetic Context.'', BMC Bioinformatics 2006, 7:371
@@ -337,14 +426,29 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 #' # registerDoParallel(cores=3)
 #' # UniFrac(esophagus, TRUE)
 #' ################################################################################
-setGeneric("UniFrac", function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
+setGeneric("UniFrac", function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE){
 	standardGeneric("UniFrac")
 })
 ################################################################################
 #' @aliases UniFrac,phyloseq-method
 #' @rdname UniFrac-methods
-setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
+setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE){
 
+	if( fast ){
+		fastUniFrac(physeq, weighted, normalized, parallel)
+	} else {
+		originalUniFrac(physeq, weighted, normalized, parallel)
+	}
+	
+})
+################################################################################
+################################################################################
+# Fast UniFrac for R.
+# Adapted from The ISME Journal (2010) 4, 17-27; doi:10.1038/ismej.2009.97;
+# http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html
+################################################################################
+#' @keywords internal
+fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
 	# # # require(picante); require(ape); require(foreach)
 
 	# Access the needed components. Note, will error if missing in physeq.
@@ -370,31 +474,92 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
     # define the rows/cols of UniFracMat with the sample names (rownames)    
     rownames(UniFracMat) <- sample.names(OTU)
     colnames(UniFracMat) <- sample.names(OTU)
-    
-	## Format coercion
-	# Coerce to the picante orientation, with species as columns
-	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
-   	# Coerce OTU to matrix for calculations.
-    OTU <- as(OTU, "matrix")
+
+	# Make sure OTU is in species-are-rows orientation
+	if( !speciesAreRows(OTU) ){OTU <- t(OTU)}    
    	# Enforce that tree and otuTable indices are the same order, 
-   	# by re-ordering OTU if needed
-	if( !all(colnames(OTU) == species.names(tree)) ){
-		OTU <- OTU[, species.names(tree)]
-	}    
-	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
-	if(!weighted){
-		# Coerce OTU to occurrence matrix for unweighted-UF calculations
-		occ <- (OTU > 0) - 0
+   	# by re-ordering OTU, if needed
+	if( !all(rownames(OTU) == species.names(tree)) ){
+		OTU <- OTU[species.names(tree), ]
+	}
+
+	########################################
+	# Build the requisite matrices as defined 
+	# in the Fast UniFrac paper.
+	########################################
+	## This only needs to happen once in a call to UniFrac.
+	## Notice that A and B do not appear in this section.
+	
+	# Begin by building the edge array (edge-by-sample matrix)
+	edges <- 1:nrow(tree$edge)
+	edge_array <- matrix(0, nrow=length(edges), ncol=nsamples(OTU), 
+		dimnames=list(edge_index=edges, sample.names=sample.names(OTU)))
+
+	# loop over each edge in the tree. Parallel version.
+  	edge_array_list <- foreach( edge = edges, .packages="phyloseq") %dopar% {		
+		# get the associated node in order to call internal2tips(). node number, n:
+		n <- tree$edge[edge, 2]
+		# get subset of tips (species) that descend from this branch
+		edgeDescendants <- phyloseq:::internal2tips.self(tree, n, return.names = TRUE)
+		# sum the descendants of this branch for every sample, assign to edge array (list)
+		return( apply(OTU[edgeDescendants, ], 2, sum) )
+	}
+	# Quick loop to organize tree-edge results into a matrix, called edge_array
+	for( edge in edges ){
+		edge_array[edge, ] <- edge_array_list[[edge]]
 	}
 	
+	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
+	if(!weighted){
+		# For unweighted UniFrac, convert the edge_array to an occurrence (presence/absence binary) array
+		edge_occ <- (edge_array > 0) - 0
+	}
+
+	if( weighted & normalized ){
+		# This is only relevant to weighted-UniFrac.
+		# For denominator in the normalized distance, we need the age of each tip.
+		# Get the tip ages from their associated edges (node.age gives the age of edges, ironically)
+		### Note: this picante:node.age function is a computational bottleneck.
+		### It could be vectorized/parallelized 
+		tipAges <- picante::node.age(tree)$ages[ which(tree$edge[, 2] %in% 1:length(tree$tip.label)) ]
+		names(tipAges) <- tree$tip.label		
+	}
+
+	########################################	
    	# optionally-parallel implementation with foreach
+	########################################
   	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
-		A <- i[1]
-		B <- i[2]
-		if( weighted ){
-			return( wUniFracPair(OTU, tree, A, B, normalized) )
-		} else {
-			return( unifracPair(occ, tree, A, B) )
+		A  <- i[1]
+		B  <- i[2]
+		AT <- sampleSums(OTU)[A]
+		BT <- sampleSums(OTU)[B]		
+		if( weighted ){ # weighted UniFrac
+			# subset matrix to just columns A and B
+			edge_array_AB <- edge_array[, c(A, B)]
+			# Perform UFwi equivalent, "inline" with apply on edge_array_AB
+			wUF_branchweight <- apply(edge_array_AB, 1, function(br, A, B, ATBT){
+				abs((br[A]/ATBT[A]) - (br[B]/ATBT[B]))
+			}, A, B, c(AT, BT))
+			# calculate the w-UF numerator
+			numerator <- sum(tree$edge.length * wUF_branchweight)
+			# if not-normalized weighted UniFrac, just return "numerator";
+			# the u-value in the w-UniFrac description
+			if(!normalized){
+				return(numerator)
+			} else {
+				# denominator (assumes tree-indices and otuTable indices are same order)
+				denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
+				# return the normalized weighted UniFrac values
+				return(numerator / denominator)
+			}
+		} else { # unweighted UniFrac
+			# subset matrix to just columns A and B
+			edge_occ_AB <- edge_occ[, c(A, B)]
+			# keep only the unique branches, sum the lengths
+			edge_uni_AB_sum <- sum( (tree$edge.length * edge_occ_AB)[apply(edge_occ_AB, 1, sum) < 2, ] )
+			# Normalize this sum to the total branches among these two samples, A and B
+			uwUFpairdist <- edge_uni_AB_sum / sum( tree$edge.length[apply(edge_occ_AB, 1, sum) > 0] )
+			return(uwUFpairdist)
 		}
 	}
 	
@@ -405,5 +570,6 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
 	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
     
     return(as.dist(UniFracMat))
-})
+	
+}
 ################################################################################

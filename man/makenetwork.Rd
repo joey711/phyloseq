@@ -4,7 +4,7 @@
 \title{Create a taxa graph adjacency matrix from an \code{otuTable}.}
 \usage{
   makenetwork(physeq, plotgraph=TRUE, community=TRUE,
-    threshold=0, incommon=0.4, method="jaccard")
+  threshold=0, incommon=0.4, method="jaccard")
 }
 \arguments{
   \item{physeq}{(Required). An \code{\link{otuTable-class}}
@@ -18,7 +18,7 @@
 
   \item{threshold}{A single-value positive integer. Default
   0. Indicates the number of individuals/observations
-  required for presense to be counted.  For example,
+  required for presense to be counted. For example,
   threshold > 1 means that species with 2 or more reads are
   considered present.}
 

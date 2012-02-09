@@ -17,7 +17,7 @@
 
   \item{...}{Additional plotting parameters that are passed
   to \code{\link{points}} or \code{\link{text}} in the R
-  base graphics.  Again, for \code{tiptext()}, make sure to
+  base graphics. Again, for \code{tiptext()}, make sure to
   include a \code{labels=} argument.}
 }
 \value{

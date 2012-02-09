@@ -2,8 +2,8 @@
 \alias{tableprint}
 \title{print a summary of data tables to screen.}
 \usage{
-  tableprint(y, typelabel = "table",
-    dim1label = "rownames", dim2label = "colnames")
+  tableprint(y, typelabel = "table", dim1label =
+  "rownames", dim2label = "colnames")
 }
 \arguments{
   \item{y}{the table to be printed.}

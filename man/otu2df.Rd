@@ -4,7 +4,7 @@
 in the ggplot2 framework.}
 \usage{
   otu2df(otu, taxavec, map, keepOnlyTheseTaxa=NULL,
-    threshold=NULL)
+  threshold=NULL)
 }
 \arguments{
   \item{otu}{An \code{otuTable} object.}

@@ -6,6 +6,9 @@
 \alias{nsamples,phyloseq-method}
 \alias{nsamples,sampleData-method}
 \title{Get the number of samples.}
+\usage{
+  nsamples(physeq)
+}
 \arguments{
   \item{physeq}{A \code{\link{phyloseq-class}},
   \code{\link{sampleData}}, or

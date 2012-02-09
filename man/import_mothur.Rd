@@ -3,7 +3,7 @@
 \title{General function for importing mothur files into phyloseq.}
 \usage{
   import_mothur(mothur_list_file, mothur_group_file=NULL,
-    mothur_tree_file=NULL, cutoff=NULL)
+  mothur_tree_file=NULL, cutoff=NULL)
 }
 \arguments{
   \item{mothur_list_file}{Required. The list file name /
@@ -18,8 +18,8 @@
   \code{http://www.mothur.org/wiki/Make.group}}
 
   \item{mothur_tree_file}{Optional. The tree file name
-  produced by \emph{mothur}.  Probably a file that ends
-  with the suffix \code{".tree"}.}
+  produced by \emph{mothur}. Probably a file that ends with
+  the suffix \code{".tree"}.}
 
   \item{cutoff}{A character string indicating the cutoff
   value, (or \code{"unique"}), that matches one of the
@@ -38,7 +38,7 @@
   function.}
 }
 \value{
-  The object class depends on the provided arguments.  If
+  The object class depends on the provided arguments. If
   the first three arguments are provided, then an
   \code{otuTree} object should be returned, containing both
   an OTU-only tree and its associated \code{otuTable}-class

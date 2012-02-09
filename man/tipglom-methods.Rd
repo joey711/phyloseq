@@ -5,6 +5,9 @@
 \alias{tipglom,phylo,otuTable-method}
 \alias{tipglom,phyloseq,ANY-method}
 \title{Agglomerate closely-related taxa using single-linkage clustering.}
+\usage{
+  tipglom(tree, OTU, speciationMinLength=0.02)
+}
 \arguments{
   \item{tree}{\code{\link{phyloseq-class}}, containing an
   OTU Table and phylogenetic tree. If, alternatively,
