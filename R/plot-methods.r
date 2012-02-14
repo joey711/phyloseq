@@ -496,7 +496,7 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'
 #' @usage taxaplot(otu, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
-#'	facet_formula = . ~ TaxaGroup)
+#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
 #'
 #' @param otu (Required). An \code{otuTable} object, or higher-order object that contains
 #'  an otuTable and sampleData (e.g. ``otuSam'' class and its superclasses.).
@@ -540,6 +540,19 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An alternative
 #'  \code{facet_grid} could be \code{sample ~ TaxaGroup}.
 #'
+#' @param OTUpoints (Optional). Logical. Default \code{FALSE}. Whether to add small grey 
+#'  semi-transparent points for each OTU. Helps convey the relative distribution
+#'  within each bar if it combines many different OTUs. For datasets with
+#'  large numbers of samples and for complicated plotting arrangements, this
+#'  might be too cluttered to be meaningful.
+#'
+#' @param labelOTUs (Optional). Logical. Default \code{FALSE}. Whether to add
+#'  a label over the top
+#'  few OTUs within each bar. As with \code{OTUpoints}, this is probably not
+#'  a good idea for plots with large complexity. For low numbers of total OTUs
+#'  this can be informative, and help display multiple layers of information 
+#'  on the same graphic.
+#'
 #' @return A ggplot2 graphic object.
 #'
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
@@ -552,17 +565,9 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' # data(ex1)
 #' # taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
 #' # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
-setGeneric("taxaplot", function(otu, taxavec="Domain",
-	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
-	facet_formula = . ~ TaxaGroup){
-		standardGeneric("taxaplot")
-})
-################################################################################
-#' @rdname taxaplot-methods
-#' @aliases taxaplot,phyloseq-method
-setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
+taxaplot <- function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
-	facet_formula = . ~ TaxaGroup){
+	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
 
 	# Some preliminary assignments. Assumes otu has non-empty sampleData slot.
 	map <- sampleData(otu)
@@ -610,20 +615,12 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	}
 	dftot <- df2sampleTGtot(df, map)
 
-	# Create a small df subset for labelling abundant OTUs
-	dfLabel <- subset(df, Abundance > 0.05)	
-
 	########################################
 	# Build the ggplot
 	p  <- ggplot(df) + 
 		opts(axis.text.x=theme_text(angle=-90, hjust=0))
 
 	p <- p + 
-			# geom_bar(
-			# data=df, eval(call("aes", x=as.name(x_category), 
-				# y=quote(Abundance), fill=as.name(fill_category) )),
-			#	 position="stack", stat="identity"
-			# ) +
 		# The full stack
 		geom_bar(
 			data=dftot, 
@@ -634,27 +631,37 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 			)),
 			position="dodge", stat="identity"
 		) + 
-		geom_point(
+		# Some reasonable default options
+		opts(panel.grid.minor = theme_blank()) + 
+		opts(panel.grid.major = theme_blank()) +
+		opts(panel.border = theme_blank()) +
+		labs(y="Relative Abundance", x=x_category, fill=fill_category)
+		
+	# Should the individual OTU points be added. Default FALSE
+	if( OTUpoints ){
+		p <- p + geom_point(
 			data=df, 
 			eval(call("aes",
 				x=as.name(x_category), 
 				y=quote(Abundance)
 			)),
 			color="black", size=1.5, position="jitter", alpha=I(1/2)
-		) +
-		opts(panel.grid.minor = theme_blank()) + 
-		opts(panel.grid.major = theme_blank()) +
-		opts(panel.border = theme_blank()) +
-		geom_text(
-			data=dfLabel,
-			size=2,
+		)
+	}
+		
+	# Should the most abundant OTUs be labeled. Default FALSE
+	if( labelOTUs ){
+		# Create a small df subset for labelling abundant OTUs
+		dfLabel <- subset(df, Abundance > 0.05)	
+		p <- p + geom_text(data=dfLabel, size=2,
 			eval(call("aes", 
 				x=as.name(x_category), 
 				y=quote(Abundance+0.01), 
 				label=quote(ID)
 			)),
-		) +	
-		labs(y="Relative Abundance", x=x_category, fill=fill_category)
+		)
+	}
+		
 
 	if( !is.null(facet_formula) ){	
 		p <- p + facet_grid(facet_formula)
@@ -663,7 +670,7 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	# Return the ggplot object so the user can 
 	# additionally manipulate it.
 	return(p)
-})
+}
 ################################################################################
 #' Create a taxa graph adjacency matrix from an \code{otuTable}.
 #' 

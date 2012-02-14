@@ -365,3 +365,80 @@ setMethod("getSpecies", "phyloseq", function(physeq, i){
 	getSpecies(otuTable(physeq), i)
 })
 ################################################################################
+#' Get the names of the taxonomic ranks 
+#'
+#' This is a simple accessor function to make it more convenient to determine
+#' the taxonomic ranks that are available in a given \code{\link{phyloseq-class}}
+#' object. 
+#'
+#' @usage rank.names(physeq)
+#' 
+#' @param physeq (Required). \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}}.
+#'
+#' @return Character vector. The names of the available taxonomic ranks.
+#' 
+#' @seealso getSpecies species.names sample.names getTaxa
+#'
+#' @export
+#'
+#' @examples
+#' data(enterotype)
+#' rank.names(enterotype)
+rank.names <- function(physeq){
+	colnames(taxTab(physeq))	
+}
+################################################################################
+#' Get a unique vector of the observed taxa at a particular taxonomic rank
+#'
+#' This is a simple accessor function to make it more convenient to determine
+#' the different taxa present for a particular taxonomic rank
+#' in a given \code{\link{phyloseq-class}} object. 
+#'
+#' @usage getTaxa(physeq, taxonomic.rank=rank.names(physeq)[1])
+#' 
+#' @param physeq (Required). \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}}.
+#'
+#' @param taxonomic.rank (Optional). Character. The taxonomic rank to use. Must select
+#'  from the set indicated by \code{getTaxa}. Default is
+#'  to take the first column of the \code{taxonomyTable} component.
+#'
+#' @return Character vector. Unique vector of the observed taxa 
+#'  at a particular taxonomic rank
+#' 
+#' @seealso getSpecies species.names sample.names getTaxa
+#'
+#' @export
+#'
+#' @examples
+#' data(enterotype)
+#' getTaxa(enterotype)
+#' data(ex1)
+#' getTaxa(ex1, "Family")
+getTaxa <- function(physeq, taxonomic.rank=rank.names(physeq)[1]){
+	unique(as(taxTab(physeq)[, taxonomic.rank], "character"))
+}
+################################################################################
+#' Get the sample variables present in sampleData
+#'
+#' This is a simple accessor function to make it more convenient to determine
+#' the sample variable names of a particular \code{\link{phyloseq-class}} object. 
+#'
+#' @usage sample.variables(physeq)
+#' 
+#' @param physeq (Required). \code{\link{sampleData-class}}, or \code{\link{phyloseq-class}}.
+#'
+#' @return Character vector. The names of the variables in the sampleData
+#'  data.frame. Essentially the column names. Useful for selecting model 
+#'  and graphics parameters that interact with sampleData.
+#' 
+#' @seealso getSpecies species.names sample.names getTaxa
+#'
+#' @export
+#'
+#' @examples
+#' data(enterotype)
+#' sample.variables(enterotype)
+sample.variables <- function(physeq){
+	colnames(sampleData(physeq))
+}
+################################################################################
