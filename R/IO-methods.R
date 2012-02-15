@@ -68,19 +68,19 @@ import <- function(pipelineName, ...){
 	}
 
 	if( pipelineName %in% c("B", "b") ){
-		import_biom(...)		
+		return( import_biom(...) )
 	}	
 	if( pipelineName %in% c("M", "m") ){
-		import_mothur(...)		
+		return( import_mothur(...) )
 	}
 	if( pipelineName %in% c("P", "p") ){
-		import_pyrotagger_tab(...)		
+		return( import_pyrotagger_tab(...) ) 
 	}	
 	if( pipelineName %in% c("Q", "q") ){
-		import_qiime(...)		
+		return( import_qiime(...) )
 	}
 	if( pipelineName %in% c("R", "r") ){
-		import_RDP_cluster(...)		
+		return( import_RDP_cluster(...) )
 	}
 }
 ################################################################################
