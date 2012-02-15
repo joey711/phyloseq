@@ -123,9 +123,8 @@
 # ################################################################################
 # # A beta diversity comparison.
 # ################################################################################
-# jaccdist <- vegdist(t(otuTable(soilrep)), "jaccard")
+# jaccdist <- vegdist(soilrep, "jaccard")
 
-# # soilMDS <- metaMDS(t(otuTable(soilrep)), "jaccard" )
 # soilMDS <- metaMDS(jaccdist, "jaccard" )
 
 # # Add the NMDS coordinates to the soil sample data.frame, DF

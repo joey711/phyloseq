@@ -7,6 +7,8 @@ phyloseq 0.99.x
 * General importer: import()
 * Lots and lots of fixes and improvements.
 
+===========
+* Added "GlobalPatterns" dataset, and some other minor improvements
 phyloseq 0.4.2 - 0.4.7
 ===========
 

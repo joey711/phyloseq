@@ -1213,10 +1213,19 @@ parseGreenGenesPrefix <- function(char.vec){
 #'  assignment at that rank. The default value is \code{NULL}, meaning that
 #'  no prefix or rank identifier will be interpreted. 
 #'
-#' @param parallel (Optional). Logical. Wrapper option over \code{.parallel}
-#'  parameter in \code{plyr-package} functions. If TRUE, apply 
+#' @param parallel (Optional). Logical. Wrapper option for \code{.parallel}
+#'  parameter in \code{plyr-package} functions. If \code{TRUE}, apply 
 #'  parsing functions in parallel, using parallel backend provided by
-#'  \code{\link{foreach}} and its supporting backen packages.
+#'  \code{\link{foreach}} and its supporting backend packages. One caveat,
+#'  plyr-parallelization currently works most-cleanly with \code{multicore}-like
+#'  backends (Mac OS X, Unix?), and may throw warnings for SNOW-like backends.
+#'  See the example below for code invoking multicore-style backend within
+#'  the \code{doParallel} package.
+#'
+#'  Finally, for many datasets a parallel import should not be necessary
+#'  because a serial import will be just as fast and the import is often only
+#'  performed one time; after which the data should be saved as an RData file
+#'  using the \code{\link{save}} function.
 #' 
 #' @param version (Optional). Numeric. The expected version number of the file.
 #'  As the BIOM format evolves, version-specific importers will be available
@@ -1234,7 +1243,12 @@ parseGreenGenesPrefix <- function(char.vec){
 #' @importFrom plyr laply
 #' @export
 #' @examples
+#'  # # # import with default parameters, specify a file
 #'  # import_BIOM(myBIOMfile)
+#'  # # # Example code for importing large file with parallel backend
+#'  # library("doParallel")
+#'  # registerDoParallel(cores=6)
+#'  # import_biom("my/file/path/file.biom", taxaPrefix="greengenes", parallel=TRUE)
 import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0.9){
 	
 	# Read the data

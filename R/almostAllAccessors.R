@@ -442,3 +442,31 @@ sample.variables <- function(physeq){
 	colnames(sampleData(physeq))
 }
 ################################################################################
+#' Get the values for a particular variable in sampleData
+#'
+#' This is a simple accessor function for streamlining access
+#' to values/vectors/factors/etc contained in the sampleData.
+#'
+#' @usage getVariable(physeq, varName)
+#' 
+#' @param physeq (Required). \code{\link{sampleData-class}}, or \code{\link{phyloseq-class}}.
+#'
+#' @param varName (Required). Character string of the variable name in \code{sampleData}.
+#'  Use \code{sample.variables(physeq)} for available variables in your object.
+#'
+#' @return Data. The clas of the data depends on what the contents of sampleData.
+#' 
+#' @seealso getSpecies species.names sample.names getTaxa 
+#'  \code{\link{sample.variables}}
+#'
+#' @export
+#'
+#' @examples
+#' # Load the GlobalPatterns dataset into the workspace environment
+#' data(GlobalPatterns)
+#' # Look at the different values for SampleType 
+#' getVariable(GlobalPatterns, "SampleType")
+getVariable <- function(physeq, varName){
+	return( as(sampleData(physeq), "data.frame")[, varName] )
+}
+################################################################################
