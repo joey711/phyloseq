@@ -1,14 +1,34 @@
 phyloseq 0.99.x
 ===========
 * Bioconductor development release updates.
-* Lots of documentation updates.
+* BIOM format import: import_biom() function
 * Parallel Fast UniFrac
-* Extension to vegan::vegdist()
-* General importer: import()
+* Directly call vegdist() on phyloseq-class object (method extension)
+* General importer for all supported data formats: import()
+* Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.20
 ===========
 * Added "GlobalPatterns" dataset, and some other minor improvements
+* added "GlobalPatterns" dataset, with doc and some analysis
+  examples. More examples will be added to the vignette.
+* add getVariable accessor function, for streamlining access
+  to values/vectors/factors/etc of the variates contained in
+  the sampleData component
+* revise documentation about parallelization of import_biom()
+* revise documentation for enterotype dataset
+
+v0.99.19
+===========
+* fixed a bug in general import() function in which it properly processed import command, but then failed to return result.
+
+v0.99.18
+===========
+* Added import_biom() function to import BIOM format OTU-clustered data / metadata
+* Added (direct) dependency for plyr, as well as RJSONIO 
+
+
 phyloseq 0.4.2 - 0.4.7
 ===========
 
