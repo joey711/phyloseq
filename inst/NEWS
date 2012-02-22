@@ -3,10 +3,16 @@ phyloseq 0.99.x
 * Bioconductor development release updates.
 * BIOM format import: import_biom() function
 * Parallel Fast UniFrac
+* Several published exampled datasets included
 * Directly call vegdist() on phyloseq-class object (method extension)
 * General importer for all supported data formats: import()
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+v0.99.23
+===========
+* Added a rooted tree to "GlobalPatterns" dataset
+* Allow multi-class tests with mt()
 
 v0.99.20
 ===========

@@ -195,11 +195,12 @@ There are multiple example data sets included in \emph{phyloseq}. Many are from 
 
 To load example data into the working environment, use the \code{data()} command:
 
-<<>>=
+<<eval=FALSE>>=
   data(ex1)
   data(esophagus)
   data(enterotype)
-  data(soilrep)  
+  data(soilrep) 
+  data(GlobalPatterns)
 @
 
 Similarly, entering \code{?enterotype} will reveal the documentation for the so-called ``enterotype'' dataset.
@@ -209,11 +210,12 @@ See the Example Data page on the phyloseq GitHub wiki at:
 \url{https://github.com/joey711/phyloseq/wiki/Example-Data}
 
 \subsection{phyloseq object summaries}
-In small font, the following is the summary of object \code{ex1} that prints to the terminal. These summaries are consistent among all object classes defined by \emph{phyloseq}. Although the components of \code{ex1} have many thousands of elements, the command-line returns only a short summary of each by default. This encourages you to check that an object is still what you expect, without needing to let thousands of elements scroll across the terminal. In the cases in which you do want to see all elements of an object, use \code{print()}.
+In small font, the following is the summary of the \code{GlobalPatterns} dataset that prints to the terminal. These summaries are consistent among all \code{phyloseq-class} objects. Although the components of \code{GlobalPatterns} have many thousands of elements, the command-line returns only a short summary of each component. This encourages you to check that an object is still what you expect, without needing to let thousands of elements scroll across the terminal. In the cases in which you do want to see more of a particular component, use an accessor function (see Table~\ref{table:access}, Section~\ref{sec:accessors}).
 
 \begin{scriptsize}
 <<>>=
-ex1
+  data(GlobalPatterns)
+  GlobalPatterns
 @
 \end{scriptsize}
 
@@ -283,7 +285,7 @@ For all of these merging situations, the suggested function is \code{merge{\text
 
 
 \clearpage
-\section{Accessor functions}
+\section{Accessor functions}\label{sec:accessors}
 Once you have a phyloseq object available, many accessor functions are available to query aspects of the data set. The function name and its purpose are summarized in Table~\ref{table:access}.
 
 \begin{table}[ht]
@@ -297,17 +299,21 @@ Function                    & Description \\
 \Rfunction{getslots.phyloseq} & Return the slot names of phyloseq objects \\
 \Rfunction{getSpecies}      & Returns the abundance values of sample `i' for all species in `x' \\
 \Rfunction{getSamples}      & Returns the abundance values of species `i' for all samples in `x' \\
+\Rfunction{getTaxa}      & Get a unique vector of the observed taxa at a particular taxonomic rank \\
+\Rfunction{getVariable}     & Returns an individual sample variable vector/factor \\
 \Rfunction{nsamples}        & Get the number of samples described by an object \\
 \Rfunction{nspecies}        & Get the number of species (taxa) described by an object \\
 \Rfunction{otuTable}        & Build or access otuTable objects \\
-\Rfunction{sampleData}       & Build or access sampleData objects \\
-\Rfunction{taxTab}          & Build or access taxTab objects \\
-\Rfunction{tre}             & Access the tree contained in a phyloseq object \\
+\Rfunction{rank.names}      & Get the names of the available taxonomic ranks \\
+\Rfunction{sampleData}      & Build or access sampleData objects \\
 \Rfunction{sample.names}    & Return the names of the samples described by an object \\
 \Rfunction{species.names}   & Return the names of the species described by an object \\
 \Rfunction{sampleSums}      & Returns the total number of individuals observed from each sample \\
+\Rfunction{sample.variables}& Returns the names of sample variables in an object \\
 \Rfunction{speciesSums}     & Returns the total number of individuals observed from each species \\
-\Rfunction{speciesAreRows}  & returns the orientation of the abundance table \\
+\Rfunction{speciesAreRows}  & Returns the orientation of the abundance table \\
+\Rfunction{taxTab}          & Build or access taxTab objects \\
+\Rfunction{tre}             & Access the tree contained in a phyloseq object \\
 \hline
 \end{tabular}
 \end{center}
@@ -526,6 +532,8 @@ Install the CRAN dependencies (doParallel is optional):
   install.packages("igraph")
   install.packages("picante")
   install.packages("vegan")
+  install.packages("RJSONIO")
+  install.packages("plyr")
 @
 
 Finally, install phyloseq using GitHub as an alternative repository with the \code{install{\textunderscore}github} command in the devtools package.
