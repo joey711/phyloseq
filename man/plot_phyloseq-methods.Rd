@@ -33,8 +33,11 @@
 ## plot_phyloseq(ex1)
 }
 \seealso{
-  \code{\link{taxaplot}} \code{\link{plot_tree_phyloseq}}
+  \code{\link{plot_taxa_bar}}
+  \code{\link{plot_sample_network}}
+  \code{\link{plot_tree_phyloseq}}
   \code{\link{plot_ordination_phyloseq}}
-  \code{\link{calcplot}} \code{\link{makenetwork}}
+  \code{\link{plot_richness_estimates}}
+  \code{\link{calcplot}}
 }
 

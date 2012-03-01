@@ -26,11 +26,12 @@
 #'  are present.
 #' 
 #' @seealso 
-#'  \code{\link{taxaplot}}
+#'  \code{\link{plot_taxa_bar}}
+#'  \code{\link{plot_sample_network}}
 #'  \code{\link{plot_tree_phyloseq}}
 #'  \code{\link{plot_ordination_phyloseq}}
+#'  \code{\link{plot_richness_estimates}}
 #'  \code{\link{calcplot}}
-#'  \code{\link{makenetwork}}
 #'
 #' @export
 #' @docType methods
@@ -53,12 +54,284 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 		ape::nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
 		ape::edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
 	} else {
-		makenetwork(physeq)
+		plot_richness_estimates(physeq)
 	}
 })
 ################################################################################
 ################################################################################
-# calcplotrda and calcplotcca
+#' Plot sample-wise microbiome network (ggplot2)
+#'
+#' A custom plotting function for displaying graph objects created by 
+#' \code{\link[igraph]{igraph}} from a 
+#' phylogenetic sequencing experiment (\code{\link{phyloseq-class}}),
+#' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
+#'
+#' @usage plot_sample_network(g, physeq=NULL,
+#' 	color=NULL, shape=NULL, point_size=4, alpha=1,
+#' 	label="value", hjust = 1.35, 
+#' 	line_weight=0.5, line_color=color, line_alpha=0.4,
+#' 	layout.method=layout.fruchterman.reingold)
+#'
+#' @param g (Required). An \code{\link[igraph]{igraph}}-class object created
+#'  either by the convenience wrapper \code{\link{make_sample_network}}, 
+#'  or directly by the tools in the igraph-package.
+#'
+#' @param physeq (Optional). Default \code{NULL}. 
+#'  A \code{\link{phyloseq-class}} object on which \code{g} is based.
+#'
+#' @param color (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for color mapping
+#'  of points (graph vertices).
+#' 
+#' @param shape (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for shape mapping.
+#'  of points (graph vertices).
+#' 
+#' @param point_size (Optional). Default \code{4}. 
+#'  The size of the vertex points.
+#' 
+#' @param alpha (Optional). Default \code{1}.
+#'  A value between 0 and 1 for the alpha transparency of the vertex points.
+#' 
+#' @param label (Optional). Default \code{"value"}.
+#'  The name of the sample variable in \code{physeq} to use for 
+#'  labelling the vertex points.
+#' 
+#' @param hjust (Optional). Default \code{1.35}.
+#'  The amount of horizontal justification to use for each label.
+#' 
+#' @param line_weight (Optional). Default \code{0.3}.
+#'  The line thickness to use to label graph edges.
+#' 
+#' @param line_color (Optional). Default \code{color}.
+#'  The name of the sample variable in \code{physeq} to use for color mapping
+#'  of lines (graph edges).
+#' 
+#' @param line_alpha (Optional). Default \code{0.4}.
+#'  The transparency level for graph-edge lines.
+#'
+#' @param layout.method (Optional). Default \code{layout.fruchterman.reingold}.
+#'  A function (closure) that determines the placement of the vertices
+#'  for drawing a graph. Should be able to take an \code{\link{igraph}}-class
+#'  as sole argument, and return a two-column coordinate matrix with \code{nrow}
+#'  equal to the number of vertices. For possible options already included in 
+#'  \code{igraph}-package, see the others also described in the help file:
+#' 
+#' \code{\link[igraph]{layout.fruchterman.reingold}}
+#'
+#' @return A \code{\link{ggplot}}2 plot.
+#' 
+#' @seealso 
+#'  \code{\link{make_sample_network}}
+#'
+#' @references
+#'  Code modified from code now hosted on GitHub by Scott Chamberlain:
+#'  \url{https://github.com/SChamberlain/gggraph}
+#'
+#'  The code most directly used/modified was first posted here:
+#'  \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
+#' 
+#' @importFrom reshape melt
+#' @importFrom igraph layout.fruchterman.reingold
+#' @importFrom igraph get.edgelist
+#' @export
+#' @examples 
+#' 
+#' data(enterotype)
+#' ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+#' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+#' # Change distance parameter
+#' ig <- make_sample_network(enterotype, FALSE, max.dist=0.2)
+#' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+plot_sample_network <- function(g, physeq=NULL,
+	color=NULL, shape=NULL, point_size=4, alpha=1,
+	label="value", hjust = 1.35, 
+	line_weight=0.5, line_color=color, line_alpha=0.4,
+	layout.method=layout.fruchterman.reingold){
+
+	# Make the edge-coordinates data.frame
+	edgeDF    <- data.frame(get.edgelist(g))
+	edgeDF$id <- 1:length(edgeDF[, 1])
+
+	# Make the vertices-coordinates data.frame
+	vertDF    <- layout.method(g)
+	colnames(vertDF) <- c("x", "y")
+	vertDF    <- data.frame(value=g[[9]][[3]][["name"]], vertDF)
+	
+	# If phyloseq object provided, add its sample data to vertDF
+	if( !is.null(physeq) ){
+		SD     <- sampleData(physeq)[as.character(vertDF$value), ]
+		vertDF <- data.frame(vertDF, SD) 
+	}
+
+	# Combine vertex and edge coordinate data.frames
+	graphDF   <- merge(melt(edgeDF, id="id"), vertDF, by = "value") 
+ 
+	# Initialize the ggplot
+	p <- ggplot(vertDF, aes(x, y)) 
+
+	# Strip all the typical annotations from the plot, leave the legend
+	p <- p + ggplot2::theme_bw() + 
+			ggplot2::opts(
+				panel.grid.major = ggplot2::theme_blank(), 
+				panel.grid.minor = ggplot2::theme_blank(), 
+				axis.text.x      = ggplot2::theme_blank(),
+				axis.text.y      = ggplot2::theme_blank(),
+				axis.title.x     = ggplot2::theme_blank(),
+				axis.title.y     = ggplot2::theme_blank(),
+				axis.ticks       = ggplot2::theme_blank(),
+				panel.border     = ggplot2::theme_blank()
+			)
+
+	# Add the graph vertices as points
+	p <- p + ggplot2::geom_point(aes_string(color=color, shape=shape), size=point_size)
+
+	# Add the text labels
+	if( !is.null(label) ){
+		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label), size = 2, hjust=hjust)		
+	}
+	
+	# Add the edges:
+	p <- p + ggplot2::geom_line(ggplot2::aes_string(group="id", color=line_color), 
+				graphDF, size=line_weight, alpha=line_alpha)
+	
+	return(p)
+}
+################################################################################
+################################################################################
+#' Plot richness estimates, flexibly with ggplot2
+#'
+#' Performs a number of standard richness estimates using the 
+#' \code{\link{estimate_richness}} function,
+#' and returns a \code{ggplot} plotting object. 
+#' This plot shows the individual richness estimates for each
+#' sample, as well as the observed richness. 
+#' You must use untrimmed datasets
+#' for meaningful results, as these estimates (and even the ``observed'' richness)
+#' are highly dependent on the number of singletons. You can always trim the data
+#' later on if needed, just not before using this function.
+#'
+#'  NOTE: Because this plotting function incorporates the output from 
+#'  \code{\link{estimate_richness}}, the variable names of that output should
+#'  not be used as \code{x} or \code{color} (even if it works, the resulting
+#'  plot might be kindof strange, and not the intended behavior of this function).
+#'  The following are the names you will want to avoid using in \code{x} or \code{color}:
+#'
+#'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
+#'
+#' @usage plot_richness_estimates(physeq, x, color=NULL)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
+#'  an \code{\link{otuTable-class}}. The data about which you want to estimate
+#'  the richness.
+#'
+#' @param x (Optional). A variable to map to the horizontal axis. The vertical
+#'  axis will be mapped to richness estimates and have units of total species.
+#'  This parameter (\code{x}) can be either a character string indicating a
+#'  variable in \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'
+#'  The default value is \code{"sample.names"}, which will map each sample's name
+#'  to a separate horizontal position in the plot.
+#'
+#' @param color (Optional). Default \code{NULL}. The sample variable to map
+#'  to different colors. Like \code{x}, this can be a single character string 
+#'  of the variable name in 
+#'  \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'  The color scheme is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_color_manual}}.
+#'
+#' @return A \code{\link{ggplot}} plot object summarizing
+#'  the richness estimates, and their standard error.
+#' 
+#' @seealso 
+#'  \code{\link{estimate_richness}},
+#'  \code{\link[vegan]{estimateR}},
+#'  \code{\link[vegan]{diversity}}
+#'
+#' @importFrom reshape melt
+#' @export
+#' @examples 
+#' # data(GlobalPatterns)
+#' # plot_richness_estimates(GlobalPatterns, "SampleType")
+#' # plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
+#' #
+#' # # Define a human-associated versus non-human categorical variable:
+#' # GP <- GlobalPatterns
+#' # human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
+#' # c("Feces", "Mock", "Skin", "Tongue")
+#' # human <- human.levels[getVariable(GP, "SampleType")]
+#' # names(human) <- sample.names(GP)
+#' # # Replace current SD with new one that includes human variable:
+#' # sampleData(GP) <- sampleData(data.frame(sampleData(GP), human))
+#' # 
+#' # # Can use new "human" variable within GP as a discrete variable in the plot
+#' # plot_richness_estimates(GP, "human", "SampleType")
+#' # plot_richness_estimates(GP, "SampleType", "human")
+#' #
+#' # # Can also provide custom factor directly:
+#' # plot_richness_estimates(GP, "SampleType", human)
+#' # plot_richness_estimates(GP, human, "SampleType")
+#' # 
+#' # # Not run: Should cause an error:
+#' # plot_richness_estimates(GP, "value", "value")
+#' # #
+plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){	
+	# Make the plotting data.frame 
+	DF <- data.frame(estimate_richness(physeq), sampleData(physeq))
+	
+	# If there is no "sample.names" variable in DF, add it
+	if( !"sample.names" %in% names(DF) ){
+		DF <- data.frame(DF, sample.names=sample.names(physeq))		
+	}
+
+	# If manually-supplied x or color, add to DF, dummy var_name
+	if(length(x) > 1){
+		DF    <- data.frame(DF, manual_x = x)
+		x     <- deparse(substitute(x))
+	}
+	if(length(color) > 1){
+		DF    <- data.frame(DF, manual_color = color)
+		color <- deparse(substitute(color))
+	}
+	
+	# melt, for different estimates
+	if( is.null(color) | identical(x, color) ){
+		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x)], 
+			id=c(x))
+	} else {
+		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x, color)], 
+			id=c(x, color))			
+	}
+			
+	# Add standard error to melted df
+	mdf    <- data.frame(mdf, se = c(rep(NA, nrow(DF)), DF[, "se.chao1"], DF[, "se.ACE"]) )	
+	
+	# map variables
+	if( is.null(color) ){
+		richness_map <- ggplot2::aes_string(x=x, y="value")				
+	} else {
+		richness_map <- ggplot2::aes_string(x=x, y="value", color=color)		
+	}
+	
+	# Make the ggplot. Note that because ggplot2 is fully loaded in namespace,
+	# its functions must be fully-qualified (ggplot2::), according to Bioconductor rules
+	p <- ggplot2::ggplot(mdf, richness_map) + 
+		ggplot2::geom_point(size=2) + 
+		ggplot2::geom_errorbar(ggplot2::aes(ymax=value + se, ymin=value - se), width=0.2) +	
+		ggplot2::opts(axis.text.x = ggplot2::theme_text(angle = -90, hjust = 0)) +
+		ggplot2::scale_y_continuous('richness [number of species]') +
+		ggplot2::facet_grid(~variable) 
+	return(p)
+}
+################################################################################
+################################################################################
 ################################################################################
 #' Convenient rendering of ordination results using ggplot2.
 #'
@@ -558,8 +831,8 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
 #'
 #' @export
-#' @docType methods
-#' @rdname taxaplot-methods
+#' @aliases plot_taxa_bar
+#' @rdname plot-taxa-bar
 #'
 #' @examples #
 #' # data(ex1)
@@ -672,99 +945,10 @@ taxaplot <- function(otu, taxavec="Domain",
 	return(p)
 }
 ################################################################################
-#' Create a taxa graph adjacency matrix from an \code{otuTable}.
-#' 
-#' By default, this uses a presence/absence criteria for taxa to determine
-#' if samples (vertices) are connected by edges, and then plot the result
-#' using the \code{\link[igraph]{igraph-package}}.
-#'
-#' @usage makenetwork(physeq, plotgraph=TRUE, 
-#'			community=TRUE, threshold=0, incommon=0.4, method="jaccard")
-#'
-#' @param physeq (Required). An \code{\link{otuTable-class}}
-#'  or \code{\link{phyloseq-class}} object.
-#'
-#' @param plotgraph A logical. Default TRUE. Indicates whether or 
-#'  not to plot the network
-#'
-#' @param community A logical. Default TRUE. If TRUE, RETURN will
-#'  include the community groups.
-#'
-#' @param threshold A single-value positive integer. Default 0. Indicates the
-#'  number of individuals/observations required for presense to be counted.
-#'  For example, threshold > 1 means that species with 2 or more reads
-#'  are considered present.
-#'
-#' @param incommon The fraction of co-occurring samples required for a pair
-#'  of species to be given an edge. Default is 0.4. This parameter has a 
-#'  strong influence on the resulting network, and must be chosen carefully.
-#'
-#' @param method A character string indicating the default distance method
-#'  parameter provided to \code{\link{vegdist}}. Default is ``jaccard''.
-#'
-#' @return Creates a plot of the adjacency graph and optionally returns the
-#'  community groups.
-#' 
-#' @author Susan Holmes
-#'
 #' @export
-#' @docType methods
-#'
-#' @examples
-#' ## data(enterotype)
-#' ## makenetwork(enterotype)
-makenetwork <- function(physeq, plotgraph=TRUE, community=TRUE, threshold=0, incommon=0.4, method="jaccard"){	
-	#require(vegan); require(igraph)
-
-	abund <- otuTable(physeq)
-
-	# transpose if speciesAreRows (vegan orientation)
-	if( speciesAreRows(abund) ){ abund <- t(abund) }
-
-	### Only take the rows where there are at least one value over threshold
-	abundance <- abund[rowSums(abund) > threshold, ]
-	n         <- nrow(abundance)
-
-	# Convert to 1,0 binary matrix for input to vegdist. -0 converts to numeric
-	presenceAbsence <- (abundance > threshold) - 0
-
-	##Compute the Jaccard distance between the rows, this will only make points
-	##closer if they are actually present together	
-	##You could use any of the other distances in vegan or elsewhere
-	jaccpa <- vegdist(presenceAbsence, method)
-	###Distances in R are vectors by default, we make them into matrices	
-	jaacm <- as.matrix(jaccpa)
-	coinc <- matrix(0, n, n)
-	ind1  <- which((jaacm>0 & jaacm<(1-incommon)),arr.ind=TRUE)
-	coinc[ind1] <- 1
-	dimnames(coinc) <- list(dimnames(abundance)[[1]],dimnames(abundance)[[1]])	
-	###If using the network package create the graph with	
-	###	g<-as.network.matrix(coinc,matrix.type="adjacency")
-	####Here I use the igraph adjacency command
-	ig=graph.adjacency(coinc)
-
-	###Take out the isolates
-	isolates=V(ig)[ degree(ig)==0 ]
-	ignoisol=delete.vertices(ig, V(ig)[ degree(ig)==0 ])
-	if (plotgraph==TRUE){
-		plot(ignoisol, layout=layout.fruchterman.reingold, 
-			vertex.size=0.6, vertex.label.dist=0.1, 
-			edge.arrow.mode="-",vertex.color="red",
-			vertex.label=NA,edge.color="blue")		
-		title("Co-occurrence graph without isolates")
-	}
-    if (community==TRUE){
-		communitywalk=walktrap.community(ignoisol)
-		nonisolates= V(ig)[ degree(ig)!=0 ]
-		group0=nonisolates[which(communitywalk$membership==0)]
-		group1=nonisolates[which(communitywalk$membership==1)]
-		###You can then play around with coloring and labelling in the graph
-		###For help don't forget to look up plot.igraph or plot.network
-		###not just plot as it inherits the plot method appropriate to its class
-		groups=list(group0,group1)
-		return(groups)
-	}
-}
+#' @aliases taxaplot
+#' @rdname plot-taxa-bar
+plot_taxa_bar <- taxaplot
 ################################################################################
 # tipsymbols and tiptext. Need to make both tipsymbols and tiptext documentation
 # point to this one.

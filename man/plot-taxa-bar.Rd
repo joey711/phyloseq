@@ -1,5 +1,5 @@
-\docType{methods}
 \name{taxaplot}
+\alias{plot_taxa_bar}
 \alias{taxaplot}
 \title{Create a structured barplot graphic of the taxonomic groups.}
 \usage{
@@ -7,6 +7,11 @@
   threshold=NULL, x_category="sample",
   fill_category=x_category, facet_formula = . ~ TaxaGroup,
   OTUpoints=FALSE, labelOTUs=FALSE)
+
+  plot_taxa_bar(otu, taxavec = "Domain", showOnlyTheseTaxa
+  = NULL, threshold = NULL, x_category = "sample",
+  fill_category = x_category, facet_formula = . ~
+  TaxaGroup, OTUpoints = FALSE, labelOTUs = FALSE)
 }
 \arguments{
   \item{otu}{(Required). An \code{otuTable} object, or

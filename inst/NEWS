@@ -9,6 +9,13 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.24
+===========
+* Advanced network/graph plotting/visualization wrappers: make_sample_network(), plot_sample_network()
+* Advanced alpha diversity wrappers: plot_richness_estimates(), estimate_richness()
+* Added taxafilter() function for even more convenient filtering of species/taxa
+* Added reshape dependency for explicit use of melt() function.
+
 v0.99.23
 ===========
 * Added a rooted tree to "GlobalPatterns" dataset

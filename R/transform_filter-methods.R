@@ -88,7 +88,8 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #'  Output class matches the class of \code{tree}.
 #'
 #' @seealso tipglom
-#' @import igraph
+#' @importFrom igraph graph.adjacency
+#' @importFrom igraph get.edgelist
 #' @keywords internal
 tipglom.internal <- function(tree, speciationMinLength){
 	# Create adjacency matrix, where tips are adjacent
@@ -102,8 +103,6 @@ tipglom.internal <- function(tree, speciationMinLength){
 	for( i in 1:length(spCliques)){
 		tree <- merge_species(tree, eqspecies=spCliques[[i]])
 	}
-	# Test if you missed anything:
-	# graph.adjacency( getTipDistMatrix(tree) < speciationMinLength, diag=FALSE )
 	return(tree)
 }
 #################################################################
@@ -829,6 +828,58 @@ filterfunSample = function(...){
 	}
 	class(f) <- "filterfun"
 	return(f)
+}
+################################################################################
+#' Filter taxa based on abundance criteria
+#'
+#' This is analogous to \code{\link[genefilter]{genefilter}}
+#' for microarray filtering. 
+#' Basically an extension of \code{\link[genefilter]{genefilter}}
+#' (from the Bioconductor repository) for phyloseq objects.
+#' 
+#' @usage filter_taxa(physeq, flist, prune=FALSE)
+#'
+#' @param physeq (Required). A \code{\link{phyloseq-class}} object that you
+#'  want to trim/filter.
+#'
+#' @param flist (Required). A function or list of functions that take a vector
+#'  of abundance values and return a logical. Some canned useful function types
+#'  are included in the \code{genefilter}-package.
+#'
+#' @param prune (Optional). A logical. Default \code{FALSE}. If \code{TRUE}, then
+#'  the function returns the pruned \code{\link{phyloseq-class}} object, rather
+#'  than the logical vector of taxa that passed the filter.
+#' 
+#' @return A logical vector equal to the number of species (taxa) in \code{physeq}.
+#'  This can be provided directly to \code{\link{prune_species}} as first argument.
+#'  Alternatively, if \code{prune==TRUE}, the pruned \code{\link{phyloseq-class}} 
+#'  object is returned instead.
+#' 
+#' @export
+#' @seealso 
+#' \code{\link[genefilter]{filterfun}},
+#' \code{\link{genefilterSample}},
+#' \code{\link{filterfunSample}}
+#' 
+#' @examples
+#' # library("genefilter")
+#' # data("enterotype")
+#' # flist <- filterfun(kOverA(5, 2e-08), allNA)
+#' # ans   <- filter_taxa(enterotype, flist)
+#' # trimmed.enterotype <- prune_species(ans, enterotype)
+#' # sum(!ans); nspecies(trimmed.enterotype)
+#' # filter_taxa(enterotype, flist, TRUE)
+filter_taxa <- function(physeq, flist, prune=FALSE){
+	OTU <- otuTable(enterotype)
+	if(!speciesAreRows(OTU)) {
+		OTU <- t(OTU)
+	}
+	ans <- apply(expr, 1, flist)
+	if( prune ){
+		return( prune_species(ans, physeq) )
+	} else {
+		return( ans )		
+	}
 }
 ############################################################
 #' Make filter fun. the most abundant \code{k} taxa
