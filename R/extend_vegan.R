@@ -42,6 +42,8 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 	vegdist(x, method, binary, diag, upper, na.rm, ...)	
 })
 ################################################################################
+# @importFrom vegan estimateR
+# @importFrom vegan diversity
 ################################################################################
 #' Summarize richness estimates
 #'
@@ -74,8 +76,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #'  \code{\link[vegan]{estimateR}},
 #'  \code{\link[vegan]{diversity}}
 #'
-#' @importFrom vegan estimateR
-#' @importFrom vegan diversity
+#' @import vegan
 #' @export
 #' @examples 
 #'  data(GlobalPatterns)
