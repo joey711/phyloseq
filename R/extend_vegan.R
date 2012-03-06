@@ -1,14 +1,24 @@
 ################################################################################
-# Define an S3 method for scores (originally defined by vegan-package) 
-# to work for pcoa results (ape::pcoa)
+# Define S3 methods for scores (originally defined by vegan-package) 
+# to work for other ordination results
 # vegan:::scores.default
 ################################################################################
+# pcoa-class, from ape::pcoa
 #' @keywords internal
-scores.pcoa <- function(x, choices=NULL, display="sites"){
+scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 	if(is.null(choices)){
 		choices <- colnames(x$vectors)
 	}
 	return( x$vectors[, choices] )
+}
+# dpcoa-class, from ade4::dpcoa or phyloseq::DPCoA
+#' @keywords internal
+scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
+	ifelse(display=="species", coords <- x$l1, coords <- x$l2)
+	if( is.null(choices) ){
+		choices <- colnames(coords)
+	}
+	return( coords[, choices] )
 }
 ################################################################################
 ################################################################################

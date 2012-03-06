@@ -9,6 +9,13 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.27
+===========
+* Added DPCoA() function for Double Principle Coordinate Analysis, relies heavily on ade4.
+* Added ade4 dependency. Some masking, but no errors apparent.
+* Added dpcoa extension for scores()
+* minor bugfix in plot_ordination_biplot().
+
 v0.99.26
 ===========
 * Add plot_ordination_samples() for convenient ordination plotting

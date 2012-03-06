@@ -604,7 +604,7 @@ plot_ordination_biplot <- function(mod, object,
 	########################################
 	# Create sites and species (taxa) data.frames
 	########################################
-	pmod      <- vegan::scores(mod, display=c("biplot","cn","sites","species"), scaling=1)
+	pmod      <- scores(mod, display=c("sites","species"), scaling=1)
 	sitesdata <- data.frame(axis1 = pmod$sites[, 1],   axis2 = pmod$sites[, 2]   )
 	specidata <- data.frame(axis1 = pmod$species[, 1], axis2 = pmod$species[, 2] )
 
