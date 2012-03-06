@@ -2,7 +2,8 @@
 \alias{plot_richness_estimates}
 \title{Plot richness estimates, flexibly with ggplot2}
 \usage{
-  plot_richness_estimates(physeq, x, color=NULL)
+  plot_richness_estimates(physeq, x, color=NULL,
+  shape=NULL)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
@@ -32,6 +33,17 @@
   automatically by \code{link{ggplot}}, but it can be
   modified afterward with an additional layer using
   \code{\link[ggplot2]{scale_color_manual}}.}
+
+  \item{shape}{(Optional). Default \code{NULL}. The sample
+  variable to map to different shapes. Like \code{x} and
+  \code{color}, this can be a single character string of
+  the variable name in \code{sampleData} (among the set
+  returned by \code{sample.variables(physeq)} ); or a
+  custom supplied vector with length equal to the number of
+  samples in the dataset (nsamples(physeq)). The shape
+  scale is chosen automatically by \code{link{ggplot}}, but
+  it can be modified afterward with an additional layer
+  using \code{\link[ggplot2]{scale_shape_manual}}.}
 }
 \value{
   A \code{\link{ggplot}} plot object summarizing the

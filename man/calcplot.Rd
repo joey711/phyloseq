@@ -49,7 +49,7 @@
   left-hand side of \code{X}.}
 
   \item{...}{Additional plotting arguments, passed on to
-  \code{\link{plot_ordination_phyloseq}}}
+  \code{\link{plot_ordination_biplot}}}
 }
 \value{
   A ggplot2 graphics object. If not stored as a variable, a

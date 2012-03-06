@@ -36,7 +36,7 @@
   \code{\link{plot_taxa_bar}}
   \code{\link{plot_sample_network}}
   \code{\link{plot_tree_phyloseq}}
-  \code{\link{plot_ordination_phyloseq}}
+  \code{\link{plot_ordination_biplot}}
   \code{\link{plot_richness_estimates}}
   \code{\link{calcplot}}
 }

@@ -29,7 +29,7 @@
 #'  \code{\link{plot_taxa_bar}}
 #'  \code{\link{plot_sample_network}}
 #'  \code{\link{plot_tree_phyloseq}}
-#'  \code{\link{plot_ordination_phyloseq}}
+#'  \code{\link{plot_ordination_biplot}}
 #'  \code{\link{plot_richness_estimates}}
 #'  \code{\link{calcplot}}
 #'
@@ -219,7 +219,7 @@ plot_sample_network <- function(g, physeq=NULL,
 #'
 #'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
 #'
-#' @usage plot_richness_estimates(physeq, x, color=NULL)
+#' @usage plot_richness_estimates(physeq, x, color=NULL, shape=NULL)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otuTable-class}}. The data about which you want to estimate
@@ -246,6 +246,18 @@ plot_sample_network <- function(g, physeq=NULL,
 #'  The color scheme is chosen automatically by \code{link{ggplot}},
 #'  but it can be modified afterward with an additional layer using
 #'  \code{\link[ggplot2]{scale_color_manual}}.
+#'
+#' @param shape (Optional). Default \code{NULL}. The sample variable to map
+#'  to different shapes. Like \code{x} and \code{color},
+#'  this can be a single character string 
+#'  of the variable name in 
+#'  \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'  The shape scale is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_shape_manual}}.
 #'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
@@ -282,7 +294,7 @@ plot_sample_network <- function(g, physeq=NULL,
 #' # # Not run: Should cause an error:
 #' # plot_richness_estimates(GP, "value", "value")
 #' # #
-plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){	
+plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=NULL){	
 	# Make the plotting data.frame 
 	DF <- data.frame(estimate_richness(physeq), sampleData(physeq))
 	
@@ -291,14 +303,21 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){
 		DF <- data.frame(DF, sample.names=sample.names(physeq))		
 	}
 
-	# If manually-supplied x or color, add to DF, dummy var_name
+	# If manually-supplied x, color, shape, add to DF, dummy var_name
 	if(length(x) > 1){
-		DF    <- data.frame(DF, manual_x = x)
-		x     <- deparse(substitute(x))
+		DF$x <- x
+		names(DF)[names(DF)=="x"] <- deparse(substitute(x))
+		x <- deparse(substitute(x))
 	}
 	if(length(color) > 1){
-		DF    <- data.frame(DF, manual_color = color)
+		DF$color <- color
+		names(DF)[names(DF)=="color"] <- deparse(substitute(color))
 		color <- deparse(substitute(color))
+	}
+	if(length(shape) > 1){
+		DF$shape <- shape
+		names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
+		shape <- deparse(substitute(shape))
 	}
 	
 	# melt, for different estimates
@@ -314,11 +333,7 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){
 	mdf    <- data.frame(mdf, se = c(rep(NA, nrow(DF)), DF[, "se.chao1"], DF[, "se.ACE"]) )	
 	
 	# map variables
-	if( is.null(color) ){
-		richness_map <- ggplot2::aes_string(x=x, y="value")				
-	} else {
-		richness_map <- ggplot2::aes_string(x=x, y="value", color=color)		
-	}
+	richness_map <- ggplot2::aes_string(x=x, y="value", color=color, shape=shape)		
 	
 	# Make the ggplot. Note that because ggplot2 is fully loaded in namespace,
 	# its functions must be fully-qualified (ggplot2::), according to Bioconductor rules
@@ -333,7 +348,125 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){
 ################################################################################
 ################################################################################
 ################################################################################
-#' Convenient rendering of ordination results using ggplot2.
+#' Convenient rendering of ordination samples/sites using ggplot2.
+#'
+#' Convenience wrapper for plotting ordination results as a 
+#' \code{ggplot2}-graphic, including
+#' additional annotation in the form of shading, shape, and/or labels of
+#' sample variables.
+#'
+#' @usage plot_ordination_samples(physeq, ordination, axes=c(1, 2),
+#' 	color=NULL, shape=NULL, label=NULL, title=NULL)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
+#'  an \code{\link{sampleData-class}}. The data about which you want to 
+#'  plot and annotate the ordination.
+#'
+#' @param ordination (Required). An ordination object. Many different classes
+#'  of ordination are defined by \code{R} packages. The supported classes 
+#'  should be listed explicitly, but in the meantime, all ordination classes
+#'  currently supported by the \code{\link[vegan]{scores}} function are
+#'  supported here. There is no default, as the expectation is that the 
+#'  ordination will be performed and saved prior to calling this plot function.
+#'
+#' @param axes (Optional). A 2-element vector indicating the axes of the 
+#'  ordination that should be used for plotting. 
+#'  Can be \code{\link{character-class}} or \code{\link{integer-class}},
+#'  naming the index name or index of the desired axis for the horizontal 
+#'  and vertical axes, respectively, in that order. The default value, 
+#'  \code{c(1, 2)}, specifies the first two axes of the provided ordination.
+#'
+#' @param color (Optional). Default \code{NULL}. The sample variable to map
+#'  to different colors. This can be a single character string 
+#'  of the variable name in 
+#'  \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'  The color scheme is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_color_manual}}.
+#'
+#' @param shape (Optional). Default \code{NULL}. The sample variable to map
+#'  to different shapes. Like \code{color},
+#'  this can be a single character string 
+#'  of the variable name in 
+#'  \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'  The shape scale is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_shape_manual}}.
+#'
+#' @param label (Optional). Default \code{NULL}. The sample variable to
+#'  use for labelling each sample coordinate in the plot. 
+#'
+#' @param title (Optional). Default \code{NULL}. Character string. The
+#'  title to include over the plot. 
+#'
+#' @return A \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result for the specified axes.
+#' 
+#' @seealso 
+#'  \code{\link{plot_ordination_biplot}}
+#'
+#' @export
+#' @examples 
+#' # data(GlobalPatterns)
+#' # # Define a human-associated versus non-human binary variable:
+#' # human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in% 
+#' #      c("Feces", "Mock", "Skin", "Tongue")
+#' # human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
+#' # names(human) <- sample.names(GlobalPatterns)
+#' # # Add the human variable to GlobalPatterns sample data
+#' # sampleData(GlobalPatterns)$human <- human
+#' # # Calculate the Bray-Curtis distance between each sample
+#' # GP.dist <- vegdist(GlobalPatterns, "bray")
+#' # # Perform principle coordinates analysis
+#' # GP.dist.pcoa <- pcoa(GP.dist)
+#' # (p1 <- plot_ordination_samples(GlobalPatterns, GP.dist.pcoa, shape=human, color="SampleType") )
+plot_ordination_samples <- function(physeq, ordination, axes=c(1, 2),
+	color=NULL, shape=NULL, label=NULL, title=NULL){
+
+	if(class(physeq)!="phyloseq"){stop("physeq must be phyloseq- or sampleData-class.")}
+
+	DF   <- data.frame(scores(ordination, choices=axes, display="sites"), sampleData(physeq))
+
+	if( length(color) > 1 ){
+		DF$color <- color
+		names(DF)[names(DF)=="color"] <- deparse(substitute(color))
+		color <- deparse(substitute(color))
+	}
+	if( length(shape) > 1 ){
+		DF$shape <- shape
+		names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
+		shape <- deparse(substitute(shape))
+	}	
+	if( length(label) > 1 ){
+		DF$label <- label
+		names(DF)[names(DF)=="label"] <- deparse(substitute(label))
+		label <- deparse(substitute(label))
+	}
+
+	ord_map <- ggplot2::aes_string(x=names(DF)[axes[1]], y=names(DF)[axes[2]], color=color, shape=shape)
+
+	# build plot
+	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(size=4)
+
+	# Add the text labels
+	if( !is.null(label) ){
+		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label), size=2, hjust=1.35)
+	}
+
+	if( !is.null(title) ){
+		p <- p + ggplot2::opts(title = title)
+	}
+	return(p)
+}
+################################################################################
+################################################################################
+#' Convenient rendering of ordination biplot using ggplot2.
 #'
 #' This convenience function includes many useful defaults for generating a
 #' plot of your ordination. This supplements the default plots created by the
@@ -347,7 +480,7 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){
 #' the specific examples provided by the phyloseq vignette, or the more 
 #' comprehensive documentation available for the ggplot2 package itself. 
 #' 
-#' @usage plot_ordination_phyloseq(mod, object,
+#' @usage plot_ordination_biplot(mod, object,
 #'	plot_title = as(mod$call, "character")[1],
 #'	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
 #'	species_alpha=1/10, sites_alpha=2/3,
@@ -427,6 +560,8 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){
 #' @seealso \code{\link{calcplot}}, \code{\link[vegan]{plot.cca}}, \code{\link[vegan]{cca.object}}
 #' @import vegan
 #' @export
+#' @aliases plot_ordination_phyloseq
+#' @rdname plot_ordination_biplot
 #' @examples
 #' # data(ex1)
 #' # ex4  <- transformsamplecounts(ex1, threshrankfun(500))
@@ -434,25 +569,25 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL){
 #' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
 #' # # CCA
 #' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-#' # plot_ordination_phyloseq(modr, ex1)
-#' # plot_ordination_phyloseq(modc, ex1)
-#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
-#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+#' # plot_ordination_biplot(modr, ex1)
+#' # plot_ordination_biplot(modc, ex1)
+#' # plot_ordination_biplot(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
+#' # plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
 #' # site_shape_category="Diet", site_color_category="Gender", species_alpha=1)
-#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+#' # plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
 #' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
 #' # species_alpha=0.4, sites_alpha=2/3,
 #' # add_sites_data=data.frame(total.reads=sampleSums(ex1)) 
 #' # site.colors <- c("darkorchid1", "blue3")
 #' # species.col.groups <- unique(as(taxTab(ex1), "matrix")[,"Phylum"])
 #' # man.colors <- c(site.colors, rainbow((1+length(species.col.groups)),start=11/12, end=5/12))
-#' # p<-plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+#' # p<-plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
 #' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
 #' # species_alpha=0.4, sites_alpha=2/3,
 #' # add_sites_data=data.frame(total.reads=sampleSums(ex1)),
 #' # man.colors=man.colors)
 #' # print(p)
-plot_ordination_phyloseq <- function(mod, object,
+plot_ordination_biplot <- function(mod, object,
 	plot_title = as(mod$call, "character")[1],
 	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
 	species_alpha=1/10, sites_alpha=2/3,
@@ -465,7 +600,6 @@ plot_ordination_phyloseq <- function(mod, object,
 	add_sites_data = NULL,
 	add_taxa_data = NULL
 			){
-	#require("ggplot2")
 
 	########################################
 	# Create sites and species (taxa) data.frames
@@ -585,6 +719,10 @@ plot_ordination_phyloseq <- function(mod, object,
 	return(p)
 }
 ################################################################################
+#' @export
+#' @aliases plot_ordination_biplot
+#' @rdname plot_ordination_biplot
+plot_ordination_phyloseq <- plot_ordination_biplot
 # calcplot
 ################################################################################
 #' Convenience wrapper for performing ordination and plotting.
@@ -626,7 +764,7 @@ plot_ordination_phyloseq <- function(mod, object,
 #'  side of \code{X}.
 #'
 #' @param ... Additional plotting arguments, passed on to 
-#'  \code{\link{plot_ordination_phyloseq}}
+#'  \code{\link{plot_ordination_biplot}}
 #'
 #' @return A ggplot2 graphics object. If not stored as a variable, a graphic
 #'  object will be produced on the default device. 
@@ -655,7 +793,7 @@ calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 
 	ord_vars <- all.vars(X)[-1]
 
-	# Initialize call list for plot_ordination_phyloseq
+	# Initialize call list for plot_ordination_biplot
 	popcallList <- list(mod=mod, object=object)
 
 	# Populate the shading/shaping options in the call list.
@@ -667,7 +805,7 @@ calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
 	}
 	
 	# Create the plot
-	do.call("plot_ordination_phyloseq", popcallList)
+	do.call("plot_ordination_biplot", popcallList)
 }
 ################################################################################
 ################################################################################

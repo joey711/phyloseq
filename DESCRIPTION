@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.99.25
-Date: 2012-02-29
+Version: 0.99.26
+Date: 2012-03-05
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Description: phyloseq is a set of classes, wrappers, and
@@ -24,7 +24,6 @@ Depends:
     picante (>= 1.3),
     ggplot2 (>= 0.8)
 Suggests:
-    adephylo,
     ade4,
     genefilter
 Enhances: doParallel (>= 1.0)

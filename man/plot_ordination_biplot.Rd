@@ -1,8 +1,9 @@
-\name{plot_ordination_phyloseq}
+\name{plot_ordination_biplot}
+\alias{plot_ordination_biplot}
 \alias{plot_ordination_phyloseq}
-\title{Convenient rendering of ordination results using ggplot2.}
+\title{Convenient rendering of ordination biplot using ggplot2.}
 \usage{
-  plot_ordination_phyloseq(mod, object, plot_title =
+  plot_ordination_biplot(mod, object, plot_title =
   as(mod$call, "character")[1], man.colors=NULL,
   man.sizes=NULL, man.shapes=NULL, species_alpha=1/10,
   sites_alpha=2/3, species_color_category =NULL,
@@ -10,6 +11,15 @@
   =NULL, site_color_category=NULL,
   site_shape_category=NULL, site_size_category=NULL,
   add_sites_data = NULL, add_taxa_data = NULL)
+
+  plot_ordination_phyloseq(mod, object, plot_title =
+  as(mod$call, "character")[1], man.colors = NULL,
+  man.sizes = NULL, man.shapes = NULL, species_alpha =
+  1/10, sites_alpha = 2/3, species_color_category = NULL,
+  species_shape_category = NULL, species_size_category =
+  NULL, site_color_category = NULL, site_shape_category =
+  NULL, site_size_category = NULL, add_sites_data = NULL,
+  add_taxa_data = NULL)
 }
 \arguments{
   \item{mod}{(Required). A \code{cca} or \code{rda} results
@@ -108,19 +118,19 @@
 # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
 # # CCA
 # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-# plot_ordination_phyloseq(modr, ex1)
-# plot_ordination_phyloseq(modc, ex1)
-# plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
-# plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+# plot_ordination_biplot(modr, ex1)
+# plot_ordination_biplot(modc, ex1)
+# plot_ordination_biplot(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
+# plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
 # site_shape_category="Diet", site_color_category="Gender", species_alpha=1)
-# plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+# plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
 # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
 # species_alpha=0.4, sites_alpha=2/3,
 # add_sites_data=data.frame(total.reads=sampleSums(ex1))
 # site.colors <- c("darkorchid1", "blue3")
 # species.col.groups <- unique(as(taxTab(ex1), "matrix")[,"Phylum"])
 # man.colors <- c(site.colors, rainbow((1+length(species.col.groups)),start=11/12, end=5/12))
-# p<-plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
+# p<-plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
 # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
 # species_alpha=0.4, sites_alpha=2/3,
 # add_sites_data=data.frame(total.reads=sampleSums(ex1)),

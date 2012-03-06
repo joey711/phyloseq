@@ -1,4 +1,17 @@
 ################################################################################
+# Define an S3 method for scores (originally defined by vegan-package) 
+# to work for pcoa results (ape::pcoa)
+# vegan:::scores.default
+################################################################################
+#' @keywords internal
+scores.pcoa <- function(x, choices=NULL, display="sites"){
+	if(is.null(choices)){
+		choices <- colnames(x$vectors)
+	}
+	return( x$vectors[, choices] )
+}
+################################################################################
+################################################################################
 # Extend vegdist for phyloseq classes
 # @importFrom vegan vegdist
 ################################################################################
