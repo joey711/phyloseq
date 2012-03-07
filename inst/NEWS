@@ -9,6 +9,11 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.29
+===========
+* Added first-draft of analysis vignette to package
+* Total package-space and build/check times tested
+
 v0.99.28
 ===========
 * Fixed bug when specifying alternative axes in plot_ordination_samples()

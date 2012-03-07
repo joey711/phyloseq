@@ -1,0 +1,689 @@
+%\VignetteIndexEntry{phyloseq basics}
+%\VignetteKeywords{access, subset, merge, build} 
+%\VignettePackage{phyloseq}
+
+%
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+\documentclass[10pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage[width=.85\textwidth,font=small,labelfont=bf]{caption}
+\usepackage{subfig}
+
+\textwidth=6.5in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=-.1in
+\evensidemargin=-.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+
+\newcommand{\R}{{\textsf{R}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\term}[1]{{\emph{#1}}}
+\newcommand{\Rpackage}[1]{\textsf{#1}}
+\newcommand{\Rfunction}[1]{\texttt{#1}}
+\newcommand{\Robject}[1]{\texttt{#1}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+
+%\bibliographystyle{plainnat} % works
+%\bibliographystyle{nature}
+%\bibliographystyle{biblatex-nature}
+%\bibliographystyle{science}
+%\bibliographystyle{biblatex-science}
+%\bibliographystyle{pnas2009} % works
+\bibliographystyle{naturemag}
+
+
+\begin{document}
+
+\title{ Vignette for phyloseq: A Bioconductor package for handling and analysis of high-throughput phylogenetic sequence data }
+
+\author{Paul J. M{c}Murdie and Susan Holmes$^*$\\
+Statistics Department, Stanford University,\\
+Stanford, CA 94305, USA\\
+$^*$E-mail: mcmurdie@stanford.edu\\
+https://github.com/joey711/phyloseq}
+
+\date{\today}
+
+\maketitle
+
+\tableofcontents
+
+\clearpage
+
+\section{Summary}
+There are already several ecology and phylogenetic packages available in R, including the adephylo, vegan, ade4, picante, ape, phangorn, phylobase, and OTUbase packages. These can already take advantage of many of the powerful statistical and graphics tools available in R. However, at present a user must devise their own methods for parsing the output of their favorite OTU clustering application, and, as a consequence, there is also no standard within Bioconductor (or R generally) for storing or sharing the suite of related data objects that describe a phylogenetic sequencing project. The phyloseq package seeks to address these issues by providing a related set of S4 classes that internally manage the handling tasks associated with organizing, linking, storing, and analyzing phylogenetic sequencing data. \emph{phyloseq} additionally provides some convenience wrappers for input from common clustering applications, common analysis pipelines, and native implementation of methods that are not available in other R packages.
+
+\renewcommand{\thefootnote}{\alph{footnote}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% About this vignette
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{About this vignette}
+
+A separate vignette is included within the phyloseq-package that describes the basics of importing pre-clustered phylogenetic sequencing data, data filtering, as well as some transformations and some additional details about the package and installation. A quick way to load it is:
+
+<<eval=FALSE>>=
+vignette("phyloseq_basics")
+@
+
+By contrast, this vignette is intended to provide functional examples of the analysis tools and wrappers included in phyloseq. All necessary code for performing the analysis and producing graphics will be included with its description, and the focus will be on the use of example data that is included and documented within the phyloseq-package.
+
+Let's start by loading the \code{phyloseq-package}:
+
+<<>>=
+library("phyloseq")
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simple graphics
+\clearpage
+\section{Simple exploratory graphics}\label{sec:explots}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Easy Richness Estimates}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<fig=FALSE, include=FALSE>>=
+data(GlobalPatterns)
+(p <- plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType"))
+@
+<<echo=FALSE>>=
+ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=7, height=7)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{phyloseq_analysis-richness_estimates}
+\captionsetup{width=1.0\textwidth}
+\caption{Estimates of the species richness of samples in the ``Global Patterns'' dataset.}
+\label{fig:richness}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsection{Exploratory tree plots}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\emph{phyloseq} also contains a method for easily annotating a phylogenetic tree with information regarding the sample in which a particular taxa was observed, and optionally the numbe of individuals that were observed. In the following example we use the included ``esophagus'' dataset. 
+
+\code{esophagus} is comprised of only 3 samples and so does not include any \code{sampleData}. For our tree example we must first make dummy \code{sampleData} that only refers to the 3 sample names. 
+
+<<fig=FALSE>>=
+data(esophagus)
+es1             <- esophagus
+sn              <- sample.names(esophagus)
+sampleData(es1) <- sampleData(data.frame(sample=sn, row.names=sn))
+@
+
+And now we will create the tree graphic, grouping/coloring by our dummy sample-name variable, and also labelling the number of individuals observed in each sample (if at all). The symbols are slightly enlarged as the number of individuals increases.
+<<fig=TRUE>>=
+plot_tree_phyloseq(es1, color_factor="sample",
+			type_abundance_value=TRUE, treeTitle="esophagus example data")
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsection{Exploratory bar plots}\label{sec:barplots}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In the following example we use the included ``enterotype'' dataset~\cite{Arumugam:2011fk}. 
+<<>>=
+data(enterotype)
+@
+We start with a simple rank abundance barplot, using the cumulative fractional abundance of each \underline{O}perational \underline{T}axonomic \underline{U}nit (OTU) in the dataset. In this particular example, the available published data are pre-processed/simplified as sample-wise fractional occurrences (rather than counts of individuals; preffered), and OTUs are clustered/labeled at the genus level. For the barplot in Figure~\ref{fig:abundbarplot}, we further normalize by the total number of samples (\Sexpr{nsamples(enterotype)}).
+
+<<EntAbundPlot, include=FALSE, fig=TRUE, height=6, width=8>>=
+par(mar = c(10, 4, 4, 2) + 0.1) # make more room on bottom margin for genera names
+N <- 30
+barplot(sort(speciesSums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
+\caption{An example exploratory barplot using base \code{R} graphics and the \code{speciesSums} and \code{nsamples} functions.}
+\label{fig:abundbarplot}
+\end{figure}
+
+Note that this first barplot is clipped at the \Sexpr{N}th OTU. This was chosen because \code{nspecies(enterotype) =} \Sexpr{nspecies(enterotype)} OTUs would not be legible on the plot. As you can see, the relative abundances have decreased dramatically by the 10th-ranked OTU.  
+
+So what are these OTUs? In the \code{enterotype} dataset, only a single taxonomic rank type is present:
+<<>>=
+rank.names(enterotype)
+@
+This means the OTUs in this dataset have been grouped at the level of genera, and no other taxonomic grouping/transformation is possible without additional information (like might be present in a phylogenetic tree, or with further taxonomic classification analysis).
+
+We need to know which taxonomic rank classifiers, if any, we have available to specify in the second barplot function in this example, \code{plot{\_}taxa{\_}bar()}. We have already observed how quickly the abundance decreases with rank, so wo we will subset the enterotype dataset to the most abundant \code{N} taxa in order to make the barplot legible on this page.
+
+<<>>=
+TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
+entTop   <- prune_species(TopNOTUs, enterotype)
+print(entTop)
+@
+
+Note also that there are \Sexpr{nsamples(entTop)} samples in this dataset, and so a remaining challenge is to consolidate these samples into meaningful groups. A good place to look is the available sample variables, which in most cases will carry more ``meaning'' than the sample names alone.
+
+<<>>=
+sample.variables(entTop)
+@
+
+The parameters to \code{plot{\_}taxa{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sampleData}, the \code{plot{\_}taxa{\_}bar()} function recognizes a special parameter name \code{"TaxaGroup"}, which is not (should not be) a sample variable name in \mbox{\code{sampleData(enterotype)}}, but instead indicates that the particular graphic parameter should group values by the taxanomic rank specified in the \code{taxavec} argument. In this example we have also elected to separate the samples by ``facets'' (separate, adjacent sub-plots) according to the enterotype to which they have been assigned. Within each enterotype facet, the samples are further separated by sequencing technology, and the genera is indicated by fill color. Multiple samples having the same enterotype designation and sequencing technology are plotted side-by-side as separate bars. 
+
+<<entbarplot, include=FALSE, fig=TRUE, height=6, width=8>>=
+p <- plot_taxa_bar(entTop, taxavec="Genus", x_category="SeqTech", fill_category = "TaxaGroup")
+p <- p + facet_wrap(~Enterotype) # Do a facet_wrap
+print(p)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{phyloseq_analysis-entbarplot}
+\captionsetup{width=1.0\textwidth}
+\caption{An example exploratory barplot using the \code{plot{\_}taxa{\_}bar()} function. In this case we have faceted the samples according to their assigned Enterotype. Within each Enterotype facet, the samples are further separated by sequencing technology, and each genera is shaded a different color. Multiple samples from the same Enterotype and sequencing technology are plotted side-by-side as separate bars (dodged).}
+\label{fig:barplot}
+\end{figure}
+
+Figure~\ref{fig:barplot} summarizes quantitatively the increased abundances of \emph{Bacteroides} and \emph{Prevotella} in the Enterotypes 1 and 2, respectively. Interestingly, a large relative abundance of \emph{Blautia} was observed for Enterotype 3, but only from 454-pyrosequencing data sets, not the Illumina or Sanger datasets. This suggests the increased \emph{Blautia} might actually be an artifact. Similarly, \emph{Prevotella} appears to be one of the most abundant genera in the Illumina-sequenced samples among Enterotype 3, but this is not reproduced in the 454-pyrosequencing or Sanger sequencing data.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Exploratory Analysis, and more complex exploratory graphics.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Exploratory analysis and graphics}\label{sec:analysisplots}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% makenetwork
+%\clearpage
+\subsection{Microbiome Graphical/Network Models}\label{sec:network}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Continuing with the \code{enterotype} dataset, here are some examples for creating custom graphical models of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} package, and uses \code{ggplot2} to create a graphical display of the ``connectedness'' of samples according to some user-provided ecological similarity.  
+
+<<ent-network, fig=FALSE, eval=TRUE>>=
+data(enterotype)
+ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+(p  <- plot_sample_network(ig, enterotype, 
+          color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL))
+@
+<<echo=FALSE>>=
+ggsave("phyloseq_analysis-plot_sample_network.pdf", p, width=7, height=7)
+@
+
+Interestingly, at this level of analysis and parameter-settings the two major sub-graphs appear to be best explained by the sequencing technology and not the subject enterotype (Figure~\ref{fig:makenetwork}), suggesting that the choice of sequencing technology has a major effect on the microbial community one can observe. This seems to differ somewhat with the inferences described in the ``enterotype'' article~\cite{Arumugam:2011fk}. However, there could be some confounding or hidden variables that might also explain this phenomenon, and the well-known differences in the sequence totals between the technologies may also be an important factor. Furthermore, since this is clearly an experimental artifact (and they were including data from multiple studies that were not orginally planned for this purpose), it may be that the enterotype observation can also be shown in a network analysis of this data after removing the effect of sequencing technology and related sequencing effort. Such an effort would be interesting to show here, but is not yet included.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-plot_sample_network.pdf}
+\caption{Graphical model of the relationship between microbiome samples in the ``Enterotype'' dataset~\cite{Arumugam:2011fk}.}
+\label{fig:makenetwork}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ordination
+\clearpage
+\subsection{Ordination Methods}\label{sec:ordination}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Principal Coordinates Analysis (PCoA)}\label{sec:PCoA}
+We take as our first example, a reproduction of Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The authors show a 3-dimensional representation of the first three axes of a Principal Coordinates Analysis (PCoA) performed on the unweighted-UniFrac distance (see section~\ref{sec:unifrac}) using all of the available sequences (their approach included both 5' and 3' sequences). According to the authors, ``the first axis [appears to be associated with a] host associated/free living [classification],'' and similarly the third axis with ``saline/nonsaline environment[s].''
+
+The following reproduces the unweighted UniFrac distance calculation on the full dataset. Note that this calculation can take a long time because of the large number of OTUs. Parallelization is recommended for large datasets, typically if they are as large as \code{GlobalPatterns}, or larger. For details on parallelization, see the details section and examples in the \code{UniFrac()} documentation, and also the page dedicated to the topic on the phyloseq-wiki:
+
+\url{https://github.com/joey711/phyloseq/wiki/Fast-Parallel-UniFrac}
+
+<<>>=
+data(GlobalPatterns)
+@
+<<eval=FALSE>>=
+GPUF <- UniFrac(GlobalPatterns)
+@
+<<echo=FALSE>>=
+# Loads the pre-computed distance matrix, GPUF
+load("Unweighted_UniFrac.RData")
+@
+<<>>=
+GloPa.pcoa <- pcoa(GPUF)
+@
+
+Before we look at the results, let's first investigate how much of the total distance structure we will capture in the first few axes. We can do this graphically with a ``scree plot'', an ordered barplot of the relative fraction of the total eigenvalues associated with each axis (Fig.~\ref{fig:PCoAScree}).
+
+<<PCoAScree, fig=TRUE, include=FALSE, width=6, height=4>>=
+barplot(GloPa.pcoa$values$Relative_eig)
+@
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.6\textwidth]{phyloseq_analysis-PCoAScree}
+\captionsetup{width=0.6\textwidth}
+\caption{Scree plot of the PCoA used to create Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The first three axes represent \Sexpr{round(100*sum(GloPa.pcoa$values$Relative_eig[1:3]))}\% of the total variation in the distances. Interestingly, the fourth axis represents another \Sexpr{round(100*(GloPa.pcoa$values$Relative_eig[4]))}\%, and so may warrant exploration as well. A scree plot is an important tool for any ordination method, as the relative importance of axes can vary widely from one dataset to another.}
+\label{fig:PCoAScree}
+\end{figure}
+
+\clearpage
+Next, we will reproduce Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}, but separating the three axes into 2 plots using \code{plot{\_}ordination{\_}samples()} (Fig.~\ref{fig:GPfig5}). 
+
+<<GPfig5ax1213, fig=FALSE, include=FALSE>>=
+(p12 <- plot_ordination_samples(GlobalPatterns, GloPa.pcoa, color="SampleType") + geom_line() )
+(p13 <- plot_ordination_samples(GlobalPatterns, GloPa.pcoa, axes=c(1, 3),
+                                color="SampleType") + geom_line() )
+@
+<<echo=FALSE, include=FALSE, fig=FALSE>>=
+ggsave("phyloseq_analysis-GPfig5ax12.pdf", p12, width=9, height=7)
+ggsave("phyloseq_analysis-GPfig5ax13.pdf", p13, width=9, height=7)
+@
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{phyloseq_analysis-GPfig5ax12}
+\includegraphics[width=0.8\textwidth]{phyloseq_analysis-GPfig5ax13}
+\captionsetup{width=0.8\textwidth}
+\caption{A reproduction in \emph{phyloseq} / \code{R} of the main panel of Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}, on two plots. The horizontal axis represents the first axis in the PCoA ordination, while the top and bottom vertical axes represent the second and third axes, respectively. Different points represent different samples within the dataset, and are shaded according to the environment category to which they belong. The color scheme is the default used by \emph{ggplot}. }
+\label{fig:GPfig5}
+\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% nmMDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsubsection{non-metric Multi-Dimensional Scaling (nmMDS)}\label{sec:nmMDS}
+We repeat the previous example, but instead using non-metric multidimensional scaling (nmMDS - \code{metaMDS()}) limited to just two dimensions. This approach limits the amount of residual distance ``not shown'' in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
+
+<<GP_UF_NMDS0, fig=FALSE, include=FALSE>>=
+# (Re)load UniFrac distance matrix and GlobalPatterns data
+data(GlobalPatterns)
+load("Unweighted_UniFrac.RData") # reloads GPUF variable
+GP.nmMDS <- metaMDS(GPUF, k=2) # perform nmMDS, set to 2 axes
+(p <- plot_ordination_samples(GlobalPatterns, GP.nmMDS, color="SampleType") + geom_line() )
+@
+<<GP_UF_NMDS1, echo=FALSE, fig=FALSE, include=FALSE>>=
+ggsave("phyloseq_analysis-GP_UF_NMDS.pdf", p, width=9, height=7)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{phyloseq_analysis-GP_UF_NMDS}
+\caption{An example exploratory ordination using non-metric multidimensional scaling (nmMDS) on the unweighted UniFrac distance between samples of the ``Global Patterns'' dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}.}
+\label{fig:GP_UF_NMDS}
+\end{figure}
+
+Figure~\ref{fig:GP_UF_NMDS} nicely shows the relative dissimilarities between microbial communities from different habitats. However, it fails to indicate \emph{what} was different between the communities. For an ordination method that provides information on the taxa that explain differences between samples (or groups of samples), we use Correspondence Analysis (Section~\ref{sec:CA}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsubsection{Correspondence Analysis (CA)}\label{sec:CA}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In the following section we will show continue our exploration of the ``GlobalPatterns'' dataset using various features of an ordination method called Correspondence Analysis. We give special emphasis to exploratory interpretations using the biplot, because it provides additional information that is not available from PCoA or nmMDS.
+
+Let's start by performing a Correspondence Analysis and investigating the scree plot (Figure~\ref{fig:GPCAscree}). Both interestingly and challengingly, the scree plot suggests that the \code{GlobalPatterns} abundance data is quite high-dimensional, with the first two CA axes accounting for not quite 17\% of the total (chi-square) variability. Note the absence of a steep decline in eigenvalue fraction as axis number increases. Each additional axis represents only marginally less variability than the previous. It is often more convenient if the first two (or three) axes account for most of the variability.
+
+<<GPCAscree, fig=TRUE, include=FALSE, width=8, height=5>>=
+data(GlobalPatterns)
+# Need to clean the zeros from GlobalPatterns:
+GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+# Now do the correspondence analysis
+gpca  <- cca.phyloseq(GP)
+barplot(gpca$CA$eig/sum(gpca$CA$eig), las=2)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-GPCAscree}
+\caption{The correspondence analysis (CA) scree plot of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
+\label{fig:GPCAscree}
+\end{figure}
+
+% \clearpage
+Now let's investigate how the samples behave on the first few CA axes.
+<<GPCA1234>>=
+(p12 <- plot_ordination_samples(GP, gpca, color="SampleType") + geom_line() )
+(p34 <- plot_ordination_samples(GP, gpca, axes=c(3, 4), color="SampleType") + geom_line() )
+@
+<<GPCA1234s, echo=FALSE, fig=FALSE, include=FALSE>>=
+ggsave("phyloseq_analysis-GPCA12.pdf", p12, width=9, height=7)
+ggsave("phyloseq_analysis-GPCA34.pdf", p34, width=9, height=7)
+@
+
+\begin{figure}[htbp]
+\centering
+\subfloat[Axes 1, 2]{\label{fig:sub:GPCA12}\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPCA12}}
+\subfloat[Axes 3, 4]{\label{fig:sub:GPCA34}\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPCA34}}
+\captionsetup{width=1.0\textwidth}
+\caption{First 4 axes of Correspondence Analysis (CA) of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
+\label{fig:GPCA}
+\end{figure}
+
+A clear feature of these plots is that the feces and mock communities cluster tightly together, far away from all other samples on the first axis (CA1) in Fig.~\ref{fig:sub:GPCA12}. The skin and tongue samples separate similarly, but on the second axis. Taken together, it appears that the first two axes are best explained by the separation of human-associated ``environments'' from the other non-human environments in the dataset, with a secondary separation of tongue and skin samples from feces. Later on we will use this extra categorical designation (human / non-human), so now is a good time to add it as an explicit variable of the `sampleData`:
+
+<<>>=
+# Define a human-associated versus non-human categorical variable:
+human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
+	c("Feces", "Mock", "Skin", "Tongue")
+human <- human.levels[getVariable(GP, "SampleType")]
+names(human) <- sample.names(GP)
+# Add new human variable to sample data:
+sampleData(GP)$human <- human
+@
+
+We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''.
+
+One way to create a biplot in \emph{phyloseq} is to use the included convenience wrapper:
+
+<<GPCAbiplot12, fig=FALSE, include=FALSE>>=
+(p <- plot_ordination_biplot(gpca, GP, "", species_color_category=NULL, 
+	site_color_category="SampleType", site_shape_category="human") + theme_bw() )
+@
+<<echo=FALSE>>=
+# Save as raster to control file size.
+ggsave("phyloseq_analysis-GPCAbiplot12.png", p, width=6, height=4, dpi=50)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPCAbiplot12}
+\caption{Biplot of the ``Global Patterns'' CA first two axes, using the dedicated convenience wrapper. The taxa are so diverse (even at the phylum level) that individual shading has been turned off. The darkest black spots are many species-points overlapping one another. In order to keep the file size low, this figure is saved as a low-density raster, but high-quality vector graphics are the default.}
+\label{fig:GPCAbiplot12}
+\end{figure}
+
+\clearpage
+While it may be useful to see an overview of how the many thousands of species are ultimately clustering in Fig~\ref{fig:GPCAbiplot12}, because there are so many species in this example it is difficult to discern any patterns. For instance, we might want to see how each phylum is represented along the axes. Before showing how to do that, let's first make a custom plot showing just the taxa, while remembering which directions in the coordinate space were important to us (Fig~\ref{fig:GPCAspecies})
+
+<<phylaTrim>>=
+# Make a data.frame for plotting species, GP CA coordinates
+DF <- data.frame(taxTab(GP), scores(gpca, choices=1:6, display="species"))
+# Sort the phyla names by their total cumulative abundance in the dataset
+top.TaxaGroup <- sort(
+	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+decreasing = TRUE)
+# Subset to just those phylum that are among the top-8 most observed in all samples
+DF <- subset(DF, Phylum %in% names(top.TaxaGroup)[1:8])
+# Fix phylum factor issue:
+DF$Phylum <- factor(as(DF$Phylum, "character"))
+@
+<<GPCAspecies, eval=TRUE>>=
+(p <- ggplot(DF, aes(x=CA1, y=CA2, color=Phylum)) + geom_point() + theme_bw() )
+@
+<<echo=FALSE>>=
+# Save as raster to control file size.
+ggsave("phyloseq_analysis-GPCAspecies3.png", plot=p, width=6, height=4, dpi=50)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPCAspecies3}
+\caption{Taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded by phylum. Only the top 8 most abundant phyla are included. There are so many individual taxa contributing to this CA that patterns are difficult to discern. In order to keep the file size low, this figure is saved as a low-density raster, but high-quality vector graphics are the default.}
+\label{fig:GPCAspecies}
+\end{figure}
+
+\clearpage
+Given the large number of points even this phylum-level shading -- and only including the most abundant phyla -- does not solve the problem of occlusion (Fig~\ref{fig:GPCAspecies}). This is typical of large datasets. The following is a way to solve the occlusion problem, while still getting useful information about individual species from different phyla that appear to contribute more than others to the separation of human samples from the others. We will need to investigate this further to determine the identities of the outlying species that have a large positive value on \code{CA1} or negative value on \code{CA2}.
+
+<<GPCAjitter0, include=FALSE, fig=FALSE>>=
+# Melt the species-data.frame, DF, to facet each CA axis separately
+mdf <- melt(DF[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
+            id=c("Phylum", "Family", "Genus") )
+# Select taxonomic-Family labels of special outliers
+LF <- rbind(
+  subset(mdf, Phylum=="Acidobacteria" & variable=="CA1" & value>1),
+  subset(mdf, Phylum=="Planctomycetes" & variable=="CA1" & value>1),
+  subset(mdf, Phylum=="Cyanobacteria" & variable=="CA2" & value < -2.5)
+  )
+# plot boxplot summaries of each CA-axis, with labels
+p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
+  facet_wrap(~variable, 2) + scale_colour_hue(legend = FALSE) +
+  theme_bw() + opts( axis.text.x = theme_text(angle = -90, hjust = 0) )
+# Add the text label layer, and render ggplot graphic
+(p <- p + geom_text(aes(Phylum, value+0.1, color=Phylum, label=Family), 
+                    data=LF, vjust=0, size=2) )
+@
+<<GPCAjitter, echo=FALSE>>=
+# Save as raster to control file size.
+#ggsave("phyloseq_analysis-GPCAjitter.png", p, width=6, height=6, dpi=75)
+ggsave("phyloseq_analysis-GPCAjitter.pdf", p, width=6, height=6)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=6in]{phyloseq_analysis-GPCAjitter}
+\caption{Boxplot of taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded by phylum. Only the top 8 most abundant phyla are included. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the cyanobacteria (\emph{Rivulariaceae}) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.}
+\label{fig:GPCAjitter}
+\end{figure}
+
+\clearpage
+One way to relate some of the high-level patterns we observed from correspondence analysis is to visualize the relative abundances of the relevant phylogenetic groups, to see if this does in fact support / explain the human/environment microbiome differences. Here is an example using the \code{plot{\_}taxa{\_}bar} function described earlier in Section~\ref{sec:barplots}.
+
+<<GPtaxaplot0, fig=FALSE, include=FALSE>>=
+(p <- plot_taxa_bar(GP, "Phylum", NULL, threshold=0.9, "human", "SampleType", 
+							facet_formula= TaxaGroup ~ .) )
+@
+<<GPtaxaplot, fig=FALSE, include=FALSE, width=6, height=7, echo=FALSE>>=
+ggsave("phyloseq_analysis-GPtaxaplot.pdf", p, width=8, height=10)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-GPtaxaplot}
+\caption{Phylum-level comparison of relative abundance of taxa in samples that are from human microbiomes (or not).}
+\label{fig:GPtaxaplot}
+\end{figure}
+
+In Fig~\ref{fig:GPtaxaplot} we've used the \code{threshold} parameter to omit all but phyla accounting for the top 90\% of phyla in any one sample. Some patterns emerging from this display appear to be: (1) Cyanobacteria, Actinobacteria appear under-represented in human samples; (2) conversely, Firmicutes appear over-represented in human samples; (3) Acidobacteria, Verrucomicrobia appear over-represented in the fecal samples; (4) the only Crenarchaeota were observed in the Mock sample, which is not really a community but a simulated community used as a control. These are not hugely surprising based on previous biological observations from the field, but it is hopefully useful code that can be applied on other datasets that you might have.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DISTANCE METHODS
+\clearpage
+\subsubsection{Double Principle Coordinate Analysis (DPCoA)}
+\code{DPCoA()}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DISTANCE METHODS
+\clearpage
+\subsection{Distance Methods}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{\code{distance()}: Central Distance Function}
+Many comparisons of microbiome samples, including the graphical model (Section~\ref{sec:network}) and the PCoA analysis (Section~\ref{sec:PCoA}), require a calculation for the relative dissimilarity of one microbial community to another, or ``distance''. Although not fully implemented yet, the phyloseq-package intends to provide a unified ecological distance function for calculating a matrix of microbial community distances between the samples in an experiment. This will surely include a wrapper for the several dozen distance calculations provided via the three distance functions in the \code{vegan}-package, many of the distance methods supported in the \code{ade4}-package, as well as the included \code{UniFrac} distance function (Section~\ref{sec:unifrac}), a method for calculating Double Principal Coordinate Analysis (DPCoA), as well as an extension to the vegan interface for arbitrary, user-defined distances.
+
+The function will take a \code{phyloseq-class} object and an argument indicating the distance type; and it will return a \code{dist}-class distance matrix.
+
+\subsubsection{\code{vegdist()} extension}
+The \emph{phyloseq} package includes an extension for the \code{vegdist()} function from the \emph{vegan} package~\cite{veganpkg}, which in-turn can calculate 14 or so ecologically relevant distances / dissimilarity indices. The primary argument should be a \code{phyloseq-class} object, and the expected result is a sample-wise distance matrix.
+
+<<eval=FALSE, echo=TRUE>>=
+data(esophagus)
+vegdist(esophagus)
+@
+\begin{scriptsize}
+\begin{samepage}
+<<echo=FALSE>>=
+data(esophagus)
+round( vegdist(esophagus), 3)
+@
+\end{samepage}
+\end{scriptsize}
+
+The available distances/dissimilarity indices calculated by \code{vegdist()} currently include the following: 
+<<echo=FALSE>>=
+c("manhattan", "euclidean", "canberra", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial", "chao")
+@
+These are specified by the \code{method=} argument. For example, if one alternatively wants to calculate the Jaccard distance instead of the default (Bray-Curtis), the following command will work:
+<<eval=FALSE, echo=TRUE>>=
+data(esophagus)
+vegdist(esophagus, "jaccard")
+@
+\begin{scriptsize}
+\begin{samepage}
+<<echo=FALSE>>=
+data(esophagus)
+round( vegdist(esophagus, "jaccard"), 3)
+@
+\end{samepage}
+\end{scriptsize}
+
+We also have plans to extend the \code{designdist}, \code{betadiver}, and \code{dist} functions, which provide even further options for distance type. \code{designdist} also provides a way to define a custom distance calculation, while \code{betadiver} calculates all 24 ecological distances reviewed in Koleff et al. 2003~\cite{Koleff2003JAE}. We plan to wrap all of these methods into one \emph{central} distance calculator method, say ``\code{sampleDistance()}'', that would also include UniFrac, DPCoA, etc. This will be implemented soon.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% UniFrac
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\subsubsection{UniFrac and weighted UniFrac}\label{sec:unifrac}
+UniFrac is a recently-defined~\cite{Lozupone:2005gn} and popular distance metric to summarize the difference between pairs of ecological communities. All UniFrac variants use a phylogenetic tree of the relationship among taxa as central information to calculating the distance between two samples/communities. An unweighted UniFrac distance matrix only considers the presence/absence of taxa, while weighted UniFrac accounts for the relative abundance of taxa as well as their phylogenetic distance. Prior to \emph{phyloseq}, a non-parallelized, non-Fast implementation of the unweighted UniFrac was available in \R{} packages (\code{picante::unifrac}~\cite{Kembel:2010ft}). In the \emph{phyloseq} package we provide optionally-parallelized implementations of Fast UniFrac~\cite{Hamady:2009fk} (both weighted and unweighted, with plans for additional UniFrac variants), all of which return a sample-wise distance matrix from any \code{phyloseq-class} object that contains a phylogenetic tree component. 
+
+The following is an example calculating the UniFrac distance (both weighted and unweighted) matrix using the ``esophagus'' example dataset:
+
+<<eval=FALSE, echo=TRUE>>=
+data(esophagus)
+UniFrac(esophagus, weighted=TRUE)
+UniFrac(esophagus, weighted=FALSE)
+@
+\begin{scriptsize}
+\begin{samepage}
+<<echo=FALSE>>=
+round( UniFrac(esophagus, weighted=TRUE), 3)
+round( UniFrac(esophagus, weighted=FALSE), 3)
+@
+\end{samepage}
+\end{scriptsize}
+
+See the wiki-page devoted to details about calculating the UniFrac distances for your experiment. In particular, some example run-times are provided for comparison, as well as details for initializing a parallel ``back end'' to perform the computation with multiple processor cores simultaneously:
+
+\url{https://github.com/joey711/phyloseq/wiki/Fast-Parallel-UniFrac}
+
+\subsection{Hierarchical Clustering}
+Another potentially useful and popular way to visualize/decompose sample-distance matrices is through hierarchical clustering (e.g. \code{hclust()}). In the following example, we reproduce Figure~4 from the ``Global Patterns'' article~\cite{Caporaso15032011}, using the unweighted UniFrac distance and the UPGMA method (\code{hclust} parameter \code{method="average"}). Try \code{help("hclust")} for alternative clustering methods included in standard \code{R}.
+<<>>=
+# (Re)load UniFrac distance matrix and GlobalPatterns data
+data(GlobalPatterns)
+load("Unweighted_UniFrac.RData") # reloads GPUF variable
+# Manually define color-shading vector based on sample type.
+colorScale    <- rainbow(length(levels(getVariable(GlobalPatterns, "SampleType"))))
+cols          <- colorScale[getVariable(GlobalPatterns, "SampleType")] 
+GP.tip.labels <- as(getVariable(GlobalPatterns, "SampleType"), "character")
+GP.hclust     <- hclust(GPUF, method="average")
+@
+
+Plot the hierarchical clustering results as a dendrogram, after first converting the \code{hclust-class} object to \code{phylo-class} tree using the \code{as.phylo()} function.
+
+<<GPfig4, fig=TRUE, include=FALSE, width=5, height=6>>=
+plot(as.phylo(GP.hclust), show.tip.label=TRUE, tip.color="white")
+tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
+@
+
+Create an alternative plot, using the Jaccard distance and complete-linkage clustering (the default) instead of UPGMA.
+
+<<GPfig4jaccCLC, fig=TRUE, include=FALSE, width=5, height=6>>=
+jaccCLC <- hclust(vegdist(GlobalPatterns, "jaccard"))
+plot( as.phylo(jaccCLC), show.tip.label=TRUE, tip.color="white" )
+tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
+@
+
+\begin{figure}[htbp]
+\centering
+\subfloat[UniFrac / UPGMA]{\label{fig:sub:GPfig4}\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPfig4}}
+\subfloat[Jaccard / CLC]{\label{fig:sub:GPjaccCLC}\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPfig4jaccCLC}}
+\captionsetup{width=1.0\textwidth}
+\caption{An alternative means of summarizing a distance matrix via hierarchical clustering and plotting as an annotated dendrogram. Compare with Figure 4 from the ``Global Patterns'' article~\cite{Caporaso15032011}. Panel~\ref{fig:sub:GPfig4} represents a faithful reproduction of the original approach from the article using \code{R} utilities, while Panel~\ref{fig:sub:GPjaccCLC} is an illustration of slightly different results with different choices of distance measure and clustering algorithm. Some differences in Panel~\ref{fig:sub:GPfig4} from the original article might be explained by the \code{GlobalPatterns} dataset in \emph{phyloseq} includes the summed observations from both directions (5' and 3'), while in the article they show the results separately. Furthermore, in the article the ``mock'' community is not included in the dataset, but an extra fecal sample is included.
+}
+\label{fig:GPfig4}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% VALIDATION
+\clearpage
+\section{Validation}\label{sec:validation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Multiple Testing.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Multiple Inference Correction}\label{sec:multtest}
+The \emph{phyloseq} package includes support for significance testing with correction for multiple inference. This is particularly important when testing for significance of the abundance patterns among thousands of microbes (OTUs). This is a common question of phylogenetic sequence data, that is, ``what is the subset of microbes that significantly correlate with a scientifically-interesting sample variable''. Although we plan to include support for other types of multiple-inference corrected tests, this ``which taxa?'' test is the only directly supported test at the moment.
+
+Our initial implementation of this support is via an extension to the \code{mt.maxT()} and \code{mt.minP} functions in the \emph{multtest} package~\cite{multtest} (Bioconductor repo). This uses permutation-adjusted p-values in a multiple testing procedure that provides strong control of the Family-Wise Error Rate (FWER) among the taxa being tested. The user specifies a sample-variable among the \code{sampleData} component, or alternatively provides a sample-wise vector or factor that classifies the samples into groups. Additional optional parameters can be provided that specify the type of test (``\code{test=}''), the sidedness of the test (``\code{side=}''), as well as some additional technical/computational parameters.
+
+In the following example we test whether a particular genera correlates with the Enterotype classification of each sample. Note that we have to specify an alternate test, \code{test="f"}, because the default test (t-test) can only handle up to 2 classes, and there are three enterotype classes.
+
+<<eval=FALSE>>=
+data(enterotype)
+# Filter samples that don't have Enterotype classification.
+x <- subset_samples(enterotype, !is.na(Enterotype))
+
+# Calculate the multiple-inference-adjusted P-values
+ent.p.table <- mt(x, "Enterotype", test="f")
+print(head(ent.p.table, 10))
+@
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrrrrr}
+\hline
+genera	& index & 	teststat & rawp & 	adjp	&  plower \\
+\hline
+Prevotella                &      207 &344.73 & 0.0001 & 0.0158 & 0.0001 \\
+Bacteroides               &      203 & 85.01 & 0.0001 & 0.0158 & 0.0001 \\
+Blautia                   &      187 & 19.52 & 0.0001 & 0.0158 & 0.0001 \\
+Bryantella                &      503 & 16.38 & 0.0001 & 0.0158 & 0.0001 \\
+Parabacteroides           &      205 & 12.89 & 0.0001 & 0.0158 & 0.0001 \\
+Alistipes                 &      208 &  8.71 & 0.0002 & 0.0301 & 0.0158 \\
+Bifidobacterium           &      240 &  9.29 & 0.0004 & 0.0560 & 0.0430 \\
+Holdemania                &      201 &  7.64 & 0.0009 & 0.1146 & 0.1031 \\
+Dorea                     &      182 &  7.44 & 0.0009 & 0.1146 & 0.1031 \\
+Phascolarctobacterium     &      513 &  7.01 & 0.0014 & 0.1695 & 0.1585 \\
+\hline
+\end{tabular}
+\caption{For computational efficiency this calculation was run separately, and results embedded here.}
+\label{tab:entmt}
+\end{table}
+
+Not surprisingly, \emph{Prevotella} and \emph{Bacteroides} top the list, since they were major components of the ``Enterotype'' classification. 
+
+Please also note that we are planning to incorporate other tools from \emph{multtest} that would allow for other types of multiple-inference correction procedures, for instance, strong control of the False Discovery Rate (FDR). These additional options will be made available shortly.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Further Examples}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This vignette is limited in size and scope because of constraints on the cumulative-size of packages allowed in Bioconductor. 
+
+\subsection{phyloseq Wiki}
+For further examples presented in html/wiki format, please see:
+
+\url{https://github.com/joey711/phyloseq/wiki/Graphics-Examples}
+
+\subsection{phyloseq Vignette Gallery}
+For additional and/or updated vignettes not present in the official Bioconductor release, please see:
+
+\url{https://github.com/joey711/phyloseq/wiki/Vignettes}
+
+\subsection{phyloseq Feedback}
+For feature requests, bug reports, and other suggestions and issues, please go to:
+
+\url{https://github.com/joey711/phyloseq/issues}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+%\appendix
+
+%\section{Details}
+
+%\section{Caveats}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+%\bibliographystyle{ws-procs11x85}
+\bibliography{phyloseq_analysis}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% In case you need to hide results for some reason
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% <<packages,results=hide>>= 
+% # code( with results that need hiding )
+% @
+%
+\end{document}
