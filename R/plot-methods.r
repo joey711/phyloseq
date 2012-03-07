@@ -448,8 +448,9 @@ plot_ordination_samples <- function(physeq, ordination, axes=c(1, 2),
 		names(DF)[names(DF)=="label"] <- deparse(substitute(label))
 		label <- deparse(substitute(label))
 	}
-
-	ord_map <- ggplot2::aes_string(x=names(DF)[axes[1]], y=names(DF)[axes[2]], color=color, shape=shape)
+	
+	# Create the aesthetic map. First to cols of DF are x and y, respectively.
+	ord_map <- ggplot2::aes_string(x=names(DF)[1], y=names(DF)[2], color=color, shape=shape)
 
 	# build plot
 	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(size=4)
