@@ -347,6 +347,216 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 }
 ################################################################################
 ################################################################################
+# The general case, could plot samples, taxa, or both (biplot). Default samples.
+################################################################################
+#' General ordination plotter based on ggplot2.
+#'
+#' Convenience wrapper for plotting ordination results as a 
+#' \code{ggplot2}-graphic, including
+#' additional annotation in the form of shading, shape, and/or labels of
+#' sample variables.
+#'
+#' @usage plot_ordination(physeq, ordination, type="samples", axes=c(1, 2),
+#'	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
+#'  an \code{\link{sampleData-class}}. The data about which you want to 
+#'  plot and annotate the ordination.
+#'
+#' @param ordination (Required). An ordination object. Many different classes
+#'  of ordination are defined by \code{R} packages. The supported classes 
+#'  should be listed explicitly, but in the meantime, all ordination classes
+#'  currently supported by the \code{\link[vegan]{scores}} function are
+#'  supported here. There is no default, as the expectation is that the 
+#'  ordination will be performed and saved prior to calling this plot function.
+#'
+#' @param type (Optional). The plot type. Default is \code{"samples"}. The
+#'  currently supported options are 
+#'  \code{c("samples", "sites", "species", "taxa", "biplot", "split")}.
+#'  The option
+#'  ``taxa'' is equivalent to ``species'' in this case, and similarly,
+#'  ``samples'' is equivalent to ``sites''. 
+#'  The options
+#'  \code{"sites"} and \code{"species"} result in a single-plot of just the 
+#'  sites/samples or species/taxa of the ordination, respectively.
+#'  The \code{"biplot"} and \code{"split"} options result in a combined
+#'  plot with both taxa and samples, either combined into one plot (``biplot'')
+#'  or 
+#'  separated in two facet panels (``split''), respectively.
+#'
+#' @param axes (Optional). A 2-element vector indicating the axes of the 
+#'  ordination that should be used for plotting. 
+#'  Can be \code{\link{character-class}} or \code{\link{integer-class}},
+#'  naming the index name or index of the desired axis for the horizontal 
+#'  and vertical axes, respectively, in that order. The default value, 
+#'  \code{c(1, 2)}, specifies the first two axes of the provided ordination.
+#'
+#' @param color (Optional). Default \code{NULL}. Character string.
+#'  The name of the variable to map to
+#'  colors in the plot. 
+#'  This can be a sample variable 
+#'  (among the set returned by \code{sample.variables(physeq)} )
+#'  or
+#'  taxonomic rank
+#'  (among the set returned by \code{rank.names(physeq)}).
+#'  
+#'  Alternatively, if \code{type} indicates a single-plot 
+#'  (\code{"samples"} or \code{"species"}), then
+#'  it is also possible to supply a custom vector with length equal to
+#'  the relevant number of samples or species
+#'  (\code{nsamples(physeq)} or \code{nspecies(physeq)}).
+#' 
+#'  Finally,
+#'  The color scheme is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_color_manual}}.
+#'
+#' @param shape (Optional). Default \code{NULL}. Character string.
+#'  The name of the variable to map
+#'  to different shapes on the plot. 
+#'  Similar to \code{color} option, but for the shape if points.
+#' 
+#'  The shape scale is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_shape_manual}}.
+#'
+#' @param label (Optional). Default \code{NULL}. Character string.
+#'  The name of the variable to map to text labels on the plot.
+#'  Similar to \code{color} option, but for plotting text.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string. The
+#'  title to include over the plot. 
+#'
+#' @param justDF (Optional). Default \code{FALSE}. Logical.
+#'  Instead of returning a ggplot2-object, do you just want the relevant
+#'  \code{data.frame} that was used to build the plot? This is a 
+#'  user-accessible option for obtaining the \code{data.frame}, in 
+#'  in principal to make a custom plot that isn't possible with the
+#'  available options in this function. For contributing new functions
+#'  (developers), the  
+#'  \code{\link{phyloseq-package}} provides/uses an internal function
+#'  to build the key features of the \code{data.frame} prior to plot-build.
+#'
+#' @return A \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result for the specified axes.
+#' 
+#' @seealso 
+#'  \code{\link{plot_ordination_biplot}}
+#'
+#' @export
+#' @examples 
+#' ##
+plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
+	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
+
+	if(class(physeq)!="phyloseq"){stop("physeq must be phyloseq-class.")}
+	if(type == "samples"){type <- "sites"} # Compatibility with phyloseq
+	if(type == "taxa"){type <- "species"} # Compatibility with phyloseq
+	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
+
+	# Build data.frame:
+	if( type %in% c("sites", "species") ){
+		DF <- ord.plot.DF.internal(physeq, ordination, type, axes)
+		# Add, any custom-supplied plot-mapped variables
+		if( length(color) > 1 ){
+			DF$color <- color
+			names(DF)[names(DF)=="color"] <- deparse(substitute(color))
+			color <- deparse(substitute(color))
+		}
+		if( length(shape) > 1 ){
+			DF$shape <- shape
+			names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
+			shape <- deparse(substitute(shape))
+		}	
+		if( length(label) > 1 ){
+			DF$label <- label
+			names(DF)[names(DF)=="label"] <- deparse(substitute(label))
+			label <- deparse(substitute(label))
+		}					
+	} else if( type %in% c("split", "biplot") ){
+		# Define DFs
+		specDF <- ord.plot.DF.internal(physeq, ordination, type="species", axes)
+		siteDF <- ord.plot.DF.internal(physeq, ordination, type="sites", axes)
+		# Add id.type label
+		specDF$id.type <- "species"
+		siteDF$id.type <- "samples"
+		# Merge the two data.frame together, for joint plotting.
+		DF <- merge(specDF, siteDF, all=TRUE)	
+	}
+	# In case user wants the plot-DF for some other purpose, return early
+	if(justDF){return(DF)}
+	
+	# Mapping section
+	if( type %in% c("sites", "species", "split") ){
+		# Because of the way scores()/coord are bound first in DF, the first two axes should
+		# always be x and y, respectively. This is also contingent on the "choices" argument
+		# to scores() working properly
+		ord_map <- ggplot2::aes_string(x=names(DF)[1], y=names(DF)[2],
+										color=color, shape=shape, na.rm=TRUE)		
+	} else if(type=="biplot"){
+		# biplot, color must be id.type	
+		ord_map <- ggplot2::aes_string(x=names(specDF)[1], y=names(specDF)[2],
+										color="id.type", shape=shape, na.rm=TRUE)
+	}
+
+	# Plot-building section
+	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(size=2, na.rm=TRUE)
+	
+	# split/facet color and shape can be anything in one or other.
+	if( type=="split" ){
+		# split-option requires a facet_wrap
+		p <- p + facet_wrap(~id.type, nrow=1)
+	}
+
+	# Add the text labels
+	if( !is.null(label) ){
+		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label, na.rm=TRUE),
+							size=2, vjust=1.5, na.rm=TRUE)
+	}
+
+	if( !is.null(title) ){
+		p <- p + ggplot2::opts(title = title)
+	}
+	return(p)
+}
+################################################################################
+# Define the ord.plot.DF.internal
+################################################################################
+#' @keywords internal
+ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2)){
+
+	coord <- scores(ordination, choices=axes, display=type)
+	# coord row.names index order should match physeq. Enforce.
+	if( type == "species" ){
+		coord <- coord[species.names(physeq), ]
+	} else if(type == "sites"){
+		coord <- coord[sample.names(physeq), ]		
+	}
+	
+	# If there is supplemental data, add it, else, return coord
+	supp <- NULL
+	# Define supplemental data
+	if( !is.null(sampleData(physeq, FALSE)) & type == "sites"){
+		supp  <- sampleData(physeq) # Supplemental data, samples
+	}else if( !is.null(taxTab(physeq, FALSE)) & type == "species"){
+		supp  <- taxTab(physeq) # Supplemental data, taxa
+	}
+	if( is.null(supp) ){
+		DF <- coord
+	} else {
+		# Check that coord and supp have same indices. 
+		if( !setequal(row.names(coord), row.names(supp)) ){
+			stop("Ordination and supplementary data indices differ on the following:\n.",
+				setdiff(row.names(coord), row.names(supp)))
+		}
+		# Combine for plotting data.frame
+		DF <- data.frame(coord, supp)		
+	}
+
+	return(DF)		
+}
+################################################################################
+################################################################################
 ################################################################################
 #' Convenient rendering of ordination samples/sites using ggplot2.
 #'
