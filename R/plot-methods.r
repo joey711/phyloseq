@@ -446,6 +446,37 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #' @export
 #' @examples 
 #' ##
+#' # data(GlobalPatterns)
+#' # # Define a human-associated versus non-human binary variable:
+#' # human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in%
+#' 		# c("Feces", "Mock", "Skin", "Tongue")
+#' # human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
+#' # names(human) <- sample.names(GlobalPatterns)
+#' # # Need to clean the zeros from GlobalPatterns:
+#' # GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' # # Get the names of the most-abundant
+#' # top.TaxaGroup <- sort(
+#' 		# tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#' 		# decreasing = TRUE)
+#' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+#' # # Now prune further, to just the most-abundant phyla
+#' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' # # DPCoA - because scores.dpcoa() is internal to phyloseq, can only test
+#' # # this chunk when new plot_ordination() is installed
+#' # topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
+#' # GP1   <- prune_species(topsp, GP)
+#' # GP.dpcoa <- DPCoA(GP1)
+#' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human) + 
+#'      # geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
+#' # plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
@@ -472,16 +503,26 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 			DF$label <- label
 			names(DF)[names(DF)=="label"] <- deparse(substitute(label))
 			label <- deparse(substitute(label))
-		}					
+		}
+		x <- names(DF)[1]
+		y <- names(DF)[2]			
 	} else if( type %in% c("split", "biplot") ){
 		# Define DFs
 		specDF <- ord.plot.DF.internal(physeq, ordination, type="species", axes)
 		siteDF <- ord.plot.DF.internal(physeq, ordination, type="sites", axes)
+		# Define x-label and y-label before merge
+		names(siteDF)[1] <- names(specDF)[1] <- x <- "Axis_1"
+		names(siteDF)[2] <- names(specDF)[2] <- y <- "Axis_2"
 		# Add id.type label
 		specDF$id.type <- "species"
 		siteDF$id.type <- "samples"
 		# Merge the two data.frame together, for joint plotting.
-		DF <- merge(specDF, siteDF, all=TRUE)	
+		DF <- merge(specDF, siteDF, all=TRUE)
+		# Replace NA with "sample" or "species", where appropriate (factor/character)
+		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "samples") }
+		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "species") }
+		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "samples") }
+		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "species") }		
 	}
 	# In case user wants the plot-DF for some other purpose, return early
 	if(justDF){return(DF)}
@@ -491,12 +532,10 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		# Because of the way scores()/coord are bound first in DF, the first two axes should
 		# always be x and y, respectively. This is also contingent on the "choices" argument
 		# to scores() working properly
-		ord_map <- ggplot2::aes_string(x=names(DF)[1], y=names(DF)[2],
-										color=color, shape=shape, na.rm=TRUE)		
+		ord_map <- ggplot2::aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
 	} else if(type=="biplot"){
 		# biplot, color must be id.type	
-		ord_map <- ggplot2::aes_string(x=names(specDF)[1], y=names(specDF)[2],
-										color="id.type", shape=shape, na.rm=TRUE)
+		ord_map <- ggplot2::aes_string(x=x, y=y, color="id.type", shape=shape, na.rm=TRUE)
 	}
 
 	# Plot-building section
@@ -510,8 +549,9 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 
 	# Add the text labels
 	if( !is.null(label) ){
-		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label, na.rm=TRUE),
-							size=2, vjust=1.5, na.rm=TRUE)
+		label_map <- ggplot2::aes_string(x=x, y=y, label=label, na.rm=TRUE)
+		p <- p + ggplot2::geom_text(label_map, data=rm.na.phyloseq(DF, label),
+					size=2, vjust=1.5, na.rm=TRUE)
 	}
 
 	if( !is.null(title) ){
@@ -557,123 +597,40 @@ ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2
 }
 ################################################################################
 ################################################################################
+# Remove NA elements from data.frame prior to plotting
+# Remove NA level from factor
 ################################################################################
-#' Convenient rendering of ordination samples/sites using ggplot2.
-#'
-#' Convenience wrapper for plotting ordination results as a 
-#' \code{ggplot2}-graphic, including
-#' additional annotation in the form of shading, shape, and/or labels of
-#' sample variables.
-#'
-#' @usage plot_ordination_samples(physeq, ordination, axes=c(1, 2),
-#' 	color=NULL, shape=NULL, label=NULL, title=NULL)
-#' 
-#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
-#'  an \code{\link{sampleData-class}}. The data about which you want to 
-#'  plot and annotate the ordination.
-#'
-#' @param ordination (Required). An ordination object. Many different classes
-#'  of ordination are defined by \code{R} packages. The supported classes 
-#'  should be listed explicitly, but in the meantime, all ordination classes
-#'  currently supported by the \code{\link[vegan]{scores}} function are
-#'  supported here. There is no default, as the expectation is that the 
-#'  ordination will be performed and saved prior to calling this plot function.
-#'
-#' @param axes (Optional). A 2-element vector indicating the axes of the 
-#'  ordination that should be used for plotting. 
-#'  Can be \code{\link{character-class}} or \code{\link{integer-class}},
-#'  naming the index name or index of the desired axis for the horizontal 
-#'  and vertical axes, respectively, in that order. The default value, 
-#'  \code{c(1, 2)}, specifies the first two axes of the provided ordination.
-#'
-#' @param color (Optional). Default \code{NULL}. The sample variable to map
-#'  to different colors. This can be a single character string 
-#'  of the variable name in 
-#'  \code{sampleData} 
-#'  (among the set returned by \code{sample.variables(physeq)} );
-#'  or a custom supplied vector with length equal to the number of samples
-#'  in the dataset (nsamples(physeq)).
-#'  The color scheme is chosen automatically by \code{link{ggplot}},
-#'  but it can be modified afterward with an additional layer using
-#'  \code{\link[ggplot2]{scale_color_manual}}.
-#'
-#' @param shape (Optional). Default \code{NULL}. The sample variable to map
-#'  to different shapes. Like \code{color},
-#'  this can be a single character string 
-#'  of the variable name in 
-#'  \code{sampleData} 
-#'  (among the set returned by \code{sample.variables(physeq)} );
-#'  or a custom supplied vector with length equal to the number of samples
-#'  in the dataset (nsamples(physeq)).
-#'  The shape scale is chosen automatically by \code{link{ggplot}},
-#'  but it can be modified afterward with an additional layer using
-#'  \code{\link[ggplot2]{scale_shape_manual}}.
-#'
-#' @param label (Optional). Default \code{NULL}. The sample variable to
-#'  use for labelling each sample coordinate in the plot. 
-#'
-#' @param title (Optional). Default \code{NULL}. Character string. The
-#'  title to include over the plot. 
-#'
-#' @return A \code{\link{ggplot}} plot object, graphically summarizing
-#'  the ordination result for the specified axes.
-#' 
-#' @seealso 
-#'  \code{\link{plot_ordination_biplot}}
-#'
-#' @export
-#' @examples 
-#' # data(GlobalPatterns)
-#' # # Define a human-associated versus non-human binary variable:
-#' # human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in% 
-#' #      c("Feces", "Mock", "Skin", "Tongue")
-#' # human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
-#' # names(human) <- sample.names(GlobalPatterns)
-#' # # Add the human variable to GlobalPatterns sample data
-#' # sampleData(GlobalPatterns)$human <- human
-#' # # Calculate the Bray-Curtis distance between each sample
-#' # GP.dist <- vegdist(GlobalPatterns, "bray")
-#' # # Perform principle coordinates analysis
-#' # GP.dist.pcoa <- pcoa(GP.dist)
-#' # (p1 <- plot_ordination_samples(GlobalPatterns, GP.dist.pcoa, shape=human, color="SampleType") )
-plot_ordination_samples <- function(physeq, ordination, axes=c(1, 2),
-	color=NULL, shape=NULL, label=NULL, title=NULL){
-
-	if(class(physeq)!="phyloseq"){stop("physeq must be phyloseq- or sampleData-class.")}
-
-	DF   <- data.frame(scores(ordination, choices=axes, display="sites"), sampleData(physeq))
-
-	if( length(color) > 1 ){
-		DF$color <- color
-		names(DF)[names(DF)=="color"] <- deparse(substitute(color))
-		color <- deparse(substitute(color))
+#' @keywords internal
+rm.na.phyloseq <- function(DF, key.var){
+	# (1) Remove elements from DF if key.var has NA
+	# DF[!is.na(DF[, key.var]), ]
+	DF <- subset(DF, !is.na(eval(parse(text=key.var))))
+	# (2) Remove NA from the factor level, if a factor.
+	if( class(DF[, key.var]) == "factor" ){
+		DF[, key.var] <- factor(as(DF[, key.var], "character"))
 	}
-	if( length(shape) > 1 ){
-		DF$shape <- shape
-		names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
-		shape <- deparse(substitute(shape))
-	}	
-	if( length(label) > 1 ){
-		DF$label <- label
-		names(DF)[names(DF)=="label"] <- deparse(substitute(label))
-		label <- deparse(substitute(label))
+	return(DF)
+}
+################################################################################
+################################################################################
+#' @keywords internal
+rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
+	# If all of the map.var values for samples are NA, replace with id.type.rp
+	if( all(is.na(DF[DF$id.type==id.type.rp, map.var])) ){
+		# Don't replace numeric. factor/character replaced differently.
+		if( class(DF[, map.var]) == "factor" ){
+			temp.vec <- as(DF[, map.var], "character")
+			temp.vec[is.na(temp.vec)] <- id.type.rp
+			DF[, map.var] <- factor(temp.vec)
+		}
+		# if( class(DF[, map.var]) == "numeric" ){
+			# return(DF) # if numeric, leave NA
+		# }
+		if( class(DF[, map.var]) == "character" ){ # replace
+			DF[DF$id.type==id.type.rp, map.var] <- id.type.rp
+		}
 	}
-	
-	# Create the aesthetic map. First to cols of DF are x and y, respectively.
-	ord_map <- ggplot2::aes_string(x=names(DF)[1], y=names(DF)[2], color=color, shape=shape)
-
-	# build plot
-	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(size=4)
-
-	# Add the text labels
-	if( !is.null(label) ){
-		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label), size=2, hjust=1.35)
-	}
-
-	if( !is.null(title) ){
-		p <- p + ggplot2::opts(title = title)
-	}
-	return(p)
+	return(DF)
 }
 ################################################################################
 ################################################################################

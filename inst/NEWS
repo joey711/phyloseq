@@ -9,6 +9,11 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.31
+===========
+* Aesthetic fixes in plot_ordination()
+* Remove plot_ordination_samples() -> redundant, covered by plot_ordination().
+
 v0.99.30
 ===========
 * Added plot_ordination -> general ordination plotting function
