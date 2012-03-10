@@ -65,7 +65,7 @@
 #' # # # # # # # Esophagus
 #' # data(esophagus)
 #' # eso.dpcoa <- DPCoA(esophagus)
-#' # plot_ordination_samples(esophagus, eso.dpcoa)
+#' # plot_ordination(esophagus, eso.dpcoa, "samples")
 #' # ### need to add support for biplot...
 #' # #
 #' # #
@@ -76,7 +76,7 @@
 #' # GP       <- prune_species(keepTaxa, GlobalPatterns)
 #' # # Perform DPCoA
 #' # GP.dpcoa <- DPCoA(GP)
-#' # plot_ordination_samples(GP, GP.dpcoa, color="SampleType")
+#' # plot_ordination(GP, GP.dpcoa, "samples", color="SampleType")
 DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	# Check that physeq is a phyloseq-class
 	if(!class(physeq)=="phyloseq"){stop("physeq must be phyloseq-class")}
