@@ -1,15 +1,16 @@
-\name{taxaplot}
+\name{plot_taxa_bar}
 \alias{plot_taxa_bar}
 \alias{taxaplot}
 \title{Create a structured barplot graphic of the taxonomic groups.}
 \usage{
-  taxaplot(otu, taxavec="Domain", showOnlyTheseTaxa=NULL,
-  threshold=NULL, x_category="sample",
-  fill_category=x_category, facet_formula = . ~ TaxaGroup,
-  OTUpoints=FALSE, labelOTUs=FALSE)
+  plot_taxa_bar(otu, taxavec="Domain",
+  showOnlyTheseTaxa=NULL, threshold=NULL,
+  x_category="sample", fill_category=x_category,
+  facet_formula = . ~ TaxaGroup, OTUpoints=FALSE,
+  labelOTUs=FALSE)
 
-  plot_taxa_bar(otu, taxavec = "Domain", showOnlyTheseTaxa
-  = NULL, threshold = NULL, x_category = "sample",
+  taxaplot(otu, taxavec = "Domain", showOnlyTheseTaxa =
+  NULL, threshold = NULL, x_category = "sample",
   fill_category = x_category, facet_formula = . ~
   TaxaGroup, OTUpoints = FALSE, labelOTUs = FALSE)
 }
@@ -104,7 +105,7 @@
 \examples{
 #
 # data(ex1)
-# taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
+# plot_taxa_bar(ex1, "Class", threshold=0.85, x_category="Diet",
 # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
 }
 \seealso{

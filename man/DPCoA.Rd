@@ -68,7 +68,8 @@ using phylogenetic distance}
 # data(esophagus)
 # eso.dpcoa <- DPCoA(esophagus)
 # plot_ordination(esophagus, eso.dpcoa, "samples")
-# ### need to add support for biplot...
+# plot_ordination(esophagus, eso.dpcoa, "species")
+# plot_ordination(esophagus, eso.dpcoa, "biplot")
 # #
 # #
 # # # # # # # GlobalPatterns
@@ -78,7 +79,7 @@ using phylogenetic distance}
 # GP       <- prune_species(keepTaxa, GlobalPatterns)
 # # Perform DPCoA
 # GP.dpcoa <- DPCoA(GP)
-# plot_ordination(GP, GP.dpcoa, "samples", color="SampleType")
+# plot_ordination(GP, GP.dpcoa, color="SampleType")
 }
 \author{
   Julia Fukuyama \email{julia.fukuyama@gmail.com}. Adapted

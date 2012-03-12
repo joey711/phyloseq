@@ -66,7 +66,8 @@
 #' # data(esophagus)
 #' # eso.dpcoa <- DPCoA(esophagus)
 #' # plot_ordination(esophagus, eso.dpcoa, "samples")
-#' # ### need to add support for biplot...
+#' # plot_ordination(esophagus, eso.dpcoa, "species")
+#' # plot_ordination(esophagus, eso.dpcoa, "biplot")
 #' # #
 #' # #
 #' # # # # # # # GlobalPatterns
@@ -76,7 +77,7 @@
 #' # GP       <- prune_species(keepTaxa, GlobalPatterns)
 #' # # Perform DPCoA
 #' # GP.dpcoa <- DPCoA(GP)
-#' # plot_ordination(GP, GP.dpcoa, "samples", color="SampleType")
+#' # plot_ordination(GP, GP.dpcoa, color="SampleType")
 DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	# Check that physeq is a phyloseq-class
 	if(!class(physeq)=="phyloseq"){stop("physeq must be phyloseq-class")}
@@ -142,7 +143,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #'
 #' @return same output as \code{\link[vegan]{cca}} or \code{\link[vegan]{rda}}, respectively.
 #'
-#' @seealso \code{\link{plot_ordination_phyloseq}}, \code{\link{calcplot}},
+#' @seealso \code{\link{plot_ordination}},
 #'  \code{\link[vegan]{rda}}, \code{\link[vegan]{cca}}
 #'
 #' @aliases cca.phyloseq rda.phyloseq
@@ -159,8 +160,8 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
 #' # # CCA
 #' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-#' # plot_ordination_phyloseq(modr, ex1)
-#' # plot_ordination_phyloseq(modc, ex1)
+#' # plot_ordination(ex1, modr, "biplot")
+#' # plot_ordination(ex1, modc, "biplot")
 #' # # Perform unconstrained ordination
 #' # mod1 <- cca.phyloseq(ex1)
 #' # # unconstrained plot using vegan plotting

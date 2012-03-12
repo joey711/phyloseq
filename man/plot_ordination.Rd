@@ -135,6 +135,6 @@
 # plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
 }
 \seealso{
-  \code{\link{plot_ordination_biplot}}
+  \code{\link{plot_phyloseq}}
 }
 

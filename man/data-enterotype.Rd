@@ -52,14 +52,17 @@
 \examples{
 # # Try simple network-analysis plot
 # data(enterotype)
-# makenetwork(enterotype)
+# ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+# plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+#
 # # Filter samples that don't have Enterotype
 # x <- subset_samples(enterotype, !is.na(Enterotype))
-# # Create correspondence analysis plot, constrained on the Enterotype category.
-# calcplot(x ~ Enterotype)
+#
 # # Alternatively. . .
 # ent.cca <- cca.phyloseq(x ~ Enterotype)
-# plot_ordination_phyloseq(ent.cca, x, site_color_category="Enterotype")
+# plot_ordination(x, ent.cca, color="Enterotype")
+# plot_ordination(x, ent.cca, "biplot")
+# plot_ordination(x, ent.cca, "split", color="Enterotype)
 # # multiple testing of genera correlating with enterotype 2
 # mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
 # # Should return a data.frame, with the following head()

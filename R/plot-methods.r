@@ -26,12 +26,11 @@
 #'  are present.
 #' 
 #' @seealso 
+#'  \code{\link{plot_ordination}}
 #'  \code{\link{plot_taxa_bar}}
 #'  \code{\link{plot_sample_network}}
 #'  \code{\link{plot_tree_phyloseq}}
-#'  \code{\link{plot_ordination_biplot}}
 #'  \code{\link{plot_richness_estimates}}
-#'  \code{\link{calcplot}}
 #'
 #' @export
 #' @docType methods
@@ -347,7 +346,7 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 }
 ################################################################################
 ################################################################################
-# The general case, could plot samples, taxa, or both (biplot). Default samples.
+# The general case, could plot samples, taxa, or both (biplot/split). Default samples.
 ################################################################################
 #' General ordination plotter based on ggplot2.
 #'
@@ -441,7 +440,7 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #'  the ordination result for the specified axes.
 #' 
 #' @seealso 
-#'  \code{\link{plot_ordination_biplot}}
+#'  \code{\link{plot_phyloseq}}
 #'
 #' @export
 #' @examples 
@@ -487,6 +486,9 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 
 	# Build data.frame:
 	if( type %in% c("sites", "species") ){
+		# Because of the way scores()/coord are bound first in DF, the first two axes should
+		# always be x and y, respectively. This is also contingent on the "choices" argument
+		# to scores() working properly		
 		DF <- ord.plot.DF.internal(physeq, ordination, type, axes)
 		# Add, any custom-supplied plot-mapped variables
 		if( length(color) > 1 ){
@@ -510,9 +512,9 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		# Define DFs
 		specDF <- ord.plot.DF.internal(physeq, ordination, type="species", axes)
 		siteDF <- ord.plot.DF.internal(physeq, ordination, type="sites", axes)
-		# Define x-label and y-label before merge
-		names(siteDF)[1] <- names(specDF)[1] <- x <- "Axis_1"
-		names(siteDF)[2] <- names(specDF)[2] <- y <- "Axis_2"
+		# Define x-label and y-label before merge, use sample-axis names (arbitrary)
+		names(specDF)[1] <- x <- names(siteDF)[1] # "x-axis"
+		names(specDF)[2] <- y <- names(siteDF)[2] # "y-axis"
 		# Add id.type label
 		specDF$id.type <- "species"
 		siteDF$id.type <- "samples"
@@ -529,9 +531,6 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	
 	# Mapping section
 	if( type %in% c("sites", "species", "split") ){
-		# Because of the way scores()/coord are bound first in DF, the first two axes should
-		# always be x and y, respectively. This is also contingent on the "choices" argument
-		# to scores() working properly
 		ord_map <- ggplot2::aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
 	} else if(type=="biplot"){
 		# biplot, color must be id.type	
@@ -634,348 +633,6 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 }
 ################################################################################
 ################################################################################
-#' Convenient rendering of ordination biplot using ggplot2.
-#'
-#' This convenience function includes many useful defaults for generating a
-#' plot of your ordination. This supplements the default plots created by the
-#' plot method extension from the vegan package, \code{\link{plot.cca}}.
-#' For further examples, see the phyloseq vignette.
-#'
-#' Because the ggplot2 objects can be stored as variables, and then further 
-#' modified, it is not necessary to support additional arguments as \code{...}.
-#' If further modifications to the plot produced by this function are desired,
-#' they can be provided as parameter updates to the returned object. See 
-#' the specific examples provided by the phyloseq vignette, or the more 
-#' comprehensive documentation available for the ggplot2 package itself. 
-#' 
-#' @usage plot_ordination_biplot(mod, object,
-#'	plot_title = as(mod$call, "character")[1],
-#'	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
-#'	species_alpha=1/10, sites_alpha=2/3,
-#'	species_color_category =NULL,
-#'	species_shape_category =NULL,
-#'	species_size_category  =NULL,
-#'	site_color_category=NULL,
-#'	site_shape_category=NULL,
-#'	site_size_category=NULL,	
-#'	add_sites_data = NULL,
-#'	add_taxa_data = NULL)
-#'
-#' @param mod (Required). A \code{cca} or \code{rda} results object. 
-#'  See \code{\link{cca.object}}. For phyloseq
-#'  objects, you probably want to see \code{\link{cca.phyloseq}} or 
-#'  \code{\link{rda.phyloseq}}.
-#'  
-#' @param object (required). A \code{\link{phyloseq-class}} object. Necessary
-#'  because ordination result objects
-#'  will only refer to the abundance table, not the phyloseq object used to
-#'  create them.
-#' 
-#' @param plot_title Default is to use the name of the ordination method, stored in 
-#'  the ordination result object, accessed via \code{as(mod$call, "character")[1]}.
-#'  Any character string will suffice.
-#' 
-#' @param man.colors A character vector of colors to overide the default 
-#'  color scale used by ggplot2. Default is \code{NULL}. 
-#' 
-#' @param man.sizes An integer vector of sizes to overide the default size
-#'  scale used by ggplot2. Default is \code{NULL}. 
-#' 
-#' @param man.shapes An integer vector of shape indices to overide the defaults
-#'  used by ggplot2. Default is \code{NULL}. 
-#' 
-#' @param species_alpha A single numeric. The alpha (transparency) value
-#'  to use for all \code{geom_points}
-#'  that represent taxa. Default is \code{1/10}.
-#' 
-#' @param sites_alpha A single numeric. The alpha (transparency) value
-#'  to use for all \code{geom_points}
-#'  that represent samples/sites. Default is \code{2/3}.
-#' 
-#' @param species_color_category A manual color scale for taxa.
-#'  Default is \code{NULL}. 
-#'
-#' @param species_shape_category A manual shape scale for taxa.
-#' Default is \code{NULL}. 
-#'
-#' @param species_size_category A manual size scale for taxa.
-#' Default is \code{NULL}.
-#' 
-#' @param site_color_category A manual color scale for samples/sites.
-#'  Default is \code{NULL}. 
-#'
-#' @param site_shape_category A manual shape scale for samples/sites.
-#'  Default is \code{NULL}.
-#'
-#' @param site_size_category A manual size scale for samples/sites.
-#'  Default is \code{NULL}.
-#'
-#' @param add_sites_data A \code{data.frame} object providing additional data
-#'  about the samples/sites that is not already available in the \code{sampleData} of
-#'  your phyloseq object specified by \code{object}. As such, it must have 
-#'  the same number of rows as as there are samples in \code{object}. 
-#'  Default is \code{NULL}. 
-#' 
-#' @param add_taxa_data A \code{matrix} object providing additional data
-#'  about the taxa that is not already available in the \code{taxTab} of
-#'  your phyloseq object specified by \code{object}, if it has a \code{taxTab} slot.
-#'  It is not required. As such, it must have 
-#'  the same number of rows as there are taxa in \code{object}. 
-#'  Default is \code{NULL}.
-#'
-#' @return A graphic object from the ggplot2 package.
-#'
-#' @seealso \code{\link{calcplot}}, \code{\link[vegan]{plot.cca}}, \code{\link[vegan]{cca.object}}
-#' @import vegan
-#' @export
-#' @aliases plot_ordination_phyloseq
-#' @rdname plot_ordination_biplot
-#' @examples
-#' # data(ex1)
-#' # ex4  <- transformsamplecounts(ex1, threshrankfun(500))
-#' # # RDA
-#' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
-#' # # CCA
-#' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-#' # plot_ordination_biplot(modr, ex1)
-#' # plot_ordination_biplot(modc, ex1)
-#' # plot_ordination_biplot(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
-#' # plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
-#' # site_shape_category="Diet", site_color_category="Gender", species_alpha=1)
-#' # plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
-#' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
-#' # species_alpha=0.4, sites_alpha=2/3,
-#' # add_sites_data=data.frame(total.reads=sampleSums(ex1)) 
-#' # site.colors <- c("darkorchid1", "blue3")
-#' # species.col.groups <- unique(as(taxTab(ex1), "matrix")[,"Phylum"])
-#' # man.colors <- c(site.colors, rainbow((1+length(species.col.groups)),start=11/12, end=5/12))
-#' # p<-plot_ordination_biplot(modr, ex1, species_color_category="Phylum",
-#' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
-#' # species_alpha=0.4, sites_alpha=2/3,
-#' # add_sites_data=data.frame(total.reads=sampleSums(ex1)),
-#' # man.colors=man.colors)
-#' # print(p)
-plot_ordination_biplot <- function(mod, object,
-	plot_title = as(mod$call, "character")[1],
-	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
-	species_alpha=1/10, sites_alpha=2/3,
-	species_color_category =NULL,
-	species_shape_category =NULL,
-	species_size_category  =NULL,
-	site_color_category=NULL,
-	site_shape_category=NULL,
-	site_size_category=NULL,	
-	add_sites_data = NULL,
-	add_taxa_data = NULL
-			){
-
-	########################################
-	# Create sites and species (taxa) data.frames
-	########################################
-	pmod      <- scores(mod, display=c("sites","species"), scaling=1)
-	sitesdata <- data.frame(axis1 = pmod$sites[, 1],   axis2 = pmod$sites[, 2]   )
-	specidata <- data.frame(axis1 = pmod$species[, 1], axis2 = pmod$species[, 2] )
-
-	########################################
-	# If there is additional data in the otuSam-class
-	# object specified as argument 'object' add it
-	# automatically to the respective data.frame
-	########################################
-	# if there is a sampleData, cbind it to the sites data
-	if( !is.null(sampleData(object)) ){
-		sitesdata <- cbind(sitesdata, data.frame(sampleData(object)))
-	}
-	
-	# if there is a taxTab, cbind it to the species data
-	if( !is.null(taxTab(object)) ){
-		specidata <- cbind(specidata, data.frame(taxTab(object)))
-	}
-
-	########################################
-	# if have additional species or sites data to include, cbind-it
-	########################################
-	if( !is.null(add_sites_data) ){
-		sitesdata <- cbind(sitesdata, add_sites_data)
-	}
-	if( !is.null(add_taxa_data) ){
-		specidata <- cbind(specidata, add_taxa_data)
-	}
-	
-	########################################
-	# setup ggplot sitesdata first.
-	########################################
-	# First, build the argument list.
-	arglist=list(x=quote(axis1), y=quote(axis2))
-	if( !is.null(site_color_category) ){
-		arglist <- c(arglist, list(colour=as.name(site_color_category)))
-	}
-	if( !is.null(site_shape_category) ){
-		arglist <- c(arglist, list(shape =as.name(site_shape_category)))
-	}
-	if( !is.null(site_size_category) ){
-		arglist <- c(arglist, list(size  =as.name(site_size_category)))
-	}	
-	# save sites_arglist for re-plot at end
-	sites_arglist <- arglist
-
-	# Finally, initalize ggplot object as "p"
-	p <- ggplot2::ggplot(data=sitesdata)
-	# Start plot with dummy layer, invisible sites
-	p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), alpha=0)
-
-	########################################
-	# Add manual values for color, size, and shape.
-	########################################
-	if( !is.null(man.colors) ){
-		p <- p + ggplot2::scale_color_manual(value = man.colors)
-	}
-	if( !is.null(man.shapes) ){
-		p <- p + ggplot2::scale_shape_manual(values = man.shapes)
-	}
-	if( !is.null(man.sizes) ){
-		p <- p + ggplot2::scale_size_manual(values = man.sizes)
-	}
-	
-	########################################
-	## Add the species data layer. 
-	########################################
-	# First, make the argument list for site aesthetic
-	arglist=list(x=quote(axis1), y=quote(axis2))
-	if( !is.null(species_color_category) ){
-		arglist <- c(arglist, list(colour=as.name(species_color_category)))
-	}
-	if( !is.null(species_shape_category) ){
-		arglist <- c(arglist, list(shape =as.name(species_shape_category)))
-	}	
-	if( !is.null(species_size_category) ){
-		arglist <- c(arglist, list(size  =as.name(species_size_category)))
-	}
-	p <- p + ggplot2::geom_point(data=specidata, do.call("aes", arglist), alpha=species_alpha)
-
-	########################################
-	## Re-Add the sites-layer after the species, 
-	## since there will normally be many fewer of them than species.
-	########################################
-	if( is.null(site_size_category) ){
-		p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), size=7, alpha=sites_alpha)		
-	} else {
-		p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), alpha=sites_alpha)		
-	}
-
-	########################################
-	# Adjust the background grey slightly so that it is more
-	# easily visible on electronic displays
-	########################################
-	p <- p + ggplot2::opts(panel.background = ggplot2::theme_rect(fill = "grey76", colour = NA),
-		strip.background = ggplot2::theme_rect(fill = "grey76", colour = NA)
-	)	
-	
-	########################################
-	# Add a plot title based on the ordination type in mod
-	########################################
-	p <- p + ggplot2::opts(title = plot_title)
-	
-	########################################
-	# Adjust the legend title for color.
-	# Mixed legends default to the first title,
-	# which won't make sense. Rename it.
-	########################################
-	if( !is.null(species_color_category) & !is.null(site_color_category) ){
-		p <- p + ggplot2::labs(colour = "Sites, Species Colors")
-	}
-	
-	return(p)
-}
-################################################################################
-#' @export
-#' @aliases plot_ordination_biplot
-#' @rdname plot_ordination_biplot
-plot_ordination_phyloseq <- plot_ordination_biplot
-# calcplot
-################################################################################
-#' Convenience wrapper for performing ordination and plotting.
-#'
-#' @usage calcplot(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...)
-#'
-#' @param X (Required). A formula object. The left-hand side specifying a single 
-#'  phyloseq object that contains (at minimum) an \code{otuTable} and a 
-#'  \code{sampleData}. The right-hand side should contain the label of at least
-#'  one variate present in the \code{sampleData} of the LHS object. There is
-#'  one supported alternative, the special \code{"."} for the RHS, in which case
-#'  all available variates will be specified as constraints in the constrained
-#'  ordination, but not shaded. This behavior is less explicit and may depend
-#'  somewhat arbitrarily on the order of variates in your \code{sampelMap}; 
-#'  as such, it should be used with caution.
-#'
-#'  For example, there are two variates in the example object obtained with
-#'  \code{data(ex1)}. \code{X} can be specified as 
-#'
-#'  \code{ex1 ~ Diet + Gender}
-#'
-#'  for using both as constraints in the ordination (and shading), or as
-#'
-#'  \code{ex1 ~ Diet}
-#'
-#'  if you only wanted to constrain on the Diet variable, for example.
-#'
-#'  For available
-#'  variate names in your object, try \code{colnames(sampleData(ex1))}, where
-#'  \code{ex1} is the phyloseq object containing your data. Because this is
-#'  a formula object, quotes should not be used. See \code{\link{formula}}
-#'  for details about writing a formula in \code{R}.
-#'
-#' @param RDA_or_CCA A character string, indicating whether the ordination
-#'  method should be RDA or CCA. Default is "cca". Case ignored. Only first
-#'  letter of string is considered.
-#'
-#' @param object Default is the object specified in the left-hand 
-#'  side of \code{X}.
-#'
-#' @param ... Additional plotting arguments, passed on to 
-#'  \code{\link{plot_ordination_biplot}}
-#'
-#' @return A ggplot2 graphics object. If not stored as a variable, a graphic
-#'  object will be produced on the default device. 
-#'
-#' @export
-#' @seealso \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
-#'  \code{\link{rda}}, \code{\link{cca}}
-#' @examples
-#' ## data(ex1)
-#' ## calcplot(ex1 ~ Diet + Gender)
-calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
-	if( class(X) != "formula" ){
-		warning("First argument, X, must be formula class. See ?formula for more info\n")
-		return()
-	}
-	
-	if( substr(RDA_or_CCA, 1, 1) %in% c("R", "r") ){
-		mod <- rda.phyloseq(X)		
-	} else if( substr(RDA_or_CCA, 1, 1) %in% c("C", "c") ){
-		mod <- cca.phyloseq(X)		
-	} else {
-		cat("You did not properly specify the desired ordination method\n")
-		cat("Please see documentation.\n")		
-		return()
-	}
-
-	ord_vars <- all.vars(X)[-1]
-
-	# Initialize call list for plot_ordination_biplot
-	popcallList <- list(mod=mod, object=object)
-
-	# Populate the shading/shaping options in the call list.
-	if( ord_vars[1] != "."){
-		popcallList <- c(popcallList, list(site_color_category = ord_vars[1]))
-	} 
-	if( length(ord_vars) > 1){
-		popcallList <- c(popcallList, list(site_shape_category = ord_vars[2]))
-	}
-	
-	# Create the plot
-	do.call("plot_ordination_biplot", popcallList)
-}
-################################################################################
 ################################################################################
 #' Convert an otuTable object into a data.frame useful for plotting
 #' in the ggplot2 framework.
@@ -1073,7 +730,7 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' by any combination of variates present in
 #' the sampleData component of \code{otu}.
 #'
-#' @usage taxaplot(otu, taxavec="Domain",
+#' @usage plot_taxa_bar(otu, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
 #'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
 #'
@@ -1137,14 +794,14 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
 #'
 #' @export
-#' @aliases plot_taxa_bar
+#' @aliases taxaplot
 #' @rdname plot-taxa-bar
 #'
 #' @examples #
 #' # data(ex1)
-#' # taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
+#' # plot_taxa_bar(ex1, "Class", threshold=0.85, x_category="Diet",
 #' # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
-taxaplot <- function(otu, taxavec="Domain",
+plot_taxa_bar <- function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
 
@@ -1252,9 +909,9 @@ taxaplot <- function(otu, taxavec="Domain",
 }
 ################################################################################
 #' @export
-#' @aliases taxaplot
+#' @aliases plot_taxa_bar
 #' @rdname plot-taxa-bar
-plot_taxa_bar <- taxaplot
+taxaplot <- plot_taxa_bar
 ################################################################################
 # tipsymbols and tiptext. Need to make both tipsymbols and tiptext documentation
 # point to this one.

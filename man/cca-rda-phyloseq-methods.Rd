@@ -49,16 +49,15 @@
 # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
 # # CCA
 # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-# plot_ordination_phyloseq(modr, ex1)
-# plot_ordination_phyloseq(modc, ex1)
+# plot_ordination(ex1, modr, "biplot")
+# plot_ordination(ex1, modc, "biplot")
 # # Perform unconstrained ordination
 # mod1 <- cca.phyloseq(ex1)
 # # unconstrained plot using vegan plotting
 # vegan:::plot.cca(mod1)
 }
 \seealso{
-  \code{\link{plot_ordination_phyloseq}},
-  \code{\link{calcplot}}, \code{\link[vegan]{rda}},
+  \code{\link{plot_ordination}}, \code{\link[vegan]{rda}},
   \code{\link[vegan]{cca}}
 }
 

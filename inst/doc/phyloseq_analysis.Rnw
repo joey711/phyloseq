@@ -268,9 +268,9 @@ barplot(GloPa.pcoa$values$Relative_eig)
 Next, we will reproduce Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}, but separating the three axes into 2 plots using \code{plot{\_}ordination()} (Fig.~\ref{fig:GPfig5}). 
 
 <<GPfig5ax1213, fig=FALSE, include=FALSE>>=
-(p12 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", color="SampleType") + geom_line() )
+(p12 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", color="SampleType") + geom_line()  + geom_point(size=5) )
 (p13 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", axes=c(1, 3),
-                                color="SampleType") + geom_line() )
+                      color="SampleType") + geom_line() + geom_point(size=5) )
 @
 <<echo=FALSE, include=FALSE, fig=FALSE>>=
 ggsave("phyloseq_analysis-GPfig5ax12.pdf", p12, width=9, height=7)
@@ -300,7 +300,7 @@ We repeat the previous example, but instead using non-metric multidimensional sc
 data(GlobalPatterns)
 load("Unweighted_UniFrac.RData") # reloads GPUF variable
 GP.nmMDS <- metaMDS(GPUF, k=2) # perform nmMDS, set to 2 axes
-(p <- plot_ordination(GlobalPatterns, GP.nmMDS, "samples", color="SampleType") + geom_line() )
+(p <- plot_ordination(GlobalPatterns, GP.nmMDS, "samples", color="SampleType") + geom_line() + geom_point(size=5) )
 @
 <<GP_UF_NMDS1, echo=FALSE, fig=FALSE, include=FALSE>>=
 ggsave("phyloseq_analysis-GP_UF_NMDS.pdf", p, width=9, height=7)
@@ -326,6 +326,12 @@ Let's start by performing a Correspondence Analysis and investigating the scree 
 data(GlobalPatterns)
 # Need to clean the zeros from GlobalPatterns:
 GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+# Get the names of the taxa from Phyla with over 1-million individuals observed
+top.TaxaGroup <- sort(
+  tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm=TRUE), decreasing=TRUE)
+top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+# Now prune further, to just the most-abundant phyla
+GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
 # Now do the correspondence analysis
 gpca  <- cca.phyloseq(GP)
 barplot(gpca$CA$eig/sum(gpca$CA$eig), las=2)
@@ -340,8 +346,10 @@ barplot(gpca$CA$eig/sum(gpca$CA$eig), las=2)
 % \clearpage
 Now let's investigate how the samples behave on the first few CA axes.
 <<GPCA1234>>=
-(p12 <- plot_ordination(GP, gpca, "samples", color="SampleType") + geom_line() )
-(p34 <- plot_ordination(GP, gpca, "samples", axes=c(3, 4), color="SampleType") + geom_line() )
+(p12 <- plot_ordination(GP, gpca, "samples", color="SampleType") + 
+  geom_line() + geom_point(size=5) )
+(p34 <- plot_ordination(GP, gpca, "samples", axes=c(3, 4), color="SampleType") + 
+  geom_line() + geom_point(size=5) )
 @
 <<GPCA1234s, echo=FALSE, fig=FALSE, include=FALSE>>=
 ggsave("phyloseq_analysis-GPCA12.pdf", p12, width=9, height=7)
@@ -371,66 +379,29 @@ sampleData(GP)$human <- human
 
 We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''.
 
-One way to create a biplot in \emph{phyloseq} is to use the included convenience wrapper:
-
 <<GPCAbiplot12, fig=FALSE, include=FALSE>>=
-(p <- plot_ordination_biplot(gpca, GP, "", species_color_category=NULL, 
-	site_color_category="SampleType", site_shape_category="human") + theme_bw() )
+(p <- plot_ordination(GP, gpca, type="split", color="Phylum", label="SampleType") + theme_bw() )
 @
 <<echo=FALSE>>=
 # Save as raster to control file size.
-ggsave("phyloseq_analysis-GPCAbiplot12.png", p, width=6, height=4, dpi=50)
+ggsave("phyloseq_analysis-GPCAbiplot12.png", p, width=7, height=3, dpi=100)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPCAbiplot12}
-\caption{Biplot of the ``Global Patterns'' CA first two axes, using the dedicated convenience wrapper. The taxa are so diverse (even at the phylum level) that individual shading has been turned off. The darkest black spots are many species-points overlapping one another. In order to keep the file size low, this figure is saved as a low-density raster, but high-quality vector graphics are the default.}
+\includegraphics[width=7in]{phyloseq_analysis-GPCAbiplot12}
+\caption{Biplot of the ``Global Patterns'' CA first two axes, with the species/samples separated on two different panels (``facets''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included. There are so many individual taxa contributing to this CA that patterns are difficult to discern. In order to keep the file size low, this figure is saved as a low-density raster, but high-quality vector graphics are the default.}
 \label{fig:GPCAbiplot12}
 \end{figure}
 
-\clearpage
-While it may be useful to see an overview of how the many thousands of species are ultimately clustering in Fig~\ref{fig:GPCAbiplot12}, because there are so many species in this example it is difficult to discern any patterns. For instance, we might want to see how each phylum is represented along the axes. Before showing how to do that, let's first make a custom plot showing just the taxa, while remembering which directions in the coordinate space were important to us (Fig~\ref{fig:GPCAspecies})
-
-<<phylaTrim>>=
-# Make a data.frame for plotting species, GP CA coordinates
-DF <- data.frame(taxTab(GP), scores(gpca, choices=1:6, display="species"))
-# Sort the phyla names by their total cumulative abundance in the dataset
-top.TaxaGroup <- sort(
-	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
-decreasing = TRUE)
-# Subset to just those phylum that are among the top-8 most observed in all samples
-DF <- subset(DF, Phylum %in% names(top.TaxaGroup)[1:8])
-# Fix phylum factor issue:
-DF$Phylum <- factor(as(DF$Phylum, "character"))
-@
-<<GPCAspecies, eval=TRUE>>=
-(p <- ggplot(DF, aes(x=CA1, y=CA2, color=Phylum)) + geom_point() + theme_bw() )
-@
-<<echo=FALSE>>=
-# Save as raster to control file size.
-ggsave("phyloseq_analysis-GPCAspecies3.png", plot=p, width=6, height=4, dpi=50)
-@
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPCAspecies3}
-\caption{Taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded by phylum. Only the top 8 most abundant phyla are included. There are so many individual taxa contributing to this CA that patterns are difficult to discern. In order to keep the file size low, this figure is saved as a low-density raster, but high-quality vector graphics are the default.}
-\label{fig:GPCAspecies}
-\end{figure}
-
-\clearpage
-Given the large number of points even this phylum-level shading -- and only including the most abundant phyla -- does not solve the problem of occlusion (Fig~\ref{fig:GPCAspecies}). This is typical of large datasets. The following is a way to solve the occlusion problem, while still getting useful information about individual species from different phyla that appear to contribute more than others to the separation of human samples from the others. We will need to investigate this further to determine the identities of the outlying species that have a large positive value on \code{CA1} or negative value on \code{CA2}.
+While in some instances it may be useful to see how the many thousands of species are ultimately clustering in Fig~\ref{fig:GPCAbiplot12}, because there are so many species in this example it is difficult to discern any patterns. For instance, we might want to see how each phylum is represented along the axes, or note outliers that not clustering with the rest of their phyla. The following code is a way to solve the occlusion problem (points layered on top of each other), while still getting some useful information about the patter of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
 
 <<GPCAjitter0, include=FALSE, fig=FALSE>>=
 # Melt the species-data.frame, DF, to facet each CA axis separately
-mdf <- melt(DF[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
+mdf <- melt(p$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
             id=c("Phylum", "Family", "Genus") )
 # Select taxonomic-Family labels of special outliers
-LF <- rbind(
-  subset(mdf, Phylum=="Acidobacteria" & variable=="CA1" & value>1),
-  subset(mdf, Phylum=="Planctomycetes" & variable=="CA1" & value>1),
-  subset(mdf, Phylum=="Cyanobacteria" & variable=="CA2" & value < -2.5)
-  )
-# plot boxplot summaries of each CA-axis, with labels
+LF <- subset(mdf, Phylum=="Cyanobacteria" & variable=="CA2" & value < -2.5)
+# build plot: boxplot summaries of each CA-axis, with labels
 p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
   facet_wrap(~variable, 2) + scale_colour_hue(legend = FALSE) +
   theme_bw() + opts( axis.text.x = theme_text(angle = -90, hjust = 0) )
@@ -446,7 +417,7 @@ ggsave("phyloseq_analysis-GPCAjitter.pdf", p, width=6, height=6)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=6in]{phyloseq_analysis-GPCAjitter}
-\caption{Boxplot of taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded by phylum. Only the top 8 most abundant phyla are included. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the cyanobacteria (\emph{Rivulariaceae}) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.}
+\caption{Boxplot of taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded/separated by phylum. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the cyanobacteria (\emph{Rivulariaceae}) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.}
 \label{fig:GPCAjitter}
 \end{figure}
 
