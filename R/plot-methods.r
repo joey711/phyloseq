@@ -533,17 +533,34 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	if( type %in% c("sites", "species", "split") ){
 		ord_map <- ggplot2::aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
 	} else if(type=="biplot"){
-		# biplot, color must be id.type	
-		ord_map <- ggplot2::aes_string(x=x, y=y, color="id.type", shape=shape, na.rm=TRUE)
+		# biplot, id.type must map to color or size. Only color if none specified.
+		if( is.null(color) ){
+			ord_map <- ggplot2::aes_string(x=x, y=y, color="id.type",
+							shape=shape, na.rm=TRUE)
+		} else {
+			ord_map <- ggplot2::aes_string(x=x, y=y, size="id.type",
+							color=color, shape=shape, na.rm=TRUE)
+		}
 	}
 
 	# Plot-building section
-	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(size=2, na.rm=TRUE)
+	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(na.rm=TRUE)
 	
 	# split/facet color and shape can be anything in one or other.
 	if( type=="split" ){
 		# split-option requires a facet_wrap
 		p <- p + facet_wrap(~id.type, nrow=1)
+	}
+	
+	# If biplot, adjust scales
+	if( type=="biplot" ){	
+		if( is.null(color) ){
+			# Rename color title in legend.
+			p <- p + scale_color_discrete(name="type")
+		} else {
+			# Adjust size so that samples are bigger than species by default.
+			p <- p + scale_size_manual("type", values=c(samples=5, species=2))		
+		}
 	}
 
 	# Add the text labels
@@ -613,20 +630,15 @@ rm.na.phyloseq <- function(DF, key.var){
 ################################################################################
 ################################################################################
 #' @keywords internal
+#' @importFrom plyr is.discrete
 rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
-	# If all of the map.var values for samples are NA, replace with id.type.rp
+	# If all of the map.var values for samples/species are NA, replace with id.type.rp
 	if( all(is.na(DF[DF$id.type==id.type.rp, map.var])) ){
-		# Don't replace numeric. factor/character replaced differently.
-		if( class(DF[, map.var]) == "factor" ){
+		# If discrete, coerce to character, convert to factor, replace
+		if( is.discrete(DF[, map.var]) ){
 			temp.vec <- as(DF[, map.var], "character")
 			temp.vec[is.na(temp.vec)] <- id.type.rp
 			DF[, map.var] <- factor(temp.vec)
-		}
-		# if( class(DF[, map.var]) == "numeric" ){
-			# return(DF) # if numeric, leave NA
-		# }
-		if( class(DF[, map.var]) == "character" ){ # replace
-			DF[DF$id.type==id.type.rp, map.var] <- id.type.rp
 		}
 	}
 	return(DF)
