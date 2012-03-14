@@ -379,21 +379,25 @@ sampleData(GP)$human <- human
 
 We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''.
 
-<<GPCAbiplot12, fig=FALSE, include=FALSE>>=
-(p <- plot_ordination(GP, gpca, type="split", color="Phylum", label="SampleType") + theme_bw() )
+<<GPCAspecplot, fig=FALSE, include=FALSE>>=
+# Use plot_ordination to get basic plotting data
+p <- plot_ordination(GP, gpca, "species", color="Phylum")
+# Re-use data, draw 2d density, and facet by Phylum
+(p2 <- ggplot(p$data, aes(x=CA1, y=CA2, color=Phylum)) + 
+		geom_density2d() + facet_wrap(~Phylum) )
 @
 <<echo=FALSE>>=
 # Save as raster to control file size.
-ggsave("phyloseq_analysis-GPCAbiplot12.png", p, width=7, height=3, dpi=100)
+ggsave("phyloseq_analysis-GPCAspecplot.pdf", p2, width=7, height=3, dpi=100)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=7in]{phyloseq_analysis-GPCAbiplot12}
-\caption{Biplot of the ``Global Patterns'' CA first two axes, with the species/samples separated on two different panels (``facets''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included. There are so many individual taxa contributing to this CA that patterns are difficult to discern. In order to keep the file size low, this figure is saved as a low-density raster, but high-quality vector graphics are the default.}
-\label{fig:GPCAbiplot12}
+\includegraphics[width=7in]{phyloseq_analysis-GPCAspecplot}
+\caption{Species plot of the ``Global Patterns'' CA first two axes, with each phylum on a  different panel (``facet''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included.}
+\label{fig:GPCAspecplot}
 \end{figure}
 
-While in some instances it may be useful to see how the many thousands of species are ultimately clustering in Fig~\ref{fig:GPCAbiplot12}, because there are so many species in this example it is difficult to discern any patterns. For instance, we might want to see how each phylum is represented along the axes, or note outliers that not clustering with the rest of their phyla. The following code is a way to solve the occlusion problem (points layered on top of each other), while still getting some useful information about the patter of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
+While in some instances it may be useful to see how the many thousands of species are ultimately clustering in Fig~\ref{fig:GPCAspecplot}, but it is impossible to discern exceptional outliers. For instance, we might want to see how each phylum is represented along the axes and note outliers that not clustering with the rest of their phyla. The following code is a way to show this while still avoiding the occlusion problem (points layered on top of each other), and also conveying some useful information about the pattern of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
 
 <<GPCAjitter0, include=FALSE, fig=FALSE>>=
 # Melt the species-data.frame, DF, to facet each CA axis separately
