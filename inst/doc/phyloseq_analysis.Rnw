@@ -61,7 +61,7 @@ https://github.com/joey711/phyloseq}
 \clearpage
 
 \section{Summary}
-There are already several ecology and phylogenetic packages available in R, including the adephylo, vegan, ade4, picante, ape, phangorn, phylobase, and OTUbase packages. These can already take advantage of many of the powerful statistical and graphics tools available in R. However, at present a user must devise their own methods for parsing the output of their favorite OTU clustering application, and, as a consequence, there is also no standard within Bioconductor (or R generally) for storing or sharing the suite of related data objects that describe a phylogenetic sequencing project. The phyloseq package seeks to address these issues by providing a related set of S4 classes that internally manage the handling tasks associated with organizing, linking, storing, and analyzing phylogenetic sequencing data. \emph{phyloseq} additionally provides some convenience wrappers for input from common clustering applications, common analysis pipelines, and native implementation of methods that are not available in other R packages.
+The analysis of microbiological communities brings many challenges: the integration of many different types of data with methods from ecology, genetics, phylogenetics, network analysis, visualization and testing. The data itself may originate from widely different sources, such as the microbiomes of humans, soils, surface and ocean waters, wastewater treatment plants, industrial facilities, and so on; and as a result, these varied sample types may have very different forms and scales of related data that is extremely dependent upon the experiment and its question(s). The phyloseq package is a tool to import, store, analyze, and graphically display complex phylogenetic sequencing data that has already been clustered into \underline{O}perational \underline{T}axonomic \underline{U}nits (OTUs), especially when there is associated sample data, phylogenetic tree, and/or taxonomic assignment of the OTUs. This package leverages many of the tools available in R for ecology and phylogenetic analysis (vegan, ade4, ape, picante), while also using advanced/flexible graphic systems (ggplot2) to easily produce publication-quality graphics of complex phylogenetic data. phyloseq uses a specialized system of S4 classes to store all related phylogenetic sequencing data as single experiment-level object, making it easier to share data and reproduce analyses. In general, phyloseq seeks to facilitate the use of R for efficient interactive and reproducible analysis of OTU-clustered high-throughput phylogenetic sequencing data.
 
 \renewcommand{\thefootnote}{\alph{footnote}}
 
@@ -86,15 +86,39 @@ library("phyloseq")
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data}\label{sec:data}
+To facilitate testing and exploration of tools in phyloseq, this package includes example data from published studies. Many of the examples in this vignette use either the \code{GlobalPatterns} or \code{enterotype} datasets as source data. The \code{GlobalPatterns} data was described in an article in PNAS in 2011~\cite{Caporaso15032011}, and compares the microbial communities of 25 environmental samples and three known ``mock communities'' --- a total of 9 sample types --- at a depth averaging 3.1 million reads per sample. The \code{enterotype} dataset was described in a 2011 article in Nature~\cite{Arumugam:2011fk}, which compares, the faecal microbial communities from 22 subjects using complete shotgun DNA sequencing. The authors further compare these microbial communities with the faecal communities of subjects from other studies, for a total of 280 faecal samples / subjects, and 553 genera. Sourcing data from different studies invariable leads to gaps in the data for certain variables, and this is easily handled by \code{R}'s core \code{NA} features.
+
+Because this data is included in the package, the examples can easily be run on your own computer using the code shown in this vignette. The data is loaded into memory using the \code{data} command. Let's start by loading the \code{GlobalPatterns} data.
+
+<<fig=FALSE, include=FALSE>>=
+data(GlobalPatterns)
+@
+
+Later on we will use an additional categorical designation --- human versus non-human associated samples --- that was not in the original dataset. Now is a good time to add it as an explicit variable of the \code{sampleData}, and because we don't want to type long words over and over, we'll choose a shorter name for this modified version of \code{GlobalPatterns}, call it \code{GP}, and also remove a handful of taxa that are not present in any of the samples included in this dataset (probably an artifact):
+
+<<>>=
+# prune OTUs that are not present in at least one sample
+GP <- prune_species(speciesSums(GlobalPatterns) > 0, GlobalPatterns)
+# Define a human-associated versus non-human categorical variable:
+human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
+	c("Feces", "Mock", "Skin", "Tongue")
+human <- human.levels[getVariable(GP, "SampleType")]
+names(human) <- sample.names(GP)
+# Add new human variable to sample data:
+sampleData(GP)$human <- factor(human)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple graphics
-\clearpage
+%\clearpage
 \section{Simple exploratory graphics}\label{sec:explots}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Easy Richness Estimates}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness{\_}estimates} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
 
 <<fig=FALSE, include=FALSE>>=
-data(GlobalPatterns)
 (p <- plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType"))
 @
 <<echo=FALSE>>=
@@ -112,21 +136,17 @@ ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=7, height=7)
 \clearpage
 \subsection{Exploratory tree plots}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\emph{phyloseq} also contains a method for easily annotating a phylogenetic tree with information regarding the sample in which a particular taxa was observed, and optionally the numbe of individuals that were observed. In the following example we use the included ``esophagus'' dataset. 
+\emph{phyloseq} also contains a method for easily annotating a phylogenetic tree with information regarding the sample in which a particular taxa was observed, and optionally the number of individuals that were observed. 
 
-\code{esophagus} is comprised of only 3 samples and so does not include any \code{sampleData}. For our tree example we must first make dummy \code{sampleData} that only refers to the 3 sample names. 
-
-<<fig=FALSE>>=
-data(esophagus)
-es1             <- esophagus
-sn              <- sample.names(esophagus)
-sampleData(es1) <- sampleData(data.frame(sample=sn, row.names=sn))
+For the sake of creating a readable tree, let's subset the data to just the \href{http://en.wikipedia.org/wiki/Chlamydiae}{Chlamydiae} phylum, which consists of obligate intracellular pathogens and is present in only a subset of environments in this dataset.
+<<>>=
+GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
 @
 
-And now we will create the tree graphic, grouping/coloring by our dummy sample-name variable, and also labelling the number of individuals observed in each sample (if at all). The symbols are slightly enlarged as the number of individuals increases.
+And now we will create the tree graphic form this subset of \code{GlobalPatterns}, shading by the \code{"SampleType"} variable, which indicates the environment category from which the microbiome samples originated.  The following command also takes the option of labelling the number of individuals observed in each sample (if at all) of each taxa. The symbols are slightly enlarged as the number of individuals increases.
 <<fig=TRUE>>=
-plot_tree_phyloseq(es1, color_factor="sample",
-			type_abundance_value=TRUE, treeTitle="esophagus example data")
+plot_tree_phyloseq(GP.chl, color_factor="SampleType",
+			type_abundance_value=TRUE, treeTitle="Chlamydiae in Global Patterns Data")
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,16 +157,16 @@ In the following example we use the included ``enterotype'' dataset~\cite{Arumug
 <<>>=
 data(enterotype)
 @
-We start with a simple rank abundance barplot, using the cumulative fractional abundance of each \underline{O}perational \underline{T}axonomic \underline{U}nit (OTU) in the dataset. In this particular example, the available published data are pre-processed/simplified as sample-wise fractional occurrences (rather than counts of individuals; preffered), and OTUs are clustered/labeled at the genus level. For the barplot in Figure~\ref{fig:abundbarplot}, we further normalize by the total number of samples (\Sexpr{nsamples(enterotype)}).
+We start with a simple rank-abundance barplot, using the cumulative fractional abundance of each OTU in the dataset. In the enterotype dataset, the available published data are simplified as sample-wise fractional occurrences, rather than counts of individuals\footnote{Unfortunate, as this means we lose information about the total number of reads and associated confidences, ability to do more sophisticated richness estimates, etc. For example, knowing that we observed 1 sequence read of a species out of 100 total reads means something very different from observing 10,000 reads out of 1,000,000 total.}, and OTUs are clustered/labeled at the genus level, but no other taxonomic assignment is available. For the barplot in Figure~\ref{fig:abundbarplot}, we further normalize by the total number of samples (\Sexpr{nsamples(enterotype)}).
 
 <<EntAbundPlot, include=FALSE, fig=TRUE, height=6, width=8>>=
-par(mar = c(10, 4, 4, 2) + 0.1) # make more room on bottom margin for genera names
+par(mar = c(10, 4, 4, 2) + 0.1) # make more room on bottom margin
 N <- 30
 barplot(sort(speciesSums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
+\includegraphics[trim = 10mm 15mm 10mm 15mm, clip, width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
 \caption{An example exploratory barplot using base \code{R} graphics and the \code{speciesSums} and \code{nsamples} functions.}
 \label{fig:abundbarplot}
 \end{figure}
@@ -163,28 +183,30 @@ We need to know which taxonomic rank classifiers, if any, we have available to s
 
 <<>>=
 TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
-entTop   <- prune_species(TopNOTUs, enterotype)
-print(entTop)
+ent10   <- prune_species(TopNOTUs, enterotype)
+print(ent10)
 @
 
-Note also that there are \Sexpr{nsamples(entTop)} samples in this dataset, and so a remaining challenge is to consolidate these samples into meaningful groups. A good place to look is the available sample variables, which in most cases will carry more ``meaning'' than the sample names alone.
+Note also that there are \Sexpr{nsamples(ent10)} samples in this dataset, and so a remaining challenge is to consolidate these samples into meaningful groups. A good place to look is the available sample variables, which in most cases will carry more ``meaning'' than the sample names alone.
 
 <<>>=
-sample.variables(entTop)
+sample.variables(ent10)
 @
 
 The parameters to \code{plot{\_}taxa{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sampleData}, the \code{plot{\_}taxa{\_}bar()} function recognizes a special parameter name \code{"TaxaGroup"}, which is not (should not be) a sample variable name in \mbox{\code{sampleData(enterotype)}}, but instead indicates that the particular graphic parameter should group values by the taxanomic rank specified in the \code{taxavec} argument. In this example we have also elected to separate the samples by ``facets'' (separate, adjacent sub-plots) according to the enterotype to which they have been assigned. Within each enterotype facet, the samples are further separated by sequencing technology, and the genera is indicated by fill color. Multiple samples having the same enterotype designation and sequencing technology are plotted side-by-side as separate bars. 
 
-<<entbarplot, include=FALSE, fig=TRUE, height=6, width=8>>=
-p <- plot_taxa_bar(entTop, taxavec="Genus", x_category="SeqTech", fill_category = "TaxaGroup")
-p <- p + facet_wrap(~Enterotype) # Do a facet_wrap
-print(p)
+<<entbarplot0, include=FALSE, fig=FALSE, height=6, width=8>>=
+(p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
+			facet_wrap(~Enterotype) )
+@
+<<echo=FALSE, include=FALSE, eval=TRUE>>=
+ggsave("phyloseq_analysis-entbarplot.pdf", p, width=8, height=6)
 @
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{phyloseq_analysis-entbarplot}
 \captionsetup{width=1.0\textwidth}
-\caption{An example exploratory barplot using the \code{plot{\_}taxa{\_}bar()} function. In this case we have faceted the samples according to their assigned Enterotype. Within each Enterotype facet, the samples are further separated by sequencing technology, and each genera is shaded a different color. Multiple samples from the same Enterotype and sequencing technology are plotted side-by-side as separate bars (dodged).}
+\caption{An example exploratory barplot using the \code{plot{\_}taxa{\_}bar()} function. In this case we have faceted the samples according to their assigned Enterotype. The small subset of samples in the dataset that do not have an assigned Enterotype are shown in the \code{NA} panel. Within each Enterotype facet, the samples are further separated by sequencing technology, and each genera is shaded a different color. Multiple samples from the same Enterotype and sequencing technology are plotted side-by-side as separate bars (dodged).}
 \label{fig:barplot}
 \end{figure}
 
@@ -200,15 +222,15 @@ Figure~\ref{fig:barplot} summarizes quantitatively the increased abundances of \
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % makenetwork
 %\clearpage
-\subsection{Microbiome Graphical/Network Models}\label{sec:network}
+\subsection{Microbiome Network Representation}\label{sec:network}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Continuing with the \code{enterotype} dataset, here are some examples for creating custom graphical models of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} package, and uses \code{ggplot2} to create a graphical display of the ``connectedness'' of samples according to some user-provided ecological similarity.  
+Continuing with the \code{enterotype} dataset, here are some examples for creating a custom network representation of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} and \code{ggplot2} packages to create a network display of the ``connectedness'' of samples according to some user-provided ecological similarity. The position of points (samples) in the plot has little meaning, other than to more easily display the presence/absence of network ``edges'' to other samples. In this case, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
 
 <<ent-network, fig=FALSE, eval=TRUE>>=
 data(enterotype)
 ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
-(p  <- plot_sample_network(ig, enterotype, 
-          color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL))
+(p  <- plot_sample_network(ig, enterotype, color="SeqTech",
+    shape="Enterotype", line_weight=0.4, label=NULL))
 @
 <<echo=FALSE>>=
 ggsave("phyloseq_analysis-plot_sample_network.pdf", p, width=7, height=7)
@@ -219,7 +241,7 @@ Interestingly, at this level of analysis and parameter-settings the two major su
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.7\textwidth]{phyloseq_analysis-plot_sample_network.pdf}
-\caption{Graphical model of the relationship between microbiome samples in the ``Enterotype'' dataset~\cite{Arumugam:2011fk}.}
+\caption{Network representation of the relationship between microbiome samples in the ``Enterotype'' dataset~\cite{Arumugam:2011fk}.}
 \label{fig:makenetwork}
 \end{figure}
 
@@ -231,7 +253,7 @@ Interestingly, at this level of analysis and parameter-settings the two major su
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Principal Coordinates Analysis (PCoA)}\label{sec:PCoA}
-We take as our first example, a reproduction of Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The authors show a 3-dimensional representation of the first three axes of a Principal Coordinates Analysis (PCoA) performed on the unweighted-UniFrac distance (see section~\ref{sec:unifrac}) using all of the available sequences (their approach included both 5' and 3' sequences). According to the authors, ``the first axis [appears to be associated with a] host associated/free living [classification],'' and similarly the third axis with ``saline/nonsaline environment[s].''
+We take as our first example, a reproduction of Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The authors show a 3-dimensional representation of the first three axes of a Principal Coordinates Analysis (PCoA\footnote{This is also sometimes referred to as ``Multi-Dimensional Scaling'', or ``MDS''}) performed on the unweighted-UniFrac distance (see section~\ref{sec:unifrac}) using all of the available sequences (their approach included both 5' and 3' sequences). According to the authors, ``the first axis [appears to be associated with a] host associated/free living [classification],'' and similarly the third axis with ``saline/nonsaline environment[s].''
 
 The following reproduces the unweighted UniFrac distance calculation on the full dataset. Note that this calculation can take a long time because of the large number of OTUs. Parallelization is recommended for large datasets, typically if they are as large as \code{GlobalPatterns}, or larger. For details on parallelization, see the details section and examples in the \code{UniFrac()} documentation, and also the page dedicated to the topic on the phyloseq-wiki:
 
@@ -252,13 +274,12 @@ GloPa.pcoa <- pcoa(GPUF)
 @
 
 Before we look at the results, let's first investigate how much of the total distance structure we will capture in the first few axes. We can do this graphically with a ``scree plot'', an ordered barplot of the relative fraction of the total eigenvalues associated with each axis (Fig.~\ref{fig:PCoAScree}).
-
 <<PCoAScree, fig=TRUE, include=FALSE, width=6, height=4>>=
 barplot(GloPa.pcoa$values$Relative_eig)
 @
-\begin{figure}[tbp]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.6\textwidth]{phyloseq_analysis-PCoAScree}
+\includegraphics[trim = 10mm 20mm 10mm 20mm, clip, width=0.6\textwidth]{phyloseq_analysis-PCoAScree}
 \captionsetup{width=0.6\textwidth}
 \caption{Scree plot of the PCoA used to create Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The first three axes represent \Sexpr{round(100*sum(GloPa.pcoa$values$Relative_eig[1:3]))}\% of the total variation in the distances. Interestingly, the fourth axis represents another \Sexpr{round(100*(GloPa.pcoa$values$Relative_eig[4]))}\%, and so may warrant exploration as well. A scree plot is an important tool for any ordination method, as the relative importance of axes can vary widely from one dataset to another.}
 \label{fig:PCoAScree}
@@ -338,7 +359,7 @@ barplot(gpca$CA$eig/sum(gpca$CA$eig), las=2)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\textwidth]{phyloseq_analysis-GPCAscree}
+\includegraphics[trim = 10mm 15mm 10mm 15mm, clip, width=0.7\textwidth]{phyloseq_analysis-GPCAscree}
 \caption{The correspondence analysis (CA) scree plot of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
 \label{fig:GPCAscree}
 \end{figure}
@@ -365,17 +386,7 @@ ggsave("phyloseq_analysis-GPCA34.pdf", p34, width=9, height=7)
 \label{fig:GPCA}
 \end{figure}
 
-A clear feature of these plots is that the feces and mock communities cluster tightly together, far away from all other samples on the first axis (CA1) in Fig.~\ref{fig:sub:GPCA12}. The skin and tongue samples separate similarly, but on the second axis. Taken together, it appears that the first two axes are best explained by the separation of human-associated ``environments'' from the other non-human environments in the dataset, with a secondary separation of tongue and skin samples from feces. Later on we will use this extra categorical designation (human / non-human), so now is a good time to add it as an explicit variable of the `sampleData`:
-
-<<>>=
-# Define a human-associated versus non-human categorical variable:
-human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
-	c("Feces", "Mock", "Skin", "Tongue")
-human <- human.levels[getVariable(GP, "SampleType")]
-names(human) <- sample.names(GP)
-# Add new human variable to sample data:
-sampleData(GP)$human <- human
-@
+A clear feature of these plots is that the feces and mock communities cluster tightly together, far away from all other samples on the first axis (CA1) in Fig.~\ref{fig:sub:GPCA12}. The skin and tongue samples separate similarly, but on the second axis. Taken together, it appears that the first two axes are best explained by the separation of human-associated ``environments'' from the other non-human environments in the dataset, with a secondary separation of tongue and skin samples from feces. 
 
 We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''.
 
