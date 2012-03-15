@@ -103,10 +103,12 @@
   the sampleData component of \code{otu}.
 }
 \examples{
-#
-# data(ex1)
-# plot_taxa_bar(ex1, "Class", threshold=0.85, x_category="Diet",
-# fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
+##
+# data(enterotype)
+# TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10])
+# ent10   <- prune_species(TopNOTUs, enterotype)
+# (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
+#    facet_wrap(~Enterotype) )
 }
 \seealso{
   \code{\link{otu2df}}, \code{\link{qplot}},

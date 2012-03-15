@@ -52,10 +52,10 @@
 }
 \examples{
 #
-# data(ex1)
-# sampleData(ex1)
+# data(GlobalPatterns)
+# sampleData(GlobalPatterns)
 ## shorter (convenience) wrapper of sampleData()
-# samData(ex1)
+# samData(GlobalPatterns)
 }
 \seealso{
   \code{\link{tre}}, \code{\link{taxTab}},

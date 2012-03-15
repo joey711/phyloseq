@@ -1050,8 +1050,8 @@ import_mothur_dist <- function(mothur_dist_file){
 #'  importing the OTUs with the \code{import_mothur_otulist()} function.
 #'
 #' @examples #
-#' ### data(ex1) 
-#' ### myDistObject <- as.dist(cophenetic(tre(ex1)))
+#' ### data(GlobalPatterns) 
+#' ### myDistObject <- as.dist(cophenetic(tre(GlobalPatterns)))
 #' ### export_mothur_dist(myDistObject, "myfilepathname.dist")
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 	if( class(x)== "matrix" ){ x <- as.dist(x) }

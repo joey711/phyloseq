@@ -41,8 +41,8 @@
 }
 \examples{
 #
-# data(ex1)
-# otuTable(ex1)
+# data(GlobalPatterns)
+# otuTable(GlobalPatterns)
 }
 \seealso{
   \code{\link{tre}}, \code{\link{sampleData}},

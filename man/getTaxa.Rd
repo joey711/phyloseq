@@ -27,8 +27,8 @@
 \examples{
 data(enterotype)
 getTaxa(enterotype)
-data(ex1)
-getTaxa(ex1, "Family")
+data(GlobalPatterns)
+getTaxa(GlobalPatterns, "Family")
 }
 \seealso{
   getSpecies species.names sample.names getTaxa

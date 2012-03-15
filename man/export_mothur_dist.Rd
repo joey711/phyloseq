@@ -41,8 +41,8 @@
 }
 \examples{
 #
-### data(ex1)
-### myDistObject <- as.dist(cophenetic(tre(ex1)))
+### data(GlobalPatterns)
+### myDistObject <- as.dist(cophenetic(tre(GlobalPatterns)))
 ### export_mothur_dist(myDistObject, "myfilepathname.dist")
 }
 

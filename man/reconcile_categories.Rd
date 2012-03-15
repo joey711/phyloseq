@@ -24,8 +24,8 @@
   plague downstream plots analysis.
 }
 \examples{
-# # # data(ex1)
-# # # SM <- sampleData(ex1)
+# # # data(GlobalPatterns)
+# # # SM <- sampleData(GlobalPatterns)
 # # # DF <- data.frame(SM)
 # # # DF <- data.frame(DF, col1=1:nrow(DF), col2=paste(1:nrow(DF), "t", sep=""))
 # # # DF <- reconcile_variables(DF)

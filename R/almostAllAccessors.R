@@ -42,8 +42,8 @@
 #' @docType methods
 #'
 #' @examples
-#' # data(ex1)
-#' # tre(ex1)
+#' # data(GlobalPatterns)
+#' # tre(GlobalPatterns)
 setGeneric("tre", function(physeq, errorIfNULL=TRUE) standardGeneric("tre"))
 #' @rdname tre-methods
 #' @aliases tre,ANY-method
@@ -249,12 +249,8 @@ setMethod("nsamples", "sampleData", function(physeq) nrow(physeq) )
 #'
 #' @examples #
 #' # # From "picante" package
-#' # data("phylocom")
-#' # tree <- phylocom$phylo
-#' # OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)
-#' # sample.names(OTU1)
-#' # ex1 <- phyloseq(OTU1, tree)
-#' # sample.names(ex1)
+#' # data(GlobalPatterns)
+#' # sample.names(GlobalPatterns)
 setGeneric("sample.names", function(physeq) standardGeneric("sample.names"))
 # Unless otherwise specified, this should return a value of NULL
 # That way, objects that do not explicitly describe samples all
@@ -412,8 +408,8 @@ rank.names <- function(physeq){
 #' @examples
 #' data(enterotype)
 #' getTaxa(enterotype)
-#' data(ex1)
-#' getTaxa(ex1, "Family")
+#' data(GlobalPatterns)
+#' getTaxa(GlobalPatterns, "Family")
 getTaxa <- function(physeq, taxonomic.rank=rank.names(physeq)[1]){
 	unique(as(taxTab(physeq)[, taxonomic.rank], "character"))
 }

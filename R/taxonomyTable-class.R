@@ -36,8 +36,8 @@
 #'
 #' @examples #
 #' # tax1 <- taxTab(matrix("abc", 30, 8))
-#' # data(ex1)
-#' # taxTab(ex1)
+#' # data(GlobalPatterns)
+#' # taxTab(GlobalPatterns)
 setGeneric("taxTab", function(object, errorIfNULL=TRUE) standardGeneric("taxTab"))
 #' @rdname taxTab-methods
 #' @aliases taxTab,ANY-method
@@ -92,7 +92,7 @@ taxtab <- taxTab
 #' @export
 #'
 #' @examples
-#' ## ex3 <- subset_species(ex1, Phylum=="Bacteroidetes")
+#' ## ex3 <- subset_species(GlobalPatterns, Phylum=="Bacteroidetes")
 subset_species <- function(physeq, ...){
 	if( is.null(taxTab(physeq)) ){ 
 		cat("Nothing subset. No taxonomyTable in physeq.\n")

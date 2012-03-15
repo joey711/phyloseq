@@ -46,8 +46,8 @@
   paired.
 }
 \examples{
-# data(ex1)
-# tre(ex1)
+# data(GlobalPatterns)
+# tre(GlobalPatterns)
 }
 \seealso{
   \code{\link{otuTable}}, \code{\link{sampleData}},

@@ -1,25 +1,4 @@
 ################################################################################
-#' (Data) Example data set 1 for the phyloseq package. (2011)
-#'
-#' This is a small preliminary dataset of human gut microbial communities from
-#' subjects of different gender and diet. The exact meaning of diet and gender
-#' has been obscured because the larger study to which it belongs has not yet
-#' been published. For a more complete and already-published example dataset,
-#' try the \code{\link{enterotype}} data.
-#'
-#' @name data-ex1
-#' @aliases ex1
-#' @docType data
-#' @author Paul J. McMurdie II \email{mcmurdie@@stanford.edu}
-#' @references \url{www.stanford.edu/~mcmurdie}
-#' @keywords data
-#' @examples
-#' ## data(ex1)
-################################################################################
-# This is a dummy line. This source file is just for documenting the
-# example data, ex1, for the phyloseq package.
-NA
-################################################################################
 #' (Data) Small example dataset from a human esophageal community (2004)
 #'
 #' Includes just 3 samples, 1 each from 3 subjects. Although the research article mentions 4 subjects,

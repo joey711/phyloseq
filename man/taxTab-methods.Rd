@@ -44,8 +44,8 @@
 \examples{
 #
 # tax1 <- taxTab(matrix("abc", 30, 8))
-# data(ex1)
-# taxTab(ex1)
+# data(GlobalPatterns)
+# taxTab(GlobalPatterns)
 }
 \seealso{
   \code{\link{tre}}, \code{\link{sampleData}},

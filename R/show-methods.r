@@ -45,9 +45,9 @@ setMethod("show", "taxonomyTable", function(object){
 #' @docType methods
 #' @rdname show-methods
 #' @examples
-#' # data(ex1)
-#' # show(ex1)
-#' # ex1
+#' # data(GlobalPatterns)
+#' # show(GlobalPatterns)
+#' # GlobalPatterns
 setMethod("show", "phyloseq", function(object){
 	cat("phyloseq-class experiment-level object", fill=TRUE)
 	# print otuTable (always there).

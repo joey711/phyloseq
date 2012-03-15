@@ -11,9 +11,9 @@
   \code{\link[methods]{show}} method for expected behavior.
 }
 \examples{
-# data(ex1)
-# show(ex1)
-# ex1
+# data(GlobalPatterns)
+# show(GlobalPatterns)
+# GlobalPatterns
 }
 \seealso{
   \code{\link[methods]{show}}

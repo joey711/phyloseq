@@ -81,19 +81,11 @@
   (\code{\link{otuTable}}).
 }
 \examples{
-# data(ex1)
-# ex2 <- ex1
-## # for reproducibility
-## set.seed(711)
-# species.names(ex2) <- sample(species.names(ex1), 50)
-# plot_tree_phyloseq(ex2)
-# plot_tree_phyloseq(ex2, shape_factor="Diet")
-# plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet")
-# plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet",
-# size_scaling_factor=0.6, type_abundance_value=TRUE)
-# plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet",
-# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
-# plot(phyloseqTree(ex2), color_factor="Gender", shape_factor="Diet",
-# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta") )
+# data(GlobalPatterns)
+# GP <- GlobalPatterns
+# GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
+# plot_tree_phyloseq(GP.chl, color_factor="SampleType",
+# 			type_abundance_value=TRUE,
+# 			treeTitle="Chlamydiae in Global Patterns Data")
 }
 

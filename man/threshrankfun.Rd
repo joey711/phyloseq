@@ -28,12 +28,13 @@
   \code{\link{transformsamplecounts}}.
 }
 \examples{
-data(ex1)
+data(GlobalPatterns)
+GP <- GlobalPatterns
 ## These three approaches result in identical otuTable
-(x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
-(x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+(x1 <- transformsamplecounts( otuTable(GP), threshrankfun(500)) )
+(x2 <- otuTable(apply(otuTable(GP), 2, threshrankfun(500)), speciesAreRows(GP)) )
 identical(x1, x2)
-(x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+(x3 <- otuTable(apply(otuTable(GP), 2, threshrank, thresh=500), speciesAreRows(GP)) )
 identical(x1, x3)
 }
 \seealso{

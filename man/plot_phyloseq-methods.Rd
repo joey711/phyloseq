@@ -29,8 +29,8 @@
   \code{\link{phyloseq-package}}.
 }
 \examples{
-## data(ex1)
-## plot_phyloseq(ex1)
+## data(esophagus)
+## plot_phyloseq(esophagus)
 }
 \seealso{
   \code{\link{plot_ordination}} \code{\link{plot_taxa_bar}}

@@ -41,10 +41,10 @@
 #' @export
 #'
 #' @examples #
-#' # data(ex1)
-#' # sampleData(ex1)
+#' # data(GlobalPatterns)
+#' # sampleData(GlobalPatterns)
 #' ## shorter (convenience) wrapper of sampleData()
-#' # samData(ex1)
+#' # samData(GlobalPatterns)
 setGeneric("sampleData", function(object, errorIfNULL=TRUE) standardGeneric("sampleData"))
 #' @rdname sampleData-methods
 #' @aliases sampleData,ANY-method
@@ -102,8 +102,8 @@ sampleMap <- function(object, errorIfNULL=TRUE){sampleData(object, errorIfNULL)}
 #' @keywords internal
 #'
 #' @examples
-#' # # # data(ex1)
-#' # # # SM <- sampleData(ex1)
+#' # # # data(GlobalPatterns)
+#' # # # SM <- sampleData(GlobalPatterns)
 #' # # # DF <- data.frame(SM)
 #' # # # DF <- data.frame(DF, col1=1:nrow(DF), col2=paste(1:nrow(DF), "t", sep=""))
 #' # # # DF <- reconcile_variables(DF)
@@ -148,15 +148,8 @@ reconcile_categories <- function(DFSM){
 #' @docType methods
 #'
 #' @examples
-#'  # data(ex1)
-#'  # ex2 <- subset_samples(ex1, Gender=="A")
-#'  # ex2 <- subset_samples(ex1, Diet==1)
-#'  ### Here is an example comparing subset_samples with prune_samples...
-#'  # B_only_sample_names <- sample.names(sampleData(ex1)[(sampleData(ex1)[, "Gender"]=="B"),])
-#'  # ex2 <- prune_samples(B_only_sample_names, ex1)
-#'  # ex3 <- subset_samples(ex1, Gender=="B")
-#'  # ## This should be TRUE.
-#'  # identical(ex2, ex3)
+#'  # data(GlobalPatterns)
+#'  # subset_samples(GlobalPatterns, SampleType=="Ocean")
 subset_samples <- function(physeq, ...){
 	if( is.null(sampleData(physeq)) ){ 
 		cat("Nothing subset. No sampleData in physeq.\n")

@@ -153,19 +153,17 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @export
 #' @import vegan
 #' @examples #
-#' # data(ex1)
+#' # data(GlobalPatterns)
 #' # # For RDA, use thresholded-rank
-#' # ex4  <- transformsamplecounts(ex1, threshrankfun(500))
+#' # ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
 #' # # RDA
-#' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
+#' # modr <- rda.phyloseq(ex4 ~ SampleType)
 #' # # CCA
-#' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-#' # plot_ordination(ex1, modr, "biplot")
-#' # plot_ordination(ex1, modc, "biplot")
+#' # modc <- cca.phyloseq(GlobalPatterns ~ SampleType)
+#' # plot_ordination(GlobalPatterns, modr, "biplot")
+#' # plot_ordination(GlobalPatterns, modc, "biplot")
 #' # # Perform unconstrained ordination
-#' # mod1 <- cca.phyloseq(ex1)
-#' # # unconstrained plot using vegan plotting
-#' # vegan:::plot.cca(mod1)
+#' # mod1 <- cca.phyloseq(GlobalPatterns)
 setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
 ################################################################################
 #' @aliases cca.phyloseq,formula-method

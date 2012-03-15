@@ -47,20 +47,10 @@
 }
 \examples{
 #
-# # # data(ex1)
-# # # t1 <- merge_samples(sampleData(ex1), "Gender")
-# # # t4 <- merge_samples(ex1, "Gender")
-# # # identical(t1, sampleData(t4))
-# # # t0 <- merge_samples(ex1, "Diet")
-# # # grp <- as(data.frame(sampleData(ex1))[, "Diet"], "vector")
-# # # t4 <- merge_samples(ex1, grp)
-# # # identical(t0, t4)
-# # # t1 <- merge_samples(otuTable(ex1), grp)
-# # # t2 <- merge_samples(otuTable(ex1), factor(grp))
-# # # t3 <- merge_samples(ex1, "Diet")
-# # # identical(t1, t2)
-# # # identical(t1, t3)
-# # # identical(t1, otuTable(t3))
+# data(GlobalPatterns)
+# t1 <- merge_samples(sampleData(GlobalPatterns), "SampleType")
+# t4 <- merge_samples(GlobalPatterns, "SampleType")
+# identical(t1, sampleData(t4))
 }
 \seealso{
   \code{\link{merge_species}}, code{\link{merge_phyloseq}}

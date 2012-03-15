@@ -23,8 +23,8 @@
 }
 \examples{
 #
-data(ex1)
-getslots.phyloseq(ex1)
+data(GlobalPatterns)
+getslots.phyloseq(GlobalPatterns)
 data(esophagus)
 getslots.phyloseq(esophagus)
 }

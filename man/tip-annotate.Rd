@@ -37,10 +37,10 @@
 }
 \examples{
 #
-## data(ex1)
+## data(GlobalPatterns)
 ## # for reproducibility
 ## set.seed(711)
-## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
+## ex2 <- prune_species(sample(species.names(GlobalPatterns), 50), GlobalPatterns)
 ## plot( tre(ex2) )
 ## tipsymbols(pch=19)
 ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")

@@ -30,7 +30,7 @@
   (\code{taxonomyTable} component) slot of \code{physeq}.
 }
 \examples{
-## ex3 <- subset_species(ex1, Phylum=="Bacteroidetes")
+## ex3 <- subset_species(GlobalPatterns, Phylum=="Bacteroidetes")
 }
 \seealso{
   \code{\link{subset_samples}}

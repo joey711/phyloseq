@@ -28,15 +28,8 @@
   related to the columns and values within the sampleData.
 }
 \examples{
-# data(ex1)
-# ex2 <- subset_samples(ex1, Gender=="A")
-# ex2 <- subset_samples(ex1, Diet==1)
-### Here is an example comparing subset_samples with prune_samples...
-# B_only_sample_names <- sample.names(sampleData(ex1)[(sampleData(ex1)[, "Gender"]=="B"),])
-# ex2 <- prune_samples(B_only_sample_names, ex1)
-# ex3 <- subset_samples(ex1, Gender=="B")
-# ## This should be TRUE.
-# identical(ex2, ex3)
+# data(GlobalPatterns)
+# subset_samples(GlobalPatterns, SampleType=="Ocean")
 }
 \seealso{
   \code{\link{subset_species}}

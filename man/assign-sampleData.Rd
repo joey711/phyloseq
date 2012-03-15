@@ -18,12 +18,12 @@
 }
 \examples{
 #
-# data(ex1)
-# # An example of pruning to just the first 10 samples in ex1
-# ex2a <- prune_samples(sample.names(ex1)[1:10], ex1)
+# data(GlobalPatterns)
+# # An example of pruning to just the first 10 samples in GlobalPatterns
+# ex2a <- prune_samples(sample.names(GlobalPatterns)[1:10], GlobalPatterns)
 # # The following 3 lines produces an ex2b that is equal to ex2a
-# ex2b <- ex1
-# SD <- sampleData(ex1)[1:10, ]
+# ex2b <- GlobalPatterns
+# SD <- sampleData(GlobalPatterns)[1:10, ]
 # sampleData(ex2b) <- SD
 # identical(ex2a, ex2b)
 # print(ex2b)

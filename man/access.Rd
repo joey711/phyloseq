@@ -38,14 +38,14 @@
 }
 \examples{
 #
-## data(ex1)
-## access(ex1, "taxTab")
-## access(ex1, "tre")
-## access(otuTable(ex1), "otuTable")
+## data(GlobalPatterns)
+## access(GlobalPatterns, "taxTab")
+## access(GlobalPatterns, "tre")
+## access(otuTable(GlobalPatterns), "otuTable")
 ## # Should return NULL:
-## access(otuTable(ex1), "sampleData")
-## access(otuTree(ex1), "sampleData")
-## access(otuSam(ex1), "tre")
+## access(otuTable(GlobalPatterns), "sampleData")
+## access(otuTree(GlobalPatterns), "sampleData")
+## access(otuSam(GlobalPatterns), "tre")
 }
 \seealso{
   \code{\link{getslots.phyloseq}},

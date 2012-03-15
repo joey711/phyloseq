@@ -37,8 +37,8 @@
 #' @rdname plot_phyloseq-methods
 #'
 #' @examples 
-#'  ## data(ex1)
-#'  ## plot_phyloseq(ex1)
+#'  ## data(esophagus)
+#'  ## plot_phyloseq(esophagus)
 setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phyloseq") })
 #' @aliases plot_phyloseq,phyloseq-method
 #' @rdname plot_phyloseq-methods
@@ -645,6 +645,114 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 }
 ################################################################################
 ################################################################################
+#' Subset points from an ordination-derived ggplot
+#'
+#' Easily retrieve a plot-derived \code{data.frame} with a subset of points
+#' according to a threshold and method. The meaning of the threshold depends
+#' upon the method. See argument description below.
+#'
+#' @usage subset_ord_plot(p, threshold=0.05, method="farthest")
+#' 
+#' @param p (Required).  A \code{\link{ggplot}} object created by 
+#'  \code{\link{plot_ordination}}. It contains the complete data that you
+#'  want to subset.
+#'
+#' @param threshold (Optional). A numeric scalar. Default is \code{0.05}.
+#'  This value determines a coordinate threshold or population threshold,
+#'  depending on the value of the \code{method} argument, ultimately 
+#'  determining which points are included in returned \code{data.frame}.
+#'
+#' @param method (Optional). A character string. One of 
+#'  \code{c("farthest", "radial", "square")}. Default is \code{"farthest"}.
+#'  This determines how threshold will be interpreted.
+#'
+#' \describe{
+#'
+#'    \item{farthest}{
+#'       Unlike the other two options, this option implies removing a 
+#'       certain fraction or number of points from the plot, depending
+#'       on the value of \code{threshold}. If \code{threshold} is greater
+#'       than or equal to \code{1}, then all but \code{threshold} number 
+#'       of points farthest from the origin are removed. Otherwise, if
+#'       \code{threshold} is less than \code{1}, all but \code{threshold}
+#'       fraction of points farthests from origin are retained.
+#'    }
+#' 
+#'    \item{radial}{
+#'	     Keep only those points that are beyond \code{threshold} 
+#'       radial distance from the origin. Has the effect of removing a
+#'       circle of points from the plot, centered at the origin.
+#'    }
+#' 
+#'    \item{square}{
+#'         Keep only those points with at least one coordinate
+#'         greater than \code{threshold}. Has the effect of removing a 
+#'         ``square'' of points from the plot, centered at the origin.
+#'    }
+#' 
+#'  }
+#'
+#' @return A \code{\link{data.frame}} suitable for creating a 
+#'  \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result according to previously-specified parameters.
+#' 
+#' @seealso 
+#'  \code{\link{plot_ordination}}
+#'
+#' @export
+#' @examples 
+#' ##
+#' # data(GlobalPatterns)
+#' # # Need to clean the zeros from GlobalPatterns:
+#' # GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' # sampleData(GP)$human <- factor(human)
+#' # # Get the names of the most-abundant phyla
+#' # top.TaxaGroup <- sort(
+#' #   	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#' #   decreasing = TRUE)
+#' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+#' # # Prune to just the most-abundant phyla
+#' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' # # Perform a correspondence analysis
+#' # gpca <- cca.phyloseq(GP)
+#' # # # Make species topo with a subset of points layered
+#' # # First, make a basic plot of just the species
+#' # p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
+#' # # Re-draw this as topo without points, and facet
+#' # p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
+#' # # Add a layer of a subset of species-points that are furthest from origin.
+#' # p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1) 
+#' # print(p53)
+subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
+	threshold <- threshold[1] # ignore all but first threshold value.
+	method    <- method[1] # ignore all but first string.
+	method.names <- c("farthest", "radial", "square")
+	# Subset to only some small fraction of points 
+	# with furthest distance from origin
+	df <- p$data[, c(1, 2)]
+	d <- sqrt(df[, 1]^2 + df[, 2]^2)
+	names(d) <- rownames(df)
+	if( method.names[pmatch(method, method.names)] == "farthest"){
+		if( threshold >= 1){
+			show.names <- names(sort(d, TRUE)[1:threshold])
+		} else if( threshold < 1 ){
+			show.names <- names(sort(d, TRUE)[1:round(threshold*length(d))])
+		} else {
+			stop("threshold not a valid positive numeric scalar")
+		}		
+	} else if( method.names[pmatch(method, method.names)] == "radial"){
+		show.names <- names(d[d > threshold])
+	} else if( method.names[pmatch(method, method.names)] == "square"){	
+		# show.names <- rownames(df)[as.logical((abs(df[, 1]) > threshold) + (abs(df[, 2]) > threshold))]
+		show.names <- rownames(df)[((abs(df[, 1]) > threshold) | (abs(df[, 2]) > threshold))]
+	} else {
+		stop("method name not supported. Please select a valid method")
+	}
+
+	return(p$data[show.names, ])
+}
+################################################################################
+################################################################################
 ################################################################################
 #' Convert an otuTable object into a data.frame useful for plotting
 #' in the ggplot2 framework.
@@ -809,10 +917,13 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' @aliases taxaplot
 #' @rdname plot-taxa-bar
 #'
-#' @examples #
-#' # data(ex1)
-#' # plot_taxa_bar(ex1, "Class", threshold=0.85, x_category="Diet",
-#' # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
+#' @examples
+#' ##
+#' # data(enterotype)
+#' # TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
+#' # ent10   <- prune_species(TopNOTUs, enterotype)
+#' # (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
+#' #    facet_wrap(~Enterotype) )
 plot_taxa_bar <- function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
@@ -959,10 +1070,10 @@ taxaplot <- plot_taxa_bar
 #' 
 #' @seealso \code{\link[ape]{tiplabels}}, \code{\link[graphics]{points}}, \code{\link[graphics]{text}}
 #' @examples #
-#' ## data(ex1)
+#' ## data(GlobalPatterns)
 #' ## # for reproducibility
 #' ## set.seed(711)
-#' ## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
+#' ## ex2 <- prune_species(sample(species.names(GlobalPatterns), 50), GlobalPatterns)
 #' ## plot( tre(ex2) )
 #' ## tipsymbols(pch=19)
 #' ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
@@ -1056,20 +1167,12 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #' @export
 #'
 #' @examples
-#' # data(ex1)
-#' # ex2 <- ex1
-#' ## # for reproducibility
-#' ## set.seed(711)
-#' # species.names(ex2) <- sample(species.names(ex1), 50)
-#' # plot_tree_phyloseq(ex2)
-#' # plot_tree_phyloseq(ex2, shape_factor="Diet")
-#' # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet")
-#' # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet", 
-#' 	# size_scaling_factor=0.6, type_abundance_value=TRUE)
-#' # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet", 
-#'	# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
-#' # plot(phyloseqTree(ex2), color_factor="Gender", shape_factor="Diet", 
-#'  # size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta") )
+#' # data(GlobalPatterns)
+#' # GP <- GlobalPatterns
+#' # GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
+#' # plot_tree_phyloseq(GP.chl, color_factor="SampleType",
+#' # 			type_abundance_value=TRUE, 
+#' # 			treeTitle="Chlamydiae in Global Patterns Data")
 plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL, 
 	base_size=1, size_scaling_factor = 0.2, opacity=2/3,
 	custom_color_scale=NULL, custom_shape_scale=NULL, 

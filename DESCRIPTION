@@ -1,13 +1,14 @@
 Package: phyloseq
-Version: 0.99.34
+Version: 0.99.35
 Date: 2012-03-11
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
-Description: phyloseq is a set of classes, and
-    tools to facilitate the import, storage, analysis, and graphical display
-    of phylogenetic sequencing data.
+Description: phyloseq is a set of classes, and tools to
+    facilitate the import, storage, analysis, and graphical
+    display of phylogenetic sequencing data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
-Author: Paul J. McMurdie <mcmurdie@stanford.edu>, Susan Holmes <susan@stat.stanford.edu>
+Author: Paul J. McMurdie <mcmurdie@stanford.edu>, Susan
+    Holmes <susan@stat.stanford.edu>
 License: AGPL-3
 Imports:
     igraph (>= 0.5),
