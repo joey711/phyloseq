@@ -34,13 +34,14 @@
 }
 \examples{
 #
-# # data(ex1)
-# # phyloseq(sampleData(ex1), otuTable(ex1))
-# # phyloseq(otuTable(ex1), tre(ex1))
-# # phyloseq(taxTab(ex1), otuTable(ex1))
-# # phyloseq(tre(ex1), otuTable(ex1), sampleData(ex1))
-# # phyloseq(otuTable(ex1), taxTab(ex1), sampleData(ex1))
-# # phyloseq(otuTable(ex1), tre(ex1), taxTab(ex1), sampleData(ex1))
+# # data(GlobalPatterns)
+# # GP <- GlobalPatterns
+# # phyloseq(sampleData(GP), otuTable(GP))
+# # phyloseq(otuTable(GP), tre(GP))
+# # phyloseq(taxTab(GP), otuTable(GP))
+# # phyloseq(tre(GP), otuTable(GP), sampleData(GP))
+# # phyloseq(otuTable(GP), taxTab(GP), sampleData(GP))
+# # phyloseq(otuTable(GP), tre(GP), taxTab(GP), sampleData(GP))
 }
 \seealso{
   \code{\link{merge_phyloseq}}

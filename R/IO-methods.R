@@ -54,37 +54,35 @@
 #'
 #' RDP pipeline: \url{http://pyro.cme.msu.edu/index.jsp}
 #' 
-#' @rdname import-methods
-#' @docType methods
 #' @export
 #' @examples
 #'  ## import("QIIME", otufilename=myOtuTaxFilePath, mapfilename=myMapFilePath)
-setGeneric("import", function(pipelineName, ...) standardGeneric("import"))
-#' @aliases import,character-method
-#' @rdname import-methods
-setMethod("import", signature("character"), function(pipelineName, ...){
+import <- function(pipelineName, ...){
 	# Reduce pipelineName to just its first letter, as all are different
 	pipelineName <- substr(pipelineName, 1, 1)
 
 	# Test that it is in the set
-	if( !(pipelineName %in% c("M", "m", "P", "p", "Q", "q", "R", "r")) ){
-		stop("You need to select among available importer types:\n",
-		"\"mothur\", \"pyrotagger\", \"QIIME\", \"RDP\" \n See ?import for details")
+	if( !(pipelineName %in% c("B", "b", "M", "m", "P", "p", "Q", "q", "R", "r")) ){
+		stop("You need to select among available importer types:\n", 
+		"\"BIOM\", \"mothur\", \"pyrotagger\", \"QIIME\", \"RDP\" \n See ?import for details")
 	}
-	
+
+	if( pipelineName %in% c("B", "b") ){
+		return( import_biom(...) )
+	}	
 	if( pipelineName %in% c("M", "m") ){
-		import_mothur(...)		
+		return( import_mothur(...) )
 	}
 	if( pipelineName %in% c("P", "p") ){
-		import_pyrotagger_tab(...)		
+		return( import_pyrotagger_tab(...) ) 
 	}	
 	if( pipelineName %in% c("Q", "q") ){
-		import_qiime(...)		
+		return( import_qiime(...) )
 	}
 	if( pipelineName %in% c("R", "r") ){
-		import_mothur(...)		
+		return( import_RDP_cluster(...) )
 	}
-})
+}
 ################################################################################
 ######################################################################################
 #' Import function to read files created by the QIIME pipeline.
@@ -1052,8 +1050,8 @@ import_mothur_dist <- function(mothur_dist_file){
 #'  importing the OTUs with the \code{import_mothur_otulist()} function.
 #'
 #' @examples #
-#' ### data(ex1) 
-#' ### myDistObject <- as.dist(cophenetic(tre(ex1)))
+#' ### data(GlobalPatterns) 
+#' ### myDistObject <- as.dist(cophenetic(tre(GlobalPatterns)))
 #' ### export_mothur_dist(myDistObject, "myfilepathname.dist")
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 	if( class(x)== "matrix" ){ x <- as.dist(x) }
@@ -1175,6 +1173,146 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 # SEQ4        ENV2        8
 # SEQ5        ENV1        4
 # http://128.138.212.43/unifrac/help.psp#env_file
+################################################################################
+# clip out the first 3 characters, and
+# name according to the taxonomic rank
+#' @keywords internal
+parseGreenGenesPrefix <- function(char.vec){
+	# Define the meaning of each prefix according to GreenGenes (and RDP?) taxonomy
+	Tranks <- c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
+	taxvec        <- substr(char.vec, 4, 1000)
+	names(taxvec) <- Tranks[substr(char.vec, 1, 1)]
+	# Make sure order is same as Tranks
+	taxvec <- taxvec[Tranks]; names(taxvec) <- Tranks
+	return(taxvec)
+}
+################################################################################
+#' Import phyloseq data from BIOM file
+#'
+#' New versions of QIIME produce a more-comprehensive and formally-defined
+#' JSON file format. From the QIIME website:
+#'
+#' ``The biom file format (canonically pronounced `biome') is designed to be a 
+#' general-use format for representing counts of observations in one or
+#' more biological samples.''
+#'
+#' \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html} 
+#'
+#' @usage import_biom(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0.9)
+#'
+#' @param BIOMfilename (Required). A character string indicating the 
+#'  file location of the BIOM formatted file. This is a JSON formatted file,
+#'  specific to biological datasets, as described in 
+#' 
+#'  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}
+#' 
+#' @param taxaPrefix (Optional). Character string. What category of prefix precedes
+#'  the taxonomic label at each taxonomic rank. Currently only ``greengenes'' is
+#'  a supported option, and implies that the first letter indicates the 
+#'  taxonomic rank, followed by two underscores and then the actual taxonomic
+#'  assignment at that rank. The default value is \code{NULL}, meaning that
+#'  no prefix or rank identifier will be interpreted. 
+#'
+#' @param parallel (Optional). Logical. Wrapper option for \code{.parallel}
+#'  parameter in \code{plyr-package} functions. If \code{TRUE}, apply 
+#'  parsing functions in parallel, using parallel backend provided by
+#'  \code{\link{foreach}} and its supporting backend packages. One caveat,
+#'  plyr-parallelization currently works most-cleanly with \code{multicore}-like
+#'  backends (Mac OS X, Unix?), and may throw warnings for SNOW-like backends.
+#'  See the example below for code invoking multicore-style backend within
+#'  the \code{doParallel} package.
+#'
+#'  Finally, for many datasets a parallel import should not be necessary
+#'  because a serial import will be just as fast and the import is often only
+#'  performed one time; after which the data should be saved as an RData file
+#'  using the \code{\link{save}} function.
+#' 
+#' @param version (Optional). Numeric. The expected version number of the file.
+#'  As the BIOM format evolves, version-specific importers will be available
+#'  by adjusting the version value. Default is \code{0.9}. Not implemented.
+#'  Has no effect (yet).
+#'
+#' @return A \code{\link{phyloseq-class}} object.
+#'
+#' @seealso \code{\link{import}}, \code{\link{import_qiime}}
+#'
+#' @references \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}
+#'
+#' @importFrom RJSONIO fromJSON
+#' @importFrom plyr ldply
+#' @importFrom plyr laply
+#' @export
+#' @examples
+#'  # # # import with default parameters, specify a file
+#'  # import_BIOM(myBIOMfile)
+#'  # # # Example code for importing large file with parallel backend
+#'  # library("doParallel")
+#'  # registerDoParallel(cores=6)
+#'  # import_biom("my/file/path/file.biom", taxaPrefix="greengenes", parallel=TRUE)
+import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0.9){
+	
+	# Read the data
+	x <- fromJSON(BIOMfilename)
+	
+	########################################
+	# OTU table:
+	########################################
+	# Check if sparse. Must parse differently than dense
+	if( x$matrix_type == "sparse" ){
+		otumat <- matrix(0, nrow=x$shape[1], ncol=x$shape[2])
+		dummy <- sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
+	}
+	# parse the dense matrix instead.
+	if( x$matrix_type == "dense" ){
+		# each row will be complete data values, should use laply
+		# laply(x$data, vector, nrow=x$shape[1], ncol=x$shape[2])
+		otumat <- laply(x$data, function(i){i}, .parallel=parallel)
+	}
+	
+	# Get row (OTU) and col (sample) names
+	rownames(otumat) <- sapply(x$rows, function(i){i$id})
+	colnames(otumat) <- sapply(x$columns, function(i){i$id})
+	
+	otutab <- otuTable(otumat, TRUE)
+	
+	########################################
+	# Taxonomy Table
+	########################################
+	# Need to check if taxonomy information is empty (minimal BIOM file)
+	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
+		taxtab <- NULL
+	} else {
+		if( is.null(taxaPrefix) ){
+			taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		} else if( taxaPrefix == "greengenes" ){
+			taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
+		} else {
+			taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		}
+		# Now convert to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
+		taxtab           <- as(taxdf, "matrix")
+		rownames(taxtab) <- sapply(x$rows, function(i){i$id})
+		taxtab <- taxTab(taxtab)	
+	}
+	
+	########################################
+	# Sample Data ("columns" in QIIME/BIOM)
+	########################################
+	# If there is no metadata (all NULL), then set samdata <- NULL
+	if(  all( sapply(sapply(x$columns, function(i){i$metadata}), is.null) )  ){
+		samdata <- NULL
+	} else {
+		samdata           <- ldply(x$columns, function(i){i$metadata}, .parallel=parallel)
+		rownames(samdata) <- sapply(x$columns, function(i){i$id})
+		samdata <- sampleData(samdata)
+	}
+	
+	########################################
+	# Put together into a phyloseq object
+	########################################
+	return( phyloseq(otutab, taxtab, samdata) )
+
+}
 ################################################################################
 ################################################################################
 ################################################################################

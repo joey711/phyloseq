@@ -24,14 +24,15 @@
 }
 \examples{
 #
-# data(ex1)
-# B_only_sample_names <- sample.names(sampleData(ex1)[(sampleData(ex1)[, "Gender"]=="B"),])
-# ex2 <- prune_samples(B_only_sample_names, ex1)
-# ex3 <- subset_samples(ex1, Gender=="B")
+# data(GlobalPatterns)
+# GP <- GlobalPatterns
+# B_only_sample_names <- sample.names(sampleData(GP)[(sampleData(GP)[, "Gender"]=="B"),])
+# ex2 <- prune_samples(B_only_sample_names, GP)
+# ex3 <- subset_samples(GP, Gender=="B")
 # ## This should be TRUE.
 # identical(ex2, ex3)
 # ## Here is a simpler example: Make new object with only the first 5 samples
-# ex4 <- prune_samples(sample.names(ex1)[1:5], ex1)
+# ex4 <- prune_samples(sample.names(GP)[1:5], GP)
 }
 \seealso{
   \code{\link{subset_samples}}

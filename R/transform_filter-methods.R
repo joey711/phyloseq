@@ -42,8 +42,8 @@
 #' # # # x2 <- tipglom(x1, speciationMinLength = 2.5)
 #' # # # plot(tre(x2))
 #' # # # ## Try on example datset 1
-#' # # # data(ex1); nspecies(ex1)
-#' # # # ex7 <- tipglom(ex1, speciationMinLength = 0.05)
+#' # # # data(GlobalPatterns); nspecies(GlobalPatterns)
+#' # # # ex7 <- tipglom(GlobalPatterns, speciationMinLength = 0.05)
 #' # # # nspecies(ex7)
 #' # data(esophagus); nspecies(esophagus); par(mfrow=c(2, 1)); plot(tre(esophagus))
 #' # tre(esophagus)$edge.length
@@ -88,7 +88,8 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #'  Output class matches the class of \code{tree}.
 #'
 #' @seealso tipglom
-#' @import igraph
+#' @importFrom igraph graph.adjacency
+#' @importFrom igraph get.edgelist
 #' @keywords internal
 tipglom.internal <- function(tree, speciationMinLength){
 	# Create adjacency matrix, where tips are adjacent
@@ -102,8 +103,6 @@ tipglom.internal <- function(tree, speciationMinLength){
 	for( i in 1:length(spCliques)){
 		tree <- merge_species(tree, eqspecies=spCliques[[i]])
 	}
-	# Test if you missed anything:
-	# graph.adjacency( getTipDistMatrix(tree) < speciationMinLength, diag=FALSE )
 	return(tree)
 }
 #################################################################
@@ -298,13 +297,13 @@ edgelist2clique = function(EdgeList){
 #' @export
 #'
 #' @examples
-#' # data(ex1)
+#' # data(GlobalPatterns)
 #' # ## print the available taxonomic ranks
-#' # colnames(taxTab(ex1))
+#' # colnames(taxTab(GlobalPatterns))
 #' # ## agglomerate at the Family taxonomic rank
-#' # (x1 <- taxglom(ex1, taxlevel="Family") )
+#' # (x1 <- taxglom(GlobalPatterns, taxlevel="Family") )
 #' # ## How many taxa before/after agglomeration?
-#' # nspecies(ex1); nspecies(x1)
+#' # nspecies(GlobalPatterns); nspecies(x1)
 #' # ## Look at enterotype dataset...
 #' # data(enterotype)
 #' # ## print the available taxonomic ranks. Shows only 1 rank available, not useful for taxglom
@@ -373,8 +372,8 @@ taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\
 	return(physeq)
 }
 ################################################################################
-# test <- taxglom.internal(ex1, as(taxTab(ex1), "matrix")[, "Phylum"])
-# testvec <- as(taxTab(ex1), "matrix")[, "Phylum", drop=TRUE]
+# test <- taxglom.internal(GlobalPatterns, as(taxTab(GlobalPatterns), "matrix")[, "Phylum"])
+# testvec <- as(taxTab(GlobalPatterns), "matrix")[, "Phylum", drop=TRUE]
 # tapply(names(testvec), factor(testvec), length)
 ################################################################################
 #' Prune unwanted species / taxa from a phylogenetic object.
@@ -512,14 +511,15 @@ setMethod("prune_species", signature("logical", "ANY"), function(species, x){
 #' @docType methods
 #' @export
 #' @examples #
-#'  # data(ex1)
-#'  # B_only_sample_names <- sample.names(sampleData(ex1)[(sampleData(ex1)[, "Gender"]=="B"),])
-#'  # ex2 <- prune_samples(B_only_sample_names, ex1)
-#'  # ex3 <- subset_samples(ex1, Gender=="B")
+#'  # data(GlobalPatterns)
+#'  # GP <- GlobalPatterns
+#'  # B_only_sample_names <- sample.names(sampleData(GP)[(sampleData(GP)[, "Gender"]=="B"),])
+#'  # ex2 <- prune_samples(B_only_sample_names, GP)
+#'  # ex3 <- subset_samples(GP, Gender=="B")
 #'  # ## This should be TRUE.
 #'  # identical(ex2, ex3)
 #'  # ## Here is a simpler example: Make new object with only the first 5 samples
-#'  # ex4 <- prune_samples(sample.names(ex1)[1:5], ex1)
+#'  # ex4 <- prune_samples(sample.names(GP)[1:5], GP)
 setGeneric("prune_samples", function(samples, x) standardGeneric("prune_samples"))
 ################################################################################
 #' @aliases prune_samples,character,otuTable-method
@@ -568,12 +568,13 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 #' @examples #
 #' (a_vector <- sample(0:10, 100, TRUE))
 #' threshrank(a_vector, 5, keep0s=TRUE)
-#' data(ex1)
+#' data(GlobalPatterns)
+#' GP <- GlobalPatterns
 #' ## These three approaches result in identical otuTable
-#' (x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
-#' (x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+#' (x1 <- transformsamplecounts( otuTable(GP), threshrankfun(500)) )
+#' (x2 <- otuTable(apply(otuTable(GP), 2, threshrankfun(500)), speciesAreRows(GP)) )
 #' identical(x1, x2)
-#' (x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+#' (x3 <- otuTable(apply(otuTable(GP), 2, threshrank, thresh=500), speciesAreRows(GP)) )
 #' identical(x1, x3)
 threshrank <- function(x, thresh, keep0s=FALSE, ...){
 	if( keep0s ){ index0 <- which(x == 0) }
@@ -604,12 +605,13 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #'  \code{\link{threshrank}}
 #' @export
 #' @examples
-#' data(ex1)
+#' data(GlobalPatterns)
+#' GP <- GlobalPatterns
 #' ## These three approaches result in identical otuTable
-#' (x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
-#' (x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+#' (x1 <- transformsamplecounts( otuTable(GP), threshrankfun(500)) )
+#' (x2 <- otuTable(apply(otuTable(GP), 2, threshrankfun(500)), speciesAreRows(GP)) )
 #' identical(x1, x2)
-#' (x3 <- otuTable(apply(otuTable(ex1), 2, threshrank, thresh=500), speciesAreRows(ex1)) )
+#' (x3 <- otuTable(apply(otuTable(GP), 2, threshrank, thresh=500), speciesAreRows(GP)) )
 #' identical(x1, x3)
 threshrankfun <- function(thresh, keep0s=FALSE, ...){
 	function(x){
@@ -634,9 +636,9 @@ threshrankfun <- function(thresh, keep0s=FALSE, ...){
 #' @docType methods
 #' @export
 #' @examples
-#' data(ex1)
-#' otuTable(ex1)
-#' t( otuTable(ex1) )
+#' data(GlobalPatterns)
+#' otuTable(GlobalPatterns)
+#' t( otuTable(GlobalPatterns) )
 setGeneric("t")
 #' @aliases t,otuTable-method
 #' @rdname transpose-methods
@@ -683,12 +685,13 @@ setMethod("t", signature("phyloseq"), function(x){
 #' @export
 #'
 #' @examples #
-#' data(ex1)
+#' data(GlobalPatterns)
+#' GP <- GlobalPatterns
 #' ## transformsamplecounts can work on phyloseq-class, modifying otuTable only
-#' (ex1r <- transformsamplecounts(ex1, rank) )
+#' (GPr <- transformsamplecounts(GP, rank) )
 #' ## These two approaches result in identical otuTable
-#' (x1 <- transformsamplecounts( otuTable(ex1), threshrankfun(500)) )
-#' (x2 <- otuTable(apply(otuTable(ex1), 2, threshrankfun(500)), speciesAreRows(ex1)) )
+#' (x1 <- transformsamplecounts( otuTable(GP), threshrankfun(500)) )
+#' (x2 <- otuTable(apply(otuTable(GP), 2, threshrankfun(500)), speciesAreRows(GP)) )
 #' identical(x1, x2)
 transformsamplecounts <- function(physeq, fun){
 	if( speciesarerows(physeq) ){
@@ -829,6 +832,58 @@ filterfunSample = function(...){
 	}
 	class(f) <- "filterfun"
 	return(f)
+}
+################################################################################
+#' Filter taxa based on abundance criteria
+#'
+#' This is analogous to \code{\link[genefilter]{genefilter}}
+#' for microarray filtering. 
+#' Basically an extension of \code{\link[genefilter]{genefilter}}
+#' (from the Bioconductor repository) for phyloseq objects.
+#' 
+#' @usage filter_taxa(physeq, flist, prune=FALSE)
+#'
+#' @param physeq (Required). A \code{\link{phyloseq-class}} object that you
+#'  want to trim/filter.
+#'
+#' @param flist (Required). A function or list of functions that take a vector
+#'  of abundance values and return a logical. Some canned useful function types
+#'  are included in the \code{genefilter}-package.
+#'
+#' @param prune (Optional). A logical. Default \code{FALSE}. If \code{TRUE}, then
+#'  the function returns the pruned \code{\link{phyloseq-class}} object, rather
+#'  than the logical vector of taxa that passed the filter.
+#' 
+#' @return A logical vector equal to the number of species (taxa) in \code{physeq}.
+#'  This can be provided directly to \code{\link{prune_species}} as first argument.
+#'  Alternatively, if \code{prune==TRUE}, the pruned \code{\link{phyloseq-class}} 
+#'  object is returned instead.
+#' 
+#' @export
+#' @seealso 
+#' \code{\link[genefilter]{filterfun}},
+#' \code{\link{genefilterSample}},
+#' \code{\link{filterfunSample}}
+#' 
+#' @examples
+#' # library("genefilter")
+#' # data("enterotype")
+#' # flist <- filterfun(kOverA(5, 2e-08), allNA)
+#' # ans   <- filter_taxa(enterotype, flist)
+#' # trimmed.enterotype <- prune_species(ans, enterotype)
+#' # sum(!ans); nspecies(trimmed.enterotype)
+#' # filter_taxa(enterotype, flist, TRUE)
+filter_taxa <- function(physeq, flist, prune=FALSE){
+	OTU <- otuTable(enterotype)
+	if(!speciesAreRows(OTU)) {
+		OTU <- t(OTU)
+	}
+	ans <- apply(expr, 1, flist)
+	if( prune ){
+		return( prune_species(ans, physeq) )
+	} else {
+		return( ans )		
+	}
 }
 ############################################################
 #' Make filter fun. the most abundant \code{k} taxa

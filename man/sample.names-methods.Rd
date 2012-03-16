@@ -25,12 +25,8 @@
 \examples{
 #
 # # From "picante" package
-# data("phylocom")
-# tree <- phylocom$phylo
-# OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)
-# sample.names(OTU1)
-# ex1 <- phyloseq(OTU1, tree)
-# sample.names(ex1)
+# data(GlobalPatterns)
+# sample.names(GlobalPatterns)
 }
 \seealso{
   \code{\link{species.names}}, \code{\link{nsamples}}

@@ -24,8 +24,8 @@
 }
 \examples{
 #
-## data(ex1)
-## reconcile_samples(ex1)
+## data(GlobalPatterns)
+## reconcile_samples(GlobalPatterns)
 }
 \seealso{
   \code{\link{reconcile_species}}

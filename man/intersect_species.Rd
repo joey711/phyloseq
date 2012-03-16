@@ -22,8 +22,8 @@
 }
 \examples{
 #
-## data(ex1)
-## head(intersect_species(ex1), 10)
+## data(GlobalPatterns)
+## head(intersect_species(GlobalPatterns), 10)
 }
 \seealso{
   \code{\link{reconcile_species}}, \code{\link{Reduce}}

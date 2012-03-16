@@ -30,9 +30,9 @@
 }
 \examples{
 #
-## data(ex1)
-## head(intersect_species(ex1), 10)
-## reconcile_species(ex1)
+## data(GlobalPatterns)
+## head(intersect_species(GlobalPatterns), 10)
+## reconcile_species(GlobalPatterns)
 # # data(phylocom)
 # # tree <- phylocom$phylo
 # # OTU  <- otuTable(phylocom$sample, speciesAreRows=FALSE)

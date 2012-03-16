@@ -17,12 +17,12 @@
 }
 \examples{
 #
-# data(ex1)
-# # An example of pruning to just the first 100 taxa in ex1.
-# ex2a <- prune_species(species.names(ex1)[1:100], ex1)
+# data(GlobalPatterns)
+# # An example of pruning to just the first 100 taxa in GlobalPatterns.
+# ex2a <- prune_species(species.names(GlobalPatterns)[1:100], GlobalPatterns)
 # # The following 3 lines produces an ex2b that is equal to ex2a
-# ex2b <- ex1
-# tree <- prune_species(species.names(ex1)[1:100], tre(ex1))
+# ex2b <- GlobalPatterns
+# tree <- prune_species(species.names(GlobalPatterns)[1:100], tre(GlobalPatterns))
 # tre(ex2b) <- tree
 # identical(ex2a, ex2b)
 # print(ex2b)

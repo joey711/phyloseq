@@ -1,4 +1,138 @@
-##############################################################################
+################################################################################
+#' General distance / dissimilarity index calculator
+#'
+#' Takes a \code{\link{phyloseq-class}} object and method option, and returns
+#'  a \code{\link{dist}}ance object suitable for certain 
+#'  ordination methods and other distance-based analyses. 
+#'  The are currently 43 explicitly supported method options, as well as
+#'  user-provided arbitrary methods via an interface to
+#'  \code{\link{designdist}}.
+#'  Currrently only
+#'  sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise)
+#'  distances will be supported as well. 
+#'
+#' @usage distance(physeq, method="unifrac", type="samples", ...)
+#' 
+#' @param physeq (Required).  A \code{\link{phyloseq-class}} or
+#'  an \code{\link{otuTable-class}} object. The latter is only appropriate
+#'  for methods that do not require any additional data (one-table). 
+#'  For example, the ``unifrac'' option (\code{\link{UniFrac}}) requires
+#'  \code{\link{phyloseq-class}} that contains both an \code{otuTable}
+#'  and a phylogenetic tree (\code{phylo}).
+#'
+#' @param method (Optional). A character string. Provide one of the 43 currently
+#'  supported options. Default is \code{"unifrac"}. Alternatively, you can provide
+#'  a character string that defines a custom distance method, if it has the form
+#'  described in \code{\link{designdist}}. Depending on the \code{method}
+#'  argument, this function wraps one of 
+#'  \code{\link{UniFrac}},
+#'  \code{\link{DPCoA}},
+#'  \code{\link{vegdist}},
+#'  \code{\link{betadiver}},
+#'  \code{\link{designdist}}, or
+#'  \code{\link{dist}}.
+#'
+#' @param type (Optional). A character string. The type of pairwise comparisons
+#'  being calculated: sample-wise or species-wise. The default is 
+#'  \code{c("samples")}.
+#'
+#' @param ... Additional arguments passed on to the appropriate distance 
+#'  function, determined by the \code{method} argument.
+#'
+#' @return An object of class ``\code{\link{dist}}'' suitable for certain 
+#'  ordination methods and other distance-based analyses.
+#' 
+#' @seealso 
+#'  \code{\link{plot_ordination}}
+#'
+#' @export
+#' @examples 
+#' data(esophagus)
+#' distance(esophagus) # Unweighted UniFrac
+#' distance(esophagus, weighted=TRUE) # weighted UniFrac
+#' distance(esophagus, "jaccard") # vegdist jaccard
+#' distance(esophagus, "gower") # vegdist option "gower"
+#' distance(esophagus, "g") # designdist method option "g"
+#' distance(esophagus, "minkowski") # invokes a method from the base dist() function.
+#' distance(esophagus, "(A+B-2*J)/(A+B)") # designdist custom distance
+#' distance("help")
+#' distance("list")
+#' help("distance")
+distance <- function(physeq, method="unifrac", type="samples", ...){
+	# # Can't do partial matching directly, because too many similar options.
+	# # Determine if method argument matches any options exactly.
+	# # If not, call designdist
+	# method <- "bray"
+	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
+		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
+		"mountford", "raup" , "binomial", "chao")
+
+	# Special methods (re)defined in phyloseq
+	phyloseq_methods <- c("unifrac", "dpcoa")
+	
+	# The standard distance methods
+	dist_methods <- c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")
+	# Only keep the ones that are NOT already in vegdist_methods
+	dist_methods <- dist_methods[!dist_methods %in% intersect(vegdist_methods, dist_methods)]
+
+	# The methods supported by vegan::betadiver function.
+	betadiver_methods <- c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j",
+		"sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
+		"sim", "gl", "z")
+	
+	method.table <- c(phyloseq_methods, vegdist_methods, dist_methods, betadiver_methods)
+	
+	if(class(physeq) == "character"){
+		if( physeq=="help" ){
+			cat("Available arguments to methods:\n")
+			print(c(method.table))
+			cat("Please be exact, partial-matching not supported.\n")
+			cat("Can alternatively provide a custom distance.\n")
+			cat("See:\n help(\"distance\") \n")
+			return()
+		}
+		if( physeq=="list" ){
+			return(c(method.table))
+		}		
+	}
+
+	# Define the function call to build
+	if( method %in% phyloseq_methods ){
+		if( method == "unifrac"){ dfun <- "UniFrac" }
+		if( method == "dpcoa"  ){ dfun <- "DPCoA" }
+	} else if( method %in% vegdist_methods ){
+		dfun <- "vegdist"
+	} else if( method %in% betadiver_methods ){
+		dfun <- "betadiver"
+	} else if( method %in% dist_methods ){
+		dfun <- "dist"		
+	} else {
+		dfun <- "designdist"
+	}
+	
+	# get the extra arguments to pass to functions (this can be empty?)
+	extrargs <- list(...)	
+	
+	# # Enforce orientation, build function.
+	if( dfun %in% c("UniFrac", "DPCoA") ){
+		fun.args <- c(list(physeq), extrargs)
+		if( dfun == "DPCoA" ){
+			return( dist(do.call(dfun, fun.args)$RaoDis) )
+		} else {
+			return( do.call(dfun, fun.args) )
+		}
+	} else {
+		OTU <- otuTable(physeq)
+		# coerce to vegan-style samples-are-rows orientation
+		if( speciesAreRows(physeq) ){OTU <- t(OTU)}
+		OTU <- as(OTU, "matrix")		
+		fun.args <- c(list(OTU, method=method), extrargs)	
+		# return(list(dfun, fun.args))
+		return( do.call(dfun, fun.args) )		
+	}
+} 
+################################################################################
+################################################################################
 #' Custom version of \code{\link[picante]{internal2tips}}
 #'
 #' Internal function for \code{\link{UniFrac}}.

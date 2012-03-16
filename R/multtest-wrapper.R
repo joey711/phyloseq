@@ -1,7 +1,7 @@
 ####################################################################################
 # # # # Avoiding full import of multtest to mitigate potential conflicts
 ####################################################################################
-#' Multiple testing of taxa abundancesa acccording to a sample variate
+#' Multiple testing of taxa abundance acccording to sample categories/classes
 #'
 #' @usage mt(physeq, classlabel, minPmaxT="minP", ...)
 #'
@@ -11,11 +11,17 @@
 #'
 #' @param classlabel (Required). A single character index of the sample-variable
 #'  in the \code{\link{sampleData}} of \code{physeq} that will be used for multiple testing. 
-#'  Alternatively, \code{classlabel} can be a custom integer, character, or factor with
-#'  length equal to \code{nsamples(physeq)}. In either scenario -- a sample variable
-#'  within the phyloseq-class object or a custom vector -- \code{classlabel} must
-#'  be coercable to a logical (i.e. two-level factor). A variable with more than
-#'  two states is not appropriate for this category of test.
+#'  Alternatively, \code{classlabel} can be a custom integer (or numeric coercable
+#'  to an integer), character, or factor with
+#'  length equal to \code{nsamples(physeq)}. 
+#'  
+#'  NOTE: the default test applied to each taxa is a two-sample two-sided 
+#'  \code{\link{t.test}}, WHICH WILL FAIL with an error if you provide a data variable
+#'  (or custom vector) that contains MORE THAN TWO classes. One alternative to consider
+#'  is an F-test, by specifying \code{test="f"} as an additional argument. See
+#'  the first example below, and/or further documentation of
+#'  \code{\link[multtest]{mt.maxT}} or \code{\link[multtest]{mt.minP}}
+#'  for other options and formal details.
 #'
 #' @param minPmaxT (Optional). Character string. \code{"mt.minP"} or \code{"mt.maxT"}.
 #'  Default is to use \code{\link[multtest]{mt.minP}}.
@@ -36,13 +42,19 @@
 #' @importFrom multtest mt.minP
 #'
 #' @examples #
-#' ## data(ex1)
-#' ## mt(ex1, "Diet")
-#' ## # Alternatively
-#' ## dietfac <- factor(data.frame(sampleData(ex1))[, "Diet"])
-#' ## mt(ex1, dietfac)
+#' ## # Simple example, testing genera that sig correlate with Enterotypes
+#' ## data(enterotype)
+#' ## # Filter samples that don't have Enterotype
+#' ## x <- subset_samples(enterotype, !is.na(Enterotype))
+#' ## # (the taxa are at the genera level in this dataset)
+#' ## mt(x, "Enterotype", test="f")
+#' ## # Not surprisingly, Prevotella and Bacteroides top the list.
+#' ## # Different test, multiple-adjusted t-test, whether samples are ent-2 or not.
+#' ## mt(x, getVariable(x, "Enterotype")==2)
 setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", ...) standardGeneric("mt") )
 ################################################################################
+# First, access the otuTable, and if appropriate, define classlabel from 
+# the sampleData.
 #' @aliases mt,phyloseq,ANY-method
 #' @rdname mt-methods
 setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", ...){
@@ -58,6 +70,8 @@ setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="min
 	mt(otuTable(physeq), classlabel, minPmaxT, ...)
 })
 ################################################################################
+# All valid mt() calls eventually funnel dispatch to this method.
+# The otuTable orientation is checked/handled here (and only here).
 #' @aliases mt,otuTable,integer-method
 #' @rdname mt-methods
 setMethod("mt", c("otuTable", "integer"), function(physeq, classlabel, minPmaxT="minP", ...){
@@ -85,7 +99,7 @@ setMethod("mt", c("otuTable", "logical"), function(physeq, classlabel, minPmaxT=
 #' @rdname mt-methods
 setMethod("mt", c("otuTable", "character"), function(physeq, classlabel, minPmaxT="minP", ...){
 	if( length(classlabel) != nsamples(physeq) ){
-		stop("classlabel not the same length as nsamples")
+		stop("classlabel not the same length as nsamples(physeq)")
 	} else {
 		classlabel <- factor(classlabel)
 	}
@@ -93,16 +107,13 @@ setMethod("mt", c("otuTable", "character"), function(physeq, classlabel, minPmax
 	mt(physeq, classlabel, minPmaxT, ...)
 })
 ################################################################################
+# Coerce factor to an integer vector of group labels,
+# starting at 0 for the first group
 #' @aliases mt,otuTable,factor-method
 #' @rdname mt-methods
 setMethod("mt", c("otuTable", "factor"), function(physeq, classlabel, minPmaxT="minP", ...){
-	if( length(levels(classlabel)) != 2 ){
-		stop("classlabel argument should be (or specify in sampleData) a two-level factor.\n",
-		"In this case, the classlabel had ", length(levels(classlabel)), " levels (after coercion)."
-		)
-	}
-	# integerize classlabel to logical suitable for mtmaxT
-	classlabel <- (0:1)[classlabel]
+	# integerize classlabel, starting at 0
+	classlabel <- (0:(length(classlabel)-1))[classlabel]
 	# Use mt dispatch with classlabel now a suitable classlabel
 	mt(physeq, classlabel, minPmaxT, ...)
 })
@@ -110,13 +121,13 @@ setMethod("mt", c("otuTable", "factor"), function(physeq, classlabel, minPmaxT="
 # Internal function
 # @aliases mt,matrix,integer-method
 # not exported
-# @keywords internal
+#' @keywords internal
 mt.phyloseq.internal <- function(physeq, classlabel, minPmaxT="minP", ...){
 	# require(multtest)
 	if( minPmaxT == "minP" ){
-		mt.minP(physeq, classlabel, ...)
+		return( mt.minP(physeq, classlabel, ...) )
 	} else if( minPmaxT == "maxT" ){
-		mt.maxT(physeq, classlabel, ...)	
+		return( mt.maxT(physeq, classlabel, ...) )
 	} else {
 		print("Nothing calculated. minPmaxT argument must be either minP or maxT.")
 	}

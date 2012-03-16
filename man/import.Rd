@@ -1,7 +1,5 @@
-\docType{methods}
 \name{import}
 \alias{import}
-\alias{import,character-method}
 \title{Universal import method (wrapper) for phyloseq-package}
 \usage{
   import(pipelineName, ...)

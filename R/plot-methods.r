@@ -26,19 +26,19 @@
 #'  are present.
 #' 
 #' @seealso 
-#'  \code{\link{taxaplot}}
+#'  \code{\link{plot_ordination}}
+#'  \code{\link{plot_taxa_bar}}
+#'  \code{\link{plot_sample_network}}
 #'  \code{\link{plot_tree_phyloseq}}
-#'  \code{\link{plot_ordination_phyloseq}}
-#'  \code{\link{calcplot}}
-#'  \code{\link{makenetwork}}
+#'  \code{\link{plot_richness_estimates}}
 #'
 #' @export
 #' @docType methods
 #' @rdname plot_phyloseq-methods
 #'
 #' @examples 
-#'  ## data(ex1)
-#'  ## plot_phyloseq(ex1)
+#'  ## data(esophagus)
+#'  ## plot_phyloseq(esophagus)
 setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phyloseq") })
 #' @aliases plot_phyloseq,phyloseq-method
 #' @rdname plot_phyloseq-methods
@@ -53,349 +53,705 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 		ape::nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
 		ape::edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
 	} else {
-		makenetwork(physeq)
+		plot_richness_estimates(physeq)
 	}
 })
 ################################################################################
 ################################################################################
-# calcplotrda and calcplotcca
-################################################################################
-#' Convenient rendering of ordination results using ggplot2.
+#' Plot sample-wise microbiome network (ggplot2)
 #'
-#' This convenience function includes many useful defaults for generating a
-#' plot of your ordination. This supplements the default plots created by the
-#' plot method extension from the vegan package, \code{\link{plot.cca}}.
-#' For further examples, see the phyloseq vignette.
+#' A custom plotting function for displaying graph objects created by 
+#' \code{\link[igraph]{igraph}} from a 
+#' phylogenetic sequencing experiment (\code{\link{phyloseq-class}}),
+#' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #'
-#' Because the ggplot2 objects can be stored as variables, and then further 
-#' modified, it is not necessary to support additional arguments as \code{...}.
-#' If further modifications to the plot produced by this function are desired,
-#' they can be provided as parameter updates to the returned object. See 
-#' the specific examples provided by the phyloseq vignette, or the more 
-#' comprehensive documentation available for the ggplot2 package itself. 
-#' 
-#' @usage plot_ordination_phyloseq(mod, object,
-#'	plot_title = as(mod$call, "character")[1],
-#'	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
-#'	species_alpha=1/10, sites_alpha=2/3,
-#'	species_color_category =NULL,
-#'	species_shape_category =NULL,
-#'	species_size_category  =NULL,
-#'	site_color_category=NULL,
-#'	site_shape_category=NULL,
-#'	site_size_category=NULL,	
-#'	add_sites_data = NULL,
-#'	add_taxa_data = NULL)
+#' @usage plot_sample_network(g, physeq=NULL,
+#' 	color=NULL, shape=NULL, point_size=4, alpha=1,
+#' 	label="value", hjust = 1.35, 
+#' 	line_weight=0.5, line_color=color, line_alpha=0.4,
+#' 	layout.method=layout.fruchterman.reingold)
 #'
-#' @param mod (Required). A \code{cca} or \code{rda} results object. 
-#'  See \code{\link{cca.object}}. For phyloseq
-#'  objects, you probably want to see \code{\link{cca.phyloseq}} or 
-#'  \code{\link{rda.phyloseq}}.
-#'  
-#' @param object (required). A \code{\link{phyloseq-class}} object. Necessary
-#'  because ordination result objects
-#'  will only refer to the abundance table, not the phyloseq object used to
-#'  create them.
-#' 
-#' @param plot_title Default is to use the name of the ordination method, stored in 
-#'  the ordination result object, accessed via \code{as(mod$call, "character")[1]}.
-#'  Any character string will suffice.
-#' 
-#' @param man.colors A character vector of colors to overide the default 
-#'  color scale used by ggplot2. Default is \code{NULL}. 
-#' 
-#' @param man.sizes An integer vector of sizes to overide the default size
-#'  scale used by ggplot2. Default is \code{NULL}. 
-#' 
-#' @param man.shapes An integer vector of shape indices to overide the defaults
-#'  used by ggplot2. Default is \code{NULL}. 
-#' 
-#' @param species_alpha A single numeric. The alpha (transparency) value
-#'  to use for all \code{geom_points}
-#'  that represent taxa. Default is \code{1/10}.
-#' 
-#' @param sites_alpha A single numeric. The alpha (transparency) value
-#'  to use for all \code{geom_points}
-#'  that represent samples/sites. Default is \code{2/3}.
-#' 
-#' @param species_color_category A manual color scale for taxa.
-#'  Default is \code{NULL}. 
+#' @param g (Required). An \code{\link[igraph]{igraph}}-class object created
+#'  either by the convenience wrapper \code{\link{make_sample_network}}, 
+#'  or directly by the tools in the igraph-package.
 #'
-#' @param species_shape_category A manual shape scale for taxa.
-#' Default is \code{NULL}. 
+#' @param physeq (Optional). Default \code{NULL}. 
+#'  A \code{\link{phyloseq-class}} object on which \code{g} is based.
 #'
-#' @param species_size_category A manual size scale for taxa.
-#' Default is \code{NULL}.
+#' @param color (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for color mapping
+#'  of points (graph vertices).
 #' 
-#' @param site_color_category A manual color scale for samples/sites.
-#'  Default is \code{NULL}. 
-#'
-#' @param site_shape_category A manual shape scale for samples/sites.
-#'  Default is \code{NULL}.
-#'
-#' @param site_size_category A manual size scale for samples/sites.
-#'  Default is \code{NULL}.
-#'
-#' @param add_sites_data A \code{data.frame} object providing additional data
-#'  about the samples/sites that is not already available in the \code{sampleData} of
-#'  your phyloseq object specified by \code{object}. As such, it must have 
-#'  the same number of rows as as there are samples in \code{object}. 
-#'  Default is \code{NULL}. 
+#' @param shape (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for shape mapping.
+#'  of points (graph vertices).
 #' 
-#' @param add_taxa_data A \code{matrix} object providing additional data
-#'  about the taxa that is not already available in the \code{taxTab} of
-#'  your phyloseq object specified by \code{object}, if it has a \code{taxTab} slot.
-#'  It is not required. As such, it must have 
-#'  the same number of rows as there are taxa in \code{object}. 
-#'  Default is \code{NULL}.
+#' @param point_size (Optional). Default \code{4}. 
+#'  The size of the vertex points.
+#' 
+#' @param alpha (Optional). Default \code{1}.
+#'  A value between 0 and 1 for the alpha transparency of the vertex points.
+#' 
+#' @param label (Optional). Default \code{"value"}.
+#'  The name of the sample variable in \code{physeq} to use for 
+#'  labelling the vertex points.
+#' 
+#' @param hjust (Optional). Default \code{1.35}.
+#'  The amount of horizontal justification to use for each label.
+#' 
+#' @param line_weight (Optional). Default \code{0.3}.
+#'  The line thickness to use to label graph edges.
+#' 
+#' @param line_color (Optional). Default \code{color}.
+#'  The name of the sample variable in \code{physeq} to use for color mapping
+#'  of lines (graph edges).
+#' 
+#' @param line_alpha (Optional). Default \code{0.4}.
+#'  The transparency level for graph-edge lines.
 #'
-#' @return A graphic object from the ggplot2 package.
+#' @param layout.method (Optional). Default \code{layout.fruchterman.reingold}.
+#'  A function (closure) that determines the placement of the vertices
+#'  for drawing a graph. Should be able to take an \code{\link{igraph}}-class
+#'  as sole argument, and return a two-column coordinate matrix with \code{nrow}
+#'  equal to the number of vertices. For possible options already included in 
+#'  \code{igraph}-package, see the others also described in the help file:
+#' 
+#' \code{\link[igraph]{layout.fruchterman.reingold}}
 #'
-#' @seealso \code{\link{calcplot}}, \code{\link[vegan]{plot.cca}}, \code{\link[vegan]{cca.object}}
-#' @import vegan
+#' @return A \code{\link{ggplot}}2 plot.
+#' 
+#' @seealso 
+#'  \code{\link{make_sample_network}}
+#'
+#' @references
+#'  Code modified from code now hosted on GitHub by Scott Chamberlain:
+#'  \url{https://github.com/SChamberlain/gggraph}
+#'
+#'  The code most directly used/modified was first posted here:
+#'  \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
+#' 
+#' @importFrom reshape melt
+#' @importFrom igraph layout.fruchterman.reingold
+#' @importFrom igraph get.edgelist
 #' @export
-#' @examples
-#' # data(ex1)
-#' # ex4  <- transformsamplecounts(ex1, threshrankfun(500))
-#' # # RDA
-#' # modr <- rda.phyloseq(ex4 ~ Diet + Gender)
-#' # # CCA
-#' # modc <- cca.phyloseq(ex1 ~ Diet + Gender)
-#' # plot_ordination_phyloseq(modr, ex1)
-#' # plot_ordination_phyloseq(modc, ex1)
-#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum", species_alpha=1/5)
-#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
-#' # site_shape_category="Diet", site_color_category="Gender", species_alpha=1)
-#' # plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
-#' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
-#' # species_alpha=0.4, sites_alpha=2/3,
-#' # add_sites_data=data.frame(total.reads=sampleSums(ex1)) 
-#' # site.colors <- c("darkorchid1", "blue3")
-#' # species.col.groups <- unique(as(taxTab(ex1), "matrix")[,"Phylum"])
-#' # man.colors <- c(site.colors, rainbow((1+length(species.col.groups)),start=11/12, end=5/12))
-#' # p<-plot_ordination_phyloseq(modr, ex1, species_color_category="Phylum",
-#' # site_shape_category="Diet", site_color_category="Gender", site_size_category="total.reads",
-#' # species_alpha=0.4, sites_alpha=2/3,
-#' # add_sites_data=data.frame(total.reads=sampleSums(ex1)),
-#' # man.colors=man.colors)
-#' # print(p)
-plot_ordination_phyloseq <- function(mod, object,
-	plot_title = as(mod$call, "character")[1],
-	man.colors=NULL, man.sizes=NULL, man.shapes=NULL,
-	species_alpha=1/10, sites_alpha=2/3,
-	species_color_category =NULL,
-	species_shape_category =NULL,
-	species_size_category  =NULL,
-	site_color_category=NULL,
-	site_shape_category=NULL,
-	site_size_category=NULL,	
-	add_sites_data = NULL,
-	add_taxa_data = NULL
-			){
-	#require("ggplot2")
+#' @examples 
+#' 
+#' data(enterotype)
+#' ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+#' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+#' # Change distance parameter
+#' ig <- make_sample_network(enterotype, FALSE, max.dist=0.2)
+#' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+plot_sample_network <- function(g, physeq=NULL,
+	color=NULL, shape=NULL, point_size=4, alpha=1,
+	label="value", hjust = 1.35, 
+	line_weight=0.5, line_color=color, line_alpha=0.4,
+	layout.method=layout.fruchterman.reingold){
 
-	########################################
-	# Create sites and species (taxa) data.frames
-	########################################
-	pmod      <- vegan::scores(mod, display=c("biplot","cn","sites","species"), scaling=1)
-	sitesdata <- data.frame(axis1 = pmod$sites[, 1],   axis2 = pmod$sites[, 2]   )
-	specidata <- data.frame(axis1 = pmod$species[, 1], axis2 = pmod$species[, 2] )
+	# Make the edge-coordinates data.frame
+	edgeDF    <- data.frame(get.edgelist(g))
+	edgeDF$id <- 1:length(edgeDF[, 1])
 
-	########################################
-	# If there is additional data in the otuSam-class
-	# object specified as argument 'object' add it
-	# automatically to the respective data.frame
-	########################################
-	# if there is a sampleData, cbind it to the sites data
-	if( !is.null(sampleData(object)) ){
-		sitesdata <- cbind(sitesdata, data.frame(sampleData(object)))
+	# Make the vertices-coordinates data.frame
+	vertDF    <- layout.method(g)
+	colnames(vertDF) <- c("x", "y")
+	vertDF    <- data.frame(value=g[[9]][[3]][["name"]], vertDF)
+	
+	# If phyloseq object provided, add its sample data to vertDF
+	if( !is.null(physeq) ){
+		SD     <- sampleData(physeq)[as.character(vertDF$value), ]
+		vertDF <- data.frame(vertDF, SD) 
+	}
+
+	# Combine vertex and edge coordinate data.frames
+	graphDF   <- merge(melt(edgeDF, id="id"), vertDF, by = "value") 
+ 
+	# Initialize the ggplot
+	p <- ggplot(vertDF, aes(x, y)) 
+
+	# Strip all the typical annotations from the plot, leave the legend
+	p <- p + ggplot2::theme_bw() + 
+			ggplot2::opts(
+				panel.grid.major = ggplot2::theme_blank(), 
+				panel.grid.minor = ggplot2::theme_blank(), 
+				axis.text.x      = ggplot2::theme_blank(),
+				axis.text.y      = ggplot2::theme_blank(),
+				axis.title.x     = ggplot2::theme_blank(),
+				axis.title.y     = ggplot2::theme_blank(),
+				axis.ticks       = ggplot2::theme_blank(),
+				panel.border     = ggplot2::theme_blank()
+			)
+
+	# Add the graph vertices as points
+	p <- p + ggplot2::geom_point(aes_string(color=color, shape=shape), size=point_size)
+
+	# Add the text labels
+	if( !is.null(label) ){
+		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label), size = 2, hjust=hjust)		
 	}
 	
-	# if there is a taxTab, cbind it to the species data
-	if( !is.null(taxTab(object)) ){
-		specidata <- cbind(specidata, data.frame(taxTab(object)))
-	}
-
-	########################################
-	# if have additional species or sites data to include, cbind-it
-	########################################
-	if( !is.null(add_sites_data) ){
-		sitesdata <- cbind(sitesdata, add_sites_data)
-	}
-	if( !is.null(add_taxa_data) ){
-		specidata <- cbind(specidata, add_taxa_data)
-	}
-	
-	########################################
-	# setup ggplot sitesdata first.
-	########################################
-	# First, build the argument list.
-	arglist=list(x=quote(axis1), y=quote(axis2))
-	if( !is.null(site_color_category) ){
-		arglist <- c(arglist, list(colour=as.name(site_color_category)))
-	}
-	if( !is.null(site_shape_category) ){
-		arglist <- c(arglist, list(shape =as.name(site_shape_category)))
-	}
-	if( !is.null(site_size_category) ){
-		arglist <- c(arglist, list(size  =as.name(site_size_category)))
-	}	
-	# save sites_arglist for re-plot at end
-	sites_arglist <- arglist
-
-	# Finally, initalize ggplot object as "p"
-	p <- ggplot2::ggplot(data=sitesdata)
-	# Start plot with dummy layer, invisible sites
-	p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), alpha=0)
-
-	########################################
-	# Add manual values for color, size, and shape.
-	########################################
-	if( !is.null(man.colors) ){
-		p <- p + ggplot2::scale_color_manual(value = man.colors)
-	}
-	if( !is.null(man.shapes) ){
-		p <- p + ggplot2::scale_shape_manual(values = man.shapes)
-	}
-	if( !is.null(man.sizes) ){
-		p <- p + ggplot2::scale_size_manual(values = man.sizes)
-	}
-	
-	########################################
-	## Add the species data layer. 
-	########################################
-	# First, make the argument list for site aesthetic
-	arglist=list(x=quote(axis1), y=quote(axis2))
-	if( !is.null(species_color_category) ){
-		arglist <- c(arglist, list(colour=as.name(species_color_category)))
-	}
-	if( !is.null(species_shape_category) ){
-		arglist <- c(arglist, list(shape =as.name(species_shape_category)))
-	}	
-	if( !is.null(species_size_category) ){
-		arglist <- c(arglist, list(size  =as.name(species_size_category)))
-	}
-	p <- p + ggplot2::geom_point(data=specidata, do.call("aes", arglist), alpha=species_alpha)
-
-	########################################
-	## Re-Add the sites-layer after the species, 
-	## since there will normally be many fewer of them than species.
-	########################################
-	if( is.null(site_size_category) ){
-		p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), size=7, alpha=sites_alpha)		
-	} else {
-		p <- p + ggplot2::geom_point( do.call("aes", sites_arglist), alpha=sites_alpha)		
-	}
-
-	########################################
-	# Adjust the background grey slightly so that it is more
-	# easily visible on electronic displays
-	########################################
-	p <- p + ggplot2::opts(panel.background = ggplot2::theme_rect(fill = "grey76", colour = NA),
-		strip.background = ggplot2::theme_rect(fill = "grey76", colour = NA)
-	)	
-	
-	########################################
-	# Add a plot title based on the ordination type in mod
-	########################################
-	p <- p + ggplot2::opts(title = plot_title)
-	
-	########################################
-	# Adjust the legend title for color.
-	# Mixed legends default to the first title,
-	# which won't make sense. Rename it.
-	########################################
-	if( !is.null(species_color_category) & !is.null(site_color_category) ){
-		p <- p + ggplot2::labs(colour = "Sites, Species Colors")
-	}
+	# Add the edges:
+	p <- p + ggplot2::geom_line(ggplot2::aes_string(group="id", color=line_color), 
+				graphDF, size=line_weight, alpha=line_alpha)
 	
 	return(p)
 }
 ################################################################################
-# calcplot
 ################################################################################
-#' Convenience wrapper for performing ordination and plotting.
+#' Plot richness estimates, flexibly with ggplot2
 #'
-#' @usage calcplot(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...)
+#' Performs a number of standard richness estimates using the 
+#' \code{\link{estimate_richness}} function,
+#' and returns a \code{ggplot} plotting object. 
+#' This plot shows the individual richness estimates for each
+#' sample, as well as the observed richness. 
+#' You must use untrimmed datasets
+#' for meaningful results, as these estimates (and even the ``observed'' richness)
+#' are highly dependent on the number of singletons. You can always trim the data
+#' later on if needed, just not before using this function.
 #'
-#' @param X (Required). A formula object. The left-hand side specifying a single 
-#'  phyloseq object that contains (at minimum) an \code{otuTable} and a 
-#'  \code{sampleData}. The right-hand side should contain the label of at least
-#'  one variate present in the \code{sampleData} of the LHS object. There is
-#'  one supported alternative, the special \code{"."} for the RHS, in which case
-#'  all available variates will be specified as constraints in the constrained
-#'  ordination, but not shaded. This behavior is less explicit and may depend
-#'  somewhat arbitrarily on the order of variates in your \code{sampelMap}; 
-#'  as such, it should be used with caution.
+#'  NOTE: Because this plotting function incorporates the output from 
+#'  \code{\link{estimate_richness}}, the variable names of that output should
+#'  not be used as \code{x} or \code{color} (even if it works, the resulting
+#'  plot might be kindof strange, and not the intended behavior of this function).
+#'  The following are the names you will want to avoid using in \code{x} or \code{color}:
 #'
-#'  For example, there are two variates in the example object obtained with
-#'  \code{data(ex1)}. \code{X} can be specified as 
+#'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
 #'
-#'  \code{ex1 ~ Diet + Gender}
+#' @usage plot_richness_estimates(physeq, x, color=NULL, shape=NULL)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
+#'  an \code{\link{otuTable-class}}. The data about which you want to estimate
+#'  the richness.
 #'
-#'  for using both as constraints in the ordination (and shading), or as
+#' @param x (Optional). A variable to map to the horizontal axis. The vertical
+#'  axis will be mapped to richness estimates and have units of total species.
+#'  This parameter (\code{x}) can be either a character string indicating a
+#'  variable in \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
 #'
-#'  \code{ex1 ~ Diet}
+#'  The default value is \code{"sample.names"}, which will map each sample's name
+#'  to a separate horizontal position in the plot.
 #'
-#'  if you only wanted to constrain on the Diet variable, for example.
+#' @param color (Optional). Default \code{NULL}. The sample variable to map
+#'  to different colors. Like \code{x}, this can be a single character string 
+#'  of the variable name in 
+#'  \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'  The color scheme is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_color_manual}}.
 #'
-#'  For available
-#'  variate names in your object, try \code{colnames(sampleData(ex1))}, where
-#'  \code{ex1} is the phyloseq object containing your data. Because this is
-#'  a formula object, quotes should not be used. See \code{\link{formula}}
-#'  for details about writing a formula in \code{R}.
+#' @param shape (Optional). Default \code{NULL}. The sample variable to map
+#'  to different shapes. Like \code{x} and \code{color},
+#'  this can be a single character string 
+#'  of the variable name in 
+#'  \code{sampleData} 
+#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  or a custom supplied vector with length equal to the number of samples
+#'  in the dataset (nsamples(physeq)).
+#'  The shape scale is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_shape_manual}}.
 #'
-#' @param RDA_or_CCA A character string, indicating whether the ordination
-#'  method should be RDA or CCA. Default is "cca". Case ignored. Only first
-#'  letter of string is considered.
+#' @return A \code{\link{ggplot}} plot object summarizing
+#'  the richness estimates, and their standard error.
+#' 
+#' @seealso 
+#'  \code{\link{estimate_richness}},
+#'  \code{\link[vegan]{estimateR}},
+#'  \code{\link[vegan]{diversity}}
 #'
-#' @param object Default is the object specified in the left-hand 
-#'  side of \code{X}.
+#' @importFrom reshape melt
+#' @export
+#' @examples 
+#' # data(GlobalPatterns)
+#' # plot_richness_estimates(GlobalPatterns, "SampleType")
+#' # plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
+#' #
+#' # # Define a human-associated versus non-human categorical variable:
+#' # GP <- GlobalPatterns
+#' # human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
+#' # c("Feces", "Mock", "Skin", "Tongue")
+#' # human <- human.levels[getVariable(GP, "SampleType")]
+#' # names(human) <- sample.names(GP)
+#' # # Replace current SD with new one that includes human variable:
+#' # sampleData(GP) <- sampleData(data.frame(sampleData(GP), human))
+#' # 
+#' # # Can use new "human" variable within GP as a discrete variable in the plot
+#' # plot_richness_estimates(GP, "human", "SampleType")
+#' # plot_richness_estimates(GP, "SampleType", "human")
+#' #
+#' # # Can also provide custom factor directly:
+#' # plot_richness_estimates(GP, "SampleType", human)
+#' # plot_richness_estimates(GP, human, "SampleType")
+#' # 
+#' # # Not run: Should cause an error:
+#' # plot_richness_estimates(GP, "value", "value")
+#' # #
+plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=NULL){	
+	# Make the plotting data.frame 
+	DF <- data.frame(estimate_richness(physeq), sampleData(physeq))
+	
+	# If there is no "sample.names" variable in DF, add it
+	if( !"sample.names" %in% names(DF) ){
+		DF <- data.frame(DF, sample.names=sample.names(physeq))		
+	}
+
+	# If manually-supplied x, color, shape, add to DF, dummy var_name
+	if(length(x) > 1){
+		DF$x <- x
+		names(DF)[names(DF)=="x"] <- deparse(substitute(x))
+		x <- deparse(substitute(x))
+	}
+	if(length(color) > 1){
+		DF$color <- color
+		names(DF)[names(DF)=="color"] <- deparse(substitute(color))
+		color <- deparse(substitute(color))
+	}
+	if(length(shape) > 1){
+		DF$shape <- shape
+		names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
+		shape <- deparse(substitute(shape))
+	}
+	
+	# melt, for different estimates
+	if( is.null(color) | identical(x, color) ){
+		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x)], 
+			id=c(x))
+	} else {
+		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x, color)], 
+			id=c(x, color))			
+	}
+			
+	# Add standard error to melted df
+	mdf    <- data.frame(mdf, se = c(rep(NA, nrow(DF)), DF[, "se.chao1"], DF[, "se.ACE"]) )	
+	
+	# map variables
+	richness_map <- ggplot2::aes_string(x=x, y="value", color=color, shape=shape)		
+	
+	# Make the ggplot. Note that because ggplot2 is fully loaded in namespace,
+	# its functions must be fully-qualified (ggplot2::), according to Bioconductor rules
+	p <- ggplot2::ggplot(mdf, richness_map) + 
+		ggplot2::geom_point(size=2) + 
+		ggplot2::geom_errorbar(ggplot2::aes(ymax=value + se, ymin=value - se), width=0.2) +	
+		ggplot2::opts(axis.text.x = ggplot2::theme_text(angle = -90, hjust = 0)) +
+		ggplot2::scale_y_continuous('richness [number of species]') +
+		ggplot2::facet_grid(~variable) 
+	return(p)
+}
+################################################################################
+################################################################################
+# The general case, could plot samples, taxa, or both (biplot/split). Default samples.
+################################################################################
+#' General ordination plotter based on ggplot2.
 #'
-#' @param ... Additional plotting arguments, passed on to 
-#'  \code{\link{plot_ordination_phyloseq}}
+#' Convenience wrapper for plotting ordination results as a 
+#' \code{ggplot2}-graphic, including
+#' additional annotation in the form of shading, shape, and/or labels of
+#' sample variables.
 #'
-#' @return A ggplot2 graphics object. If not stored as a variable, a graphic
-#'  object will be produced on the default device. 
+#' @usage plot_ordination(physeq, ordination, type="samples", axes=c(1, 2),
+#'	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
+#'  an \code{\link{sampleData-class}}. The data about which you want to 
+#'  plot and annotate the ordination.
+#'
+#' @param ordination (Required). An ordination object. Many different classes
+#'  of ordination are defined by \code{R} packages. The supported classes 
+#'  should be listed explicitly, but in the meantime, all ordination classes
+#'  currently supported by the \code{\link[vegan]{scores}} function are
+#'  supported here. There is no default, as the expectation is that the 
+#'  ordination will be performed and saved prior to calling this plot function.
+#'
+#' @param type (Optional). The plot type. Default is \code{"samples"}. The
+#'  currently supported options are 
+#'  \code{c("samples", "sites", "species", "taxa", "biplot", "split")}.
+#'  The option
+#'  ``taxa'' is equivalent to ``species'' in this case, and similarly,
+#'  ``samples'' is equivalent to ``sites''. 
+#'  The options
+#'  \code{"sites"} and \code{"species"} result in a single-plot of just the 
+#'  sites/samples or species/taxa of the ordination, respectively.
+#'  The \code{"biplot"} and \code{"split"} options result in a combined
+#'  plot with both taxa and samples, either combined into one plot (``biplot'')
+#'  or 
+#'  separated in two facet panels (``split''), respectively.
+#'
+#' @param axes (Optional). A 2-element vector indicating the axes of the 
+#'  ordination that should be used for plotting. 
+#'  Can be \code{\link{character-class}} or \code{\link{integer-class}},
+#'  naming the index name or index of the desired axis for the horizontal 
+#'  and vertical axes, respectively, in that order. The default value, 
+#'  \code{c(1, 2)}, specifies the first two axes of the provided ordination.
+#'
+#' @param color (Optional). Default \code{NULL}. Character string.
+#'  The name of the variable to map to
+#'  colors in the plot. 
+#'  This can be a sample variable 
+#'  (among the set returned by \code{sample.variables(physeq)} )
+#'  or
+#'  taxonomic rank
+#'  (among the set returned by \code{rank.names(physeq)}).
+#'  
+#'  Alternatively, if \code{type} indicates a single-plot 
+#'  (\code{"samples"} or \code{"species"}), then
+#'  it is also possible to supply a custom vector with length equal to
+#'  the relevant number of samples or species
+#'  (\code{nsamples(physeq)} or \code{nspecies(physeq)}).
+#' 
+#'  Finally,
+#'  The color scheme is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_color_manual}}.
+#'
+#' @param shape (Optional). Default \code{NULL}. Character string.
+#'  The name of the variable to map
+#'  to different shapes on the plot. 
+#'  Similar to \code{color} option, but for the shape if points.
+#' 
+#'  The shape scale is chosen automatically by \code{link{ggplot}},
+#'  but it can be modified afterward with an additional layer using
+#'  \code{\link[ggplot2]{scale_shape_manual}}.
+#'
+#' @param label (Optional). Default \code{NULL}. Character string.
+#'  The name of the variable to map to text labels on the plot.
+#'  Similar to \code{color} option, but for plotting text.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string. The
+#'  title to include over the plot. 
+#'
+#' @param justDF (Optional). Default \code{FALSE}. Logical.
+#'  Instead of returning a ggplot2-object, do you just want the relevant
+#'  \code{data.frame} that was used to build the plot? This is a 
+#'  user-accessible option for obtaining the \code{data.frame}, in 
+#'  in principal to make a custom plot that isn't possible with the
+#'  available options in this function. For contributing new functions
+#'  (developers), the  
+#'  \code{\link{phyloseq-package}} provides/uses an internal function
+#'  to build the key features of the \code{data.frame} prior to plot-build.
+#'
+#' @return A \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result for the specified axes.
+#' 
+#' @seealso 
+#'  \code{\link{plot_phyloseq}}
 #'
 #' @export
-#' @seealso \code{\link{rda.phyloseq}}, \code{\link{cca.phyloseq}},
-#'  \code{\link{rda}}, \code{\link{cca}}
-#' @examples
-#' ## data(ex1)
-#' ## calcplot(ex1 ~ Diet + Gender)
-calcplot <- function(X, RDA_or_CCA="cca", object=get(all.vars(X)[1]), ...){
-	if( class(X) != "formula" ){
-		warning("First argument, X, must be formula class. See ?formula for more info\n")
-		return()
+#' @examples 
+#' ##
+#' # data(GlobalPatterns)
+#' # # Define a human-associated versus non-human binary variable:
+#' # human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in%
+#' 		# c("Feces", "Mock", "Skin", "Tongue")
+#' # human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
+#' # names(human) <- sample.names(GlobalPatterns)
+#' # # Need to clean the zeros from GlobalPatterns:
+#' # GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' # # Get the names of the most-abundant
+#' # top.TaxaGroup <- sort(
+#' 		# tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#' 		# decreasing = TRUE)
+#' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+#' # # Now prune further, to just the most-abundant phyla
+#' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' # # DPCoA - because scores.dpcoa() is internal to phyloseq, can only test
+#' # # this chunk when new plot_ordination() is installed
+#' # topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
+#' # GP1   <- prune_species(topsp, GP)
+#' # GP.dpcoa <- DPCoA(GP1)
+#' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human) + 
+#'      # geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
+#' # plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
+#' # plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
+plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
+	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
+
+	if(class(physeq)!="phyloseq"){stop("physeq must be phyloseq-class.")}
+	if(type == "samples"){type <- "sites"} # Compatibility with phyloseq
+	if(type == "taxa"){type <- "species"} # Compatibility with phyloseq
+	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
+
+	# Build data.frame:
+	if( type %in% c("sites", "species") ){
+		# Because of the way scores()/coord are bound first in DF, the first two axes should
+		# always be x and y, respectively. This is also contingent on the "choices" argument
+		# to scores() working properly		
+		DF <- ord.plot.DF.internal(physeq, ordination, type, axes)
+		# Add, any custom-supplied plot-mapped variables
+		if( length(color) > 1 ){
+			DF$color <- color
+			names(DF)[names(DF)=="color"] <- deparse(substitute(color))
+			color <- deparse(substitute(color))
+		}
+		if( length(shape) > 1 ){
+			DF$shape <- shape
+			names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
+			shape <- deparse(substitute(shape))
+		}	
+		if( length(label) > 1 ){
+			DF$label <- label
+			names(DF)[names(DF)=="label"] <- deparse(substitute(label))
+			label <- deparse(substitute(label))
+		}
+		x <- names(DF)[1]
+		y <- names(DF)[2]			
+	} else if( type %in% c("split", "biplot") ){
+		# Define DFs
+		specDF <- ord.plot.DF.internal(physeq, ordination, type="species", axes)
+		siteDF <- ord.plot.DF.internal(physeq, ordination, type="sites", axes)
+		# Define x-label and y-label before merge, use sample-axis names (arbitrary)
+		names(specDF)[1] <- x <- names(siteDF)[1] # "x-axis"
+		names(specDF)[2] <- y <- names(siteDF)[2] # "y-axis"
+		# Add id.type label
+		specDF$id.type <- "species"
+		siteDF$id.type <- "samples"
+		# Merge the two data.frame together, for joint plotting.
+		DF <- merge(specDF, siteDF, all=TRUE)
+		# Replace NA with "sample" or "species", where appropriate (factor/character)
+		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "samples") }
+		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "species") }
+		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "samples") }
+		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "species") }		
+	}
+	# In case user wants the plot-DF for some other purpose, return early
+	if(justDF){return(DF)}
+	
+	# Mapping section
+	if( type %in% c("sites", "species", "split") ){
+		ord_map <- ggplot2::aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
+	} else if(type=="biplot"){
+		# biplot, id.type must map to color or size. Only color if none specified.
+		if( is.null(color) ){
+			ord_map <- ggplot2::aes_string(x=x, y=y, color="id.type",
+							shape=shape, na.rm=TRUE)
+		} else {
+			ord_map <- ggplot2::aes_string(x=x, y=y, size="id.type",
+							color=color, shape=shape, na.rm=TRUE)
+		}
+	}
+
+	# Plot-building section
+	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(na.rm=TRUE)
+	
+	# split/facet color and shape can be anything in one or other.
+	if( type=="split" ){
+		# split-option requires a facet_wrap
+		p <- p + facet_wrap(~id.type, nrow=1)
 	}
 	
-	if( substr(RDA_or_CCA, 1, 1) %in% c("R", "r") ){
-		mod <- rda.phyloseq(X)		
-	} else if( substr(RDA_or_CCA, 1, 1) %in% c("C", "c") ){
-		mod <- cca.phyloseq(X)		
-	} else {
-		cat("You did not properly specify the desired ordination method\n")
-		cat("Please see documentation.\n")		
-		return()
+	# If biplot, adjust scales
+	if( type=="biplot" ){	
+		if( is.null(color) ){
+			# Rename color title in legend.
+			p <- p + scale_color_discrete(name="type")
+		} else {
+			# Adjust size so that samples are bigger than species by default.
+			p <- p + scale_size_manual("type", values=c(samples=5, species=2))		
+		}
 	}
 
-	ord_vars <- all.vars(X)[-1]
-
-	# Initialize call list for plot_ordination_phyloseq
-	popcallList <- list(mod=mod, object=object)
-
-	# Populate the shading/shaping options in the call list.
-	if( ord_vars[1] != "."){
-		popcallList <- c(popcallList, list(site_color_category = ord_vars[1]))
-	} 
-	if( length(ord_vars) > 1){
-		popcallList <- c(popcallList, list(site_shape_category = ord_vars[2]))
+	# Add the text labels
+	if( !is.null(label) ){
+		label_map <- ggplot2::aes_string(x=x, y=y, label=label, na.rm=TRUE)
+		p <- p + ggplot2::geom_text(label_map, data=rm.na.phyloseq(DF, label),
+					size=2, vjust=1.5, na.rm=TRUE)
 	}
-	
-	# Create the plot
-	do.call("plot_ordination_phyloseq", popcallList)
+
+	if( !is.null(title) ){
+		p <- p + ggplot2::opts(title = title)
+	}
+	return(p)
 }
+################################################################################
+# Define the ord.plot.DF.internal
+################################################################################
+#' @keywords internal
+ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2)){
+
+	coord <- scores(ordination, choices=axes, display=type)
+	# coord row.names index order should match physeq. Enforce.
+	if( type == "species" ){
+		coord <- coord[species.names(physeq), ]
+	} else if(type == "sites"){
+		coord <- coord[sample.names(physeq), ]		
+	}
+	
+	# If there is supplemental data, add it, else, return coord
+	supp <- NULL
+	# Define supplemental data
+	if( !is.null(sampleData(physeq, FALSE)) & type == "sites"){
+		supp  <- sampleData(physeq) # Supplemental data, samples
+	}else if( !is.null(taxTab(physeq, FALSE)) & type == "species"){
+		supp  <- taxTab(physeq) # Supplemental data, taxa
+	}
+	if( is.null(supp) ){
+		DF <- coord
+	} else {
+		# Check that coord and supp have same indices. 
+		if( !setequal(row.names(coord), row.names(supp)) ){
+			stop("Ordination and supplementary data indices differ on the following:\n.",
+				setdiff(row.names(coord), row.names(supp)))
+		}
+		# Combine for plotting data.frame
+		DF <- data.frame(coord, supp)		
+	}
+
+	return(DF)		
+}
+################################################################################
+################################################################################
+# Remove NA elements from data.frame prior to plotting
+# Remove NA level from factor
+################################################################################
+#' @keywords internal
+rm.na.phyloseq <- function(DF, key.var){
+	# (1) Remove elements from DF if key.var has NA
+	# DF[!is.na(DF[, key.var]), ]
+	DF <- subset(DF, !is.na(eval(parse(text=key.var))))
+	# (2) Remove NA from the factor level, if a factor.
+	if( class(DF[, key.var]) == "factor" ){
+		DF[, key.var] <- factor(as(DF[, key.var], "character"))
+	}
+	return(DF)
+}
+################################################################################
+################################################################################
+#' @keywords internal
+#' @importFrom plyr is.discrete
+rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
+	# If all of the map.var values for samples/species are NA, replace with id.type.rp
+	if( all(is.na(DF[DF$id.type==id.type.rp, map.var])) ){
+		# If discrete, coerce to character, convert to factor, replace
+		if( is.discrete(DF[, map.var]) ){
+			temp.vec <- as(DF[, map.var], "character")
+			temp.vec[is.na(temp.vec)] <- id.type.rp
+			DF[, map.var] <- factor(temp.vec)
+		}
+	}
+	return(DF)
+}
+################################################################################
+################################################################################
+#' Subset points from an ordination-derived ggplot
+#'
+#' Easily retrieve a plot-derived \code{data.frame} with a subset of points
+#' according to a threshold and method. The meaning of the threshold depends
+#' upon the method. See argument description below.
+#'
+#' @usage subset_ord_plot(p, threshold=0.05, method="farthest")
+#' 
+#' @param p (Required).  A \code{\link{ggplot}} object created by 
+#'  \code{\link{plot_ordination}}. It contains the complete data that you
+#'  want to subset.
+#'
+#' @param threshold (Optional). A numeric scalar. Default is \code{0.05}.
+#'  This value determines a coordinate threshold or population threshold,
+#'  depending on the value of the \code{method} argument, ultimately 
+#'  determining which points are included in returned \code{data.frame}.
+#'
+#' @param method (Optional). A character string. One of 
+#'  \code{c("farthest", "radial", "square")}. Default is \code{"farthest"}.
+#'  This determines how threshold will be interpreted.
+#'
+#' \describe{
+#'
+#'    \item{farthest}{
+#'       Unlike the other two options, this option implies removing a 
+#'       certain fraction or number of points from the plot, depending
+#'       on the value of \code{threshold}. If \code{threshold} is greater
+#'       than or equal to \code{1}, then all but \code{threshold} number 
+#'       of points farthest from the origin are removed. Otherwise, if
+#'       \code{threshold} is less than \code{1}, all but \code{threshold}
+#'       fraction of points farthests from origin are retained.
+#'    }
+#' 
+#'    \item{radial}{
+#'	     Keep only those points that are beyond \code{threshold} 
+#'       radial distance from the origin. Has the effect of removing a
+#'       circle of points from the plot, centered at the origin.
+#'    }
+#' 
+#'    \item{square}{
+#'         Keep only those points with at least one coordinate
+#'         greater than \code{threshold}. Has the effect of removing a 
+#'         ``square'' of points from the plot, centered at the origin.
+#'    }
+#' 
+#'  }
+#'
+#' @return A \code{\link{data.frame}} suitable for creating a 
+#'  \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result according to previously-specified parameters.
+#' 
+#' @seealso 
+#'  \code{\link{plot_ordination}}
+#'
+#' @export
+#' @examples 
+#' ##
+#' # data(GlobalPatterns)
+#' # # Need to clean the zeros from GlobalPatterns:
+#' # GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' # sampleData(GP)$human <- factor(human)
+#' # # Get the names of the most-abundant phyla
+#' # top.TaxaGroup <- sort(
+#' #   	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#' #   decreasing = TRUE)
+#' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+#' # # Prune to just the most-abundant phyla
+#' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' # # Perform a correspondence analysis
+#' # gpca <- cca.phyloseq(GP)
+#' # # # Make species topo with a subset of points layered
+#' # # First, make a basic plot of just the species
+#' # p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
+#' # # Re-draw this as topo without points, and facet
+#' # p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
+#' # # Add a layer of a subset of species-points that are furthest from origin.
+#' # p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1) 
+#' # print(p53)
+subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
+	threshold <- threshold[1] # ignore all but first threshold value.
+	method    <- method[1] # ignore all but first string.
+	method.names <- c("farthest", "radial", "square")
+	# Subset to only some small fraction of points 
+	# with furthest distance from origin
+	df <- p$data[, c(1, 2)]
+	d <- sqrt(df[, 1]^2 + df[, 2]^2)
+	names(d) <- rownames(df)
+	if( method.names[pmatch(method, method.names)] == "farthest"){
+		if( threshold >= 1){
+			show.names <- names(sort(d, TRUE)[1:threshold])
+		} else if( threshold < 1 ){
+			show.names <- names(sort(d, TRUE)[1:round(threshold*length(d))])
+		} else {
+			stop("threshold not a valid positive numeric scalar")
+		}		
+	} else if( method.names[pmatch(method, method.names)] == "radial"){
+		show.names <- names(d[d > threshold])
+	} else if( method.names[pmatch(method, method.names)] == "square"){	
+		# show.names <- rownames(df)[as.logical((abs(df[, 1]) > threshold) + (abs(df[, 2]) > threshold))]
+		show.names <- rownames(df)[((abs(df[, 1]) > threshold) | (abs(df[, 2]) > threshold))]
+	} else {
+		stop("method name not supported. Please select a valid method")
+	}
+
+	return(p$data[show.names, ])
+}
+################################################################################
 ################################################################################
 ################################################################################
 #' Convert an otuTable object into a data.frame useful for plotting
@@ -494,9 +850,9 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' by any combination of variates present in
 #' the sampleData component of \code{otu}.
 #'
-#' @usage taxaplot(otu, taxavec="Domain",
+#' @usage plot_taxa_bar(otu, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
-#'	facet_formula = . ~ TaxaGroup)
+#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
 #'
 #' @param otu (Required). An \code{otuTable} object, or higher-order object that contains
 #'  an otuTable and sampleData (e.g. ``otuSam'' class and its superclasses.).
@@ -540,29 +896,37 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An alternative
 #'  \code{facet_grid} could be \code{sample ~ TaxaGroup}.
 #'
+#' @param OTUpoints (Optional). Logical. Default \code{FALSE}. Whether to add small grey 
+#'  semi-transparent points for each OTU. Helps convey the relative distribution
+#'  within each bar if it combines many different OTUs. For datasets with
+#'  large numbers of samples and for complicated plotting arrangements, this
+#'  might be too cluttered to be meaningful.
+#'
+#' @param labelOTUs (Optional). Logical. Default \code{FALSE}. Whether to add
+#'  a label over the top
+#'  few OTUs within each bar. As with \code{OTUpoints}, this is probably not
+#'  a good idea for plots with large complexity. For low numbers of total OTUs
+#'  this can be informative, and help display multiple layers of information 
+#'  on the same graphic.
+#'
 #' @return A ggplot2 graphic object.
 #'
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
 #'
 #' @export
-#' @docType methods
-#' @rdname taxaplot-methods
+#' @aliases taxaplot
+#' @rdname plot-taxa-bar
 #'
-#' @examples #
-#' # data(ex1)
-#' # taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
-#' # fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
-setGeneric("taxaplot", function(otu, taxavec="Domain",
-	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
-	facet_formula = . ~ TaxaGroup){
-		standardGeneric("taxaplot")
-})
-################################################################################
-#' @rdname taxaplot-methods
-#' @aliases taxaplot,phyloseq-method
-setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
+#' @examples
+#' ##
+#' # data(enterotype)
+#' # TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
+#' # ent10   <- prune_species(TopNOTUs, enterotype)
+#' # (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
+#' #    facet_wrap(~Enterotype) )
+plot_taxa_bar <- function(otu, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
-	facet_formula = . ~ TaxaGroup){
+	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
 
 	# Some preliminary assignments. Assumes otu has non-empty sampleData slot.
 	map <- sampleData(otu)
@@ -610,20 +974,12 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	}
 	dftot <- df2sampleTGtot(df, map)
 
-	# Create a small df subset for labelling abundant OTUs
-	dfLabel <- subset(df, Abundance > 0.05)	
-
 	########################################
 	# Build the ggplot
 	p  <- ggplot(df) + 
 		opts(axis.text.x=theme_text(angle=-90, hjust=0))
 
 	p <- p + 
-			# geom_bar(
-			# data=df, eval(call("aes", x=as.name(x_category), 
-				# y=quote(Abundance), fill=as.name(fill_category) )),
-			#	 position="stack", stat="identity"
-			# ) +
 		# The full stack
 		geom_bar(
 			data=dftot, 
@@ -634,27 +990,37 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 			)),
 			position="dodge", stat="identity"
 		) + 
-		geom_point(
+		# Some reasonable default options
+		opts(panel.grid.minor = theme_blank()) + 
+		opts(panel.grid.major = theme_blank()) +
+		opts(panel.border = theme_blank()) +
+		labs(y="Relative Abundance", x=x_category, fill=fill_category)
+		
+	# Should the individual OTU points be added. Default FALSE
+	if( OTUpoints ){
+		p <- p + geom_point(
 			data=df, 
 			eval(call("aes",
 				x=as.name(x_category), 
 				y=quote(Abundance)
 			)),
 			color="black", size=1.5, position="jitter", alpha=I(1/2)
-		) +
-		opts(panel.grid.minor = theme_blank()) + 
-		opts(panel.grid.major = theme_blank()) +
-		opts(panel.border = theme_blank()) +
-		geom_text(
-			data=dfLabel,
-			size=2,
+		)
+	}
+		
+	# Should the most abundant OTUs be labeled. Default FALSE
+	if( labelOTUs ){
+		# Create a small df subset for labelling abundant OTUs
+		dfLabel <- subset(df, Abundance > 0.05)	
+		p <- p + geom_text(data=dfLabel, size=2,
 			eval(call("aes", 
 				x=as.name(x_category), 
 				y=quote(Abundance+0.01), 
 				label=quote(ID)
 			)),
-		) +	
-		labs(y="Relative Abundance", x=x_category, fill=fill_category)
+		)
+	}
+		
 
 	if( !is.null(facet_formula) ){	
 		p <- p + facet_grid(facet_formula)
@@ -663,101 +1029,12 @@ setMethod("taxaplot", "phyloseq", function(otu, taxavec="Domain",
 	# Return the ggplot object so the user can 
 	# additionally manipulate it.
 	return(p)
-})
-################################################################################
-#' Create a taxa graph adjacency matrix from an \code{otuTable}.
-#' 
-#' By default, this uses a presence/absence criteria for taxa to determine
-#' if samples (vertices) are connected by edges, and then plot the result
-#' using the \code{\link[igraph]{igraph-package}}.
-#'
-#' @usage makenetwork(physeq, plotgraph=TRUE, 
-#'			community=TRUE, threshold=0, incommon=0.4, method="jaccard")
-#'
-#' @param physeq (Required). An \code{\link{otuTable-class}}
-#'  or \code{\link{phyloseq-class}} object.
-#'
-#' @param plotgraph A logical. Default TRUE. Indicates whether or 
-#'  not to plot the network
-#'
-#' @param community A logical. Default TRUE. If TRUE, RETURN will
-#'  include the community groups.
-#'
-#' @param threshold A single-value positive integer. Default 0. Indicates the
-#'  number of individuals/observations required for presense to be counted.
-#'  For example, threshold > 1 means that species with 2 or more reads
-#'  are considered present.
-#'
-#' @param incommon The fraction of co-occurring samples required for a pair
-#'  of species to be given an edge. Default is 0.4. This parameter has a 
-#'  strong influence on the resulting network, and must be chosen carefully.
-#'
-#' @param method A character string indicating the default distance method
-#'  parameter provided to \code{\link{vegdist}}. Default is ``jaccard''.
-#'
-#' @return Creates a plot of the adjacency graph and optionally returns the
-#'  community groups.
-#' 
-#' @author Susan Holmes
-#'
-#' @export
-#' @docType methods
-#'
-#' @examples
-#' ## data(enterotype)
-#' ## makenetwork(enterotype)
-makenetwork <- function(physeq, plotgraph=TRUE, community=TRUE, threshold=0, incommon=0.4, method="jaccard"){	
-	#require(vegan); require(igraph)
-
-	abund <- otuTable(physeq)
-
-	# transpose if speciesAreRows (vegan orientation)
-	if( speciesAreRows(abund) ){ abund <- t(abund) }
-
-	### Only take the rows where there are at least one value over threshold
-	abundance <- abund[rowSums(abund) > threshold, ]
-	n         <- nrow(abundance)
-
-	# Convert to 1,0 binary matrix for input to vegdist. -0 converts to numeric
-	presenceAbsence <- (abundance > threshold) - 0
-
-	##Compute the Jaccard distance between the rows, this will only make points
-	##closer if they are actually present together	
-	##You could use any of the other distances in vegan or elsewhere
-	jaccpa <- vegdist(presenceAbsence, method)
-	###Distances in R are vectors by default, we make them into matrices	
-	jaacm <- as.matrix(jaccpa)
-	coinc <- matrix(0, n, n)
-	ind1  <- which((jaacm>0 & jaacm<(1-incommon)),arr.ind=TRUE)
-	coinc[ind1] <- 1
-	dimnames(coinc) <- list(dimnames(abundance)[[1]],dimnames(abundance)[[1]])	
-	###If using the network package create the graph with	
-	###	g<-as.network.matrix(coinc,matrix.type="adjacency")
-	####Here I use the igraph adjacency command
-	ig=graph.adjacency(coinc)
-
-	###Take out the isolates
-	isolates=V(ig)[ degree(ig)==0 ]
-	ignoisol=delete.vertices(ig, V(ig)[ degree(ig)==0 ])
-	if (plotgraph==TRUE){
-		plot(ignoisol, layout=layout.fruchterman.reingold, 
-			vertex.size=0.6, vertex.label.dist=0.1, 
-			edge.arrow.mode="-",vertex.color="red",
-			vertex.label=NA,edge.color="blue")		
-		title("Co-occurrence graph without isolates")
-	}
-    if (community==TRUE){
-		communitywalk=walktrap.community(ignoisol)
-		nonisolates= V(ig)[ degree(ig)!=0 ]
-		group0=nonisolates[which(communitywalk$membership==0)]
-		group1=nonisolates[which(communitywalk$membership==1)]
-		###You can then play around with coloring and labelling in the graph
-		###For help don't forget to look up plot.igraph or plot.network
-		###not just plot as it inherits the plot method appropriate to its class
-		groups=list(group0,group1)
-		return(groups)
-	}
 }
+################################################################################
+#' @export
+#' @aliases plot_taxa_bar
+#' @rdname plot-taxa-bar
+taxaplot <- plot_taxa_bar
 ################################################################################
 # tipsymbols and tiptext. Need to make both tipsymbols and tiptext documentation
 # point to this one.
@@ -793,10 +1070,10 @@ makenetwork <- function(physeq, plotgraph=TRUE, community=TRUE, threshold=0, inc
 #' 
 #' @seealso \code{\link[ape]{tiplabels}}, \code{\link[graphics]{points}}, \code{\link[graphics]{text}}
 #' @examples #
-#' ## data(ex1)
+#' ## data(GlobalPatterns)
 #' ## # for reproducibility
 #' ## set.seed(711)
-#' ## ex2 <- prune_species(sample(species.names(ex1), 50), ex1)
+#' ## ex2 <- prune_species(sample(species.names(GlobalPatterns), 50), GlobalPatterns)
 #' ## plot( tre(ex2) )
 #' ## tipsymbols(pch=19)
 #' ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
@@ -890,20 +1167,12 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #' @export
 #'
 #' @examples
-#' # data(ex1)
-#' # ex2 <- ex1
-#' ## # for reproducibility
-#' ## set.seed(711)
-#' # species.names(ex2) <- sample(species.names(ex1), 50)
-#' # plot_tree_phyloseq(ex2)
-#' # plot_tree_phyloseq(ex2, shape_factor="Diet")
-#' # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet")
-#' # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet", 
-#' 	# size_scaling_factor=0.6, type_abundance_value=TRUE)
-#' # plot_tree_phyloseq(ex2, color_factor="Gender", shape_factor="Diet", 
-#'	# size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta"))
-#' # plot(phyloseqTree(ex2), color_factor="Gender", shape_factor="Diet", 
-#'  # size_scaling_factor=0.6, custom_color_scale=c("blue", "magenta") )
+#' # data(GlobalPatterns)
+#' # GP <- GlobalPatterns
+#' # GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
+#' # plot_tree_phyloseq(GP.chl, color_factor="SampleType",
+#' # 			type_abundance_value=TRUE, 
+#' # 			treeTitle="Chlamydiae in Global Patterns Data")
 plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL, 
 	base_size=1, size_scaling_factor = 0.2, opacity=2/3,
 	custom_color_scale=NULL, custom_shape_scale=NULL, 

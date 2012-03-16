@@ -24,8 +24,8 @@
 }
 \examples{
 #
-# data(ex1)
-# speciesarerows(ex1)
-# speciesarerows(otuTable(ex1))
+# data(GlobalPatterns)
+# speciesarerows(GlobalPatterns)
+# speciesarerows(otuTable(GlobalPatterns))
 }
 

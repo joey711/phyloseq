@@ -32,8 +32,8 @@
 #' @rdname otuTable-methods
 #' @export
 #' @examples #
-#' # data(ex1)
-#' # otuTable(ex1)
+#' # data(GlobalPatterns)
+#' # otuTable(GlobalPatterns)
 setGeneric("otuTable", function(object, speciesAreRows, errorIfNULL=TRUE){
 	standardGeneric("otuTable")	
 })

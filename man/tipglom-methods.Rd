@@ -56,8 +56,8 @@
 # # # x2 <- tipglom(x1, speciationMinLength = 2.5)
 # # # plot(tre(x2))
 # # # ## Try on example datset 1
-# # # data(ex1); nspecies(ex1)
-# # # ex7 <- tipglom(ex1, speciationMinLength = 0.05)
+# # # data(GlobalPatterns); nspecies(GlobalPatterns)
+# # # ex7 <- tipglom(GlobalPatterns, speciationMinLength = 0.05)
 # # # nspecies(ex7)
 # data(esophagus); nspecies(esophagus); par(mfrow=c(2, 1)); plot(tre(esophagus))
 # tre(esophagus)$edge.length

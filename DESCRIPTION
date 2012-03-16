@@ -1,26 +1,56 @@
 Package: phyloseq
-Version: 0.99.16
-Date: 2012-02-08
-Title: Handling and analysis of high-throughput phylogenetic sequence
-        data.
-Description: phyloseq is a set of classes, wrappers, and
-    tools to facilitate the import, storage, and analysis
-    of phylogenetic sequencing data.
+Version: 0.99.38
+Date: 2012-03-15
+Title: Handling and analysis of high-throughput
+    phylogenetic sequence data.
+Description: phyloseq is a set of classes, and tools to
+    facilitate the import, storage, analysis, and graphical
+    display of phylogenetic sequencing data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
-Author: Paul J. McMurdie <mcmurdie@stanford.edu>
+Author: Paul J. McMurdie <mcmurdie@stanford.edu>, Susan
+    Holmes <susan@stat.stanford.edu>
 License: AGPL-3
-Imports: igraph (>= 0.5), multtest (>= 2.8), vegan (>= 2.0), foreach
-        (>= 1.3)
-Depends: R (>= 2.15.0), methods, ape (>= 2.8), picante (>= 1.3),
-        ggplot2 (>= 0.8)
-Suggests: adephylo, ade4, genefilter
+Imports:
+    igraph (>= 0.5),
+    multtest (>= 2.8),
+    vegan (>= 2.0),
+    foreach (>= 1.3),
+    plyr (>= 1.7),
+    reshape (>= 0.8.4),
+    RJSONIO (>= 0.98)
+Depends:
+    R (>= 2.14.0),
+    methods,
+    ade4 (>= 1.4),
+    ape (>= 2.8),
+    picante (>= 1.3),
+    ggplot2 (>= 0.8)
+Suggests:
+    genefilter
 Enhances: doParallel (>= 1.0)
 biocViews: Clustering, Classification, MultipleComparisons,
-        QualityControl, GeneticVariability, HighThroughputSequencing
-Collate: 'allclasses.r' 'allpackage.r' 'alldata.r' 'as-methods.r'
-        'show-methods.r' 'plot-methods.r' 'unifrac.r'
-        'extract-methods.r' 'almostAllAccessors.R' 'otuTable-class.R'
-        'phyloseq-class.R' 'taxonomyTable-class.R' 'IO-methods.R'
-        'merge-methods.R' 'multtest-wrapper.R' 'ordination-methods.R'
-        'transform_filter-methods.R' 'validity-methods.R'
-        'assignment-methods.r' 'sampleData-class.R' 'extend_vegan.R'
+    QualityControl, GeneticVariability,
+    HighThroughputSequencing
+Collate:
+    'allclasses.r'
+    'allpackage.r'
+    'alldata.r'
+    'as-methods.r'
+    'show-methods.r'
+    'plot-methods.r'
+    'extract-methods.r'
+    'almostAllAccessors.R'
+    'otuTable-class.R'
+    'phyloseq-class.R'
+    'taxonomyTable-class.R'
+    'IO-methods.R'
+    'merge-methods.R'
+    'multtest-wrapper.R'
+    'ordination-methods.R'
+    'transform_filter-methods.R'
+    'validity-methods.R'
+    'assignment-methods.r'
+    'sampleData-class.R'
+    'extend_vegan.R'
+    'network-methods.R'
+    'distance-methods.r'

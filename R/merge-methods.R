@@ -51,16 +51,12 @@
 #' ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
 #' ##   matrix(sample(c("a","b","c"),150,TRUE), 25, 6) ) 
 #' ## map1 <- sampleData(map1)
-#' ## ex1 <- phyloseq(OTU1, map1, tax1)
-#' ## x <- ex1
-#' ## x <- phyloseq(ex1)
-#' ## y <- taxTab(ex1)
+#' ## exam1 <- phyloseq(OTU1, map1, tax1)
+#' ## x <- exam1
+#' ## x <- phyloseq(exam1)
+#' ## y <- taxTab(exam1)
 #' ## merge_phyloseq(x, y)
 #' ## merge_phyloseq(y, y, y, y)
-#' ## # Try the simple example dataset, ex1
-#' ## data(ex1)
-#' ## merge_phyloseq( otutree(ex1), sampleData(ex1))
-#' ## merge_phyloseq( otuSam(ex1), tre(ex1), taxTab(ex1))
 merge_phyloseq <- function(...){
 	arguments <- list(...)
 	# create list of all components of all objects
@@ -435,20 +431,10 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #' @export
 #'
 #' @examples #
-#' # # # data(ex1)
-#' # # # t1 <- merge_samples(sampleData(ex1), "Gender")
-#' # # # t4 <- merge_samples(ex1, "Gender")
-#' # # # identical(t1, sampleData(t4))
-#' # # # t0 <- merge_samples(ex1, "Diet")
-#' # # # grp <- as(data.frame(sampleData(ex1))[, "Diet"], "vector")
-#' # # # t4 <- merge_samples(ex1, grp)
-#' # # # identical(t0, t4)
-#' # # # t1 <- merge_samples(otuTable(ex1), grp)
-#' # # # t2 <- merge_samples(otuTable(ex1), factor(grp))
-#' # # # t3 <- merge_samples(ex1, "Diet")
-#' # # # identical(t1, t2)
-#' # # # identical(t1, t3)
-#' # # # identical(t1, otuTable(t3))
+#' # data(GlobalPatterns)
+#' # t1 <- merge_samples(sampleData(GlobalPatterns), "SampleType")
+#' # t4 <- merge_samples(GlobalPatterns, "SampleType")
+#' # identical(t1, sampleData(t4))
 setGeneric("merge_samples", function(x, group, fun=mean) standardGeneric("merge_samples"))
 ################################################################################
 #' @aliases merge_samples,sampleData-method

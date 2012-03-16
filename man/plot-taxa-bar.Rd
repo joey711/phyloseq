@@ -1,12 +1,18 @@
-\docType{methods}
-\name{taxaplot}
+\name{plot_taxa_bar}
+\alias{plot_taxa_bar}
 \alias{taxaplot}
-\alias{taxaplot,phyloseq-method}
 \title{Create a structured barplot graphic of the taxonomic groups.}
 \usage{
-  taxaplot(otu, taxavec="Domain", showOnlyTheseTaxa=NULL,
-  threshold=NULL, x_category="sample",
-  fill_category=x_category, facet_formula = . ~ TaxaGroup)
+  plot_taxa_bar(otu, taxavec="Domain",
+  showOnlyTheseTaxa=NULL, threshold=NULL,
+  x_category="sample", fill_category=x_category,
+  facet_formula = . ~ TaxaGroup, OTUpoints=FALSE,
+  labelOTUs=FALSE)
+
+  taxaplot(otu, taxavec = "Domain", showOnlyTheseTaxa =
+  NULL, threshold = NULL, x_category = "sample",
+  fill_category = x_category, facet_formula = . ~
+  TaxaGroup, OTUpoints = FALSE, labelOTUs = FALSE)
 }
 \arguments{
   \item{otu}{(Required). An \code{otuTable} object, or
@@ -61,6 +67,22 @@
   ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An
   alternative \code{facet_grid} could be \code{sample ~
   TaxaGroup}.}
+
+  \item{OTUpoints}{(Optional). Logical. Default
+  \code{FALSE}. Whether to add small grey semi-transparent
+  points for each OTU. Helps convey the relative
+  distribution within each bar if it combines many
+  different OTUs. For datasets with large numbers of
+  samples and for complicated plotting arrangements, this
+  might be too cluttered to be meaningful.}
+
+  \item{labelOTUs}{(Optional). Logical. Default
+  \code{FALSE}. Whether to add a label over the top few
+  OTUs within each bar. As with \code{OTUpoints}, this is
+  probably not a good idea for plots with large complexity.
+  For low numbers of total OTUs this can be informative,
+  and help display multiple layers of information on the
+  same graphic.}
 }
 \value{
   A ggplot2 graphic object.
@@ -81,10 +103,12 @@
   the sampleData component of \code{otu}.
 }
 \examples{
-#
-# data(ex1)
-# taxaplot(ex1, "Class", threshold=0.85, x_category="Diet",
-# fill_category="Diet", facet_formula = Gender ~ TaxaGroup)
+##
+# data(enterotype)
+# TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10])
+# ent10   <- prune_species(TopNOTUs, enterotype)
+# (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
+#    facet_wrap(~Enterotype) )
 }
 \seealso{
   \code{\link{otu2df}}, \code{\link{qplot}},

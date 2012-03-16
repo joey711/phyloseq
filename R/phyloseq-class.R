@@ -27,13 +27,14 @@
 #' @seealso \code{\link{merge_phyloseq}}
 #' @export
 #' @examples #
-#' # # data(ex1)
-#' # # phyloseq(sampleData(ex1), otuTable(ex1))
-#' # # phyloseq(otuTable(ex1), tre(ex1))
-#' # # phyloseq(taxTab(ex1), otuTable(ex1))
-#' # # phyloseq(tre(ex1), otuTable(ex1), sampleData(ex1))
-#' # # phyloseq(otuTable(ex1), taxTab(ex1), sampleData(ex1))
-#' # # phyloseq(otuTable(ex1), tre(ex1), taxTab(ex1), sampleData(ex1))
+#' # # data(GlobalPatterns)
+#' # # GP <- GlobalPatterns
+#' # # phyloseq(sampleData(GP), otuTable(GP))
+#' # # phyloseq(otuTable(GP), tre(GP))
+#' # # phyloseq(taxTab(GP), otuTable(GP))
+#' # # phyloseq(tre(GP), otuTable(GP), sampleData(GP))
+#' # # phyloseq(otuTable(GP), taxTab(GP), sampleData(GP))
+#' # # phyloseq(otuTable(GP), tre(GP), taxTab(GP), sampleData(GP))
 phyloseq <- function(...){
 	
 	arglist <- list(...)
@@ -185,8 +186,8 @@ splat.phyloseq.objects <- function(x){
 #' @seealso merge_phyloseq
 #' @export
 #' @examples #
-#'  data(ex1)
-#'  getslots.phyloseq(ex1)
+#'  data(GlobalPatterns)
+#'  getslots.phyloseq(GlobalPatterns)
 #'  data(esophagus)
 #'  getslots.phyloseq(esophagus)
 getslots.phyloseq <- function(physeq){
@@ -233,14 +234,14 @@ getslots.phyloseq <- function(physeq){
 #' @seealso \code{\link{getslots.phyloseq}}, \code{\link{merge_phyloseq}}
 #' @export
 #' @examples #
-#' ## data(ex1)
-#' ## access(ex1, "taxTab")
-#' ## access(ex1, "tre")
-#' ## access(otuTable(ex1), "otuTable")
+#' ## data(GlobalPatterns)
+#' ## access(GlobalPatterns, "taxTab")
+#' ## access(GlobalPatterns, "tre")
+#' ## access(otuTable(GlobalPatterns), "otuTable")
 #' ## # Should return NULL:
-#' ## access(otuTable(ex1), "sampleData")
-#' ## access(otuTree(ex1), "sampleData")
-#' ## access(otuSam(ex1), "tre")
+#' ## access(otuTable(GlobalPatterns), "sampleData")
+#' ## access(otuTree(GlobalPatterns), "sampleData")
+#' ## access(otuSam(GlobalPatterns), "tre")
 access <- function(physeq, slot, errorIfNULL=FALSE){
 	component.classes <- get.component.classes()
 	# Check if class of x is among the component classes (not H.O.)
@@ -283,8 +284,8 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' @seealso \code{\link{reconcile_species}}, \code{\link{Reduce}}
 #' @keywords internal
 #' @examples #
-#' ## data(ex1)
-#' ## head(intersect_species(ex1), 10)
+#' ## data(GlobalPatterns)
+#' ## head(intersect_species(GlobalPatterns), 10)
 intersect_species <- function(x){
 	component_list  <- splat.phyloseq.objects(x)
 	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("samData") )
@@ -319,9 +320,9 @@ intersect_species <- function(x){
 #' @rdname reconcile_species-methods
 #' @keywords internal
 #' @examples #
-#' ## data(ex1)
-#' ## head(intersect_species(ex1), 10)
-#' ## reconcile_species(ex1)
+#' ## data(GlobalPatterns)
+#' ## head(intersect_species(GlobalPatterns), 10)
+#' ## reconcile_species(GlobalPatterns)
 #' # # data(phylocom)
 #' # # tree <- phylocom$phylo
 #' # # OTU  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
@@ -361,8 +362,8 @@ setMethod("reconcile_species", signature("phyloseq"), function(x){
 #' @seealso \code{\link{reconcile_species}}
 #' @keywords internal
 #' @examples #
-#' ## data(ex1)
-#' ## reconcile_samples(ex1)
+#' ## data(GlobalPatterns)
+#' ## reconcile_samples(GlobalPatterns)
 reconcile_samples <- function(x){
 	# prevent infinite recursion issues by checking if intersection already satisfied
 	if( setequal(sample.names(sampleData(x)), sample.names(otuTable(x))) ){
