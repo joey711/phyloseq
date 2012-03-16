@@ -1,5 +1,5 @@
-%\VignetteIndexEntry{phyloseq basics}
-%\VignetteKeywords{access, subset, merge, build} 
+%\VignetteIndexEntry{Basic data manipulation using phyloseq}
+%\VignetteKeywords{import, subset, filter, merge, build} 
 %\VignettePackage{phyloseq}
 
 %
@@ -55,12 +55,27 @@
 
 \clearpage
 \section{Introduction}
-There are already several ecology and phylogenetic packages available in R, including the adephylo, vegan, ade4, picante, ape, phangorn, phylobase, and OTUbase packages. These can already take advantage of many of the powerful statistical and graphics tools available in R. However, at present a user must devise their own methods for parsing the output of their favorite OTU clustering application, and, as a consequence, there is also no standard within Bioconductor (or R generally) for storing or sharing the suite of related data objects that describe a phylogenetic sequencing project. The phyloseq package\footnote{Throughout this vignette we use regular or \emph{italics} font for packages/applications with names that are capitalized or uncapitalized, respectively. We further use a \texttt{courier} style font for R code, including function and class names.} seeks to address these issues by providing a related set of S4 classes that internally manage the handling tasks associated with organizing, linking, storing, and analyzing phylogenetic sequencing data. \emph{phyloseq} additionally provides some convenience wrappers for input from common clustering applications, common analysis pipelines, and native implementation of methods that are not available in other R packages.
+The analysis of microbiological communities brings many challenges: the integration of many different types of data with methods from ecology, genetics, phylogenetics, network analysis, visualization and testing. The data itself may originate from widely different sources, such as the microbiomes of humans, soils, surface and ocean waters, wastewater treatment plants, industrial facilities, and so on; and as a result, these varied sample types may have very different forms and scales of related data that is extremely dependent upon the experiment and its question(s). The phyloseq package is a tool to import, store, analyze, and graphically display complex phylogenetic sequencing data that has already been clustered into \underline{O}perational \underline{T}axonomic \underline{U}nits (OTUs), especially when there is associated sample data, phylogenetic tree, and/or taxonomic assignment of the OTUs. This package leverages many of the tools available in R for ecology and phylogenetic analysis (vegan, ade4, ape, picante), while also using advanced/flexible graphic systems (ggplot2) to easily produce publication-quality graphics of complex phylogenetic data. phyloseq uses a specialized system of S4 classes to store all related phylogenetic sequencing data as single experiment-level object, making it easier to share data and reproduce analyses. In general, phyloseq seeks to facilitate the use of R for efficient interactive and reproducible analysis of OTU-clustered high-throughput phylogenetic sequencing data.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% About this vignette
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\section{About this vignette}
+
+A separate vignette is included within the phyloseq-package that describes analysis tools included in phyloseq along with various examples using included example data. A quick way to load it is:
+
+<<eval=FALSE>>=
+vignette("phyloseq_analysis")
+@
+
+By contrast, this vignette is intended to provide functional examples of the basic data import and manipulation infrastructure included in phyloseq. This includes example code for importing OTU-clustered data from different clustering pipelines, as well as performing clear and reproducible filtering tasks that can be altered later and checked for robustness. The motivation for including tools like this in phyloseq is to save time, and also to build-in a structure that requires consistency across related data tables from the same experiment. This not only reduces code repetition, but also decreases the likelihood of mistakes during data filtering and analysis. For example, it is intentionally difficult in phyloseq to create an experiment-level object \footnote{``phyloseq-class'', required for many analysis tools} in which a component tree and OTU table have different species. The import functions, trimming tools, as well as the main tool for creating an experiment-level object, \code{phyloseq()}, all automatically trim the species and samples indices to their intersection, such that these component data types are exactly coherent. 
+
+Let's get started by loading phyloseq, and describing some methods for importing data.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load phyloseq and Import Data.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%\clearpage
 \section{Load \emph{phyloseq} and import data}\label{sec:load}
 \subsection{Load \emph{phyloseq}}
 To use \emph{phyloseq} in a new R session, it will have to be loaded. This can be done in your package manager, or at the command line using the \code{library()} command:
@@ -200,7 +215,6 @@ To load example data into the working environment, use the \code{data()} command
   data(esophagus)
   data(enterotype)
   data(soilrep) 
-  data(GlobalPatterns)
 @
 
 Similarly, entering \code{?enterotype} will reveal the documentation for the so-called ``enterotype'' dataset.
@@ -562,7 +576,7 @@ For running parallel implementation of functions/methods in \emph{phyloseq} (e.g
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%\clearpage
 \section{Bibliography}
 \bibliography{phyloseq_basics}
 

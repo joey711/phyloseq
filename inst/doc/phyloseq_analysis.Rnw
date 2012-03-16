@@ -1,5 +1,5 @@
-%\VignetteIndexEntry{phyloseq basics}
-%\VignetteKeywords{access, subset, merge, build} 
+%\VignetteIndexEntry{Analysis examples using phyloseq}
+%\VignetteKeywords{distance, ordination, plot, test, analysis} 
 %\VignettePackage{phyloseq}
 
 %
@@ -63,12 +63,11 @@ https://github.com/joey711/phyloseq}
 \section{Summary}
 The analysis of microbiological communities brings many challenges: the integration of many different types of data with methods from ecology, genetics, phylogenetics, network analysis, visualization and testing. The data itself may originate from widely different sources, such as the microbiomes of humans, soils, surface and ocean waters, wastewater treatment plants, industrial facilities, and so on; and as a result, these varied sample types may have very different forms and scales of related data that is extremely dependent upon the experiment and its question(s). The phyloseq package is a tool to import, store, analyze, and graphically display complex phylogenetic sequencing data that has already been clustered into \underline{O}perational \underline{T}axonomic \underline{U}nits (OTUs), especially when there is associated sample data, phylogenetic tree, and/or taxonomic assignment of the OTUs. This package leverages many of the tools available in R for ecology and phylogenetic analysis (vegan, ade4, ape, picante), while also using advanced/flexible graphic systems (ggplot2) to easily produce publication-quality graphics of complex phylogenetic data. phyloseq uses a specialized system of S4 classes to store all related phylogenetic sequencing data as single experiment-level object, making it easier to share data and reproduce analyses. In general, phyloseq seeks to facilitate the use of R for efficient interactive and reproducible analysis of OTU-clustered high-throughput phylogenetic sequencing data.
 
-\renewcommand{\thefootnote}{\alph{footnote}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % About this vignette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%\clearpage
 \section{About this vignette}
 
 A separate vignette is included within the phyloseq-package that describes the basics of importing pre-clustered phylogenetic sequencing data, data filtering, as well as some transformations and some additional details about the package and installation. A quick way to load it is:
@@ -324,7 +323,8 @@ We repeat the previous example, but instead using non-metric multidimensional sc
 data(GlobalPatterns)
 load("Unweighted_UniFrac.RData") # reloads GPUF variable
 GP.nmMDS <- metaMDS(GPUF, k=2) # perform nmMDS, set to 2 axes
-(p <- plot_ordination(GlobalPatterns, GP.nmMDS, "samples", color="SampleType") + geom_line() + geom_point(size=5) )
+(p <- plot_ordination(GlobalPatterns, GP.nmMDS, "samples", color="SampleType") +
+  geom_line() + geom_point(size=5) )
 @
 <<GP_UF_NMDS1, echo=FALSE, fig=FALSE, include=FALSE>>=
 ggsave("phyloseq_analysis-GP_UF_NMDS.pdf", p, width=9, height=7)
@@ -394,15 +394,16 @@ A clear feature of these plots is that the feces and mock communities cluster ti
 We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''. However, because we just displayed the position of samples in the ordination and there are many thousands of OTUs, we will focus on creating an interpretable plot of the OTUs. For creating graphics that combine the two plots, try the ``\code{biplot}'' or ``\code{split}'' option for \code{type} in \code{plot{\_}ordination()}.
 
 <<GPCAspecplot0, fig=FALSE, include=FALSE>>=
-(p1 <- plot_ordination(GP, gpca, "species", color="Phylum") )
+(p1 <- plot_ordination(GP, gpca, "species", color="Phylum") +
+  facet_wrap(~Phylum) + scale_colour_hue(legend = FALSE) )
 @
 <<GPCAspecplot1, echo=FALSE>>=
 # Save as raster to control file size.
-ggsave("phyloseq_analysis-GPCAspecplot.pdf", p1, width=10, height=9)
+ggsave("phyloseq_analysis-GPCAspecplot.pdf", p1, width=10, height=7)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=5in]{phyloseq_analysis-GPCAspecplot}
+\includegraphics[width=7in]{phyloseq_analysis-GPCAspecplot}
 \caption{Species plot of the ``Global Patterns'' correspondence analysis first two axes, with each phylum on a  different panel (``facet''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included.}
 \label{fig:GPCAspecplot}
 \end{figure}
@@ -510,9 +511,7 @@ ggsave("phyloseq_analysis-GPdpcoaBiplot.pdf", pdpcoa, width=9, height=7)
 \subsubsection{\code{distance()}: Central Distance Function}
 Many comparisons of microbiome samples, including the graphical model (Section~\ref{sec:network}) and the PCoA analysis (Section~\ref{sec:PCoA}), require a calculation for the relative dissimilarity of one microbial community to another, or ``distance''. The phyloseq-package provides a general ``wrapper'' function for calculating ecological distance matrices between the samples in an experiment. 
 
-\code{distance()} currently supports 43 method options, as well as user-provided arbitrary methods via an interface to vegan's \code{designdist()} function. Currrently only sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise) distances will be supported as well. 
-
-In addition to supporting any of the method options for the three distance functions in the \code{vegan}-package, \code{distance()} will eventually support many of the distance methods in the \code{ade4}-package. It also supports  \code{UniFrac} distance function (Section~\ref{sec:unifrac}), a method for calculating Double Principal Coordinate Analysis (DPCoA), as well as an extension to the vegan interface for arbitrary, user-defined distances.
+\code{distance()} currently supports 43 method options, as well as user-provided arbitrary methods via an interface to vegan's \code{designdist()} function. Currrently only sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise) distances will be supported as well. In addition to supporting any of the method options to the three main distance functions of the \code{vegan}-package --- including the 14 distances of the \code{vegdist()} function and all 24 ecological distances reviewed in Koleff et al. 2003~\cite{Koleff2003JAE} coded by \code{betadiver} --- \code{distance()} will eventually support many of the distance methods in the \code{ade4}-package, and others. It also supports the Fast \code{UniFrac} distance function (Section~\ref{sec:unifrac}) included in phyloseq as native \code{R} code, a wrapper for retreiving the sample-distances from Double Principal Coordinate Analysis (DPCoA), as well as an extension to the \code{vegan::designdist()} interface for arbitrary, user-defined distances.
 
 The function takes a \code{phyloseq-class} object and an argument indicating the distance type; and it returns a \code{dist}-class distance matrix.
 
@@ -524,42 +523,6 @@ distance(esophagus, "jaccard") # vegdist jaccard
 distance(esophagus, "g") # betadiver method option "g"
 distance("help")
 @
-
-\subsubsection{\code{vegdist()} extension}
-The \emph{phyloseq} package includes an extension for the \code{vegdist()} function from the \emph{vegan} package~\cite{veganpkg}, which in-turn can calculate 14 or so ecologically relevant distances / dissimilarity indices. The primary argument should be a \code{phyloseq-class} object, and the expected result is a sample-wise distance matrix.
-
-<<eval=FALSE, echo=TRUE>>=
-data(esophagus)
-vegdist(esophagus)
-@
-\begin{scriptsize}
-\begin{samepage}
-<<echo=FALSE>>=
-data(esophagus)
-round( vegdist(esophagus), 3)
-@
-\end{samepage}
-\end{scriptsize}
-
-The available distances/dissimilarity indices calculated by \code{vegdist()} currently include the following: 
-<<echo=FALSE>>=
-c("manhattan", "euclidean", "canberra", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial", "chao")
-@
-These are specified by the \code{method=} argument. For example, if one alternatively wants to calculate the Jaccard distance instead of the default (Bray-Curtis), the following command will work:
-<<eval=FALSE, echo=TRUE>>=
-data(esophagus)
-vegdist(esophagus, "jaccard")
-@
-\begin{scriptsize}
-\begin{samepage}
-<<echo=FALSE>>=
-data(esophagus)
-round( vegdist(esophagus, "jaccard"), 3)
-@
-\end{samepage}
-\end{scriptsize}
-
-We also have plans to extend the \code{designdist}, \code{betadiver}, and \code{dist} functions, which provide even further options for distance type. \code{designdist} also provides a way to define a custom distance calculation, while \code{betadiver} calculates all 24 ecological distances reviewed in Koleff et al. 2003~\cite{Koleff2003JAE}. We plan to wrap all of these methods into one \emph{central} distance calculator method, say ``\code{sampleDistance()}'', that would also include UniFrac, DPCoA, etc. This will be implemented soon.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UniFrac
@@ -714,7 +677,7 @@ For feature requests, bug reports, and other suggestions and issues, please go t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%\clearpage
 %\bibliographystyle{ws-procs11x85}
 \bibliography{phyloseq_analysis}
 
