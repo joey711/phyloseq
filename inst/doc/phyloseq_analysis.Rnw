@@ -146,7 +146,7 @@ GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
 And now we will create the tree graphic form this subset of \code{GlobalPatterns}, shading by the \code{"SampleType"} variable, which indicates the environment category from which the microbiome samples originated.  The following command also takes the option of labelling the number of individuals observed in each sample (if at all) of each taxa. The symbols are slightly enlarged as the number of individuals increases.
 <<fig=TRUE>>=
 plot_tree_phyloseq(GP.chl, color_factor="SampleType",
-			type_abundance_value=TRUE, treeTitle="Chlamydiae in Global Patterns Data")
+			type_abundance_value=TRUE, treeTitle="")
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -166,7 +166,7 @@ barplot(sort(speciesSums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[trim = 10mm 15mm 10mm 15mm, clip, width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
+\includegraphics[trim = 10mm 10mm 10mm 15mm, clip, width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
 \caption{An example exploratory barplot using base \code{R} graphics and the \code{speciesSums} and \code{nsamples} functions.}
 \label{fig:abundbarplot}
 \end{figure}
@@ -295,14 +295,14 @@ Next, we will reproduce Figure 5 from the ``Global Patterns'' article~\cite{Capo
   color="SampleType") + geom_line() + geom_point(size=5) )
 @
 <<echo=FALSE, include=FALSE, fig=FALSE>>=
-ggsave("phyloseq_analysis-GPfig5ax12.pdf", p12, width=9, height=7)
+ggsave("phyloseq_analysis-GPfig5ax12.pdf", p12, width=7, height=7)
 ggsave("phyloseq_analysis-GPfig5ax13.pdf", p13, width=9, height=7)
 @
 
 \begin{figure}[htbp]
 \centering
-\subfloat[Axes 1, 2]{\label{fig:sub:GPCA12}\includegraphics[width=0.47\textwidth]{phyloseq_analysis-GPfig5ax12}}
-\subfloat[Axes 1, 3]{\label{fig:sub:GPCA34}\includegraphics[width=0.53\textwidth]{phyloseq_analysis-GPfig5ax13}}
+\subfloat[Axes 1, 2]{\label{fig:sub:GPCA12}\includegraphics[width=0.45\textwidth]{phyloseq_analysis-GPfig5ax12}}
+\subfloat[Axes 1, 3]{\label{fig:sub:GPCA34}\includegraphics[width=0.55\textwidth]{phyloseq_analysis-GPfig5ax13}}
 %\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPfig5ax12}
 %\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPfig5ax13}
 \captionsetup{width=0.9\textwidth}
@@ -315,7 +315,7 @@ ggsave("phyloseq_analysis-GPfig5ax13.pdf", p13, width=9, height=7)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % nmMDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%\clearpage
 \subsubsection{non-metric Multi-Dimensional Scaling (nmMDS)}\label{sec:nmMDS}
 We repeat the previous example, but instead using non-metric multidimensional scaling (nmMDS - \code{metaMDS()}) limited to just two dimensions. This approach limits the amount of residual distance ``not shown'' in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
 
@@ -362,7 +362,7 @@ barplot(gpca$CA$eig/sum(gpca$CA$eig), las=2)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[trim = 10mm 15mm 10mm 15mm, clip, width=0.7\textwidth]{phyloseq_analysis-GPCAscree}
+\includegraphics[trim = 10mm 10mm 10mm 15mm, clip, width=0.7\textwidth]{phyloseq_analysis-GPCAscree}
 \caption{The correspondence analysis (CA) scree plot of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
 \label{fig:GPCAscree}
 \end{figure}
@@ -394,25 +394,36 @@ A clear feature of these plots is that the feces and mock communities cluster ti
 We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''. However, because we just displayed the position of samples in the ordination and there are many thousands of OTUs, we will focus on creating an interpretable plot of the OTUs. For creating graphics that combine the two plots, try the ``\code{biplot}'' or ``\code{split}'' option for \code{type} in \code{plot{\_}ordination()}.
 
 <<GPCAspecplot0, fig=FALSE, include=FALSE>>=
-p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
-# Re-draw this as topo without points
-p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
-# Add layer. Subset of species-points, beyond threshold dist from origin.
-p2 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1) +
-  scale_colour_hue(legend = FALSE)
+(p1 <- plot_ordination(GP, gpca, "species", color="Phylum") )
 @
 <<GPCAspecplot1, echo=FALSE>>=
 # Save as raster to control file size.
-ggsave("phyloseq_analysis-GPCAspecplot.pdf", p2, width=10, height=7)
+ggsave("phyloseq_analysis-GPCAspecplot.pdf", p1, width=10, height=9)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=7in]{phyloseq_analysis-GPCAspecplot}
-\caption{Species plot of the ``Global Patterns'' CA first two axes, with each phylum on a  different panel (``facet''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included. The topo lines indicate regions of the plot with a high density of points that would otherwise be difficult to discern}
+\includegraphics[width=5in]{phyloseq_analysis-GPCAspecplot}
+\caption{Species plot of the ``Global Patterns'' correspondence analysis first two axes, with each phylum on a  different panel (``facet''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included.}
 \label{fig:GPCAspecplot}
 \end{figure}
 
-While Fig~\ref{fig:GPCAspecplot} reveals some useful patterns and a few interesting outliers, but what if we want a complete summary of how each phylum is represented along each axis? The following code is a way to show this using boxplots, while still avoiding the occlusion problem (points layered on top of each other), and also conveying some useful information about the pattern of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
+Let's try drawing Fig~\ref{fig:GPCAspecplot} again, only this time summarizing the species points as a 2D density estimate, without any individual points.
+<<GPCAspecplotTopo0, fig=FALSE, include=FALSE>>=
+(p3 <- ggplot(p1$data, p1$mapping) + geom_density2d() +
+	facet_wrap(~Phylum) + scale_colour_hue(legend = FALSE) )
+@
+<<GPCAspecplotTopo1, echo=FALSE>>=
+# Do this one PDF, because it shouldn't be large file.
+ggsave("phyloseq_analysis-GPCAspecplotTopo.pdf", p3, width=10, height=7)
+@
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=7in]{phyloseq_analysis-GPCAspecplotTopo}
+\caption{Redrawn Fig.~\ref{fig:GPCAspecplot}, which is severely overplotted, as a 2-dimensional species-density topographic map, faceted in the same way.}
+\label{fig:GPCAspecplotTopo}
+\end{figure}
+
+Figs~\ref{fig:GPCAspecplot} and \ref{fig:GPCAspecplotTopo} reveal some useful patterns and interesting outliers, but what if we want a complete summary of how each phylum is represented along each axis? The following code is a way to show this using boxplots, while still avoiding the occlusion problem (points layered on top of each other), and also conveying some useful information about the pattern of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
 
 <<GPCAjitter0, include=FALSE, fig=FALSE>>=
 # Melt the species-data.frame, DF, to facet each CA axis separately
@@ -460,10 +471,36 @@ ggsave("phyloseq_analysis-GPtaxaplot.pdf", p, width=8, height=10)
 In Fig~\ref{fig:GPtaxaplot} we've used the \code{threshold} parameter to omit all but phyla accounting for the top 90\% of phyla in any one sample. Some patterns emerging from this display appear to be: (1) Cyanobacteria, Actinobacteria appear under-represented in human samples; (2) conversely, Firmicutes appear over-represented in human samples; (3) Acidobacteria, Verrucomicrobia appear over-represented in the fecal samples; (4) the only Crenarchaeota were observed in the Mock sample, which is not really a community but a simulated community used as a control. These are not hugely surprising based on previous biological observations from the field, but it is hopefully useful code that can be applied on other datasets that you might have.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% DISTANCE METHODS
+% DPCoA
 \clearpage
 \subsubsection{Double Principle Coordinate Analysis (DPCoA)}
-\code{DPCoA()}~\cite{Pavoine2004523}.
+Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523}), using the using the \code{DPCoA()} function in phyloseq, as well as the ``biplot'' option for \code{plot{\_}ordination()}.
+
+First, let's severely subset the number of species for the sake of run-time.\footnote{This is for illustration purposes only, do not repeat unless you are very sure you have a good reason for doing this.}
+
+<<GPdpcoa00, fig=FALSE, include=FALSE>>=
+topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
+GP1   <- prune_species(topsp, GP)
+@
+
+Now perform the DPCoA on the simplified dataset, and plot.
+
+<<GPdpcoa01, fig=FALSE>>=
+GP.dpcoa <- DPCoA(GP1)
+( pdpcoa <- plot_ordination(GP1, GP.dpcoa, type="biplot",
+     color="SampleType", shape="Phylum") )
+@
+
+<<GPdpcoa02, echo=FALSE, fig=FALSE, include=FALSE>>=
+ggsave("phyloseq_analysis-GPdpcoaBiplot.pdf", pdpcoa, width=9, height=7)
+@
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-GPdpcoaBiplot}
+\caption{A biplot representation of a Double Principal Coordinate Analysis (DPCoA), on a simplified version of the ``Global Patterns'' dataset with only the most abundant 200 OTUs included.}
+\label{fig:GPdpcoaBiplot}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DISTANCE METHODS
@@ -471,9 +508,22 @@ In Fig~\ref{fig:GPtaxaplot} we've used the \code{threshold} parameter to omit al
 \subsection{Distance Methods}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{\code{distance()}: Central Distance Function}
-Many comparisons of microbiome samples, including the graphical model (Section~\ref{sec:network}) and the PCoA analysis (Section~\ref{sec:PCoA}), require a calculation for the relative dissimilarity of one microbial community to another, or ``distance''. Although not fully implemented yet, the phyloseq-package intends to provide a unified ecological distance function for calculating a matrix of microbial community distances between the samples in an experiment. This will surely include a wrapper for the several dozen distance calculations provided via the three distance functions in the \code{vegan}-package, many of the distance methods supported in the \code{ade4}-package, as well as the included \code{UniFrac} distance function (Section~\ref{sec:unifrac}), a method for calculating Double Principal Coordinate Analysis (DPCoA), as well as an extension to the vegan interface for arbitrary, user-defined distances.
+Many comparisons of microbiome samples, including the graphical model (Section~\ref{sec:network}) and the PCoA analysis (Section~\ref{sec:PCoA}), require a calculation for the relative dissimilarity of one microbial community to another, or ``distance''. The phyloseq-package provides a general ``wrapper'' function for calculating ecological distance matrices between the samples in an experiment. 
 
-The function will take a \code{phyloseq-class} object and an argument indicating the distance type; and it will return a \code{dist}-class distance matrix.
+\code{distance()} currently supports 43 method options, as well as user-provided arbitrary methods via an interface to vegan's \code{designdist()} function. Currrently only sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise) distances will be supported as well. 
+
+In addition to supporting any of the method options for the three distance functions in the \code{vegan}-package, \code{distance()} will eventually support many of the distance methods in the \code{ade4}-package. It also supports  \code{UniFrac} distance function (Section~\ref{sec:unifrac}), a method for calculating Double Principal Coordinate Analysis (DPCoA), as well as an extension to the vegan interface for arbitrary, user-defined distances.
+
+The function takes a \code{phyloseq-class} object and an argument indicating the distance type; and it returns a \code{dist}-class distance matrix.
+
+<<distancefun>>=
+data(esophagus)
+distance(esophagus) # Unweighted UniFrac
+distance(esophagus, weighted=TRUE) # weighted UniFrac
+distance(esophagus, "jaccard") # vegdist jaccard
+distance(esophagus, "g") # betadiver method option "g"
+distance("help")
+@
 
 \subsubsection{\code{vegdist()} extension}
 The \emph{phyloseq} package includes an extension for the \code{vegdist()} function from the \emph{vegan} package~\cite{veganpkg}, which in-turn can calculate 14 or so ecologically relevant distances / dissimilarity indices. The primary argument should be a \code{phyloseq-class} object, and the expected result is a sample-wise distance matrix.
