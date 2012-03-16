@@ -3,13 +3,16 @@ phyloseq 0.99.x
 * Bioconductor development release updates.
 * BIOM format import: import_biom() function
 * Parallel Fast UniFrac
+* distance() wrapper for ecological distance calculations
+* plot_ordination() powerful, flexible ordination plotting using ggplot2
+* plot_richness_estimates() for easy, flexible summary of species richness
+* Support for Double Principle Coordinate Analysis (DPCoA)
 * Several published exampled datasets included
-* Directly call vegdist() on phyloseq-class object (method extension)
 * General importer for all supported data formats: import()
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
-v0.99.37 - 0.99.38
+v0.99.37 - 0.99.39
 ===========
 * Vignette updates.
 

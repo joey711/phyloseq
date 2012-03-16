@@ -46,7 +46,7 @@
 
 \title{ Vignette for phyloseq: A Bioconductor package for handling and analysis of high-throughput phylogenetic sequence data }
 
-\author{Paul J. M{c}Murdie and Susan Holmes$^*$\\
+\author{Paul J. M{c}Murdie$^*$ and Susan Holmes\\
 Statistics Department, Stanford University,\\
 Stanford, CA 94305, USA\\
 $^*$E-mail: mcmurdie@stanford.edu\\
@@ -475,7 +475,7 @@ In Fig~\ref{fig:GPtaxaplot} we've used the \code{threshold} parameter to omit al
 % DPCoA
 \clearpage
 \subsubsection{Double Principle Coordinate Analysis (DPCoA)}
-Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523}), using the using the \code{DPCoA()} function in phyloseq, as well as the ``biplot'' option for \code{plot{\_}ordination()}.
+Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523}), using the using the \code{DPCoA()} function in phyloseq, as well as the ``biplot'' option for \code{plot{\_}ordination()}. For a description that includes an applied example using the ``enterotype'' dataset and comparison with UniFrac/PCoA, see Fukuyama et al~\cite{fukuyama2012com}. 
 
 First, let's severely subset the number of species for the sake of run-time.\footnote{This is for illustration purposes only, do not repeat unless you are very sure you have a good reason for doing this.}
 
@@ -511,7 +511,7 @@ ggsave("phyloseq_analysis-GPdpcoaBiplot.pdf", pdpcoa, width=9, height=7)
 \subsubsection{\code{distance()}: Central Distance Function}
 Many comparisons of microbiome samples, including the graphical model (Section~\ref{sec:network}) and the PCoA analysis (Section~\ref{sec:PCoA}), require a calculation for the relative dissimilarity of one microbial community to another, or ``distance''. The phyloseq-package provides a general ``wrapper'' function for calculating ecological distance matrices between the samples in an experiment. 
 
-\code{distance()} currently supports 43 method options, as well as user-provided arbitrary methods via an interface to vegan's \code{designdist()} function. Currrently only sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise) distances will be supported as well. In addition to supporting any of the method options to the three main distance functions of the \code{vegan}-package --- including the 14 distances of the \code{vegdist()} function and all 24 ecological distances reviewed in Koleff et al. 2003~\cite{Koleff2003JAE} coded by \code{betadiver} --- \code{distance()} will eventually support many of the distance methods in the \code{ade4}-package, and others. It also supports the Fast \code{UniFrac} distance function (Section~\ref{sec:unifrac}) included in phyloseq as native \code{R} code, a wrapper for retreiving the sample-distances from Double Principal Coordinate Analysis (DPCoA), as well as an extension to the \code{vegan::designdist()} interface for arbitrary, user-defined distances.
+\code{distance()} currently supports 43 method options, as well as user-provided arbitrary methods via an interface to vegan's \code{designdist()} function. Currrently only sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise) distances will be supported as well. In addition to supporting any of the method options to the three main distance functions of the \code{vegan}-package~\cite{veganpkg} --- including the 14 distances of the \code{vegdist()} function and all 24 ecological distances reviewed in Koleff et al. 2003~\cite{Koleff2003JAE} coded by \code{betadiver} --- \code{distance()} will eventually support many of the distance methods in the \code{ade4}-package~\cite{Dray:2007vs}, and others. It also supports the Fast \code{UniFrac} distance function (Section~\ref{sec:unifrac}) included in phyloseq as native \code{R} code, and a wrapper for retreiving the sample-distances from Double Principal Coordinate Analysis (DPCoA).
 
 The function takes a \code{phyloseq-class} object and an argument indicating the distance type; and it returns a \code{dist}-class distance matrix.
 

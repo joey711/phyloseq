@@ -44,10 +44,13 @@
 %\setkeys{Gin}{width=0.55\textwidth}
 
 \title{Basic storage, access, and manipulation of phylogenetic sequencing data with \emph{phyloseq}}
-\author{Paul J. McMurdie \\
-  Holmes Group \\
-  Statistics Department, Stanford University\\
-  Stanford, CA}
+
+\author{Paul J. M{c}Murdie$^*$ and Susan Holmes\\
+Statistics Department, Stanford University,\\
+Stanford, CA 94305, USA\\
+$^*$E-mail: mcmurdie@stanford.edu\\
+https://github.com/joey711/phyloseq}
+
 \date{\today}
 \maketitle
 
