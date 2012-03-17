@@ -43,7 +43,13 @@
 #'  ordination methods and other distance-based analyses.
 #' 
 #' @seealso 
-#'  \code{\link{plot_ordination}}
+#'  \code{\link{plot_ordination}}, 
+#'  \code{\link{UniFrac}},
+#'  \code{\link{DPCoA}},
+#'  \code{\link{vegdist}},
+#'  \code{\link{betadiver}},
+#'  \code{\link{designdist}},
+#'  \code{\link{dist}}.
 #'
 #' @export
 #' @examples 
