@@ -5,6 +5,7 @@ phyloseq 0.99.x
 * Parallel Fast UniFrac
 * distance() wrapper for ecological distance calculations
 * plot_ordination() powerful, flexible ordination plotting using ggplot2
+* make_sample_network(), plot_sample_network() - microbiome network visualization
 * plot_richness_estimates() for easy, flexible summary of species richness
 * Support for Double Principle Coordinate Analysis (DPCoA)
 * Several published exampled datasets included
