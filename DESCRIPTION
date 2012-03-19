@@ -1,6 +1,6 @@
 Package: phyloseq
 Version: 0.99.40
-Date: 2012-03-16
+Date: 2012-03-19
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Description: phyloseq is a set of classes, and tools to
@@ -32,13 +32,13 @@ biocViews: Clustering, Classification, MultipleComparisons,
     QualityControl, GeneticVariability,
     HighThroughputSequencing
 Collate:
-    'allclasses.r'
-    'allpackage.r'
-    'alldata.r'
-    'as-methods.r'
-    'show-methods.r'
-    'plot-methods.r'
-    'extract-methods.r'
+    'allClasses.R'
+    'allPackage.R'
+    'allData.R'
+    'as-methods.R'
+    'show-methods.R'
+    'plot-methods.R'
+    'extract-methods.R'
     'almostAllAccessors.R'
     'otuTable-class.R'
     'phyloseq-class.R'
@@ -49,8 +49,8 @@ Collate:
     'ordination-methods.R'
     'transform_filter-methods.R'
     'validity-methods.R'
-    'assignment-methods.r'
+    'assignment-methods.R'
     'sampleData-class.R'
     'extend_vegan.R'
     'network-methods.R'
-    'distance-methods.r'
+    'distance-methods.R'
