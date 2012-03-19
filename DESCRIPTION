@@ -19,7 +19,7 @@ Imports:
     reshape (>= 0.8.4),
     RJSONIO (>= 0.98)
 Depends:
-    R (>= 2.14.0),
+    R (>= 2.15.0),
     methods,
     ade4 (>= 1.4),
     ape (>= 2.8),
