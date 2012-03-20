@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 0.99.40
-Date: 2012-03-19
+Version: 0.99.41
+Date: 2012-03-20
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Description: phyloseq is a set of classes, and tools to
