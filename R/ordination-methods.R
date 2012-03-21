@@ -382,6 +382,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @docType methods
 #'
 #' @export
+#' @keywords internal
 #' @import vegan
 #' @examples #
 #' # data(GlobalPatterns)
@@ -437,6 +438,7 @@ setMethod("cca.phyloseq", "phyloseq", function(X){
 	cca.phyloseq(otuTable(X))
 })
 ################################################################################
+#' @keywords internal
 #' @usage rda.phyloseq(X, ...)
 #' @export
 #' @import vegan

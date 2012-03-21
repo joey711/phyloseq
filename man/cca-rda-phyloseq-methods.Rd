@@ -58,4 +58,5 @@
   \code{\link{plot_ordination}}, \code{\link[vegan]{rda}},
   \code{\link[vegan]{cca}}
 }
+\keyword{internal}
 

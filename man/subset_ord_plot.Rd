@@ -70,7 +70,7 @@
 # # Prune to just the most-abundant phyla
 # GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
 # # Perform a correspondence analysis
-# gpca <- cca.phyloseq(GP)
+# gpca <- ordinate(GP, "CCA")
 # # # Make species topo with a subset of points layered
 # # First, make a basic plot of just the species
 # p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
