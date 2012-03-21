@@ -13,6 +13,13 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.43
+===========
+* Revise component assignment operators, e.g. "sampleData(physeq)<-" to coerce/access
+  from more diverse objects based on context. Documentation for these operators updated.
+  This is a more general solution to Issue 68
+  https://github.com/joey711/phyloseq/issues/68
+
 v0.99.42
 ===========
 * purge rda.phyloseq and cca.phyloseq from documentation, vignettes. Internal functions.
