@@ -3,17 +3,19 @@
 \alias{assign-tre}
 \alias{tre<-}
 \alias{tre<-,phyloseq,phylo-method}
-\title{Assign to tre an object/value.}
+\alias{tre<-,phyloseq,phyloseq-method}
+\title{Assign a (new) phylogenetic tree to \code{x}}
 \usage{
   tre(x) <- value
 }
 \arguments{
   \item{x}{(Required). \code{\link{phyloseq-class}}}
 
-  \item{value}{(Required). \code{\link{phylo-class}}}
+  \item{value}{(Required). \code{\link{phylo-class}}, or
+  \code{\link{phyloseq-class}}}
 }
 \description{
-  Assign to tre an object/value.
+  Assign a (new) phylogenetic tree to \code{x}
 }
 \examples{
 #
@@ -26,5 +28,9 @@
 # tre(ex2b) <- tree
 # identical(ex2a, ex2b)
 # print(ex2b)
+# # Example adding a phylo tree from phyloseq class
+# ex2c <- phyloseq(otuTable(ex2b), sampleData(ex2b), taxTab(ex2b))
+# tre(ex2c) <- ex2b
+# identical(ex2b, ex2c)
 }
 

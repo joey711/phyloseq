@@ -117,11 +117,9 @@
 # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 # # Now prune further, to just the most-abundant phyla
 # GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
-# # DPCoA - because scores.dpcoa() is internal to phyloseq, can only test
-# # this chunk when new plot_ordination() is installed
 # topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
 # GP1   <- prune_species(topsp, GP)
-# GP.dpcoa <- DPCoA(GP1)
+# GP.dpcoa <- ordinate(GP1, "DPCoA")
 # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
 # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
 # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human) +

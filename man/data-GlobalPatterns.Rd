@@ -59,7 +59,7 @@
 # # The default method for hclust() uses complete-linkage clustering (method="complete")
 # ################################################################################
 # # Calculate the jaccard distance between each sample
-# jaccdist <- vegdist(GlobalPatterns, "jaccard")
+# jaccdist <- distance(GlobalPatterns, "jaccard")
 # plot(hclust(jaccdist, "average"), labels=getVariable(GlobalPatterns, "SampleType"))
 # # A different method ("complete-linkage")
 # plot(hclust(jaccdist), labels=getVariable(GlobalPatterns, "SampleType"), col=cols)
@@ -112,13 +112,13 @@
 # ################################################################################
 # # Reproduce Figure 5, but using correspondence analysis
 # ################################################################################
-# gpcca  <- cca.phyloseq(GlobalPatterns)
-# coords <- scores(gpcca)$sites
+# gpdca  <- ordinate(GlobalPatterns, "DCA")
+# coords <- scores(gpdca)$sites
 # DF     <- data.frame(sampleData(GlobalPatterns), coords)
 # ggplot(DF, aes(x=CA1, y=CA2, color=SampleType)) +
 # geom_point(size=4) +
 # geom_line() +
-# opts(title = ps("CA on abundances, first two axes"))
+# opts(title = ps("DCA on abundances, first two axes"))
 }
 \author{
   Caporaso, J. G., et al.

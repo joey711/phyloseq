@@ -4,6 +4,7 @@ phyloseq 0.99.x
 * BIOM format import: import_biom() function
 * Parallel Fast UniFrac
 * distance() wrapper for ecological distance calculations
+* ordinate() function, general ordination wrapper. Syntactic sugar.
 * plot_ordination() powerful, flexible ordination plotting using ggplot2
 * make_sample_network(), plot_sample_network() - microbiome network visualization
 * plot_richness_estimates() for easy, flexible summary of species richness
@@ -12,3 +13,4 @@ phyloseq 0.99.x
 * General importer for all supported data formats: import()
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+

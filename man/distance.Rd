@@ -20,8 +20,9 @@
   if it has the form described in \code{\link{designdist}}.
   Depending on the \code{method} argument, this function
   wraps one of \code{\link{UniFrac}}, \code{\link{DPCoA}},
-  \code{\link{vegdist}}, \code{\link{betadiver}},
-  \code{\link{designdist}}, or \code{\link{dist}}.}
+  \code{\link[vegan]{vegdist}},
+  \code{\link[vegan]{betadiver}},
+  \code{\link[vegan]{designdist}}, or \code{\link{dist}}.}
 
   \item{type}{(Optional). A character string. The type of
   pairwise comparisons being calculated: sample-wise or
@@ -63,8 +64,8 @@ help("distance")
 }
 \seealso{
   \code{\link{plot_ordination}}, \code{\link{UniFrac}},
-  \code{\link{DPCoA}}, \code{\link{vegdist}},
-  \code{\link{betadiver}}, \code{\link{designdist}},
-  \code{\link{dist}}.
+  \code{\link{DPCoA}}, \code{\link[vegan]{vegdist}},
+  \code{\link[vegan]{betadiver}},
+  \code{\link[vegan]{designdist}}, \code{\link{dist}}.
 }
 

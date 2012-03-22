@@ -4,6 +4,7 @@
 \alias{otuTable<-}
 \alias{otuTable<-,otuTable,otuTable-method}
 \alias{otuTable<-,phyloseq,otuTable-method}
+\alias{otuTable<-,phyloseq,phyloseq-method}
 \title{Assign a new OTU Table to \code{x}}
 \usage{
   otuTable(x) <- value
@@ -11,7 +12,8 @@
 \arguments{
   \item{x}{(Required). \code{\link{phyloseq-class}}}
 
-  \item{value}{(Required). \code{\link{otuTable-class}}}
+  \item{value}{(Required). \code{\link{otuTable-class}} or
+  \code{\link{phyloseq-class}}.}
 }
 \description{
   Assign a new OTU Table to \code{x}
@@ -26,5 +28,9 @@
 # otuTable(ex2b) <- OTU
 # identical(ex2a, ex2b)
 # print(ex2b)
+# # Relace otuTable by implying the component in context.
+# ex2c <- GlobalPatterns
+# otuTable(ex2c) <- ex2b
+# identical(ex2a, ex2c)
 }
 

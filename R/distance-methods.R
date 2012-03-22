@@ -27,9 +27,9 @@
 #'  argument, this function wraps one of 
 #'  \code{\link{UniFrac}},
 #'  \code{\link{DPCoA}},
-#'  \code{\link{vegdist}},
-#'  \code{\link{betadiver}},
-#'  \code{\link{designdist}}, or
+#'  \code{\link[vegan]{vegdist}},
+#'  \code{\link[vegan]{betadiver}},
+#'  \code{\link[vegan]{designdist}}, or
 #'  \code{\link{dist}}.
 #'
 #' @param type (Optional). A character string. The type of pairwise comparisons
@@ -46,9 +46,9 @@
 #'  \code{\link{plot_ordination}}, 
 #'  \code{\link{UniFrac}},
 #'  \code{\link{DPCoA}},
-#'  \code{\link{vegdist}},
-#'  \code{\link{betadiver}},
-#'  \code{\link{designdist}},
+#'  \code{\link[vegan]{vegdist}},
+#'  \code{\link[vegan]{betadiver}},
+#'  \code{\link[vegan]{designdist}},
 #'  \code{\link{dist}}.
 #'
 #' @export
@@ -489,7 +489,7 @@ originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FA
 #'
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' 
-#' @seealso \code{\link[vegan]{vegdist}}, \code{\link[picante]{unifrac}}
+#' @seealso \code{\link{distance}}, \code{\link[picante]{unifrac}}
 #'
 #' @references \url{http://bmf.colorado.edu/unifrac/}
 #'

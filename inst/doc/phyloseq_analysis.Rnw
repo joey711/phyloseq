@@ -118,16 +118,18 @@ sampleData(GP)$human <- factor(human)
 We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness{\_}estimates} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
 
 <<fig=FALSE, include=FALSE>>=
-(p <- plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType"))
+p <- plot_richness_estimates(GP, "human", "SampleType")
+(p <- p + geom_boxplot(data=p$data, 
+          aes(x=human, y=value, color=NULL), alpha=0.1))
 @
 <<echo=FALSE>>=
-ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=7, height=7)
+ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=11, height=7)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{phyloseq_analysis-richness_estimates}
+\includegraphics[width=1.0\textwidth]{phyloseq_analysis-richness_estimates}
 \captionsetup{width=1.0\textwidth}
-\caption{Estimates of the species richness of samples in the ``Global Patterns'' dataset.}
+\caption{Estimates of the species richness of samples in the ``Global Patterns'' dataset. Each panel shows a different type of ``estimate''. \code{S.obs}, observed richness; \code{S.chao1}, Chao1 estimate; \code{S.ACE}, an ACE estimate. Individual color-shaded points and brackets represent the richness estimate and the theoretical standard error range associated with that estimate, respectively. The colors group the sample-sources into ``types''. Within each panel, the samples are further organized into human-associated (\code{TRUE}) or not (\code{FALSE}), and a boxplot is overlayed on top of this for the two groups, illustrating that these human-associated samples are less rich than the environmental samples (although the type of environment appears to matter a great deal as well).}
 \label{fig:richness}
 \end{figure}
 
@@ -227,7 +229,7 @@ Continuing with the \code{enterotype} dataset, here are some examples for creati
 
 <<ent-network, fig=FALSE, eval=TRUE>>=
 data(enterotype)
-ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+ig <- make_sample_network(enterotype, max.dist=0.3)
 (p  <- plot_sample_network(ig, enterotype, color="SeqTech",
     shape="Enterotype", line_weight=0.4, label=NULL))
 @
@@ -250,6 +252,21 @@ Interestingly, at this level of analysis and parameter-settings the two major su
 \clearpage
 \subsection{Ordination Methods}\label{sec:ordination}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Ordination methods can be a useful tool for exploring complex phylogenetic sequencing data, particularly when the hypothesized structure of the data is poorly defined (or there isn't a hypothesis). The phyloseq package provides some useful tools for performing ordinations and plotting their results, via the \code{ordinate()} and \code{plot{\_}ordination()} functions, respectively. Although there are many options and methods supported, a first-step will probably look something like the following:
+
+<<eval=FALSE>>=
+my.physeq <- import("Biom", BIOMfilename="myBiomFile.biom")
+my.ord    <- ordinate(my.physeq)
+plot_ordination(my.physeq, my.ord, color="myFavoriteVarible")
+@
+
+It is probably a good idea to read the documentation for these two functions, as they also provide links to related functions and additional examples you can try immediately on your own machine.
+<<eval=FALSE>>=
+?import
+?ordinate
+?distance
+?plot_ordination
+@
 
 \subsubsection{Principal Coordinates Analysis (PCoA)}\label{sec:PCoA}
 We take as our first example, a reproduction of Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The authors show a 3-dimensional representation of the first three axes of a Principal Coordinates Analysis (PCoA\footnote{This is also sometimes referred to as ``Multi-Dimensional Scaling'', or ``MDS''}) performed on the unweighted-UniFrac distance (see section~\ref{sec:unifrac}) using all of the available sequences (their approach included both 5' and 3' sequences). According to the authors, ``the first axis [appears to be associated with a] host associated/free living [classification],'' and similarly the third axis with ``saline/nonsaline environment[s].''
@@ -312,18 +329,18 @@ ggsave("phyloseq_analysis-GPfig5ax13.pdf", p13, width=9, height=7)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% nmMDS
+% NMDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\clearpage
-\subsubsection{non-metric Multi-Dimensional Scaling (nmMDS)}\label{sec:nmMDS}
-We repeat the previous example, but instead using non-metric multidimensional scaling (nmMDS - \code{metaMDS()}) limited to just two dimensions. This approach limits the amount of residual distance ``not shown'' in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
+\subsubsection{non-metric Multi-Dimensional Scaling (NMDS)}\label{sec:NMDS}
+We repeat the previous example, but instead using non-metric multidimensional scaling (NMDS - \code{metaMDS()}) limited to just two dimensions. This approach limits the amount of residual distance ``not shown'' in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
 
 <<GP_UF_NMDS0, fig=FALSE, include=FALSE>>=
 # (Re)load UniFrac distance matrix and GlobalPatterns data
 data(GlobalPatterns)
 load("Unweighted_UniFrac.RData") # reloads GPUF variable
-GP.nmMDS <- metaMDS(GPUF, k=2) # perform nmMDS, set to 2 axes
-(p <- plot_ordination(GlobalPatterns, GP.nmMDS, "samples", color="SampleType") +
+GP.NMDS <- metaMDS(GPUF, k=2) # perform NMDS, set to 2 axes
+(p <- plot_ordination(GlobalPatterns, GP.NMDS, "samples", color="SampleType") +
   geom_line() + geom_point(size=5) )
 @
 <<GP_UF_NMDS1, echo=FALSE, fig=FALSE, include=FALSE>>=
@@ -332,7 +349,7 @@ ggsave("phyloseq_analysis-GP_UF_NMDS.pdf", p, width=9, height=7)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.6\textwidth]{phyloseq_analysis-GP_UF_NMDS}
-\caption{An example exploratory ordination using non-metric multidimensional scaling (nmMDS) on the unweighted UniFrac distance between samples of the ``Global Patterns'' dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}.}
+\caption{An example exploratory ordination using non-metric multidimensional scaling (NMDS) on the unweighted UniFrac distance between samples of the ``Global Patterns'' dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}.}
 \label{fig:GP_UF_NMDS}
 \end{figure}
 
@@ -342,22 +359,28 @@ Figure~\ref{fig:GP_UF_NMDS} nicely shows the relative dissimilarities between mi
 \clearpage
 \subsubsection{Correspondence Analysis (CA)}\label{sec:CA}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In the following section we will show continue our exploration of the ``GlobalPatterns'' dataset using various features of an ordination method called Correspondence Analysis. We give special emphasis to exploratory interpretations using the biplot, because it provides additional information that is not available from PCoA or nmMDS.
+In the following section we will show continue our exploration of the ``GlobalPatterns'' dataset using various features of an ordination method called Correspondence Analysis. We give special emphasis to exploratory interpretations using the biplot, because it provides additional information that is not available from PCoA or NMDS.
 
 Let's start by performing a Correspondence Analysis and investigating the scree plot (Figure~\ref{fig:GPCAscree}). Both interestingly and challengingly, the scree plot suggests that the \code{GlobalPatterns} abundance data is quite high-dimensional, with the first two CA axes accounting for not quite 17\% of the total (chi-square) variability. Note the absence of a steep decline in eigenvalue fraction as axis number increases. Each additional axis represents only marginally less variability than the previous. It is often more convenient if the first two (or three) axes account for most of the variability.
 
-<<GPCAscree, fig=TRUE, include=FALSE, width=8, height=5>>=
+First, let's severely subset the number of species for the sake of run-time.\footnote{This is for illustration purposes only, do not repeat unless you are very sure you have a good reason for doing this.}
+
+<<GPCAscree0, fig=FALSE>>=
 data(GlobalPatterns)
-# Need to clean the zeros from GlobalPatterns:
-GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
-# Get the names of the taxa from Phyla with over 1-million individuals observed
-top.TaxaGroup <- sort(
-  tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm=TRUE), decreasing=TRUE)
-top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-# Now prune further, to just the most-abundant phyla
-GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
-# Now do the correspondence analysis
-gpca  <- cca.phyloseq(GP)
+# Take a subset of the GP dataset, top 200 species
+topsp <- names(sort(speciesSums(GlobalPatterns), TRUE)[1:200])
+GP    <- prune_species(topsp, GlobalPatterns)
+# Subset further to top 5 phyla, among the top 200 OTUs.
+top5ph <- sort(tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
+GP     <- subset_species(GP, Phylum %in% names(top5ph))
+# Re-add human variable to sample data:
+sampleData(GP)$human <- factor(human)
+@
+
+Now perform the correspondence analysis.
+<<GPCAscree, fig=TRUE, include=FALSE, width=8, height=5>>=
+# Now perform a unconstrained correspondence analysis
+gpca  <- ordinate(GP, "CCA")
 barplot(gpca$CA$eig/sum(gpca$CA$eig), las=2)
 @
 \begin{figure}[htbp]
@@ -391,10 +414,11 @@ ggsave("phyloseq_analysis-GPCA34.pdf", p34, width=9, height=7)
 
 A clear feature of these plots is that the feces and mock communities cluster tightly together, far away from all other samples on the first axis (CA1) in Fig.~\ref{fig:sub:GPCA12}. The skin and tongue samples separate similarly, but on the second axis. Taken together, it appears that the first two axes are best explained by the separation of human-associated ``environments'' from the other non-human environments in the dataset, with a secondary separation of tongue and skin samples from feces. 
 
-We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''. However, because we just displayed the position of samples in the ordination and there are many thousands of OTUs, we will focus on creating an interpretable plot of the OTUs. For creating graphics that combine the two plots, try the ``\code{biplot}'' or ``\code{split}'' option for \code{type} in \code{plot{\_}ordination()}.
+We will now investigate further this top-level structure of the data, using an additional feature of correspondence analysis that allows us to compare the relative contributions of individual taxa on the same graphical space: the ``biplot''. However, because we just displayed the position of samples in the ordination and there are often many thousands of OTUs, we will focus on creating an interpretable plot of the OTUs. For creating graphics that combine the two plots, try the ``\code{biplot}'' or ``\code{split}'' option for \code{type} in \code{plot{\_}ordination()}.
 
 <<GPCAspecplot0, fig=FALSE, include=FALSE>>=
-(p1 <- plot_ordination(GP, gpca, "species", color="Phylum") +
+p1  <- plot_ordination(GP, gpca, "species", color="Phylum")
+(p1 <- ggplot(p1$data, p1$mapping) + geom_point(size=5, alpha=0.5) + 
   facet_wrap(~Phylum) + scale_colour_hue(legend = FALSE) )
 @
 <<GPCAspecplot1, echo=FALSE>>=
@@ -404,7 +428,7 @@ ggsave("phyloseq_analysis-GPCAspecplot.pdf", p1, width=10, height=7)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=7in]{phyloseq_analysis-GPCAspecplot}
-\caption{Species plot of the ``Global Patterns'' correspondence analysis first two axes, with each phylum on a  different panel (``facet''). Only the phyla with at least one million individuals observed (cumulative, all samples) are included.}
+\caption{Species plot of the ``Global Patterns'' correspondence analysis first two axes, with each phylum on a different panel (``facet''). Only the most abundant 5 phyla among the most abundant 200 taxa (cumulative, all samples) are included. Arbitrary reduction, for computational efficiency of example.}
 \label{fig:GPCAspecplot}
 \end{figure}
 
@@ -430,8 +454,8 @@ Figs~\ref{fig:GPCAspecplot} and \ref{fig:GPCAspecplotTopo} reveal some useful pa
 # Melt the species-data.frame, DF, to facet each CA axis separately
 mdf <- melt(p1$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
             id=c("Phylum", "Family", "Genus") )
-# Select taxonomic-Family labels of special outliers
-LF <- subset(mdf, Phylum=="Cyanobacteria" & variable=="CA2" & value < -2.5)
+# Select some special outliers for labelling
+LF <- subset(mdf, variable=="CA2" & value < -1.0)
 # build plot: boxplot summaries of each CA-axis, with labels
 p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
   facet_wrap(~variable, 2) + scale_colour_hue(legend = FALSE) +
@@ -448,7 +472,7 @@ ggsave("phyloseq_analysis-GPCAjitter.pdf", p, width=7, height=7)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=4.5in]{phyloseq_analysis-GPCAjitter}
-\caption{Boxplot of taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded/separated by phylum. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the cyanobacteria (\emph{Rivulariaceae}) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.}
+\caption{Boxplot of taxa (species in this case) of the ``Global Patterns'' CA first two axes, shaded/separated by phylum. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the Bacteroidetes species (\emph{Prevotellaceae} family) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.}
 \label{fig:GPCAjitter}
 \end{figure}
 
@@ -477,23 +501,19 @@ In Fig~\ref{fig:GPtaxaplot} we've used the \code{threshold} parameter to omit al
 \subsubsection{Double Principle Coordinate Analysis (DPCoA)}
 Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523}), using the using the \code{DPCoA()} function in phyloseq, as well as the ``biplot'' option for \code{plot{\_}ordination()}. For a description that includes an applied example using the ``enterotype'' dataset and comparison with UniFrac/PCoA, see Fukuyama et al~\cite{fukuyama2012com}. 
 
-First, let's severely subset the number of species for the sake of run-time.\footnote{This is for illustration purposes only, do not repeat unless you are very sure you have a good reason for doing this.}
-
-<<GPdpcoa00, fig=FALSE, include=FALSE>>=
-topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
-GP1   <- prune_species(topsp, GP)
-@
-
-Now perform the DPCoA on the simplified dataset, and plot.
-
 <<GPdpcoa01, fig=FALSE>>=
-GP.dpcoa <- DPCoA(GP1)
-( pdpcoa <- plot_ordination(GP1, GP.dpcoa, type="biplot",
-     color="SampleType", shape="Phylum") )
+GP.dpcoa <- DPCoA(GP)
+# GP.dpcoa <- ordinate(GP, "DPCoA") # Alternative; ordinate() function
+pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot",
+     color="SampleType", shape="Phylum")
+shape.fac <- pdpcoa$data[, deparse(pdpcoa$mapping$shape)]
+man.shapes <- c(19, 21:25)
+names(man.shapes) <- c("samples", levels(shape.fac)[levels(shape.fac)!="samples"])
+p2dpcoa <- pdpcoa + scale_shape_manual(value=man.shapes)
 @
 
 <<GPdpcoa02, echo=FALSE, fig=FALSE, include=FALSE>>=
-ggsave("phyloseq_analysis-GPdpcoaBiplot.pdf", pdpcoa, width=9, height=7)
+ggsave("phyloseq_analysis-GPdpcoaBiplot.pdf", p2dpcoa, width=9, height=7)
 @
 
 \begin{figure}[htbp]
@@ -536,7 +556,9 @@ The following is an example calculating the UniFrac distance (both weighted and 
 <<eval=FALSE, echo=TRUE>>=
 data(esophagus)
 UniFrac(esophagus, weighted=TRUE)
+# distance(esophagus, weighted=TRUE) # Alternative using the distance() function
 UniFrac(esophagus, weighted=FALSE)
+# distance(esophagus) # Alternative using the distance() function
 @
 \begin{scriptsize}
 \begin{samepage}
@@ -574,7 +596,7 @@ tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
 Create an alternative plot, using the Jaccard distance and complete-linkage clustering (the default) instead of UPGMA.
 
 <<GPfig4jaccCLC, fig=TRUE, include=FALSE, width=5, height=6>>=
-jaccCLC <- hclust(vegdist(GlobalPatterns, "jaccard"))
+jaccCLC <- hclust(distance(GlobalPatterns, "jaccard"))
 plot( as.phylo(jaccCLC), show.tip.label=TRUE, tip.color="white" )
 tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
 @

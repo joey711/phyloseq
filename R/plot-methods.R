@@ -137,10 +137,10 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' @examples 
 #' 
 #' data(enterotype)
-#' ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+#' ig <- make_sample_network(enterotype, max.dist=0.3)
 #' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 #' # Change distance parameter
-#' ig <- make_sample_network(enterotype, FALSE, max.dist=0.2)
+#' ig <- make_sample_network(enterotype, max.dist=0.2)
 #' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 plot_sample_network <- function(g, physeq=NULL,
 	color=NULL, shape=NULL, point_size=4, alpha=1,
@@ -460,11 +460,9 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 #' # # Now prune further, to just the most-abundant phyla
 #' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
-#' # # DPCoA - because scores.dpcoa() is internal to phyloseq, can only test
-#' # # this chunk when new plot_ordination() is installed
 #' # topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
 #' # GP1   <- prune_species(topsp, GP)
-#' # GP.dpcoa <- DPCoA(GP1)
+#' # GP.dpcoa <- ordinate(GP1, "DPCoA")
 #' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
 #' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
 #' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human) + 
@@ -714,7 +712,7 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' # # Prune to just the most-abundant phyla
 #' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
 #' # # Perform a correspondence analysis
-#' # gpca <- cca.phyloseq(GP)
+#' # gpca <- ordinate(GP, "CCA")
 #' # # # Make species topo with a subset of points layered
 #' # # First, make a basic plot of just the species
 #' # p1 <- plot_ordination(GP, gpca, "species", color="Phylum")

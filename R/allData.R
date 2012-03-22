@@ -93,7 +93,7 @@ NA
 #' # x <- subset_samples(enterotype, !is.na(Enterotype))
 #' # 
 #' # # Alternatively. . .
-#' # ent.cca <- cca.phyloseq(x ~ Enterotype)
+#' # ent.cca <- ordinate(x ~ Enterotype, "CCA")
 #' # plot_ordination(x, ent.cca, color="Enterotype")
 #' # plot_ordination(x, ent.cca, "biplot")
 #' # plot_ordination(x, ent.cca, "split", color="Enterotype)
@@ -151,58 +151,27 @@ NA
 #' @author Jizhong Zhou, et al.
 #' @keywords data
 #' @examples
-#' # ################################################################################
-#' # # Load the data
-#' # ################################################################################
-#' # data(soilrep)
-#'
-#' # ################################################################################
-#' # # Richness and sequencing effort example. Accept null hypothesis: 
-#' # # No convincing difference in species richness between warmed/unwarmed soils.
-#' # ################################################################################
-#' # # Build data.frame with total sequencing reads and soil covariates
-#' # DF <- data.frame(total.reads=sampleSums(soilrep), as(sampleData(soilrep), "data.frame"))
-#' # # Calculate total (estimated) species richness for each sample and combine with DF
-#' # DF <- data.frame(DF, t(round(estimateR(t(otuTable(soilrep))))))
-#'
-#' # # Initialize ggplot data and color layers
-#' # mancol <- c(no="blue", yes="red")
-#' # p      <- ggplot(DF) + scale_fill_manual(values=mancol) + scale_colour_manual(values=mancol) 
-#'
-#' # # Build faceted histogram of the total-reads for each treatment type.
-#' # p + geom_histogram(aes(x=total.reads, y=..count.., fill=warmed)) + facet_wrap(~ Treatment, 2)
-#'
-#' # # Plot (estimated) richness versus sequencing effort (total reads)
-#' # p + geom_point(aes(x=total.reads, y=S.chao1, color=warmed, shape=clipped), size=3.5)
-#'
-#' # # Plot (estimated) richness versus observed richness
-#' # p + geom_point(aes(x=S.obs, y=S.chao1, color=warmed, shape=clipped), size=3.5)
-#'
-#' # # Did the warming or clipping treatments affect observed or estimated richness?
-#' # par(mfcol=c(2, 2))
-#' # boxplot(S.obs ~ warmed, DF, main="Did warming affect observed richness?", xlab="Warmed?")
-#' # boxplot(S.chao1 ~ warmed, DF, main="Did warming affect estimated richness (Chao1)?", xlab="Warmed?")
-#' # boxplot(S.obs ~ clipped, DF, main="Did clipping affect observed richness?", xlab="Clipped?")
-#' # boxplot(S.chao1 ~ clipped, DF, main="Did clipping affect estimated richness (Chao1)?", xlab="Clipped?")
-#' # # (For reference, here's a ggplot2 approach to making the boxplot):
-#' # p + geom_boxplot(aes(Treatment, S.chao1, color=warmed))
-#'
-#' # # The treatments do not appear to have affected the
-#' # # estimated total richness between warmed/unwarmed soil samples
-#' # t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
-#'
-#' # ################################################################################
-#' # # A beta diversity comparison.
-#' # ################################################################################
-#' # jaccdist <- vegdist(soilrep, "jaccard")
-#'
-#' # soilMDS <- metaMDS(jaccdist, "jaccard" )
-#'
-#' # # Add the NMDS coordinates to the soil sample data.frame, DF
-#' # DF <- data.frame(DF, scores(soilMDS))
-#'
-#' # # plot the MDS of jaccard-distances, and shade points by soil treatments
-#' # ggplot(DF) + geom_point(aes(x=NMDS1, y=NMDS2, color=Treatment), size=3)
+#' # Load the data
+#' data(soilrep)
+#' ################################################################################
+#' # Alpha diversity (richness) example. Accept null hypothesis: 
+#' # No convincing difference in species richness between warmed/unwarmed soils.
+#' ################################################################################
+#' DF <- data.frame(sampleData(soilrep), estimate_richness(soilrep) )
+#' # Create ggplot2-boxplot comparing the different treatments.
+#' man.col <- c(WC="red", WU="brown", UC="blue", UU="darkgreen")
+#' p <- plot_richness_estimates(soilrep, x="Treatment", color="Treatment")
+#' p + geom_boxplot() + scale_color_manual(values=man.col)
+#' # The treatments do not appear to have affected the
+#' # estimated total richness between warmed/unwarmed soil samples
+#' t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
+#' ################################################################################
+#' # A beta diversity comparison.
+#' ################################################################################
+#' # Perform non-metric multidimensional scaling, using Bray-Curtis distance
+#' soil.NMDS <- ordinate(soilrep, "NMDS", "bray")
+#' p <- plot_ordination(soilrep, soil.NMDS, "samples", color="Treatment")
+#' ( p <- p + geom_point(size=5, alpha=0.5) + facet_grid(warmed ~ clipped) )
 ################################################################################
 NA
 ################################################################################
@@ -252,7 +221,7 @@ NA
 #' # # The default method for hclust() uses complete-linkage clustering (method="complete")
 #' # ################################################################################
 #' # # Calculate the jaccard distance between each sample
-#' # jaccdist <- vegdist(GlobalPatterns, "jaccard")
+#' # jaccdist <- distance(GlobalPatterns, "jaccard")
 #' # plot(hclust(jaccdist, "average"), labels=getVariable(GlobalPatterns, "SampleType"))
 #' # # A different method ("complete-linkage")
 #' # plot(hclust(jaccdist), labels=getVariable(GlobalPatterns, "SampleType"), col=cols)
@@ -305,13 +274,13 @@ NA
 #' # ################################################################################	
 #' # # Reproduce Figure 5, but using correspondence analysis
 #' # ################################################################################
-#' # gpcca  <- cca.phyloseq(GlobalPatterns)
-#' # coords <- scores(gpcca)$sites
+#' # gpdca  <- ordinate(GlobalPatterns, "DCA")
+#' # coords <- scores(gpdca)$sites
 #' # DF     <- data.frame(sampleData(GlobalPatterns), coords)
 #' # ggplot(DF, aes(x=CA1, y=CA2, color=SampleType)) + 
 #' # geom_point(size=4) + 
 #' # geom_line() +
-#' # opts(title = ps("CA on abundances, first two axes"))
+#' # opts(title = ps("DCA on abundances, first two axes"))
 ################################################################################
 NA
 ################################################################################

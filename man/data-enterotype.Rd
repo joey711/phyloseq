@@ -59,7 +59,7 @@
 # x <- subset_samples(enterotype, !is.na(Enterotype))
 #
 # # Alternatively. . .
-# ent.cca <- cca.phyloseq(x ~ Enterotype)
+# ent.cca <- ordinate(x ~ Enterotype, "CCA")
 # plot_ordination(x, ent.cca, color="Enterotype")
 # plot_ordination(x, ent.cca, "biplot")
 # plot_ordination(x, ent.cca, "split", color="Enterotype)
