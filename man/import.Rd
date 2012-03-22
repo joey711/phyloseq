@@ -46,6 +46,8 @@
 
   QIIME: \url{http://qiime.org/}
 
+  BIOM: \url{http://www.biom-format.org/}
+
   RDP pipeline: \url{http://pyro.cme.msu.edu/index.jsp}
 }
 \seealso{
@@ -59,6 +61,8 @@
   For PyroTagger, see: \code{\link{import_pyrotagger_tab}}
 
   For QIIME, see: \code{\link{import_qiime}}
+
+  For BIOM format, see: \code{\link{import_biom}}
 
   For RDP pipeline, see: \code{\link{import_RDP_cluster}}
 }

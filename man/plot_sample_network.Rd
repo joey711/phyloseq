@@ -74,10 +74,10 @@
 }
 \examples{
 data(enterotype)
-ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+ig <- make_sample_network(enterotype, max.dist=0.3)
 plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 # Change distance parameter
-ig <- make_sample_network(enterotype, FALSE, max.dist=0.2)
+ig <- make_sample_network(enterotype, max.dist=0.2)
 plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 }
 \references{

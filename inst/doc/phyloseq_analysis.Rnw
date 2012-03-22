@@ -118,16 +118,18 @@ sampleData(GP)$human <- factor(human)
 We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness{\_}estimates} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
 
 <<fig=FALSE, include=FALSE>>=
-(p <- plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType"))
+p <- plot_richness_estimates(GP, "human", "SampleType")
+(p <- p + geom_boxplot(data=p$data, 
+          aes(x=human, y=value, color=NULL), alpha=0.1))
 @
 <<echo=FALSE>>=
-ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=7, height=7)
+ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=11, height=7)
 @
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{phyloseq_analysis-richness_estimates}
+\includegraphics[width=1.0\textwidth]{phyloseq_analysis-richness_estimates}
 \captionsetup{width=1.0\textwidth}
-\caption{Estimates of the species richness of samples in the ``Global Patterns'' dataset.}
+\caption{Estimates of the species richness of samples in the ``Global Patterns'' dataset. Each panel shows a different type of ``estimate''. \code{S.obs}, observed richness; \code{S.chao1}, Chao1 estimate; \code{S.ACE}, an ACE estimate. Individual color-shaded points and brackets represent the richness estimate and the theoretical standard error range associated with that estimate, respectively. The colors group the sample-sources into ``types''. Within each panel, the samples are further organized into human-associated (\code{TRUE}) or not (\code{FALSE}), and a boxplot is overlayed on top of this for the two groups, illustrating that these human-associated samples are less rich than the environmental samples (although the type of environment appears to matter a great deal as well).}
 \label{fig:richness}
 \end{figure}
 
@@ -227,7 +229,7 @@ Continuing with the \code{enterotype} dataset, here are some examples for creati
 
 <<ent-network, fig=FALSE, eval=TRUE>>=
 data(enterotype)
-ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+ig <- make_sample_network(enterotype, max.dist=0.3)
 (p  <- plot_sample_network(ig, enterotype, color="SeqTech",
     shape="Enterotype", line_weight=0.4, label=NULL))
 @
@@ -250,6 +252,21 @@ Interestingly, at this level of analysis and parameter-settings the two major su
 \clearpage
 \subsection{Ordination Methods}\label{sec:ordination}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Ordination methods can be a useful tool for exploring complex phylogenetic sequencing data, particularly when the hypothesized structure of the data is poorly defined (or there isn't a hypothesis). The phyloseq package provides some useful tools for performing ordinations and plotting their results, via the \code{ordinate()} and \code{plot{\_}ordination()} functions, respectively. Although there are many options and methods supported, a first-step will probably look something like the following:
+
+<<eval=FALSE>>=
+my.physeq <- import("Biom", BIOMfilename="myBiomFile.biom")
+my.ord    <- ordinate(my.physeq)
+plot_ordination(my.physeq, my.ord, color="myFavoriteVarible")
+@
+
+It is probably a good idea to read the documentation for these two functions, as they also provide links to related functions and additional examples you can try immediately on your own machine.
+<<eval=FALSE>>=
+?import
+?ordinate
+?distance
+?plot_ordination
+@
 
 \subsubsection{Principal Coordinates Analysis (PCoA)}\label{sec:PCoA}
 We take as our first example, a reproduction of Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}. The authors show a 3-dimensional representation of the first three axes of a Principal Coordinates Analysis (PCoA\footnote{This is also sometimes referred to as ``Multi-Dimensional Scaling'', or ``MDS''}) performed on the unweighted-UniFrac distance (see section~\ref{sec:unifrac}) using all of the available sequences (their approach included both 5' and 3' sequences). According to the authors, ``the first axis [appears to be associated with a] host associated/free living [classification],'' and similarly the third axis with ``saline/nonsaline environment[s].''
@@ -312,18 +329,18 @@ ggsave("phyloseq_analysis-GPfig5ax13.pdf", p13, width=9, height=7)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% nmMDS
+% NMDS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\clearpage
-\subsubsection{non-metric Multi-Dimensional Scaling (nmMDS)}\label{sec:nmMDS}
-We repeat the previous example, but instead using non-metric multidimensional scaling (nmMDS - \code{metaMDS()}) limited to just two dimensions. This approach limits the amount of residual distance ``not shown'' in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
+\subsubsection{non-metric Multi-Dimensional Scaling (NMDS)}\label{sec:NMDS}
+We repeat the previous example, but instead using non-metric multidimensional scaling (NMDS - \code{metaMDS()}) limited to just two dimensions. This approach limits the amount of residual distance ``not shown'' in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
 
 <<GP_UF_NMDS0, fig=FALSE, include=FALSE>>=
 # (Re)load UniFrac distance matrix and GlobalPatterns data
 data(GlobalPatterns)
 load("Unweighted_UniFrac.RData") # reloads GPUF variable
-GP.nmMDS <- metaMDS(GPUF, k=2) # perform nmMDS, set to 2 axes
-(p <- plot_ordination(GlobalPatterns, GP.nmMDS, "samples", color="SampleType") +
+GP.NMDS <- metaMDS(GPUF, k=2) # perform NMDS, set to 2 axes
+(p <- plot_ordination(GlobalPatterns, GP.NMDS, "samples", color="SampleType") +
   geom_line() + geom_point(size=5) )
 @
 <<GP_UF_NMDS1, echo=FALSE, fig=FALSE, include=FALSE>>=
@@ -332,7 +349,7 @@ ggsave("phyloseq_analysis-GP_UF_NMDS.pdf", p, width=9, height=7)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.6\textwidth]{phyloseq_analysis-GP_UF_NMDS}
-\caption{An example exploratory ordination using non-metric multidimensional scaling (nmMDS) on the unweighted UniFrac distance between samples of the ``Global Patterns'' dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}.}
+\caption{An example exploratory ordination using non-metric multidimensional scaling (NMDS) on the unweighted UniFrac distance between samples of the ``Global Patterns'' dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the ``Global Patterns'' article~\cite{Caporaso15032011}.}
 \label{fig:GP_UF_NMDS}
 \end{figure}
 
@@ -342,7 +359,7 @@ Figure~\ref{fig:GP_UF_NMDS} nicely shows the relative dissimilarities between mi
 \clearpage
 \subsubsection{Correspondence Analysis (CA)}\label{sec:CA}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In the following section we will show continue our exploration of the ``GlobalPatterns'' dataset using various features of an ordination method called Correspondence Analysis. We give special emphasis to exploratory interpretations using the biplot, because it provides additional information that is not available from PCoA or nmMDS.
+In the following section we will show continue our exploration of the ``GlobalPatterns'' dataset using various features of an ordination method called Correspondence Analysis. We give special emphasis to exploratory interpretations using the biplot, because it provides additional information that is not available from PCoA or NMDS.
 
 Let's start by performing a Correspondence Analysis and investigating the scree plot (Figure~\ref{fig:GPCAscree}). Both interestingly and challengingly, the scree plot suggests that the \code{GlobalPatterns} abundance data is quite high-dimensional, with the first two CA axes accounting for not quite 17\% of the total (chi-square) variability. Note the absence of a steep decline in eigenvalue fraction as axis number increases. Each additional axis represents only marginally less variability than the previous. It is often more convenient if the first two (or three) axes account for most of the variability.
 
@@ -579,7 +596,7 @@ tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
 Create an alternative plot, using the Jaccard distance and complete-linkage clustering (the default) instead of UPGMA.
 
 <<GPfig4jaccCLC, fig=TRUE, include=FALSE, width=5, height=6>>=
-jaccCLC <- hclust(vegdist(GlobalPatterns, "jaccard"))
+jaccCLC <- hclust(distance(GlobalPatterns, "jaccard"))
 plot( as.phylo(jaccCLC), show.tip.label=TRUE, tip.color="white" )
 tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
 @

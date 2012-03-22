@@ -197,7 +197,6 @@
   Environ Microbiol. 2005 71 (12):8228-35.
 }
 \seealso{
-  \code{\link[vegan]{vegdist}},
-  \code{\link[picante]{unifrac}}
+  \code{\link{distance}}, \code{\link[picante]{unifrac}}
 }
 

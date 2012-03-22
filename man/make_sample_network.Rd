@@ -2,28 +2,32 @@
 \alias{make_sample_network}
 \title{Make sample-wise microbiome network (igraph)}
 \usage{
-  make_sample_network(physeq, keep.isolates=FALSE,
-  threshold = 0, max.dist = 0.4, dist.fun = function(x)
-  vegdist(x, "jaccard"), presence.absence=FALSE)
+  make_sample_network(physeq, dist.fun="jaccard", max.dist
+  = 0.4, keep.isolates=FALSE, ...)
 }
 \arguments{
   \item{physeq}{(Required). Default \code{NULL}. A
-  \code{\link{phyloseq-class}} object on which \code{g} is
-  based.}
+  \code{\link{phyloseq-class}} object, or
+  \code{\link{otuTable-class}} object, on which \code{g} is
+  based. \code{phyloseq-class} recommended.}
 
-  \item{keep.isolates}{(Optional). Default \code{FALSE}.
-  Logical. Whether to keep isolates (un-connected samples,
-  not microbial isolates) in the graphical model that is
-  returned. Default results in isolates being removed from
-  the object.}
+  \item{dist.fun}{(Optional). Default "jaccard". Any
+  supported argument to the \code{method} parameter of the
+  \code{\link{distance}} function is supported here. Some
+  distance methods, like \code{"unifrac"}, may take a
+  non-trivial amount of time to calculate, in which case
+  you probably want to calculate the distance matrix
+  separately, save, and then provide it as the argument to
+  \code{dist.fun} instead. See below for alternatives).
 
-  \item{threshold}{(Optional). Default \code{1}. The
-  minimum number of individuals of each taxa across all
-  samples. Taxa below this value are ignored during network
-  construction. Note that this is extremely simple
-  filtering. More advanced filtering can be performed prior
-  to this function using the \code{\link{filterfunSample}}
-  or \code{\link{filter_taxa}} functions.}
+  Alternatively, if you have already calculated the
+  sample-wise distance object, the resulting
+  \code{dist}-class object can be provided as
+  \code{dist.fun} instead (see examples).
+
+  A third alternative is to provide a function that takes a
+  sample-by-species matrix (typical vegan orientation) and
+  returns a sample-wise distance matrix.}
 
   \item{max.dist}{(Optional). Default \code{0.4}. The
   maximum ecological distance (as defined by
@@ -31,31 +35,14 @@
   consider them ``connected'' by an edge in the graphical
   model.}
 
-  \item{dist.fun}{(Optional). Default \code{function(x)
-  vegdist(x, "jaccard")}. A function that takes a
-  \code{\link{phyloseq-class}} object (or
-  \code{\link{otuTable-class}}) and returns a sample-wise
-  distance matrix. Currently, any method in
-  \code{\link{vegdist}} is supported, as well as
-  \code{\link{UniFrac}} (although this may take some time
-  to run you probably want to run this separately, save,
-  and then provide the distance-object directly. See below
-  for alternatives). Most ecological distance functions
-  that take a matrix in \code{vegan-package} format
-  (samples are rows) are supported.
+  \item{keep.isolates}{(Optional). Default \code{FALSE}.
+  Logical. Whether to keep isolates (un-connected samples,
+  not microbial isolates) in the graphical model that is
+  returned. Default results in isolates being removed from
+  the object.}
 
-  Alternatively, if you have already calculated the
-  sample-wise distance object, this can be provided as
-  \code{dist.fun} instead (see examples). A third
-  alternative is to provide a character string indicating
-  the desired method of distance calculation. For the
-  moment, this is limited to the distance methods available
-  in \code{\link{vegdist}}.}
-
-  \item{presence.absence}{(Optional). Default \code{FALSE}.
-  Whether the abundances values should be transformed to
-  binary presence-absence values prior to distance
-  calculation and network construction.}
+  \item{...}{(Optional). Additional parameters passed on to
+  \code{\link{distance}}.}
 }
 \value{
   A \code{\link[igraph]{igraph}}-class object.
@@ -69,24 +56,28 @@
 \examples{
 # # Example plots with Enterotype Dataset
 data(enterotype)
-
-ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
+ig <- make_sample_network(enterotype, max.dist=0.3)
 plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-
-# ig <- make_sample_network(enterotype, FALSE, max.dist=0.2)
+#
+# ig <- make_sample_network(enterotype, max.dist=0.2)
 # plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-
+#
 # # Three methods of choosing/providing distance/distance-method
-# Provide method name available to vegdist
-ig <- make_sample_network(enterotype, FALSE, max.dist=0.3, dist.fun="jaccard")
+# Provide method name available to distance
+ig <- make_sample_network(enterotype, max.dist=0.3, dist.fun="jaccard")
 # Provide distance object, already computed
-ih <- make_sample_network(enterotype, FALSE, max.dist=0.3, dist.fun=vegdist(enterotype, "jaccard"))
-# Provide explicit function. Can be custom function.
-ii <- make_sample_network(enterotype, FALSE, max.dist=0.3, dist.fun=function(x){vegdist(x, "jaccard")})
+jaccdist <- distance(enterotype, "jaccard")
+ih <- make_sample_network(enterotype, max.dist=0.3, dist.fun=jaccdist)
+# Provide "custom" function.
+ii <- make_sample_network(enterotype, max.dist=0.3, dist.fun=function(x){vegdist(x, "jaccard")})
 # The have equal results:
 all.equal(ig, ih)
 all.equal(ig, ii)
 #
+# Try out making a trivial "network" of the 3-sample esophagus data,
+# with weighted-UniFrac as distance
+data(esophagus)
+ij <- make_sample_network(esophagus, "unifrac", weighted=TRUE)
 }
 \seealso{
   \code{\link{plot_sample_network}}

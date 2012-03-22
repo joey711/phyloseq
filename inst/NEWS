@@ -13,6 +13,23 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.44
+===========
+* Make the phyloseq::vegdist() wrapper an internal function. Documentation updated as well.
+  This is a solution to Issue 87
+  https://github.com/joey711/phyloseq/issues/87
+* Remove rda.phyloseq and cca.phyloseq from exported methods.
+  Documentation had already been removed when these were first attempted to be converted
+  to internal methods in v0.99.42
+* Modify make_sample_network to use the new distance() function, and be able to pass on
+  additional parameters to distance().
+* Re-order arguments to make_sample_network to better represent the stability of defaults.
+* Removed redundant parameters from make_sample_network(). Transformations to abundance
+  tables should be performed upstream using phyloseq tools, not embedded in this function.
+* Modify vignettes to reflect these changes.
+* Rebuild vignette.
+* Update import() documentation to reflect support for BIOM format, import_biom() function.
+
 v0.99.43
 ===========
 * Revise component assignment operators, e.g. "sampleData(physeq)<-" to coerce/access

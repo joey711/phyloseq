@@ -59,7 +59,7 @@
 # # The default method for hclust() uses complete-linkage clustering (method="complete")
 # ################################################################################
 # # Calculate the jaccard distance between each sample
-# jaccdist <- vegdist(GlobalPatterns, "jaccard")
+# jaccdist <- distance(GlobalPatterns, "jaccard")
 # plot(hclust(jaccdist, "average"), labels=getVariable(GlobalPatterns, "SampleType"))
 # # A different method ("complete-linkage")
 # plot(hclust(jaccdist), labels=getVariable(GlobalPatterns, "SampleType"), col=cols)

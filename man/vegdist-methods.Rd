@@ -18,4 +18,5 @@
 \seealso{
   \code{\link[vegan]{vegdist}}
 }
+\keyword{internal}
 

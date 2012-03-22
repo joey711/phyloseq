@@ -34,7 +34,6 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 #'
 #' @seealso \code{\link[vegan]{vegdist}} 
 #' @import vegan
-#' @export
 #' @rdname vegdist-methods
 #' @docType methods
 #' @aliases vegdist
@@ -42,6 +41,7 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 #' @examples
 #' # data(esophagus)
 #' # vegdist(esophagus, "jaccard")
+#' @keywords internal
 setGeneric("vegdist")
 ################################################################################
 #' @aliases vegdist,otuTable-method

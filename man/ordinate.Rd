@@ -49,8 +49,8 @@
   \code{\link{metaMDS}} after the appropriate accessions
   and distance calculations. Because \code{metaMDS}
   includes its own distance calculation wrappers to
-  \code{\link{vegdist}}, and these provide additional
-  functionality in the form of species scores,
+  \code{\link[vegan]{vegdist}}, and these provide
+  additional functionality in the form of species scores,
   \code{ordinate} will pass-on the \code{distance} argument
   to \code{metaMDS} if it is among the supported
   \code{vegdist} methods. However, all distance methods

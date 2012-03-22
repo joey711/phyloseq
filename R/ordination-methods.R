@@ -45,7 +45,7 @@
 #'           By default, \code{k=2}, but this can be modified as a supplementary argument.
 #'           This method is ultimately carried out by \code{\link{metaMDS}} after the 
 #'           appropriate accessions and distance calculations. Because \code{metaMDS} includes
-#'           its own distance calculation wrappers to \code{\link{vegdist}}, and these provide
+#'           its own distance calculation wrappers to \code{\link[vegan]{vegdist}}, and these provide
 #'           additional functionality in the form of species scores, \code{ordinate} will
 #'           pass-on the \code{distance} argument to \code{metaMDS} if it is among the 
 #'           supported \code{vegdist} methods. However, all distance methods supported by
@@ -381,7 +381,6 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @rdname cca-rda-phyloseq-methods
 #' @docType methods
 #'
-#' @export
 #' @keywords internal
 #' @import vegan
 #' @examples #
@@ -440,7 +439,6 @@ setMethod("cca.phyloseq", "phyloseq", function(X){
 ################################################################################
 #' @keywords internal
 #' @usage rda.phyloseq(X, ...)
-#' @export
 #' @import vegan
 #' @rdname cca-rda-phyloseq-methods
 #' @aliases cca.phyloseq rda.phyloseq
