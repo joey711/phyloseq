@@ -1,0 +1,69 @@
+\name{JSD}
+\alias{JSD}
+\title{Calculate the Jensen-Shannon Divergence (distance)}
+\usage{
+  JSD(physeq, parallel=FALSE)
+}
+\arguments{
+  \item{physeq}{(Required). \code{\link{phyloseq-class}}.
+  The phyloseq data on which to compute the pairwise sample
+  distance matrix.}
+
+  \item{parallel}{(Optional). Logical. Default
+  \code{FALSE}. Should the calculation be run using
+  parallel processors? Note that this only actually runs in
+  parallel if you have registered a parallel ``backend''
+  prior to calling this function. Further details are
+  provided in the documentation for \code{\link{UniFrac}}.}
+}
+\value{
+  An object of class ``\code{\link{dist}}'' suitable for
+  certain ordination methods and other distance-based
+  analyses. See \code{\link{distance}}.
+}
+\description{
+  This is a phyloseq-specific implementation of the
+  Jensen-Shannon Divergence for comparing pairs of
+  microbial communities (samples) in an experiment. The
+  expectation is that you have many samples (say. more than
+  two) and you want a distance matrix on which will perform
+  further analysis. \code{JSD} is intended to be
+  ``wrapped'' by the more general \code{\link{distance}}
+  function in phyloseq, and it can be invoked using
+  \code{"jsd"} as the argument to the \code{method}
+  parameter of \code{\link{distance}}.
+}
+\details{
+  One of the motivations for providing JSD in phyloseq was
+  its recent use in the analysis of the
+  \code{\link{enterotype}} dataset.
+}
+\examples{
+# library(doParallel)  # Do this and next line only if you have multi-cores
+# registerDoParallel(cores=6)
+# data(enterotype)
+# # ent.jsd <- JSD(enterotype, TRUE) # internal only
+# ent.jsd <- distance(enterotype, "jsd", parallel=TRUE)
+# ent.PCoA <- ordinate(enterotype, "PCoA", ent.jsd) # Perform principle coordinate analysis
+# p <- plot_ordination(enterotype, ent.PCoA, color="Enterotype", shape="SeqTech")
+# (p <- p + geom_point(size=5, alpha=0.5))
+}
+\author{
+  Susan Holmes \email{susan@stat.stanford.edu}. Adapted for
+  phyloseq by Paul J. McMurdie.
+}
+\references{
+  Jensen-Shannon Divergence and Hilbert space embedding.
+  Bent Fuglede and Flemming Topsoe University of
+  Copenhagen, Department of Mathematics
+  \url{http://www.math.ku.dk/~topsoe/ISIT2004JSD.pdf}
+}
+\seealso{
+  \code{\link{distance}}
+
+  \code{\link{enterotype}}
+
+  \url{http://en.wikipedia.org/wiki/Jensen-Shannon_divergence}
+}
+\keyword{internal}
+

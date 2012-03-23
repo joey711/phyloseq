@@ -13,16 +13,36 @@
   \code{\link{phyloseq-class}} that contains both an
   \code{otuTable} and a phylogenetic tree (\code{phylo}).}
 
-  \item{method}{(Optional). A character string. Provide one
-  of the 43 currently supported options. Default is
-  \code{"unifrac"}. Alternatively, you can provide a
-  character string that defines a custom distance method,
-  if it has the form described in \code{\link{designdist}}.
-  Depending on the \code{method} argument, this function
-  wraps one of \code{\link{UniFrac}}, \code{\link{DPCoA}},
-  \code{\link[vegan]{vegdist}},
-  \code{\link[vegan]{betadiver}},
-  \code{\link[vegan]{designdist}}, or \code{\link{dist}}.}
+  \item{method}{(Optional). A character string. Default is
+  \code{"unifrac"}. Provide one of the 44 currently
+  supported options. To see a list of supported options,
+  enter the following into the command line:
+
+  \code{distance("list")}
+
+  For further details and additional arguments, see the
+  documentation for the supprting functions, linked below
+  under ``See Also''.
+
+  In particular, there are three methods included by the
+  \code{\link{phyloseq-package}}, and accessed by the
+  following \code{method} options:
+
+  \code{"unifrac"}, for UniFrac based distances,
+  \code{\link{UniFrac}};
+
+  \code{"dpcoa"}, sample-wise distance from Double
+  Principle Coordinate Analysis, \code{\link{DPCoA}};
+
+  \code{"jsd"}, for Jensen-Shannon Divergence,
+  \code{\link{JSD}};
+
+  and it is recommended that you see their documentation
+  for details, references, background and examples for use.
+
+  Alternatively, you can provide a character string that
+  defines a custom distance method, if it has the form
+  described in \code{\link{designdist}}.}
 
   \item{type}{(Optional). A character string. The type of
   pairwise comparisons being calculated: sample-wise or
@@ -41,13 +61,24 @@
   Takes a \code{\link{phyloseq-class}} object and method
   option, and returns a \code{\link{dist}}ance object
   suitable for certain ordination methods and other
-  distance-based analyses. The are currently 43 explicitly
-  supported method options, as well as user-provided
-  arbitrary methods via an interface to
-  \code{\link{designdist}}. Currrently only sample-wise
-  distances are supported (the \code{type} argument), but
+  distance-based analyses. There are currently 44
+  explicitly supported method options, as well as
+  user-provided arbitrary methods via an interface to
+  \code{\link{designdist}}. For the complete list of
+  currently supported options/arguments to the
+  \code{method} parameter, type \code{distance("list")} at
+  the command-line. Only sample-wise distances are
+  currently supported (the \code{type} argument), but
   eventually species-wise (OTU-wise) distances will be
   supported as well.
+}
+\details{
+  Depending on the \code{method} argument,
+  \code{distance()} wraps one of \code{\link{UniFrac}},
+  \code{\link{DPCoA}}, \code{\link{JSD}},
+  \code{\link[vegan]{vegdist}},
+  \code{\link[vegan]{betadiver}},
+  \code{\link[vegan]{designdist}}, or \code{\link{dist}}.
 }
 \examples{
 data(esophagus)
@@ -64,7 +95,8 @@ help("distance")
 }
 \seealso{
   \code{\link{plot_ordination}}, \code{\link{UniFrac}},
-  \code{\link{DPCoA}}, \code{\link[vegan]{vegdist}},
+  \code{\link{DPCoA}}, \code{\link{JSD}},
+  \code{\link[vegan]{vegdist}},
   \code{\link[vegan]{betadiver}},
   \code{\link[vegan]{designdist}}, \code{\link{dist}}.
 }

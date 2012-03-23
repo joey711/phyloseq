@@ -4,12 +4,25 @@
 #' Takes a \code{\link{phyloseq-class}} object and method option, and returns
 #'  a \code{\link{dist}}ance object suitable for certain 
 #'  ordination methods and other distance-based analyses. 
-#'  The are currently 43 explicitly supported method options, as well as
+#'  There are currently 44 explicitly supported method options, as well as
 #'  user-provided arbitrary methods via an interface to
-#'  \code{\link{designdist}}.
-#'  Currrently only
-#'  sample-wise distances are supported (the \code{type} argument), but eventually species-wise (OTU-wise)
+#'  \code{\link{designdist}}. For the complete list of currently
+#'  supported options/arguments to the \code{method} parameter, 
+#'  type \code{distance("list")} at the command-line.
+#'  Only
+#'  sample-wise distances are currently supported (the \code{type} argument),
+#'  but eventually species-wise (OTU-wise)
 #'  distances will be supported as well. 
+#'
+#'  Depending on the \code{method}
+#'  argument, \code{distance()} wraps one of 
+#'  \code{\link{UniFrac}},
+#'  \code{\link{DPCoA}},
+#'  \code{\link{JSD}},
+#'  \code{\link[vegan]{vegdist}},
+#'  \code{\link[vegan]{betadiver}},
+#'  \code{\link[vegan]{designdist}}, or
+#'  \code{\link{dist}}.
 #'
 #' @usage distance(physeq, method="unifrac", type="samples", ...)
 #' 
@@ -20,17 +33,33 @@
 #'  \code{\link{phyloseq-class}} that contains both an \code{otuTable}
 #'  and a phylogenetic tree (\code{phylo}).
 #'
-#' @param method (Optional). A character string. Provide one of the 43 currently
-#'  supported options. Default is \code{"unifrac"}. Alternatively, you can provide
+#' @param method (Optional). A character string. Default is \code{"unifrac"}.
+#'  Provide one of the 44 currently supported options. 
+#'  To see a list of supported options, enter the following into the command line:
+#' 
+#'  \code{distance("list")}
+#'  
+#'  For further details and additional arguments,
+#'  see the documentation for the supprting functions, linked below
+#'  under ``See Also''. 
+#'  
+#'  In particular, there are three methods included
+#'  by the \code{\link{phyloseq-package}}, and accessed by the following
+#'  \code{method} options:
+#' 
+#'  \code{"unifrac"}, for UniFrac based distances, \code{\link{UniFrac}};
+#'
+#'  \code{"dpcoa"}, sample-wise distance from Double Principle 
+#'   Coordinate Analysis, \code{\link{DPCoA}};
+#' 
+#'  \code{"jsd"}, for Jensen-Shannon Divergence, \code{\link{JSD}}; 
+#'  
+#'  and it is recommended that you see their documentation
+#'  for details, references, background and examples for use. 
+#'
+#'  Alternatively, you can provide
 #'  a character string that defines a custom distance method, if it has the form
-#'  described in \code{\link{designdist}}. Depending on the \code{method}
-#'  argument, this function wraps one of 
-#'  \code{\link{UniFrac}},
-#'  \code{\link{DPCoA}},
-#'  \code{\link[vegan]{vegdist}},
-#'  \code{\link[vegan]{betadiver}},
-#'  \code{\link[vegan]{designdist}}, or
-#'  \code{\link{dist}}.
+#'  described in \code{\link{designdist}}. 
 #'
 #' @param type (Optional). A character string. The type of pairwise comparisons
 #'  being calculated: sample-wise or species-wise. The default is 
@@ -46,6 +75,7 @@
 #'  \code{\link{plot_ordination}}, 
 #'  \code{\link{UniFrac}},
 #'  \code{\link{DPCoA}},
+#'  \code{\link{JSD}},
 #'  \code{\link[vegan]{vegdist}},
 #'  \code{\link[vegan]{betadiver}},
 #'  \code{\link[vegan]{designdist}},
@@ -74,7 +104,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		"mountford", "raup" , "binomial", "chao")
 
 	# Special methods (re)defined in phyloseq
-	phyloseq_methods <- c("unifrac", "dpcoa")
+	phyloseq_methods <- c("unifrac", "dpcoa", "jsd")
 	
 	# The standard distance methods
 	dist_methods <- c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")
@@ -104,8 +134,9 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 
 	# Define the function call to build
 	if( method %in% phyloseq_methods ){
-		if( method == "unifrac"){ dfun <- "UniFrac" }
-		if( method == "dpcoa"  ){ dfun <- "DPCoA" }
+		if( method == "unifrac"){ return(UniFrac(physeq, ...)) }
+		if( method == "jsd"    ){ return(    JSD(physeq, ...)) }
+		if( method == "dpcoa"  ){ return(dist(DPCoA(physeq, ...)$RaoDis)) }
 	} else if( method %in% vegdist_methods ){
 		dfun <- "vegdist"
 	} else if( method %in% betadiver_methods ){
@@ -116,27 +147,133 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		dfun <- "designdist"
 	}
 	
-	# get the extra arguments to pass to functions (this can be empty?)
+	# get the extra arguments to pass to functions (this can be empty)
 	extrargs <- list(...)	
 	
-	# # Enforce orientation, build function.
-	if( dfun %in% c("UniFrac", "DPCoA") ){
-		fun.args <- c(list(physeq), extrargs)
-		if( dfun == "DPCoA" ){
-			return( dist(do.call(dfun, fun.args)$RaoDis) )
-		} else {
-			return( do.call(dfun, fun.args) )
-		}
-	} else {
-		OTU <- otuTable(physeq)
-		# coerce to vegan-style samples-are-rows orientation
-		if( speciesAreRows(physeq) ){OTU <- t(OTU)}
-		OTU <- as(OTU, "matrix")		
-		fun.args <- c(list(OTU, method=method), extrargs)	
-		# return(list(dfun, fun.args))
-		return( do.call(dfun, fun.args) )		
-	}
+	# # If necessary (non phyloseq funs), enforce orientation, build function.
+	OTU <- otuTable(physeq)
+	# coerce to vegan-style samples-are-rows orientation
+	if( speciesAreRows(physeq) ){OTU <- t(OTU)}
+	OTU <- as(OTU, "matrix")		
+	fun.args <- c(list(OTU, method=method), extrargs)	
+
+	return( do.call(dfun, fun.args) )	
 } 
+################################################################################
+################################################################################
+# Shannon-Jensen Divergence, in R.
+################################################################################
+#' @keywords internal
+JSD.pair <- function(x, y){
+	###Function to compute Shannon-Jensen Divergence
+	###x and y are the frequencies for the same p categories
+	u <- x/sum(x)
+	v <- y/sum(y)
+	m <- (u+v)/2
+	if (all(u*v>0)){
+		d <- (u*log(u/m)+v*log(v/m))/2
+	} else {
+		P1 <- u*log(u/m)
+		P2 <- v*log(v/m)
+		P1[is.nan(P1)] <- 0
+		P2[is.nan(P2)] <- 0
+		d <- (P1+P2)/2
+	}
+	return(sum(d))
+}
+################################################################################
+#' Calculate the Jensen-Shannon Divergence (distance)
+#'
+#' This is a phyloseq-specific implementation of the Jensen-Shannon Divergence
+#' for comparing pairs of microbial communities (samples) in an experiment. 
+#' The expectation is that you have many samples (say. more than two) and you
+#' want a distance matrix on which will perform further analysis. \code{JSD} is
+#' intended to be ``wrapped'' by the more general \code{\link{distance}} 
+#' function in phyloseq, and it can be invoked using \code{"jsd"} as the 
+#' argument to the \code{method} parameter of \code{\link{distance}}.
+#'
+#' One of the motivations for providing JSD in phyloseq was its recent use in 
+#' the analysis of the \code{\link{enterotype}} dataset. 
+#'
+#' @usage JSD(physeq, parallel=FALSE)
+#' 
+#' @param physeq (Required). \code{\link{phyloseq-class}}. 
+#'  The phyloseq data on which to compute the 
+#'  pairwise sample distance matrix.
+#'
+#' @param parallel (Optional). Logical. Default \code{FALSE}. Should the 
+#'  calculation be run using parallel processors? Note that this only actually
+#'  runs in parallel if you have registered a parallel ``backend'' prior to 
+#'  calling this function. Further details are provided in the documentation
+#'  for \code{\link{UniFrac}}.
+#'
+#' @return An object of class ``\code{\link{dist}}'' suitable for certain 
+#'  ordination methods and other distance-based analyses.
+#'  See \code{\link{distance}}.
+#'  
+#' @seealso
+#'  \code{\link{distance}} 
+#' 
+#'  \code{\link{enterotype}}
+#' 
+#'  \url{http://en.wikipedia.org/wiki/Jensen-Shannon_divergence}
+#'
+#' @references
+#' Jensen-Shannon Divergence and Hilbert space embedding.  
+#' Bent Fuglede and Flemming Topsoe University of Copenhagen,
+#' Department of Mathematics
+#' \url{http://www.math.ku.dk/~topsoe/ISIT2004JSD.pdf}
+#'
+#' @author
+#'  Susan Holmes \email{susan@@stat.stanford.edu}.
+#'  Adapted for phyloseq by Paul J. McMurdie.
+#'
+#' @keywords internal
+#' @examples
+#' # library(doParallel)  # Do this and next line only if you have multi-cores
+#' # registerDoParallel(cores=6)
+#' # data(enterotype)
+#' # # ent.jsd <- JSD(enterotype, TRUE) # internal only
+#' # ent.jsd <- distance(enterotype, "jsd", parallel=TRUE)
+#' # ent.PCoA <- ordinate(enterotype, "PCoA", ent.jsd) # Perform principle coordinate analysis
+#' # p <- plot_ordination(enterotype, ent.PCoA, color="Enterotype", shape="SeqTech") 
+#' # (p <- p + geom_point(size=5, alpha=0.5))
+JSD <- function(physeq, parallel=FALSE){
+	OTU <- otuTable(physeq)
+	### Some parallel-foreach housekeeping.    
+    # If user specifies not-parallel run (the default), register the sequential "back-end"
+    if( !parallel ){ registerDoSEQ() }
+    
+	# create N x 2 matrix of all pairwise combinations of samples.
+    spn <- combn(sample.names(OTU), 2, simplify=FALSE)
+    
+    # initialize DistMat with NAs
+    DistMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
+    # define the rows/cols of DistMat with the sample names (rownames)    
+    rownames(DistMat) <- sample.names(OTU)
+    colnames(DistMat) <- sample.names(OTU)
+    
+	## Format coercion
+	# Coerce to the picante/vegan orientation, with species as columns
+	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
+   	# Coerce OTU to matrix for calculations.
+    OTU <- as(OTU, "matrix")
+	
+   	# optionally-parallel implementation with foreach
+  	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
+		A <- i[1]
+		B <- i[2]
+		return( phyloseq:::JSD.pair(OTU[A, ], OTU[B, ]) )
+	}
+	# return(distlist)
+    # This is in serial, but it is quick.
+    distlist2distmat <- function(i, spn, DL){
+    	DistMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
+    }
+	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
+    
+    return(as.dist(DistMat))
+}
 ################################################################################
 ################################################################################
 #' Custom version of \code{\link[picante]{internal2tips}}

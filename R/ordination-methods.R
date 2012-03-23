@@ -62,22 +62,28 @@
 #'          }	
 #'	}
 #' 
-#' @param distance (Optional). A character string. This argument is only utilized
-#'  if a distance matrix is required by the ordination method specified in the
-#'  argument to \code{method}. Any supported arguments to the \code{method} 
-#'  parameter of the \code{\link{distance}} function are supported here, as this
-#'  is ultimately passed on to \code{\link{distance}} in most cases. Try 
-#'  \code{distance("list")} for a list of explicitly supported distance method
+#' @param distance (Optional). A character string matching a 
+#'  \code{\link{distance}} method; or, alternatively, 
+#'  a pre-computed \code{\link{dist}}-class object.
+#'  This argument is only utilized
+#'  if a distance matrix is required by the ordination method specified by the
+#'  \code{method} argument (above).
+#'
+#'  Any supported \code{\link{distance}} methods 
+#'  are supported arguments to \code{distance} here. 
+#'  Try \code{distance("list")} for a explicitly supported distance method
 #'  abbreviations. User-specified custom distance equations should also work,
 #'  e.g. \code{"(A+B-2*J)/(A+B)"}. 
 #'  See \code{\link{distance}} for more details, examples.
 #' 
 #' @param ... (Optional). Additional arguments to supporting functions. For 
 #'  example, the additional argument \code{weighted=TRUE} would be passed on
-#'  to \code{\link{UniFrac}} if \code{"unifrac"} were chosen as the preferred
-#'  distance method (the default).
+#'  to \code{\link{UniFrac}} if \code{"unifrac"} were chosen as the
+#'  \code{distance} option and \code{"MDS"} as the ordination \code{method}
+#'  option. Alternatively, if \code{"DCA"} were chosen as the 
+#'  ordination \code{method} option, additional arguments would be passed on
+#'  to the relevant ordination function, \code{\link{decorana}}, for example.
 #' 
-#'
 #' @return
 #'  An ordination object. The specific class of the returned object depends upon the 
 #'  ordination method, as well as the function/package that is called internally
@@ -182,9 +188,19 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 		}	
 	}
 
-	# # Start with methods that don't need accessing formatting (phyloseq)
-	if( method == "DPCoA" ){
-		return( DPCoA(physeq, ...) )
+	# Define an internal function for accessing and orienting the OTU table
+	# in a fashion suitable for vegan/picante functions
+	veganify <- function(physeq){
+		OTU <- otuTable(physeq)
+		if( speciesAreRows(OTU) ){ OTU <- t(OTU) }
+		return( as(OTU, "matrix") )
+	}
+
+	# # Start with methods that don't require 
+	# #  additional distance calculation. (distance argument ignored)
+	# DCA
+	if( method == "DCA" ){
+		return( decorana(veganify(physeq), ...) )
 	}
 	# CCA
 	if( method == "CCA" ){
@@ -194,39 +210,37 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 	if( method == "RDA" ){
 		return( rda.phyloseq(physeq, ...) )
 	}
+	# DPCoA
+	if( method == "DPCoA" ){
+		return( DPCoA(physeq, ...) )
+	}	
+
+	# # Now resort to methods that do require a separate distance/dist-calc
+	# Define ps.dist. Check the class of distance argument is character or dist
+	if( class(distance) == "dist" ){
+		ps.dist <- distance
+	} else if( class(distance) == "character" ){
+		# There are some special options for NMDS/metaMDS if distance-method
+		# is supported by vegdist, so check first. If not, just calculate distance	
+		vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
+		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
+		"mountford", "raup" , "binomial", "chao")			
+		# NMDS with vegdist-method to include species		
+		if(method == "NMDS" & distance %in% vegdist_methods){
+			return(metaMDS(veganify(physeq), distance, ...))
+		}
+		# Calculate distance with handoff to distance()
+		ps.dist <- distance(physeq, distance, ...)
+	}
+
 	# Vanilla MDS/PCoA
 	if( method %in% c("PCoA", "MDS")){
-		ps.dist <- distance(physeq, distance, ...)
 		return(ape::pcoa(ps.dist))
 	}
-	
-	# Some ordinations have special options if they use an underlying
-	# distance supported by vegdist, so define those.
-	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
-		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
-		"mountford", "raup" , "binomial", "chao")
-
 	# NMDS with non-vegdist-method
-	# There are some special options for NMDS/metaMDS if distance-method
-	# is supported by vegdist, so check first. If not, just calculate distance
-	if(method == "NMDS" & !distance %in% vegdist_methods){
-		return(metaMDS(distance(physeq, distance, ...)))
-	}
-
-	# # The remaining methods will access the OTU table first.
-	OTU <- otuTable(physeq)
-	if( speciesAreRows(OTU) ){ OTU <- t(OTU) }
-	OTU <- as(OTU, "matrix")
-	
-	# DCA
-	if( method == "DCA" ){
-		return( decorana(OTU, ...) )
-	}
-
-	# NMDS with vegdist-method to include species
-	if(method == "NMDS" & distance %in% vegdist_methods){
-		return(metaMDS(OTU, distance, ...))
-	}
+	if(method == "NMDS"){
+		return(metaMDS(ps.dist))
+	}	
 }
 ################################################################################
 ################################################################################
