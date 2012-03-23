@@ -14,6 +14,10 @@ phyloseq 0.99.x
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+v0.99.48
+===========
+* Updated README.md
+
 v0.99.47
 ===========
 * Add support for ordinate() to take dist-object instead of distance-method string.
