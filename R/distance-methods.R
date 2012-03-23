@@ -230,13 +230,14 @@ JSD.pair <- function(x, y){
 #'
 #' @keywords internal
 #' @examples
-#' # library(doParallel)
+#' # library(doParallel)  # Do this and next line only if you have multi-cores
 #' # registerDoParallel(cores=6)
 #' # data(enterotype)
 #' # # ent.jsd <- JSD(enterotype, TRUE) # internal only
 #' # ent.jsd <- distance(enterotype, "jsd", parallel=TRUE)
-#' # ent.ord <- pcoa(ent.jsd) # Perform principle coordinate analysis
-#' # (p <- plot_ordination(enterotype, ent.ord, color="Enterotype", shape="SeqTech") )
+#' # ent.PCoA <- ordinate(enterotype, "PCoA", ent.jsd) # Perform principle coordinate analysis
+#' # p <- plot_ordination(enterotype, ent.PCoA, color="Enterotype", shape="SeqTech") 
+#' # (p <- p + geom_point(size=5, alpha=0.5))
 JSD <- function(physeq, parallel=FALSE){
 	OTU <- otuTable(physeq)
 	### Some parallel-foreach housekeeping.    

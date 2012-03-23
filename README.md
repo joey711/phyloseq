@@ -4,10 +4,12 @@ There are already several ecology and phylogenetic packages available in R, incl
 
 More concretely, `phyloseq` provides:
 
- * Import abundance and related data from popular OTU clustering pipelines, like QIIME and mothur
-	- BIOM, pyrotagger, RDP also supported.
+ * Import abundance and related data from popular OTU clustering pipelines:
+	- QIIME, mothur, BIOM, pyrotagger, RDP. More planned.
 
- * Convenience analysis wrappers for common analysis tasks, including ordination.
+ * Convenience analysis wrappers for common analysis tasks, e.g.
+	- distance  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
+	- ordinate  --> many supported methods, including constrained methods
 
  * Native, parallelized implementation of UniFrac distance calculations.
 

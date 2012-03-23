@@ -64,16 +64,18 @@
   eigenvalues. See \code{\link[ape]{pcoa}} for further
   details. } }}
 
-  \item{distance}{(Optional). A character string. This
+  \item{distance}{(Optional). A character string matching a
+  \code{\link{distance}} method; or, alternatively, a
+  pre-computed \code{\link{dist}}-class object. This
   argument is only utilized if a distance matrix is
-  required by the ordination method specified in the
-  argument to \code{method}. Any supported arguments to the
-  \code{method} parameter of the \code{\link{distance}}
-  function are supported here, as this is ultimately passed
-  on to \code{\link{distance}} in most cases. Try
-  \code{distance("list")} for a list of explicitly
-  supported distance method abbreviations. User-specified
-  custom distance equations should also work, e.g.
+  required by the ordination method specified by the
+  \code{method} argument (above).
+
+  Any supported \code{\link{distance}} methods are
+  supported arguments to \code{distance} here. Try
+  \code{distance("list")} for a explicitly supported
+  distance method abbreviations. User-specified custom
+  distance equations should also work, e.g.
   \code{"(A+B-2*J)/(A+B)"}. See \code{\link{distance}} for
   more details, examples.}
 
@@ -81,7 +83,12 @@
   functions. For example, the additional argument
   \code{weighted=TRUE} would be passed on to
   \code{\link{UniFrac}} if \code{"unifrac"} were chosen as
-  the preferred distance method (the default).}
+  the \code{distance} option and \code{"MDS"} as the
+  ordination \code{method} option. Alternatively, if
+  \code{"DCA"} were chosen as the ordination \code{method}
+  option, additional arguments would be passed on to the
+  relevant ordination function, \code{\link{decorana}}, for
+  example.}
 }
 \value{
   An ordination object. The specific class of the returned
