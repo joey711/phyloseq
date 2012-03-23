@@ -509,7 +509,7 @@ pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot",
 shape.fac <- pdpcoa$data[, deparse(pdpcoa$mapping$shape)]
 man.shapes <- c(19, 21:25)
 names(man.shapes) <- c("samples", levels(shape.fac)[levels(shape.fac)!="samples"])
-p2dpcoa <- pdpcoa + scale_shape_manual(value=man.shapes)
+p2dpcoa <- pdpcoa + scale_shape_manual(values=man.shapes)
 @
 
 <<GPdpcoa02, echo=FALSE, fig=FALSE, include=FALSE>>=
