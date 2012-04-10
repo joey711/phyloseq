@@ -61,7 +61,7 @@ setMethod("show", "phyloseq", function(object){
 
 	# print Sample Data if there
 	if(!is.null(sampleData(object, FALSE))){
-        cat(paste("Sample Map:         [", dim(sampleData(object))[1], " samples by ", 
+        cat(paste("Sample Data:         [", dim(sampleData(object))[1], " samples by ", 
 	        dim(sampleData(object))[2], 
             " sample variables]:", sep = ""), fill = TRUE)
 	}
