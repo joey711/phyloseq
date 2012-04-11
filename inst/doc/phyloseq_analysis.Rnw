@@ -82,7 +82,10 @@ Let's start by loading the \code{phyloseq-package}:
 
 <<>>=
 library("phyloseq")
+library("ggplot2")
 @
+
+And because we will show examples of custom modifications to \code{ggplot2} plots, we also loaded \code{ggplot2} as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data}\label{sec:data}
@@ -451,6 +454,7 @@ ggsave("phyloseq_analysis-GPCAspecplotTopo.pdf", p3, width=10, height=7)
 Figs~\ref{fig:GPCAspecplot} and \ref{fig:GPCAspecplotTopo} reveal some useful patterns and interesting outliers, but what if we want a complete summary of how each phylum is represented along each axis? The following code is a way to show this using boxplots, while still avoiding the occlusion problem (points layered on top of each other), and also conveying some useful information about the pattern of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
 
 <<GPCAjitter0, include=FALSE, fig=FALSE>>=
+library("reshape")
 # Melt the species-data.frame, DF, to facet each CA axis separately
 mdf <- melt(p1$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
             id=c("Phylum", "Family", "Genus") )
@@ -509,7 +513,7 @@ pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot",
 shape.fac <- pdpcoa$data[, deparse(pdpcoa$mapping$shape)]
 man.shapes <- c(19, 21:25)
 names(man.shapes) <- c("samples", levels(shape.fac)[levels(shape.fac)!="samples"])
-p2dpcoa <- pdpcoa + scale_shape_manual(value=man.shapes)
+p2dpcoa <- pdpcoa + scale_shape_manual(values=man.shapes)
 @
 
 <<GPdpcoa02, echo=FALSE, fig=FALSE, include=FALSE>>=

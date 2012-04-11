@@ -91,7 +91,7 @@
 # ggplot(DF, aes(x=NMDS1, y=NMDS2, color=SampleType)) +
 # geom_point(size=4) +
 # geom_line() +
-# opts(title = ps("nmMDS on Jaccard distance, ", N, " axes"))
+# opts(title = paste("nmMDS on Jaccard distance, ", N, " axes", sep=""))
 
 # ################################################################################
 # # Reproduce Figure 5 (but use Jaccard distance / PCoA)
@@ -107,7 +107,7 @@
 # ggplot(DF, aes(x=Axis.1, y=Axis.2, color=SampleType)) +
 # geom_point(size=4) +
 # geom_line() +
-# opts(title = ps("PCoA on Jaccard distance, two axes"))
+# opts(title = paste("PCoA on Jaccard distance, two axes", sep=""))
 
 # ################################################################################
 # # Reproduce Figure 5, but using correspondence analysis
@@ -118,7 +118,7 @@
 # ggplot(DF, aes(x=CA1, y=CA2, color=SampleType)) +
 # geom_point(size=4) +
 # geom_line() +
-# opts(title = ps("DCA on abundances, first two axes"))
+# opts(title = paste("DCA on abundances, first two axes", sep=""))
 }
 \author{
   Caporaso, J. G., et al.

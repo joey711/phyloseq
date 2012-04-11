@@ -130,7 +130,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  The code most directly used/modified was first posted here:
 #'  \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
 #' 
+#' @import ggplot2
 #' @importFrom reshape melt
+#' @importFrom reshape melt.data.frame
 #' @importFrom igraph layout.fruchterman.reingold
 #' @importFrom igraph get.edgelist
 #' @export
@@ -170,28 +172,28 @@ plot_sample_network <- function(g, physeq=NULL,
 	p <- ggplot(vertDF, aes(x, y)) 
 
 	# Strip all the typical annotations from the plot, leave the legend
-	p <- p + ggplot2::theme_bw() + 
-			ggplot2::opts(
-				panel.grid.major = ggplot2::theme_blank(), 
-				panel.grid.minor = ggplot2::theme_blank(), 
-				axis.text.x      = ggplot2::theme_blank(),
-				axis.text.y      = ggplot2::theme_blank(),
-				axis.title.x     = ggplot2::theme_blank(),
-				axis.title.y     = ggplot2::theme_blank(),
-				axis.ticks       = ggplot2::theme_blank(),
-				panel.border     = ggplot2::theme_blank()
+	p <- p + theme_bw() + 
+			opts(
+				panel.grid.major = theme_blank(), 
+				panel.grid.minor = theme_blank(), 
+				axis.text.x      = theme_blank(),
+				axis.text.y      = theme_blank(),
+				axis.title.x     = theme_blank(),
+				axis.title.y     = theme_blank(),
+				axis.ticks       = theme_blank(),
+				panel.border     = theme_blank()
 			)
 
 	# Add the graph vertices as points
-	p <- p + ggplot2::geom_point(aes_string(color=color, shape=shape), size=point_size)
+	p <- p + geom_point(aes_string(color=color, shape=shape), size=point_size)
 
 	# Add the text labels
 	if( !is.null(label) ){
-		p <- p + ggplot2::geom_text(ggplot2::aes_string(label=label), size = 2, hjust=hjust)		
+		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust)		
 	}
 	
 	# Add the edges:
-	p <- p + ggplot2::geom_line(ggplot2::aes_string(group="id", color=line_color), 
+	p <- p + geom_line(aes_string(group="id", color=line_color), 
 				graphDF, size=line_weight, alpha=line_alpha)
 	
 	return(p)
@@ -266,7 +268,9 @@ plot_sample_network <- function(g, physeq=NULL,
 #'  \code{\link[vegan]{estimateR}},
 #'  \code{\link[vegan]{diversity}}
 #'
+#' @import ggplot2
 #' @importFrom reshape melt
+#' @importFrom reshape melt.data.frame
 #' @export
 #' @examples 
 #' # data(GlobalPatterns)
@@ -332,16 +336,15 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 	mdf    <- data.frame(mdf, se = c(rep(NA, nrow(DF)), DF[, "se.chao1"], DF[, "se.ACE"]) )	
 	
 	# map variables
-	richness_map <- ggplot2::aes_string(x=x, y="value", color=color, shape=shape)		
+	richness_map <- aes_string(x=x, y="value", color=color, shape=shape)		
 	
-	# Make the ggplot. Note that because ggplot2 is fully loaded in namespace,
-	# its functions must be fully-qualified (ggplot2::), according to Bioconductor rules
-	p <- ggplot2::ggplot(mdf, richness_map) + 
-		ggplot2::geom_point(size=2) + 
-		ggplot2::geom_errorbar(ggplot2::aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		ggplot2::opts(axis.text.x = ggplot2::theme_text(angle = -90, hjust = 0)) +
-		ggplot2::scale_y_continuous('richness [number of species]') +
-		ggplot2::facet_grid(~variable) 
+	# Make the ggplot.
+	p <- ggplot(mdf, richness_map) + 
+		geom_point(size=2) + 
+		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
+		opts(axis.text.x = theme_text(angle = -90, hjust = 0)) +
+		scale_y_continuous('richness [number of species]') +
+		facet_grid(~variable) 
 	return(p)
 }
 ################################################################################
@@ -442,6 +445,7 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #' @seealso 
 #'  \code{\link{plot_phyloseq}}
 #'
+#' @import ggplot2
 #' @export
 #' @examples 
 #' ##
@@ -529,20 +533,20 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	
 	# Mapping section
 	if( type %in% c("sites", "species", "split") ){
-		ord_map <- ggplot2::aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
+		ord_map <- aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
 	} else if(type=="biplot"){
 		# biplot, id.type must map to color or size. Only color if none specified.
 		if( is.null(color) ){
-			ord_map <- ggplot2::aes_string(x=x, y=y, color="id.type",
+			ord_map <- aes_string(x=x, y=y, color="id.type",
 							shape=shape, na.rm=TRUE)
 		} else {
-			ord_map <- ggplot2::aes_string(x=x, y=y, size="id.type",
+			ord_map <- aes_string(x=x, y=y, size="id.type",
 							color=color, shape=shape, na.rm=TRUE)
 		}
 	}
 
 	# Plot-building section
-	p <- ggplot2::ggplot(DF, ord_map) + ggplot2::geom_point(na.rm=TRUE)
+	p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
 	
 	# split/facet color and shape can be anything in one or other.
 	if( type=="split" ){
@@ -563,13 +567,13 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 
 	# Add the text labels
 	if( !is.null(label) ){
-		label_map <- ggplot2::aes_string(x=x, y=y, label=label, na.rm=TRUE)
-		p <- p + ggplot2::geom_text(label_map, data=rm.na.phyloseq(DF, label),
+		label_map <- aes_string(x=x, y=y, label=label, na.rm=TRUE)
+		p <- p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
 					size=2, vjust=1.5, na.rm=TRUE)
 	}
 
 	if( !is.null(title) ){
-		p <- p + ggplot2::opts(title = title)
+		p <- p + opts(title = title)
 	}
 	return(p)
 }
@@ -697,6 +701,7 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' @seealso 
 #'  \code{\link{plot_ordination}}
 #'
+#' @import ggplot2
 #' @export
 #' @examples 
 #' ##
@@ -911,6 +916,7 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #'
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
 #'
+#' @import ggplot2
 #' @export
 #' @aliases taxaplot
 #' @rdname plot-taxa-bar

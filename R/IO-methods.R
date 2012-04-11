@@ -1161,7 +1161,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 	
 	# If needed, also write the associated tree-file. 
 	if( writeTree ){
-		fileTree <- ps(file, ".nex")
+		fileTree <- paste(file, ".nex", sep="")
 		ape::write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
 	}
 
