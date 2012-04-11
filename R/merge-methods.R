@@ -122,6 +122,7 @@ merge_phyloseq <- function(...){
 #'
 #' @rdname merge_phyloseq_pair-methods
 #' @docType methods
+#' @import ape
 #' @export
 #'
 #' @examples #
@@ -224,7 +225,7 @@ setMethod("merge_phyloseq_pair", signature("sampleData", "sampleData"), function
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
-	ape::consensus(x, y)
+	consensus(x, y)
 })
 ################################################################################
 ################################################################################
@@ -262,6 +263,7 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' @seealso \code{\link{tipglom}}, \code{\link{taxglom}}, \code{\link{merge_phyloseq}},
 #'  \code{\link{merge_samples}}
 #'
+#' @import ape
 #' @export
 #' @docType methods
 #' @rdname merge_species-methods
@@ -318,7 +320,7 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- ape::drop.tip(x, removeIndex)
+	x           <- drop.tip(x, removeIndex)
 	return(x)
 })
 ################################################################################

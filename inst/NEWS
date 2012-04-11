@@ -1,4 +1,4 @@
-phyloseq 0.99.x
+phyloseq
 ===========
 * Bioconductor development release updates.
 * BIOM format import: import_biom() function
@@ -13,6 +13,14 @@ phyloseq 0.99.x
 * General importer for all supported data formats: import()
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+phyloseq 1.1.1-3
+===========
+* R version updated to match Bioconductor, R-2.15.0+
+* ape-package version updated to 3.0+
+* ape-package now import dependency
+* ggplot2-package version updated to 0.9.0+
+* ggplot2-package now import dependency
 
 v0.99.48
 ===========

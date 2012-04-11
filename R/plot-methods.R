@@ -49,9 +49,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 		taxaplot(otu=physeq, ...)
 	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
 		tree <- tre(physeq)
-		ape::plot.phylo(tree, ...)	
-		ape::nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
-		ape::edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
+		plot.phylo(tree, ...)	
+		nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
+		edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
 	} else {
 		plot_richness_estimates(physeq)
 	}
@@ -1168,6 +1168,7 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 #' @return Creates a phylogenetic tree, with additional symbols annotated on
 #'  each tip to indicate in which samples the particular taxa was observed.
 #'
+#' @import ape
 #' @export
 #'
 #' @examples
@@ -1239,7 +1240,7 @@ plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL,
 	
 	# Now plot the initial, symbol-less tree. Must be first to get the proper
 	# x, y limits to calculate the scales of the annotation objects.
-	ape::plot.phylo(tree, type="phylogram", show.tip.label=FALSE,
+	plot.phylo(tree, type="phylogram", show.tip.label=FALSE,
 		xpd=NA, no.margin=TRUE, edge.width=1.5)
 
 	# Store information about the tree-plot

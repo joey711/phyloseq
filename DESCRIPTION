@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.1.2
-Date: 2012-04-10
+Version: 1.1.3
+Date: 2012-04-11
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Description: phyloseq is a set of classes, and tools to
@@ -18,12 +18,12 @@ Imports:
     plyr (>= 1.7),
     reshape (>= 0.8.4),
     ggplot2 (>= 0.9.0),
+    ape (>= 3.0),
     RJSONIO (>= 0.98)
 Depends:
-    R (>= 2.14.0),
+    R (>= 2.15.0),
     methods,
     ade4 (>= 1.4),
-    ape (>= 2.8),
     picante (>= 1.3)
 Suggests:
     genefilter

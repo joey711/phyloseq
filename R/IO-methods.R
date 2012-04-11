@@ -154,6 +154,7 @@ import <- function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
+#' @import ape
 #' @export
 #' @examples
 #'  # import_qiime(myOtuTaxFilePath, myMapFilePath)
@@ -183,8 +184,8 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
 		} else {
-			#tree <- ape::read.tree(treefilename, ...)
-			tree <- ape::read.nexus(treefilename, ...)
+			#tree <- read.tree(treefilename, ...)
+			tree <- read.nexus(treefilename, ...)
 		}
 		argumentlist <- c(argumentlist, list(tree) )
 	}
@@ -1121,6 +1122,7 @@ export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 #' @param return (Optional). Should the ENV table be returned to the R workspace?
 #'  Default is \code{FALSE}.
 #'
+#' @import ape
 #' @export
 #' 
 #' @examples
@@ -1162,7 +1164,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 	# If needed, also write the associated tree-file. 
 	if( writeTree ){
 		fileTree <- paste(file, ".nex", sep="")
-		ape::write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
+		write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
 	}
 
 	# If return argument is TRUE, return the environment table
