@@ -2,7 +2,8 @@
 \alias{getTaxa}
 \title{Get a unique vector of the observed taxa at a particular taxonomic rank}
 \usage{
-  getTaxa(physeq, taxonomic.rank=rank.names(physeq)[1])
+  getTaxa(physeq, taxonomic.rank=rank.names(physeq)[1],
+  errorIfNULL=TRUE)
 }
 \arguments{
   \item{physeq}{(Required).
@@ -13,6 +14,10 @@
   taxonomic rank to use. Must select from the set indicated
   by \code{getTaxa}. Default is to take the first column of
   the \code{taxonomyTable} component.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
   Character vector. Unique vector of the observed taxa at a
