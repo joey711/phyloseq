@@ -131,8 +131,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
 #' 
 #' @import ggplot2
-#' @importFrom reshape melt
-#' @importFrom reshape melt.data.frame
+#' @import reshape
 #' @importFrom igraph layout.fruchterman.reingold
 #' @importFrom igraph get.edgelist
 #' @export
@@ -269,8 +268,7 @@ plot_sample_network <- function(g, physeq=NULL,
 #'  \code{\link[vegan]{diversity}}
 #'
 #' @import ggplot2
-#' @importFrom reshape melt
-#' @importFrom reshape melt.data.frame
+#' @import reshape
 #' @export
 #' @examples 
 #' # data(GlobalPatterns)
@@ -1826,9 +1824,8 @@ plot_tree_only <- function(physeq){
 ################################################################################
 # The "sampledodge" plot_tree subset function.
 #' @keywords internal
+#' @import reshape 
 #' @importFrom scales log_trans
-#' @importFrom reshape melt
-#' @importFrom reshape melt.array
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
 plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
@@ -2082,8 +2079,8 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' @author Paul McMurdie, relying on supporting code from
 #'  Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
+#' @import reshape
 #' @importFrom scales log_trans
-#' @importFrom reshape melt
 #' @export
 #' @examples
 #' # # # Using plot_tree with the esophagus dataset.

@@ -49,7 +49,7 @@ access(otuTable(ex1), "sampleMap", TRUE)
 setMethod("sampleMap", "ANY", function(object, errorIfNULL=TRUE){#
 	access(object, "sampleMap", errorIfNULL)#
 })
-# while for many other cases, the direct-name accessor needs to find a non-NULL or throw#
+while for many other cases, the direct-name accessor needs to find a non-NULL or throw#
 # an error because the rest of the function/method won't work without that data#
 # This can be accomplished with some simple modifications to the accessors.#
 setGeneric("sampleMap1", function(object, errorIfNULL=TRUE) standardGeneric("sampleMap1"))#
@@ -63,7 +63,7 @@ access(ps1, "sampleMap", TRUE)
 access(ps0, "sampleMap", TRUE)
 sampleMap1(ps0)
 sampleMap1(ps0, FALSE)
-# Define the new "phyloseq" class.#
+Define the new "phyloseq" class.#
 #################################################################################
 setClass(Class="phyloseq", representation=representation(#
 	otuTable="otuTable",#
@@ -72,7 +72,6 @@ setClass(Class="phyloseq", representation=representation(#
 	tre="phylo4"),#
 	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)#
 )
-#################################################################################
 setClass(Class="phyloseq", #
 	representation=representation(#
 		otuTable="otuTable",#
@@ -83,7 +82,7 @@ setClass(Class="phyloseq", #
 	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)#
 )
 library("phyloseq")
-# Define the new "phyloseq" class.#
+Define the new "phyloseq" class.#
 #################################################################################
 setClass(Class="phyloseq", #
 	representation=representation(#
@@ -108,7 +107,7 @@ data(ex1)
 rownames(sampleMap(ex1))
 rownames(matrix(3,5,5))
 matrix(3,5,5)
-#' #    matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )#
+' #    matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )#
 #' # map1 <- sampleMap(map1) #
 #' # ex1 <- phyloseq(OTU1, map1, tax1)#
 #' # otuTable(ex1)#
@@ -154,11 +153,10 @@ setMethod("otuTable", "data.frame", function(object, speciesAreRows){#
 	otuTable(as(object, "matrix"), speciesAreRows)#
 })
 otuTable(matrix(5,5,5), TRUE)
-		HO
+HO
 setClassUnion("taxTabOrNULL", c("taxonomyTable", "NULL"))
 library("phylobase")
-#################################################################################
-#' The S4 class for storing taxa-abundance information.#
+' The S4 class for storing taxa-abundance information.#
 #'#
 #' Because orientation of these tables can vary by method, the orientation is#
 #' defined explicitly in the \code{speciesAreRows} slot (a logical).#
@@ -285,8 +283,7 @@ setClass(Class="phyloseq", #
 	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)#
 )
 getSlots("phyloseq")
-#################################################################################
-#' The S4 class for storing taxa-abundance information.#
+' The S4 class for storing taxa-abundance information.#
 #'#
 #' Because orientation of these tables can vary by method, the orientation is#
 #' defined explicitly in the \code{speciesAreRows} slot (a logical).#
@@ -413,8 +410,7 @@ setClass(Class="phyloseq", #
 	prototype=prototype(otuTable=NULL, taxTab=NULL, sampleMap=NULL, tre=NULL)#
 )
 getSlots("phyloseq")
-#################################################################################
-### Accessor / subset methods.#
+Accessor / subset methods.#
 #################################################################################
 #' Build or access otuTable objects.#
 #'#
@@ -1089,7 +1085,7 @@ list(OTU, SM)
 sapply(list(OTU, SM), splat.phyloseq.objects)
 splatlist <- sapply(list(OTU, SM), splat.phyloseq.objects)
 splatlist
-	## Need to determine which new() type to call.#
+Need to determine which new() type to call.#
 	# First some quality-control checks:#
 	if( length(splatlist) > 4){#
 		stop("phyloseq()-ERROR: Too many components provided\n")#
@@ -1110,10 +1106,10 @@ getSlots(ps)
 splatlist
 ps
 splat.phyloseq.objects(ps)
-		slotsx <- getSlots(class(x))
+slotsx <- getSlots(class(x))
 x <- ps
-		slotsx <- getSlots(class(x))
-		slotsx
+slotsx <- getSlots(class(x))
+slotsx
 getSlots(class(ps))
 names(getSlots(class(ps)))
 slotnames
@@ -1125,8 +1121,7 @@ allslots  <- sapply(slotnames, function(i, x){access(x, i, FALSE)}, ps)
 sapply(allslots, is.null)
 slotsx    <- allslots[!sapply(allslots, is.null)]
 slotsx
-#################################################################################
-#' Convert phyloseq objects into a named list of the component type (class)#
+' Convert phyloseq objects into a named list of the component type (class)#
 #'#
 #' @usage splat.phyloseq.objects(x)#
 #'#
@@ -1160,7 +1155,7 @@ splatlist
 splat.phyloseq.objects(NULL)
 (t1 <- splat.phyloseq.objects(ps))
 names(t1)
-#' Return the non-empty slot names of a phyloseq object.#
+' Return the non-empty slot names of a phyloseq object.#
 #'#
 #' Like \code{\link{getSlots}}, but returns the class name if argument #
 #' is component data object.#
@@ -1217,7 +1212,7 @@ source("~/github_packages/phyloseq_bioc/R/phyloseq-class.R")#
 source("/Users/pjm2/github_packages/phyloseq_bioc/R/accessor-methods.r")#
 #
 # A test for the constructor...
-# A test for the constructor...#
+A test for the constructor...#
 phyloseq(OTU)#
 phyloseq(OTU, SM)#
 # should only return
@@ -1229,19 +1224,15 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 #
 	# Set the "seed" for randomization. Default 888 :)#
 	set.seed(random_seed)#
-	#
 	# Define the current year, starting with 2011, so that years don't repeat#
 	# but continue forward in time from 2011#
 	year <- current_year - 2011 + 1#
-	#
 	# Run the loop the number of times required for the current year.#
 	for( yr in 1:year ){#
 		# Initialize the giver/recipient table for each year.#
 		NSSS <- data.frame(giver=clan, recipient1=NA, recipient2); rownames(NSSS) <- clan#
-		#
 		# Initialize the set of possible recipients for each year.#
 		receives <- clan#
-		#
 		# The main table-filling loop and if/test for random NSSS selection.#
 		for( j in clan ){#
 			# Check that giver is not the only remaining recipient.#
@@ -1250,18 +1241,14 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 				switch_recipients <- sample(clan[-which(clan==j)], 1)#
 				NSSS[j, "recipient"] <- NSSS[switch_recipients, "recipient"]#
 				NSSS[switch_recipients, "recipient"] <- j#
-				#
 			# Else, everything fine, finish table.	#
 			} else {#
 				# make sure giver doesn't give to himself/herself#
 				receivej <- receives[ receives != j ]#
-				#
 				# Randomly determine recipient from receivej#
 				receivej <- sample(receivej, 1)#
-				#
 				# Once a recipient is chosen, pop it from the available recipients#
 				receives <- receives[-which(receives==receivej)]#
-				#
 				# Add to new NSSS recipient to NSSS-table#
 				NSSS[j, "recipient"] <- receivej		#
 			}#
@@ -1273,8 +1260,7 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 # Run makeNSSS(), and print the table to screen#
 #################################################################################
 makeNSSS(2011)
-#################################################################################
-# Remove everything from the main environment workspace to avoid conflicts bugs.#
+Remove everything from the main environment workspace to avoid conflicts bugs.#
 rm(list=ls())#
 #
 makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integer"),#
@@ -1284,19 +1270,15 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 #
 	# Set the "seed" for randomization. Default 888 :)#
 	set.seed(random_seed)#
-	#
 	# Define the current year, starting with 2011, so that years don't repeat#
 	# but continue forward in time from 2011#
 	year <- current_year - 2011 + 1#
-	#
 	# Run the loop the number of times required for the current year.#
 	for( yr in 1:year ){#
 		# Initialize the giver/recipient table for each year.#
 		NSSS <- data.frame(giver=clan, recipient1=NA); rownames(NSSS) <- clan#
-		#
 		# Initialize the set of possible recipients for each year.#
 		receives <- clan#
-		#
 		# The main table-filling loop and if/test for random NSSS selection.#
 		for( j in clan ){#
 			# Check that giver is not the only remaining recipient.#
@@ -1305,18 +1287,14 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 				switch_recipients <- sample(clan[-which(clan==j)], 1)#
 				NSSS[j, "recipient"] <- NSSS[switch_recipients, "recipient"]#
 				NSSS[switch_recipients, "recipient"] <- j#
-				#
 			# Else, everything fine, finish table.	#
 			} else {#
 				# make sure giver doesn't give to himself/herself#
 				receivej <- receives[ receives != j ]#
-				#
 				# Randomly determine recipient from receivej#
 				receivej <- sample(receivej, 1)#
-				#
 				# Once a recipient is chosen, pop it from the available recipients#
 				receives <- receives[-which(receives==receivej)]#
-				#
 				# Add to new NSSS recipient to NSSS-table#
 				NSSS[j, "recipient"] <- receivej		#
 			}#
@@ -1335,19 +1313,15 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 #
 	# Set the "seed" for randomization. Default 888 :)#
 	set.seed(random_seed)#
-	#
 	# Define the current year, starting with 2011, so that years don't repeat#
 	# but continue forward in time from 2011#
 	year <- current_year - 2011 + 1#
-	#
 	# Run the loop the number of times required for the current year.#
 	for( yr in 1:year ){#
 		# Initialize the giver/recipient table for each year.#
 		NSSS <- data.frame(giver=clan, recipient=NA); rownames(NSSS) <- clan#
-		#
 		# Initialize the set of possible recipients for each year.#
 		receives <- clan#
-		#
 		# The main table-filling loop and if/test for random NSSS selection.#
 		for( j in clan ){#
 			# Check that giver is not the only remaining recipient.#
@@ -1356,18 +1330,14 @@ makeNSSS <- function(current_year=as(strsplit(date(), " ", TRUE)[[1]][5], "integ
 				switch_recipients <- sample(clan[-which(clan==j)], 1)#
 				NSSS[j, "recipient"] <- NSSS[switch_recipients, "recipient"]#
 				NSSS[switch_recipients, "recipient"] <- j#
-				#
 			# Else, everything fine, finish table.	#
 			} else {#
 				# make sure giver doesn't give to himself/herself#
 				receivej <- receives[ receives != j ]#
-				#
 				# Randomly determine recipient from receivej#
 				receivej <- sample(receivej, 1)#
-				#
 				# Once a recipient is chosen, pop it from the available recipients#
 				receives <- receives[-which(receives==receivej)]#
-				#
 				# Add to new NSSS recipient to NSSS-table#
 				NSSS[j, "recipient"] <- receivej		#
 			}#
@@ -1398,8 +1368,7 @@ do.call("print", list(3,3,NULL,NULL,5))
 ?"phylo4-class"
 library('phylobase')
 ?"phylo4-class"
-##########
-# Now load and re-save as an object from new package#
+Now load and re-save as an object from new package#
 library("phyloseq")#
 data(ex1)#
 # # # # # newex1name <- "/Users/joeyMP/github/phyloseq_bioc/data/ex1.RData"#
@@ -1416,7 +1385,6 @@ sampleMap(ex1) <- sampleMap(ex1)
 tre(ex1) <- tre(ex1)
 otuTable(ex1) <- otuTable(ex1)
 taxTab(ex1) <- taxTab(ex1)
-#################################################################################
 data(ex1)#
 ex2 <- ex1#
 otuTable(ex2) <- otuTable(ex1)#
@@ -1430,7 +1398,6 @@ ex2
 Comparison(ex1, ex2)
 Compare(ex1, ex2)
 Ops(ex1, ex2)
-#################################################################################
 data(ex1)#
 ex2 <- ex1#
 identical(ex1, ex2)
@@ -1444,8 +1411,8 @@ identical(otuTable(ex1), otuTable(ex2))
 getslots.phyloseq(ex1)
 getslots.phyloseq(ex1)[1]
 i<-getslots.phyloseq(ex1)[1]
-	do.call(i, ex1, FALSE)
-	do.call(i, list(ex1, FALSE))
+do.call(i, ex1, FALSE)
+do.call(i, list(ex1, FALSE))
 sapply(getslots.phyloseq(ex1), function(i, x1, x2){ # i<-getslots.phyloseq(ex1)[1]#
 	identical(do.call(i, list(ex1, FALSE)), do.call(i, list(ex2, FALSE)))#
 }, ex1, ex2)
@@ -1479,12 +1446,10 @@ test <- sapply(getslots.phyloseq(ex1), function(i, x1, x2){ # i<-getslots.phylos
 	identical( do.call(i, list(x1, FALSE)), do.call(i, list(x2, FALSE)) )#
 }, ex1, ex2)
 test
-#################################################################################
 data(ex1)#
 t1 <- sapply(splat.phyloseq.objects(ex1), class)#
 t2 <- sapply(getslots.phyloseq(ex1), function(i, x1){ class(do.call(i, list(x1, FALSE))) }, ex1)#
 identical(t1, t2)
-#################################################################################
 data(ex1)#
 ex2 <- ex1#
 otuTable(ex2)  <- otuTable(ex1)#
@@ -1501,7 +1466,6 @@ matx <- as(x1, "matrix")
 data(ex1)
 ex1 <- otuTable(ex1)
 matx <- as(ex1, "matrix")
-#################################################################################
 data(ex1)#
 ex1  <- otuTable(ex1)#
 matx <- as(ex1, "matrix")#
@@ -1583,8 +1547,7 @@ source('merge-methods.R')#
 source('multtest-wrapper.R')#
 source('ordination-methods.R')#
 source('transform_filter-methods.R')
-#################################################################################
-#' The S4 class for storing taxa-abundance information.#
+' The S4 class for storing taxa-abundance information.#
 #'#
 #' Because orientation of these tables can vary by method, the orientation is#
 #' defined explicitly in the \code{speciesAreRows} slot (a logical).#
