@@ -1828,6 +1828,7 @@ plot_tree_only <- function(physeq){
 #' @keywords internal
 #' @importFrom scales log_trans
 #' @importFrom reshape melt
+#' @importFrom reshape melt.array
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
 plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
@@ -1863,7 +1864,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
-	# Add to melted data.frame (melted.tip)
+	# Add to melted data.frame (melted.tip) - uses melt.array
 	melted.tip$h.adj.index <- melt(h.adj)$value
 	
 	# the amount to adjust the horizontal coordinate space
