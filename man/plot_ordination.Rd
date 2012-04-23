@@ -7,9 +7,8 @@
   title=NULL, justDF=FALSE)
 }
 \arguments{
-  \item{physeq}{(Required). \code{\link{phyloseq-class}},
-  or alternatively, an \code{\link{sampleData-class}}. The
-  data about which you want to plot and annotate the
+  \item{physeq}{(Required). \code{\link{phyloseq-class}}.
+  The data about which you want to plot and annotate the
   ordination.}
 
   \item{ordination}{(Required). An ordination object. Many

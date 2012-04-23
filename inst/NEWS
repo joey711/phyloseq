@@ -1,18 +1,24 @@
 phyloseq
 ===========
-* Bioconductor development release updates.
-* BIOM format import: import_biom() function
+* plot_ordination() powerful, flexible ordination plots built with ggplot2
+* plot_tree() easy, flexible annotated tree plots built with ggplot2
+* make_sample_network(), plot_sample_network() - microbiome network visualization
+* plot_richness_estimates() for easy, flexible summary of species richness
 * Parallel Fast UniFrac
 * distance() wrapper for ecological distance calculations
 * ordinate() wrapper, calculates many different ordination methods.
-* plot_ordination() powerful, flexible ordination plotting using ggplot2
-* make_sample_network(), plot_sample_network() - microbiome network visualization
-* plot_richness_estimates() for easy, flexible summary of species richness
+* General importer for all supported data formats: import()
+* BIOM format import: import_biom() function
 * Support for Double Principle Coordinate Analysis (DPCoA)
 * Several published exampled datasets included
-* General importer for all supported data formats: import()
+* Bioconductor development release updates.
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+phyloseq 1.1.5
+===========
+* Add initial version of tree_plot(), built with ggplot2
+* Adds several internal functions borrowed from devel version of ggphylo
 
 phyloseq 1.1.4
 ===========

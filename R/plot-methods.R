@@ -361,8 +361,8 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #' @usage plot_ordination(physeq, ordination, type="samples", axes=c(1, 2),
 #'	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE)
 #' 
-#' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
-#'  an \code{\link{sampleData-class}}. The data about which you want to 
+#' @param physeq (Required). \code{\link{phyloseq-class}}. 
+#'  The data about which you want to 
 #'  plot and annotate the ordination.
 #'
 #' @param ordination (Required). An ordination object. Many different classes
@@ -1105,7 +1105,7 @@ tiptext <- function(tip, adj=c(0.5, 0.5), ...){
 	text( (XX + adj[1] - 0.5), (YY + adj[2] - 0.5), ... )
 }
 ################################################################################
-#' Plot tree with easy tip annotation.
+#' Plot and annotate tree-tip using base/ape graphics
 #'
 #' Requires a \code{\link{phyloseq-class}} that contains a tree (\code{\link{tre}}), 
 #' sample data (\code{\link{sampleData}}),
@@ -1324,4 +1324,825 @@ colname2hex <- function(colname, alpha=1){
 		sapply(colname, colname2hex, alpha)
 	}	
 }
+################################################################################
+################################################################################
+################################################################################
+# plot_tree section.  
+# Includes core code borrowed with-permission from and attribution to the
+# ggphylo package available (only) on GitHub
+################################################################################
+################################################################################
+#' Extracts the parent node index for the given node. 
+#'
+#' Returns -1 if the node is root.
+#' Return the index of the node directly above the given node.
+#' Returns -1 if the given node is root.
+#'
+#' @param phylo, input phylo object
+#' @param node, integer index of the node whose parent is desired
+#' @return integer, the index of the parent node or -1 if the given node is root.
+#' 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#'
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tree.parent.node <- function(phylo, node) {
+  edge.index <- which(phylo$edge[,2]==node)
+  node <- phylo$edge[edge.index,1]
+  if (length(node)==0) {
+    node <- -1
+  }
+  return(node)
+}
+################################################################################
+#' Extracts the length of the branch above the given node.
+#'
+#' Returns 0 if the node is root.
+#' 
+#' @param phylo input phylo object
+#' @param node integer, the node's index
+#' @return numeric, the branch length of the edge leading to the given node.
+#' May be NA.
+#' 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tree.branch.length <- function(phylo, node) {
+  edge.index <- which(phylo$edge[,2]==node)
+  if (is.null(phylo$edge.length)) {
+    return(NA)
+  }
+  bl <- phylo$edge.length[edge.index]
+  if (length(bl)==0) {
+    bl <- 0
+  }
+  return(bl)
+}
+################################################################################
+#' Return a list of a node's children.
+#'
+#' Returns a list (not a vector!) of the node indices of the given
+#' node's direct children. Returns (-1, -1) if the given node is a leaf.
+#'
+#' @param phylo, input phylo object
+#' @param node, integer index of the node to test
+#' @return list, a list containing the integer indices 
+#' of the nodes directly beneath the given node.
+#' 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tree.child.nodes <- function(phylo, node) {
+  edge.indices <- which(phylo$edge[,1]==node)
+  nodes <- phylo$edge[edge.indices,2]
+  if (length(nodes)==0) {
+    nodes <- list(c(-1,-1))
+  } else {
+    nodes <- list(nodes)
+  }
+  return(list(nodes))
+}
+################################################################################
+#' @keywords internal
+is.standard.layout <- function(x) {
+  any(x %in% c('default', 'radial'))
+}
+################################################################################
+#' Return length to root from node.
+#'
+#' Returns the length from the tree root to the given node. The input
+#'  node can either be input as a node index or a node label.
+#' 
+#' @param phylo input phylo object
+#' @param node integer or character. When integer, the node index; when character, the node label
+#' @return numeric, the total branch length separating the tree root and the given node.
+#' 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tree.length.to.root <- function(phylo, node) {
+  tip.index <- node
+  if (is.character(node)) {
+    tip.index <- which(phylo$tip.label==node)
+  }
+  cur.node.b <- tip.index
+
+  p.edges <- phylo$edge
+  p.lengths <- phylo$edge.length
+
+  if(is.null(p.lengths)) {
+    p.lengths <- rep(1, length(p.edges[,1]))
+  }
+
+  length <- 0
+  while(length(which(p.edges[,2]==cur.node.b)) > 0) {
+    cur.edge.index <- which(p.edges[,2]==cur.node.b)
+    cur.edge.length <- p.lengths[cur.edge.index]
+    if (length(cur.edge.length) == 0 || is.na(cur.edge.length)) {
+      cur.edge.length <- 0
+    }
+    length <- length + cur.edge.length
+    cur.node.a <- p.edges[cur.edge.index,1]
+    cur.node.b <- cur.node.a # Move up to the next edge
+  }
+  return(length)
+}
+################################################################################
+#' Convert tree tags into data.frame columns
+#' 
+#' Given a \code{\link{phylo}} object and a data frame, transform all
+#' the tags from the tree into columns of the data frame. Rows of the
+#' data frame are linked to the tree via a required 'node' column, which
+#' must contain integer indices of the associated node.
+#'
+#' This function is similar to the tree.as.data.frame method, but not
+#' exactly the same. It is used internally by the tree.layout
+#' function.
+#' 
+#' @param phylo, input phylo object
+#' @param df, data.frame with a 'node' column corresponding to integer indices
+#' of tree nodes.
+#' @return df, a copy of the input data frame, with tags added as new columns
+#'
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tags.into.df <- function(phylo, df) {
+  all.tags <- c()
+
+  for (i in 1:nrow(df)) {
+    row <- df[i,]
+    node <- row$node
+    tags <- tree.get.tags(phylo, node)
+    for (j in 1:length(tags)) {
+      all.tags <- c(all.tags, names(tags)[j])
+    }
+  }
+  all.tags <- unique(all.tags)
+
+  df[, all.tags] <- 0
+
+  for (i in 1:nrow(df)) {
+    row <- df[i,]
+    node <- row$node
+    tags <- tree.get.tags(phylo, node)
+
+    for (j in 1:length(tags)) {
+      key <- names(tags)[j]
+      val <- tags[j]
+      df[i, key] <- val
+    }
+  }
+  return(df)
+}
+################################################################################
+#' Retrieves a list of all tags for the given node.
+#'
+#' @param phylo input phylo object
+#' @param node the node index for the desired tags
+#' @return list containing all tags associated with this node, if tags exist; empty list otherwise.
+#'
+#' @examples
+#' # tree <- tree.read('((a,b[&&NHX:foo=bar]),c);')
+#' # tree.get.tags(tree, tree.node.with.label(tree, 'b')) # foo => bar
+#' # 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tree.get.tags <- function(phylo, node) {
+  if (!tree.has.tags(phylo)) {
+    return(list())
+  }
+  
+  tags <- phylo$.tags[[node]]
+  #print(paste(label(phylo, node), tags))
+  if (is.null(tags) || is.na(tags)) {
+    return(list())
+  } else {
+    return(tags)
+  }
+}
+################################################################################
+#' Determines whether the given phylo object contains tags or not.
+#'
+#' @param phylo input phylo object
+#' @return boolean, indicating this phylo has tags (TRUE) or doesn't (FALSE).
+#' 
+#' @examples
+#' # tree.has.tags(tree.read('((a,b[&&NHX:foo=bar]),c);')) # TRUE
+#' # tree.has.tags(tree.read('((a,b),c);')) # FALSE
+#' # 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @keywords internal
+tree.has.tags <- function(phylo) {
+  !is.null(phylo$.tags)
+}
+################################################################################
+#' Returns a data frame defining segments to draw the phylogenetic tree.
+#'
+#' This internal function is borrowed directly from the \code{ggphylo} package
+#' available on GitHub: \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @seealso
+#' This code is borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#' 
+#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @importFrom plyr rbind.fill
+#'
+#' @keywords internal
+tree.layout <- function(
+  phylo,
+  layout = 'default',
+  layout.ancestors = FALSE,
+  align.seq.names = NA
+) {
+  # Number of nodes and leaves.
+  n.nodes <- length(phylo$tip.label)+phylo$Nnode
+  n.leaves <- length(phylo$tip.label)
+
+  t.labels <- phylo$tip.label
+  n.labels <- ((n.leaves+1):n.nodes)
+  if (!is.null(phylo$node.label)) {
+    n.labels <- phylo$node.label
+  }
+
+  # Create the skeleton data frame.
+  df <- data.frame(
+                   node=c(1:n.nodes),                                            # Nodes with IDs 1 to N.
+                   angle=0,
+                   x=0,                                                          # These will contain the x and y coordinates after the layout procedure below.
+                   y=0,
+                   label=c(t.labels, n.labels),            # The first n.leaves nodes are the labeled tips.
+                   is.leaf=c(rep(TRUE, n.leaves), rep(FALSE, n.nodes-n.leaves)),    # Just for convenience, store a boolean whether it's a leaf or not.
+                   parent=0,                                                     # Will contain the ID of the current node's parent
+                   children=0,                                                   # Will contain a list of IDs of the current node's children
+                   branch.length=0                                               # Will contain the branch lengths
+                   )
+
+  # Collect the parents, children, and branch lengths for each node
+  parent <- c()
+  bl <- c()
+  children <- list()
+  event.count <- c()
+  for (i in 1:nrow(df)) {
+    node <- df[i,]$node
+    parent <- c(parent, tree.parent.node(phylo, node))
+    bl <- c(bl, tree.branch.length(phylo, node))
+    children <- c(children, tree.child.nodes(phylo, node))
+  }
+  df$parent <- parent
+  df$branch.length <- bl
+  df$children <- children
+
+  # Start the layout procedure by equally spacing the leaves in the y-dimension.
+  df[df$is.leaf==TRUE,]$y = c(1:n.leaves)
+
+  found.any.internal.node.sequences <- FALSE
+
+  if (is.standard.layout(layout)) {
+    # For each leaf: travel up towards the root, laying out each internal node along the way.
+    for (i in 1:n.leaves) {
+      cur.node <- i
+      while (length(cur.node) > 0 && cur.node != -1) {
+        df[cur.node, 'angle'] <- 0
+
+        # We always use branch lengths: x-position is simply the length to the root.
+        df[cur.node,]$x <- tree.length.to.root(phylo,cur.node)
+
+        # The y-position for internal nodes is the mean of the y-position of all children.
+        children <- unlist(df[cur.node,]$children)
+        if (length(children) > 0 && children[1] != -1) {
+          child.y.sum <- 0
+          for (i in 1:length(children)) {
+            child.index <- children[i]
+            cur.y <- df[child.index,]$y
+            child.y.sum <- child.y.sum + cur.y
+          }
+          df[cur.node, ]$y <- (child.y.sum) / length(children)
+        }
+
+        # Try to find the index of this node in the alignment names.
+        if (!is.na(align.seq.names)) {
+          lbl <- df[cur.node,]$label
+          index.in.names <- which(align.seq.names == lbl | align.seq.names %in% c(paste('Node',lbl),
+					          paste('Root node',lbl)))
+          if (length(index.in.names)>0) {
+            df[cur.node,]$y <- index.in.names
+            if (!df[cur.node,]$is.leaf) {
+              found.any.internal.node.sequences <- TRUE
+            }
+          }
+        }
+
+        cur.node <- unlist(df[cur.node,]$parent)
+      }
+    }
+  }
+
+  if (layout == 'unrooted') {
+    # # See http://code.google.com/p/phylowidget/source/browse/trunk/PhyloWidget/src/org/phylowidget/render/LayoutUnrooted.java
+    # # For unrooted layout, we start from the root.
+    # layout.f <- function(node, lo, hi) {
+      # cur.enclosed <- tree.leaves.beneath(phylo, node)
+      # cur.x <- df[node, 'x']
+      # cur.y <- df[node, 'y']
+
+      # children <- unlist(df[node, ]$children)
+      # if (length(children) > 0 && children[1] != -1) {
+        # cur.angle <- lo
+        # for (i in 1:length(children)) {
+          # child.node <- children[i]
+          # child.enclosed <- tree.leaves.beneath(phylo, child.node)
+          # child.ratio <- child.enclosed / cur.enclosed
+          # child.bl <- tree.branch.length(phylo, child.node)
+
+          # arc.size <- (hi - lo) * child.ratio
+          # mid.angle <- cur.angle + arc.size / 2
+          
+          # child.x <- cur.x + cos(mid.angle) * child.bl
+          # child.y <- cur.y + sin(mid.angle) * child.bl
+
+          # df[child.node, 'x'] <<- child.x
+          # df[child.node, 'y'] <<- child.y
+          # df[child.node, 'angle'] <<- mid.angle / (2*pi) * 360
+
+          # layout.f(child.node, cur.angle, cur.angle+arc.size)
+          # cur.angle <- cur.angle + arc.size          
+        # }        
+      # }      
+    # }
+    
+    # layout.f(tree.get.root(phylo), 0, 2 * pi)
+  }
+
+  df$dir <- 'none'
+
+  # We have a data frame with each node positioned.
+  # Now we go through and make two line segments for each node (for a 'square corner' type tree plot).
+  line.df <- data.frame()
+  for (i in 1:nrow(df)) {
+    row <- df[i,]            # Data frame row for the current node.
+    if (row$parent == -1) {
+      next; # Root node!
+    }
+    p.row <- df[row$parent,] # Data frame row for the parent node.
+
+    if (is.standard.layout(layout) && !(layout.ancestors && found.any.internal.node.sequences)) {
+      horiz.line <- data.frame(
+                               node=row$node,
+                               y=row$y,
+                               yend=row$y,
+                               x=row$x,
+                               xend=p.row$x,
+                               label=row$label,   
+                               dir='up',
+                               branch.length=row$branch.length
+                               )
+      vert.line <- data.frame(
+                               node=row$node,
+                               y=row$y,
+                               yend=p.row$y,
+                               x=p.row$x,
+                               xend=p.row$x,
+                               label=row$label,
+                               dir='across',
+                               branch.length=row$branch.length
+      )
+      line.df <- rbind(line.df, horiz.line, vert.line)
+    } else {
+      up.line <- data.frame(
+                               node=row$node,
+                               y=row$y,
+                               yend=p.row$y,
+                               x=row$x,
+                               xend=p.row$x,
+                               label=row$label,
+                               dir='up',
+                               branch.length=row$branch.length
+                               )
+      line.df <- rbind(line.df, up.line)
+    }
+  }
+
+  line.df <- tags.into.df(phylo, line.df)
+  df <- tags.into.df(phylo, df)
+  # Remove weird list-of-lists from the nodes data frame.
+  df$children <- NULL
+
+  label.df <- df
+  line.df$type <- 'line'
+  df$type <- 'node'
+  label.df$type <- 'label'
+
+  internal.label.df <- subset(label.df, is.leaf==FALSE)
+  internal.label.df$type <- 'internal.label'
+
+  label.df <- subset(label.df, is.leaf==TRUE)  
+
+  all.df <- rbind.fill(line.df, df, label.df, internal.label.df)
+  all.df
+}
+################################################################################
+# Define an internal function for determining what the text-size should be
+#' @keywords internal
+treetextsize <- function(n){
+	# empirically chosen size-value calculator.
+	s <- 6 * exp(-n/100)
+	# enforce a floor.
+	s <- ifelse(s > 0.5, s, 0.5)
+	# enforce a max
+	s <- ifelse(s < 4, s, 4)
+	return(s)
+}
+################################################################################
+# Define an internal function for mapping phyloseq data variables to melted.tip
+#' @keywords internal
+treeMapVar2Tips <- function(melted.tip, physeq, variate){
+	# If variate is taxTab-variable: Map taxTab-variable to melted.tip
+	if( variate %in% rank.names(physeq, FALSE) ){
+		# Add relevant taxTab column.
+		x <- as(taxTab(physeq), "matrix")[, variate, drop=TRUE]
+		names(x) <- species.names(physeq)
+		return( x[as(melted.tip$species.names, "character")] )
+	}
+	# If variate is sampleMap-variable: Map sample-variable to melted.tip
+	if( variate %in% sample.variables(physeq, FALSE) ){
+		x <- as.vector(data.frame(sampleData(physeq))[, variate])
+		names(x) <- sample.names(physeq)				
+		return( x[as(melted.tip$variable, "character")] )
+	}	
+}
+################################################################################
+# The "tree only" setting. Simple. No annotations.
+#' @keywords internal
+plot_tree_only <- function(physeq){
+	# Create the tree data.frame
+	tdf <- tree.layout(tre(physeq))
+	# build tree lines
+	p <- ggplot(subset(tdf, type == "line")) + 
+			geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) 
+	return(p)
+}
+################################################################################
+# The "sampledodge" plot_tree subset function.
+#' @keywords internal
+#' @importFrom scales log_trans
+#' @importFrom reshape melt
+#' @importFrom plyr aaply
+#' @importFrom plyr ddply
+plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
+				label.tips, text.size, sizebase, base.spacing){
+
+	# Create the tree data.frame
+	tdf <- tree.layout(tre(physeq))
+	
+	# build tree lines
+	p <- ggplot(subset(tdf, type == "line")) + 
+			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
+								
+	# Get the subset of tdf for just the tips (leaves)
+	speciesDF <- subset(tdf, type=="label")
+	
+	# Add abundance data for each species
+	# # First, re-order speciesDF ensure match with otuTable
+	rownames(speciesDF) <- as(speciesDF$label, "character")
+	speciesDF <- speciesDF[species.names(physeq), ]
+	# # subset speciesDF to just what you need for tip plotting
+	speciesDF <- data.frame(speciesDF[, c("x", "y")], species.names=rownames(speciesDF))
+	
+	# # Make the 0-values NA so they're not plotted. 
+	OTU 		<- as(otuTable(physeq), "matrix") # Coerce to matrix.
+	if(!speciesAreRows(physeq)){OTU <- t(OTU)} # Enforce orientation.
+	OTU[OTU==0] <- NA
+	
+	# # Now add abundance table
+	speciesDF 	<- data.frame(speciesDF, OTU)
+	
+	# # Now melt to just what you need for adding to plot
+	melted.tip <- melt(speciesDF, id=c("x", "y", "species.names"))
+	
+	# Determine the horizontal adjustment index for each point
+	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
+	# Add to melted data.frame (melted.tip)
+	melted.tip$h.adj.index <- melt(h.adj)$value
+	
+	# the amount to adjust the horizontal coordinate space
+	x.spacer.base    <- base.spacing * max(melted.tip$x)
+	melted.tip$x.spacer.base <- x.spacer.base
+	melted.tip$x.adj <- (melted.tip$h.adj.index * melted.tip$x.spacer.base)
+	
+	# Remove the NA values (the samples that had no individuals of a particular species)
+	melted.tip <- subset(melted.tip, !is.na(value))
+
+	# Build the tip-label portion of the melted.tip data.frame, if needed.
+	if( !is.null(label.tips) ){
+		if( label.tips == "species.names" ){
+			melted.tip$tipLabels <- melted.tip[, "species.names"]
+		} else {
+			melted.tip$tipLabels <- treeMapVar2Tips(melted.tip, physeq, label.tips)
+		}
+	} 	
+
+	# color-map handling. Names "variable", "value" have specieal meaning.	
+	if( !is.null(color) ){
+		if( color %in% c("sample.names", "samples") ){
+			color <- "variable"
+		} else {
+			melted.tip$color <- treeMapVar2Tips(melted.tip, physeq, color)
+			names(melted.tip)[names(melted.tip)=="color"] <- color # rename to name of color variable
+		}
+	}
+
+	# shape-map handling. Names "variable", "value" have specieal meaning.	
+	if( !is.null(shape) ){
+		if( shape %in% c("sample.names", "samples") ){
+			shape <- "variable"
+		} else if( !is.null(shape) ){
+			melted.tip$shape <- treeMapVar2Tips(melted.tip, physeq, shape)
+			names(melted.tip)[names(melted.tip)=="shape"] <- shape # rename to name of shape variable
+		}
+	}
+	
+	# size-map handling. Names "abundance", "variable", "value" have special meaning.
+	if( !is.null(size) ){	
+		if( size %in% c("abundance", "Abundance", "abund") ){
+			size <- "value"
+		} else if( !is.null(size) ){
+			melted.tip$size <- treeMapVar2Tips(melted.tip, physeq, size)
+			names(melted.tip)[names(melted.tip)=="size"] <- size # rename to name of size variable
+		}
+	}
+		
+	# The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
+	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, shape=shape, size=size)
+	
+	# Add the new point layer.
+	p <- p + geom_point(tip.map, data=melted.tip)
+
+	# Optionally-add abundance value label to each point.
+	# This size needs to match point size.
+	if( any(melted.tip$value >= min.abundance[1]) ){
+		if( is.null(size) ){
+			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", label="value")
+			p <- p + geom_text( point.label.map, data=subset(melted.tip, value>=min.abundance[1]), size=1)
+		} else {
+			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y",
+				label="value", size=paste("0.025*", size, sep=""))
+			p <- p + geom_text( point.label.map, angle=45, hjust=0,
+						data=subset(melted.tip, value>=min.abundance[1]) )
+		}
+	}
+
+	# If no text.size given, calculate it from number of tips ("species", aka taxa)
+	# This is very fast. No need to worry about whether text is printed or not. DRY.
+	if( is.null(text.size) ){
+		text.size <- treetextsize(nspecies(physeq))
+	}
+
+	# If indicated, add the species labels to the right of points.
+	if( !is.null(label.tips) ){
+		# melted.tip.far has only one row per tip,
+		# the farthest horiz. adjusted position (one for each taxa)
+		melted.tip.far <- ddply(melted.tip, "species.names", function(df){
+			df[df$h.adj.index == max(df$h.adj.index), , drop=FALSE]
+		})
+		# Create the tip-label aesthetic map.
+		label.map <- aes(x=x + x.adj + 2*x.spacer.base, y=y, label=tipLabels)
+		# Add labels layer to plotting object.
+		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0)
+	}
+	
+	# Adjust name of 
+	if( !is.null(size) ){ 	
+		# p <- p + scale_size_continuous("Abundance", trans=log_trans(sizebase))
+		p <- p + scale_size_continuous(size, trans=log_trans(sizebase))
+	}
+	
+	# Update legend-name of color or shape
+	if( as.logical(sum(color == "variable")) ){
+		p <- update_labels(p, list(colour = "Samples"))
+	}
+	if( as.logical(sum(shape == "variable")) ){
+		p <- update_labels(p, list(shape  = "Samples"))
+	}
+			
+	return(p)		
+}
+################################################################################
+#' Plot a phylogenetic tree with optional annotations
+#'
+#' This function is intended to facilitate easy graphical investigation of 
+#' the phylogenetic tree, as well as sample data. Note that for phylogenetic
+#' sequencing of samples with large richness, some of the options in this 
+#' function will be prohibitively slow to render, or too dense to be
+#' interpretable. A rough ``rule of thumb'' is to use subsets of data 
+#' with not many more than 200 taxa per plot, sometimes less depending on the
+#' complexity of the additional annotations being mapped to the tree. It is 
+#' usually possible to create an unreadable, uninterpretable tree with modern
+#' datasets. However, the goal should be toward parameter settings and data
+#' subsets that convey (honestly, accurately) some biologically relevant
+#' feature of the data. One of the goals of the \code{\link{phyloseq-package}}
+#' is to make the determination of these features/settings as easy as possible.
+#'
+#' This function received a development contribution from the work of 
+#' Gregory Jordan for the \code{ggphylo} package, which provides tools for 
+#' rendering a phylogenetic tree in \code{\link{ggplot2}} graphics. That package
+#' is not currently available from CRAN or Bioconductor, but is available 
+#' in development (roughly ``beta'') form from GitHub. 
+#' Furthermore, although \code{ggphylo} awesomely supports radial and unrooted trees, 
+#' \code{plot_tree} currently only supports ``standard'' square-horizontal trees.
+#' Additional support for these types of features (like radial trees)
+#' is planned. Send us development feedback if this is a feature you really
+#' want to have soon.
+#'
+#' @usage plot_tree(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
+#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing = 0.02)
+#'
+#' @param physeq (Required). The data about which you want to 
+#'  plot and annotate a phylogenetic tree, in the form of a
+#'  single instance of the \code{\link{phyloseq-class}}, containing at 
+#'  minimum a phylogenetic tree component (try \code{\link{tre}}).
+#'  One of the major advantages of this function over basic tree-plotting utilities
+#'  in the \code{\link{ape}}-package is the ability to easily annotate the tree
+#'  with sample variables and taxonomic information. For these uses, 
+#'  the \code{physeq} argument should also have a \code{\link{sampleData}}
+#'  and/or \code{\link{taxTab}} component(s).
+#' 
+#' @param method (Optional). Character string. Default \code{"sampledodge"}. 
+#'  The name of the annotation method to use. 
+#'  This will be expanded in future versions.
+#'  Currently only \code{"sampledodge"} and \code{"treeonly"} are supported.
+#'  The \code{"sampledodge"} option results in points
+#'  drawn next to leaves if individuals from that taxa were observed,
+#'  and a separate point is drawn for each sample.
+#' 
+#' @param color (Optional). Character string. Default \code{NULL}.
+#'  The name of the variable in \code{physeq} to map to point color.
+#' 
+#' @param shape (Optional). Character string. Default \code{NULL}.
+#'  The name of the variable in \code{physeq} to map to point shape.
+#'
+#' @param size (Optional). Character string. Default \code{NULL}.
+#'  The name of the variable in \code{physeq} to map to point size.
+#'  A special argument \code{"abundance"} is reserved here and scales
+#'  point size using abundance in each sample on a log scale.
+#'
+#' @param min.abundance (Optional). Numeric. 
+#'  The minimum number of individuals required to label a point
+#'  with the precise number.
+#'  Default is \code{Inf},
+#'  meaning that no points will have their abundance labeled.
+#'  If a vector, only the first element is used. 
+#'
+#' @param label.tips (Optional). Character string. Default is \code{NULL},
+#'  indicating that no tip labels will be printed.
+#'  If \code{"species.names"}, then the name of the taxa will be added 
+#'  to the tree; either next to the leaves, or next to
+#'  the set of points that label the leaves. Alternatively,
+#'  if this is one of the rank names (from \code{rank.names(physeq)}),
+#'  then the identity (if any) for that particular taxonomic rank
+#'  is printed instead.
+#'
+#' @param text.size (Optional). Numeric. Should be positive. The 
+#'  size parameter used to control the text size of taxa labels.
+#'  Default is \code{NULL}. If left \code{NULL}, this function
+#'  will automatically calculate a (hopefully) optimal text size
+#'  given the vertical constraints posed by the tree itself. 
+#'  This argument is included in case the 
+#'  automatically-calculated size is wrong, and you want to change it.
+#'  Note that this parameter is only meaningful if \code{label.tips}
+#'  is not \code{NULL}.
+#'
+#' @param sizebase (Optional). Numeric. Should be positive.
+#'  The base of the logarithm used
+#'  to scale point sizes to graphically represent abundance of
+#'  species in a given sample. Default is 5.
+#' 
+#' @param base.spacing (Optional). Numeric. Default is \code{0.02}.
+#'  Should be positive.
+#'  This defines the base-spacing between points at each tip/leaf in the
+#'  the tree. The larger this value, the larger the spacing between points.
+#'  This is useful if you have problems with overlapping large points
+#'  and/or text indicating abundance, for example. Similarly, if you 
+#'  don't have this problem and want tighter point-spacing, you can 
+#'  shrink this value.
+#'
+#' @return A \code{\link{ggplot}}2 plot.
+#' 
+#' @seealso
+#'  \code{\link{plot.phylo}}
+#'
+#' This function is a special use-case that relies 
+#' on code borrowed directly, with permission, from the
+#' not-yet-officially-released package, \code{ggphylo}, currently only
+#' available from GitHub at:
+#' \url{https://github.com/gjuggler/ggphylo}
+#'
+#' @author Paul McMurdie, relying on supporting code from
+#'  Gregory Jordan \email{gjuggler@@gmail.com}
+#' 
+#' @importFrom scales log_trans
+#' @importFrom reshape melt
+#' @export
+#' @examples
+#' # # # Using plot_tree with the esophagus dataset.
+#' # data(esophagus)
+#' # plot_tree(esophagus)
+#' # plot_tree(esophagus, color="samples")
+#' # plot_tree(esophagus, size="abundance")
+#' # plot_tree(esophagus, size="abundance", color="samples")
+#' # plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+#' # # #
+#' # # # Using plot_tree with the Global Patterns dataset
+#' # # Subset Global Patterns dataset to just the observed Archaea
+#' # gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
+#' # # The number of different Archaeal species from this dataset is small enough ...
+#' # nspecies(gpa)
+#' # # ... that it is reasonable to consider displaying the phylogenetic tree directly.
+#' # # (probably not true of the total dataset)
+#' # nspecies(GlobalPatterns)
+#' # # Some patterns are immediately discernable with minimal parameter choices:
+#' # plot_tree(gpa, color="SampleType")
+#' # plot_tree(gpa, color="Phylum")
+#' # plot_tree(gpa, color="SampleType", shape="Phylum")
+#' # plot_tree(gpa, color="Phylum", label.tips="Genus")
+#' # # However, the text-label size scales with number of species, and with common
+#' # # graphics-divice sizes/resolutions, these ~200 taxa still make for a 
+#' # # somewhat crowded graphic. 
+#' # # 
+#' # # Let's instead subset further ot just the Crenarchaeota
+#' # gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
+#' # plot_tree(gpac, color="SampleType", shape="Genus")
+#' # plot_tree(gpac, color="SampleType", label.tips="Genus")
+#' # # Let's add some abundance information.
+#' # # Notice that the default spacing gets a little crowded when we map
+#' # # species-abundance to point-size:
+#' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance")
+#' # # So let's spread it out a little bit with the base.spacing parameter.
+#' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
+plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
+	min.abundance=Inf, label.tips=NULL, text.size=NULL,
+	sizebase=5, base.spacing = 0.02){
+
+	if( method %in% c("treeonly") ){
+		p <- plot_tree_only(physeq)
+	}
+	
+	if( method == "sampledodge" ){
+		p <- plot_tree_sampledodge(physeq, color, shape, size, min.abundance, 
+				label.tips, text.size, sizebase, base.spacing)
+	}
+	
+	# Theme-ing:
+	p <- p + opts(axis.ticks = theme_blank(),
+			axis.title.x=theme_blank(), axis.text.x=theme_blank(),
+			axis.title.y=theme_blank(), axis.text.y=theme_blank(),
+			panel.background = theme_blank(),
+			panel.grid.minor = theme_blank(),			
+			panel.grid.major = theme_blank()
+			)
+	
+	return(p)
+}
+################################################################################
 ################################################################################

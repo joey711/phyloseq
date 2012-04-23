@@ -14,11 +14,11 @@ More concretely, `phyloseq` provides:
  * Native, parallelized implementation of UniFrac distance calculations.
 
  * Powerful, flexible custom plot methods using ggplot2 for rapid, convenient exploratory analysis.
+	- plot_tree
+	- plot_ordination
 	- plot_sample_network
 	- plot_richness_estimates
-	- plot_ordination
 	- plot_taxa_bar
-	- plot_tree_phyloseq
 
  * Multiple testing methods specific to high-throughput phylogenetic sequencing data.
 
@@ -31,7 +31,7 @@ Additional features planned for the near-term:
  * Animated ordinations for time-series (and analogous) data.
 	See beta-version support package: https://github.com/joey711/animate.phyloseq
 
- * More advanced tree-based OTU clustering leveraging tools already available in R.
+ * More advanced tree-based OTU clustering, leveraging tools already available in R.
 
  * Structures for additional data components, e.g. mass spec and expression data.
 
@@ -39,7 +39,7 @@ For news related to the latest development version, see:
 
 https://github.com/joey711/phyloseq/blob/master/inst/NEWS
 
-phyloseq is under active development, which is hosted and versioned at github:
+phyloseq is under active development, hosted and versioned at GitHub:
 
 https://github.com/joey711/phyloseq
 

@@ -1,6 +1,6 @@
 \name{plot_tree_phyloseq}
 \alias{plot_tree_phyloseq}
-\title{Plot tree with easy tip annotation.}
+\title{Plot and annotate tree-tip using base/ape graphics}
 \usage{
   plot_tree_phyloseq(physeq, color_factor=NULL,
   shape_factor=NULL, base_size=1, size_scaling_factor =
