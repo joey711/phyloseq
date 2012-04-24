@@ -5,13 +5,13 @@ The analysis of microbiological communities brings many challenges: the integrat
 More concretely, `phyloseq` provides:
 
  * Import abundance and related data from popular OTU clustering pipelines:
-	- QIIME, mothur, BIOM, pyrotagger, RDP. More planned.
+	- [QIIME](http://qiime.org/), [mothur](http://www.mothur.org/), [BIOM](http://www.qiime.org/svn_documentation/documentation/biom_format.html), [PyroTagger](http://pyrotagger.jgi-psf.org/cgi-bin/index.pl), [RDP](http://pyro.cme.msu.edu/). More planned.
 
  * Convenience analysis wrappers for common analysis tasks, e.g.
-	- distance  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
-	- ordinate  --> many supported methods, including constrained methods
+	- [distance](https://github.com/joey711/phyloseq/wiki/distance)  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
+	- [ordinate](https://github.com/joey711/phyloseq/wiki/ordinate)  --> many supported methods, including constrained methods
 
- * Native, parallelized implementation of UniFrac distance calculations.
+ * Native, parallelized implementation of [UniFrac](https://github.com/joey711/phyloseq/wiki/Fast-Parallel-UniFrac) distance calculations.
 
  * Powerful, flexible custom plot methods using ggplot2 for rapid, convenient exploratory analysis.
 	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
@@ -29,7 +29,7 @@ More concretely, `phyloseq` provides:
 Additional features planned for the near-term:
 
  * Animated ordinations for time-series (and analogous) data.
-	See beta-version support package: https://github.com/joey711/animate.phyloseq
+	See beta-version support package: [animate.phyloseq](https://github.com/joey711/animate.phyloseq)
 
  * More advanced tree-based OTU clustering, leveraging tools already available in R.
 
@@ -37,10 +37,10 @@ Additional features planned for the near-term:
 
 For news related to the latest development version, see:
 
-https://github.com/joey711/phyloseq/blob/master/inst/NEWS
+[phyloseq NEWS](https://github.com/joey711/phyloseq/blob/master/inst/NEWS)
 
 phyloseq is under active development, hosted and versioned at GitHub:
 
 https://github.com/joey711/phyloseq
 
-Feel free to fork and contribute!
+I make lots of effort to cite/attribute author contributions within official package documentation, citations, and anywhere else it is appropriate. Please feel free to fork and contribute!
