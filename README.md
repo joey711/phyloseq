@@ -14,10 +14,10 @@ More concretely, `phyloseq` provides:
  * Native, parallelized implementation of UniFrac distance calculations.
 
  * Powerful, flexible custom plot methods using ggplot2 for rapid, convenient exploratory analysis.
-	- (plot_tree)[https://github.com/joey711/phyloseq/wiki/tree_plot]
+	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
 	- plot_ordination
 	- plot_sample_network
-	- plot_richness_estimates
+	- [plot_richness_estimates](https://github.com/joey711/phyloseq/wiki/Graphics-Examples)
 	- plot_taxa_bar
 
  * Multiple testing methods specific to high-throughput phylogenetic sequencing data.
