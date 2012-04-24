@@ -34,7 +34,7 @@
 }
 \seealso{
   \code{\link{plot_ordination}} \code{\link{plot_taxa_bar}}
-  \code{\link{plot_sample_network}}
+  \code{\link{plot_sample_network}} \code{\link{plot_tree}}
   \code{\link{plot_tree_phyloseq}}
   \code{\link{plot_richness_estimates}}
 }

@@ -15,6 +15,12 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.6
+===========
+* Update vignette with plot_tree() example, replacing the 
+   old base-graphics function, plot_tree_phyloseq().
+* Fix bug in legend for trees with size mapped to abundance
+
 phyloseq 1.1.5
 ===========
 * Add initial version of tree_plot(), built with ggplot2

@@ -29,6 +29,7 @@
 #'  \code{\link{plot_ordination}}
 #'  \code{\link{plot_taxa_bar}}
 #'  \code{\link{plot_sample_network}}
+#'  \code{\link{plot_tree}}
 #'  \code{\link{plot_tree_phyloseq}}
 #'  \code{\link{plot_richness_estimates}}
 #'
@@ -1950,18 +1951,20 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0)
 	}
 	
-	# Adjust name of 
+	# Adjust name / scale of abundance...
 	if( !is.null(size) ){ 	
-		# p <- p + scale_size_continuous("Abundance", trans=log_trans(sizebase))
-		p <- p + scale_size_continuous(size, trans=log_trans(sizebase))
+		p <- p + scale_size_continuous("Abundance", trans=log_trans(sizebase))
 	}
 	
-	# Update legend-name of color or shape
+	# Update legend-name of color or shape or size
 	if( as.logical(sum(color == "variable")) ){
 		p <- update_labels(p, list(colour = "Samples"))
 	}
 	if( as.logical(sum(shape == "variable")) ){
 		p <- update_labels(p, list(shape  = "Samples"))
+	}
+	if( as.logical(sum(size == "value")) ){
+		p <- update_labels(p, list(size = "Abundance"))
 	}
 			
 	return(p)		
