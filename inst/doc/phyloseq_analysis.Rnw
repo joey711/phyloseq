@@ -104,10 +104,7 @@ Later on we will use an additional categorical designation --- human versus non-
 # prune OTUs that are not present in at least one sample
 GP <- prune_species(speciesSums(GlobalPatterns) > 0, GlobalPatterns)
 # Define a human-associated versus non-human categorical variable:
-human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
-	c("Feces", "Mock", "Skin", "Tongue")
-human <- human.levels[getVariable(GP, "SampleType")]
-names(human) <- sample.names(GP)
+human <- getVariable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
 # Add new human variable to sample data:
 sampleData(GP)$human <- factor(human)
 @
