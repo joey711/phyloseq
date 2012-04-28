@@ -47,7 +47,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	if( all(c("otuTable", "sampleData", "tre") %in% getslots.phyloseq(physeq)) ){
 		plot_tree_phyloseq(physeq, ...)		
 	} else if( all(c("otuTable", "sampleData", "taxTab") %in% getslots.phyloseq(physeq) ) ){
-		taxaplot(otu=physeq, ...)
+		plot_taxa_bar(physeq, ...)
 	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
 		tree <- tre(physeq)
 		plot.phylo(tree, ...)	
@@ -759,14 +759,14 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' Convert an otuTable object into a data.frame useful for plotting
 #' in the ggplot2 framework.
 #'
-#' @usage otu2df(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
+#' @usage otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
-#' @param otu An \code{otuTable} object.
+#' @param physeq An \code{otuTable} object.
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
-#'  categorize each species in otu. 
+#'  categorize each species in physeq. 
 #' 
-#' @param map The corresponding sampleData object for \code{otu}.
+#' @param map The corresponding sampleData object for \code{physeq}.
 #' 
 #' @param keepOnlyTheseTaxa A vector of the taxonomic labels that you want
 #'  included. If NULL, the default, then all taxonomic labels are used, except
@@ -779,21 +779,21 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #'  are included.
 #'
 #' @keywords internal
-otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
+otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 	########################################
 	# sample_i - A sample name. A single character string.
-	# otu      - An otuTable object.
+	# physeq      - An otuTable object.
 	# taxavec  - A character vector of the desired taxonomic names 
-	#             to categorize each species in otu. 
-	otu2dfi <- function(sample_i, otu, taxavec, normalized=TRUE){
-		Abundance_i <- getSpecies(otu, sample_i)
+	#             to categorize each species in physeq. 
+	otu2dfi <- function(sample_i, physeq, taxavec, normalized=TRUE){
+		Abundance_i <- getSpecies(physeq, sample_i)
 		if(normalized){ 
 			Abundance_i <- Abundance_i / sum(Abundance_i)
 		}
 		dflist <- list(
-			TaxaGroup = taxavec[species.names(otu)],
+			TaxaGroup = taxavec[species.names(physeq)],
 			Abundance = Abundance_i,
-			ID        = species.names(otu),
+			ID        = species.names(physeq),
 			sample    = sample_i
 		)
 		dflist <- c(dflist, map[sample_i, , drop=TRUE])
@@ -828,10 +828,10 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 	}
 	########################################		
 	# Main control loop to create large redundant data.frame for ggplot2	
-	df <- otu2dfi(sample.names(otu)[1], otu, taxavec)
+	df <- otu2dfi(sample.names(physeq)[1], physeq, taxavec)
 	df <- trimdf(df, keepOnlyTheseTaxa, threshold)
-	for( j in sample.names(otu)[-1] ){ 
-		dfj <- otu2dfi( j, otu, taxavec)
+	for( j in sample.names(physeq)[-1] ){ 
+		dfj <- otu2dfi( j, physeq, taxavec)
 		dfj <- trimdf(dfj, keepOnlyTheseTaxa, threshold)
 		df  <- rbind(df, dfj)
 	}
@@ -850,21 +850,21 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' The vertical axis is always relative abundance, but the data
 #' can be further organized at the horizontal axis and faceting grid
 #' by any combination of variates present in
-#' the sampleData component of \code{otu}.
+#' the \code{\link{sampleData}} component of \code{physeq}.
 #'
-#' @usage plot_taxa_bar(otu, taxavec="Domain",
+#' @usage plot_taxa_bar(physeq, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
 #'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
 #'
-#' @param otu (Required). An \code{otuTable} object, or higher-order object that contains
-#'  an otuTable and sampleData (e.g. ``otuSam'' class and its superclasses.).
-#'  If \code{otu} does not contain a taxTab slot (is a class that does not
-#'  have ``Tax'' in its title), then the second argument, \code{taxavec}, is
+#' @param physeq (Required). An \code{\class{otuTable-class}} or 
+#'  \code{\class{phyloseq-class}}.
+#'  If \code{physeq} does not contain a taxonomyTable component,
+#'  then the second argument, \code{taxavec}, is
 #'  required and should have length equal to the number of species/taxa in
-#'  \code{otu}.
+#'  \code{physeq}.
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
-#'  categorize each species in \code{otu}. If \code{otu} is a higher-order
+#'  categorize each species in \code{physeq}. If \code{physeq} is a higher-order
 #'  object that
 #'  contains a taxonomyTable, then taxavec can alternatively specify the
 #'  desired taxonomic level as a character string of length 1. 
@@ -927,18 +927,18 @@ otu2df <- function(otu, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 #' # ent10   <- prune_species(TopNOTUs, enterotype)
 #' # (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
 #' #    facet_wrap(~Enterotype) )
-plot_taxa_bar <- function(otu, taxavec="Domain",
+plot_taxa_bar <- function(physeq, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
 	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
 
-	# Some preliminary assignments. Assumes otu has non-empty sampleData slot.
-	map <- sampleData(otu)
+	# Some preliminary assignments. Assumes physeq has non-empty sampleData slot.
+	map <- sampleData(physeq)
 	if( length(taxavec) == 1 ){ 
-		taxavec <- as(taxTab(otu), "matrix")[, taxavec, drop=TRUE]
+		taxavec <- as(taxTab(physeq), "matrix")[, taxavec, drop=TRUE]
 	}
 
 	# Build the main species-level data.frame
-	df <- otu2df(otu, taxavec, map,	showOnlyTheseTaxa, threshold)
+	df <- otu2df(physeq, taxavec, map,	showOnlyTheseTaxa, threshold)
 
 	########################################
 	# Set the factor-order for df to ensure the
