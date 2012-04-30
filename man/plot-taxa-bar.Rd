@@ -3,61 +3,57 @@
 \alias{taxaplot}
 \title{Create a structured barplot graphic of the taxonomic groups.}
 \usage{
-  plot_taxa_bar(otu, taxavec="Domain",
-  showOnlyTheseTaxa=NULL, threshold=NULL,
-  x_category="sample", fill_category=x_category,
-  facet_formula = . ~ TaxaGroup, OTUpoints=FALSE,
+  plot_taxa_bar(physeq, taxavec="Domain",
+  showOnlyTheseTaxa=NULL, threshold=NULL, x="sample",
+  fill=x, facet_formula = . ~ TaxaGroup, OTUpoints=FALSE,
   labelOTUs=FALSE)
 
-  taxaplot(otu, taxavec = "Domain", showOnlyTheseTaxa =
-  NULL, threshold = NULL, x_category = "sample",
-  fill_category = x_category, facet_formula = . ~
-  TaxaGroup, OTUpoints = FALSE, labelOTUs = FALSE)
+  taxaplot(physeq, taxavec = "Domain", showOnlyTheseTaxa =
+  NULL, threshold = NULL, x = "sample", fill = x,
+  facet_formula = . ~ TaxaGroup, OTUpoints = FALSE,
+  labelOTUs = FALSE)
 }
 \arguments{
-  \item{otu}{(Required). An \code{otuTable} object, or
-  higher-order object that contains an otuTable and
-  sampleData (e.g. ``otuSam'' class and its superclasses.).
-  If \code{otu} does not contain a taxTab slot (is a class
-  that does not have ``Tax'' in its title), then the second
+  \item{physeq}{(Required). An \code{\link{otuTable-class}}
+  or \code{\link{phyloseq-class}}. If \code{physeq} does
+  not contain a taxonomyTable component, then the second
   argument, \code{taxavec}, is required and should have
   length equal to the number of species/taxa in
-  \code{otu}.}
+  \code{physeq}.}
 
-  \item{taxavec}{A character vector of the desired
-  taxonomic names to categorize each species in \code{otu}.
-  If \code{otu} is a higher-order object that contains a
-  taxonomyTable, then taxavec can alternatively specify the
-  desired taxonomic level as a character string of length
-  1. E.g. \code{taxavec = "Phylum"}. Default value is
-  \code{"Domain"}.}
+  \item{taxavec}{(Optional, but recommended). A character
+  vector of the desired taxonomic rank to use in grouping
+  each species/OTU in \code{physeq}. If \code{physeq}
+  contains a taxonomyTable, then taxavec can alternatively
+  specify the desired taxonomic level as a character string
+  of length 1. E.g. \code{taxavec = "Phylum"}. Default
+  value is \code{"Domain"}.}
 
   \item{showOnlyTheseTaxa}{A vector of the taxonomic labels
   that you want included. If NULL, the default, then all
   taxonomic labels are used, except for the empty character
   string, ``'', which is trimmed away.}
 
-  \item{threshold}{A [0,1] numeric. Fraction of abundance
-  of the taxonomic groups to keep for each sample. The
-  higher the value, the larger the diversity of taxonomica
-  groups included. That is, a greater number of the rare
-  groups are included. If NULL (or 1), the default, all
-  taxonomic groups are included.}
+  \item{threshold}{(Optional). A [0,1] numeric. Fraction of
+  abundance of the taxonomic groups to keep for each
+  sample. The higher the value, the larger the diversity of
+  taxonomica groups included. That is, a greater number of
+  the rare groups are included. If NULL (or 1), the
+  default, all taxonomic groups are included.}
 
-  \item{x_category}{A character string indicating which
-  sampleData column should be used to define the horizontal
+  \item{x}{(Optional). A character string indicating which
+  sample variable should be used to define the horizontal
   axis categories. Default is \code{"sample"}. Note that a
   few column-names are added by default and are available
   as options. They are ``sample'', ``Abundance'', and
   ``TaxaGroup''.}
 
-  \item{fill_category}{A character string indicating which
-  sampleData column should be used to define the fill color
-  of the bars. This does not have to match
-  \code{x_category}, but does so by default. Note that a
-  few column-names are added by default and are available
-  as options. They are ``sample'', ``Abundance'', and
-  ``TaxaGroup''.}
+  \item{fill}{(Optional). A character string. Indicates
+  which sample variable should be used to define the fill
+  color of the bars. This does not have to match \code{x},
+  but does so by default. Note that a few column-names are
+  added by default and are available as options. They are
+  ``sample'', ``Abundance'', and ``TaxaGroup''.}
 
   \item{facet_formula}{A formula object as used by
   \code{\link{facet_grid}} in \code{\link{ggplot}} or
@@ -100,15 +96,15 @@
   The vertical axis is always relative abundance, but the
   data can be further organized at the horizontal axis and
   faceting grid by any combination of variates present in
-  the sampleData component of \code{otu}.
+  the \code{\link{sampleData}} component of \code{physeq}.
 }
 \examples{
-##
-# data(enterotype)
-# TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10])
-# ent10   <- prune_species(TopNOTUs, enterotype)
-# (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
-#    facet_wrap(~Enterotype) )
+data(enterotype)
+TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10])
+ent10   <- prune_species(TopNOTUs, enterotype)
+plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup")
+library("ggplot2")
+plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype)
 }
 \seealso{
   \code{\link{otu2df}}, \code{\link{qplot}},

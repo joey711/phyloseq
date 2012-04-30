@@ -30,7 +30,6 @@
 #'  \code{\link{plot_taxa_bar}}
 #'  \code{\link{plot_sample_network}}
 #'  \code{\link{plot_tree}}
-#'  \code{\link{plot_tree_phyloseq}}
 #'  \code{\link{plot_richness_estimates}}
 #'
 #' @export
@@ -38,21 +37,18 @@
 #' @rdname plot_phyloseq-methods
 #'
 #' @examples 
-#'  ## data(esophagus)
-#'  ## plot_phyloseq(esophagus)
+#' data(esophagus)
+#' plot_phyloseq(esophagus)
 setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phyloseq") })
 #' @aliases plot_phyloseq,phyloseq-method
 #' @rdname plot_phyloseq-methods
 setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	if( all(c("otuTable", "sampleData", "tre") %in% getslots.phyloseq(physeq)) ){
-		plot_tree_phyloseq(physeq, ...)		
+		plot_tree(esophagus, color="samples")	
 	} else if( all(c("otuTable", "sampleData", "taxTab") %in% getslots.phyloseq(physeq) ) ){
 		plot_taxa_bar(physeq, ...)
 	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
-		tree <- tre(physeq)
-		plot.phylo(tree, ...)	
-		nodelabels(as.character(1:max(tree$edge)), node=1:max(tree$edge))
-		edgelabels(as.character(1:nrow(tree$edge)), edge=1:nrow(tree$edge))		
+		plot_tree(esophagus, color="samples")	
 	} else {
 		plot_richness_estimates(physeq)
 	}
@@ -272,27 +268,22 @@ plot_sample_network <- function(g, physeq=NULL,
 #' @import reshape
 #' @export
 #' @examples 
-#' # data(GlobalPatterns)
-#' # plot_richness_estimates(GlobalPatterns, "SampleType")
-#' # plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
-#' #
+#' data(GlobalPatterns)
+#' plot_richness_estimates(GlobalPatterns, "SampleType")
+#' plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
 #' # # Define a human-associated versus non-human categorical variable:
-#' # GP <- GlobalPatterns
-#' # human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
-#' # c("Feces", "Mock", "Skin", "Tongue")
-#' # human <- human.levels[getVariable(GP, "SampleType")]
-#' # names(human) <- sample.names(GP)
+#' GP <- GlobalPatterns
+#' human <- getVariable(GP, "SampleType") %in% 
+#'                   c("Feces", "Mock", "Skin", "Tongue")
+#' names(human) <- sample.names(GP)
 #' # # Replace current SD with new one that includes human variable:
-#' # sampleData(GP) <- sampleData(data.frame(sampleData(GP), human))
-#' # 
+#' sampleData(GP)$human <- human 
 #' # # Can use new "human" variable within GP as a discrete variable in the plot
-#' # plot_richness_estimates(GP, "human", "SampleType")
-#' # plot_richness_estimates(GP, "SampleType", "human")
-#' #
+#' plot_richness_estimates(GP, "human", "SampleType")
+#' plot_richness_estimates(GP, "SampleType", "human")
 #' # # Can also provide custom factor directly:
-#' # plot_richness_estimates(GP, "SampleType", human)
-#' # plot_richness_estimates(GP, human, "SampleType")
-#' # 
+#' plot_richness_estimates(GP, "SampleType", human)
+#' plot_richness_estimates(GP, human, "SampleType")
 #' # # Not run: Should cause an error:
 #' # plot_richness_estimates(GP, "value", "value")
 #' # #
@@ -447,36 +438,39 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #' @import ggplot2
 #' @export
 #' @examples 
-#' ##
-#' # data(GlobalPatterns)
-#' # # Define a human-associated versus non-human binary variable:
-#' # human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in%
-#' 		# c("Feces", "Mock", "Skin", "Tongue")
-#' # human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
-#' # names(human) <- sample.names(GlobalPatterns)
-#' # # Need to clean the zeros from GlobalPatterns:
-#' # GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
-#' # # Get the names of the most-abundant
-#' # top.TaxaGroup <- sort(
-#' 		# tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
-#' 		# decreasing = TRUE)
-#' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-#' # # Now prune further, to just the most-abundant phyla
-#' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
-#' # topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
-#' # GP1   <- prune_species(topsp, GP)
-#' # GP.dpcoa <- ordinate(GP1, "DPCoA")
-#' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
-#' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
-#' # plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human) + 
-#'      # geom_line() + geom_point(size=5)
+#' data(GlobalPatterns)
+#' # Define a human-associated versus non-human binary variable:
+#' human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in%
+#'    c("Feces", "Mock", "Skin", "Tongue")
+#' human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
+#' names(human) <- sample.names(GlobalPatterns)
+#' # Need to clean the zeros from GlobalPatterns:
+#' GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' # Get the names of the most-abundant
+#' top.TaxaGroup <- sort(
+#'    tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#'    decreasing = TRUE)
+#' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+#' # Now prune further, to just the most-abundant phyla
+#' GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
+#' GP1   <- prune_species(topsp, GP)
+#' GP.dpcoa <- ordinate(GP1, "DPCoA")
+#' plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
+#' # Customize with ggplot2 layers added directly to output
+#' library("ggplot2")
+#' plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
+#' p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human)
+#' print(p)
+#' # library("ggplot2")
+#' # p + geom_line() + geom_point(size=5)
 #' # plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
-#' # plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
-#' # plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
-#' # plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
-#' # plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
-#' # plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
-#' # plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
+#' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
+#' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
+#' plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
+#' plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
+#' plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
+#' plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
@@ -703,28 +697,33 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' @import ggplot2
 #' @export
 #' @examples 
-#' ##
-#' # data(GlobalPatterns)
-#' # # Need to clean the zeros from GlobalPatterns:
-#' # GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
-#' # sampleData(GP)$human <- factor(human)
-#' # # Get the names of the most-abundant phyla
-#' # top.TaxaGroup <- sort(
-#' #   	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
-#' #   decreasing = TRUE)
-#' # top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-#' # # Prune to just the most-abundant phyla
-#' # GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
-#' # # Perform a correspondence analysis
-#' # gpca <- ordinate(GP, "CCA")
-#' # # # Make species topo with a subset of points layered
-#' # # First, make a basic plot of just the species
-#' # p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
-#' # # Re-draw this as topo without points, and facet
-#' # p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
-#' # # Add a layer of a subset of species-points that are furthest from origin.
-#' # p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1) 
-#' # print(p53)
+#' data(GlobalPatterns)
+#' # Need to clean the zeros from GlobalPatterns:
+#' GP <- GlobalPatterns
+#' GP <- prune_species(speciesSums(GP)>0, GP)
+#' # # Add "human" variable to GP
+#' human <- getVariable(GP, "SampleType") %in% 
+#'                   c("Feces", "Mock", "Skin", "Tongue")
+#' names(human) <- sample.names(GP)
+#' sampleData(GP)$human <- human 
+#' # Get the names of the most-abundant phyla
+#' top.TaxaGroup <- sort(
+#'   	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#'   decreasing = TRUE)
+#' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+#' # Prune to just the most-abundant phyla
+#' GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' # Perform a correspondence analysis
+#' gpca <- ordinate(GP, "CCA")
+#' # # Make species topo with a subset of points layered
+#' # First, make a basic plot of just the species
+#' p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
+#' # Re-draw this as topo without points, and facet
+#' library("ggplot2")
+#' p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
+#' # Add a layer of a subset of species-points that are furthest from origin.
+#' p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1) 
+#' print(p53)
 subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 	threshold <- threshold[1] # ignore all but first threshold value.
 	method    <- method[1] # ignore all but first string.
@@ -853,19 +852,19 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #' the \code{\link{sampleData}} component of \code{physeq}.
 #'
 #' @usage plot_taxa_bar(physeq, taxavec="Domain",
-#'	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category,  
+#'	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x,  
 #'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
 #'
-#' @param physeq (Required). An \code{\class{otuTable-class}} or 
-#'  \code{\class{phyloseq-class}}.
+#' @param physeq (Required). An \code{\link{otuTable-class}} or 
+#'  \code{\link{phyloseq-class}}.
 #'  If \code{physeq} does not contain a taxonomyTable component,
 #'  then the second argument, \code{taxavec}, is
 #'  required and should have length equal to the number of species/taxa in
 #'  \code{physeq}.
 #'
-#' @param taxavec A character vector of the desired taxonomic names to 
-#'  categorize each species in \code{physeq}. If \code{physeq} is a higher-order
-#'  object that
+#' @param taxavec (Optional, but recommended). A character vector of 
+#'  the desired taxonomic rank to use in grouping 
+#'  each species/OTU in \code{physeq}. If \code{physeq}  
 #'  contains a taxonomyTable, then taxavec can alternatively specify the
 #'  desired taxonomic level as a character string of length 1. 
 #'  E.g. \code{taxavec = "Phylum"}. Default value is \code{"Domain"}.
@@ -874,20 +873,20 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'  included. If NULL, the default, then all taxonomic labels are used, except
 #'  for the empty character string, ``'', which is trimmed away.
 #'
-#' @param threshold A [0,1] numeric. Fraction of abundance of the taxonomic
+#' @param threshold (Optional). A [0,1] numeric. Fraction of abundance of the taxonomic
 #'  groups to keep for each sample. The higher the value, the larger
 #'  the diversity of taxonomica groups included. That is, a greater number of
 #'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
 #'  are included.
 #'
-#' @param x_category A character string indicating which sampleData column should be
+#' @param x (Optional). A character string indicating which sample variable should be
 #'  used to define the horizontal axis categories. Default is \code{"sample"}. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
 #' 
-#' @param fill_category A character string indicating which sampleData column
+#' @param fill (Optional). A character string. Indicates which sample variable
 #'  should be used to define the fill color of the bars. This does not have to 
-#'  match \code{x_category}, but does so by default. Note
+#'  match \code{x}, but does so by default. Note
 #'  that a few column-names are added by default and are available as options. 
 #'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
 #' 
@@ -921,14 +920,14 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #' @rdname plot-taxa-bar
 #'
 #' @examples
-#' ##
-#' # data(enterotype)
-#' # TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
-#' # ent10   <- prune_species(TopNOTUs, enterotype)
-#' # (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
-#' #    facet_wrap(~Enterotype) )
+#' data(enterotype)
+#' TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
+#' ent10   <- prune_species(TopNOTUs, enterotype)
+#' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup")
+#' library("ggplot2")
+#' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype) 
 plot_taxa_bar <- function(physeq, taxavec="Domain",
-	showOnlyTheseTaxa=NULL, threshold=NULL, x_category="sample", fill_category=x_category, 
+	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x, 
 	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
 
 	# Some preliminary assignments. Assumes physeq has non-empty sampleData slot.
@@ -987,9 +986,9 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 		geom_bar(
 			data=dftot, 
 			eval(call("aes",
-				x=as.name(x_category), 
+				x=as.name(x), 
 				y=quote(Abundance), 
-				fill=as.name(fill_category)
+				fill=as.name(fill)
 			)),
 			position="dodge", stat="identity"
 		) + 
@@ -997,14 +996,14 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 		opts(panel.grid.minor = theme_blank()) + 
 		opts(panel.grid.major = theme_blank()) +
 		opts(panel.border = theme_blank()) +
-		labs(y="Relative Abundance", x=x_category, fill=fill_category)
+		labs(y="Relative Abundance", x=x, fill=fill)
 		
 	# Should the individual OTU points be added. Default FALSE
 	if( OTUpoints ){
 		p <- p + geom_point(
 			data=df, 
 			eval(call("aes",
-				x=as.name(x_category), 
+				x=as.name(x), 
 				y=quote(Abundance)
 			)),
 			color="black", size=1.5, position="jitter", alpha=I(1/2)
@@ -1017,7 +1016,7 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 		dfLabel <- subset(df, Abundance > 0.05)	
 		p <- p + geom_text(data=dfLabel, size=2,
 			eval(call("aes", 
-				x=as.name(x_category), 
+				x=as.name(x), 
 				y=quote(Abundance+0.01), 
 				label=quote(ID)
 			)),
@@ -1038,291 +1037,6 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 #' @aliases plot_taxa_bar
 #' @rdname plot-taxa-bar
 taxaplot <- plot_taxa_bar
-################################################################################
-# tipsymbols and tiptext. Need to make both tipsymbols and tiptext documentation
-# point to this one.
-################################################################################
-#' Annotate tips on a tree with symbols or text.
-#'
-#' There were some unexpected behavior from the \code{\link[ape]{tiplabels}}
-#' function in ape. These
-#' functions are intended to act as simplified versions that act as a convenience
-#' wrapper for \code{points()} or \code{text()} functions, respectively, 
-#' but where the tip
-#' coordinates are specified by giving the tip ID (integer) as input.
-#' For \code{tiptext()}, make sure to include a \code{labels=} argument, which
-#' will be passed on to \code{\link[graphics]{text}}.
-#'
-#' @usage tipsymbols(tip, adj=c(0.5, 0.5), ...)
-#' @usage tiptext(tip, adj=c(0.5, 0.5), ...)
-#'
-#' @param tip An integer specifying the tip ID in a tree that for which the 
-#'  base plot has already been generated and is still available to \code{R}.
-#' 
-#' @param adj A 2 element numeric vector specifying a position adjustment.
-#' 
-#' @param ... Additional plotting parameters that are passed to 
-#'  \code{\link{points}} or \code{\link{text}} in the R base graphics.
-#'  Again, for \code{tiptext()}, make sure to include a \code{labels=} argument.
-#'
-#' @return No objects returned. Symbol or text is plotted on the available
-#'  graphic device.
-#'
-#' @export
-#' @rdname tip-annotate
-#' 
-#' @seealso \code{\link[ape]{tiplabels}}, \code{\link[graphics]{points}}, \code{\link[graphics]{text}}
-#' @examples #
-#' ## data(GlobalPatterns)
-#' ## # for reproducibility
-#' ## set.seed(711)
-#' ## ex2 <- prune_species(sample(species.names(GlobalPatterns), 50), GlobalPatterns)
-#' ## plot( tre(ex2) )
-#' ## tipsymbols(pch=19)
-#' ## tipsymbols(1, pch=22, cex=3, col="red", bg="blue")
-#' ## tiptext(2, labels="my.label")
-tipsymbols <- function(tip, adj=c(0.5, 0.5), ...){
-    lastPP <- get("last_plot.phylo", envir = .PlotPhyloEnv)
-    if ( missing(tip) ){ 
-		tip <- 1:lastPP$Ntip
-	}
-    XX <- lastPP$xx[tip]
-    YY <- lastPP$yy[tip]
-	points( (XX + adj[1] - 0.5), (YY + adj[2] - 0.5), ... )
-}
-################################################################################
-# Custom text plotting function
-#' @export
-#' @rdname tip-annotate
-tiptext <- function(tip, adj=c(0.5, 0.5), ...){
-    lastPP <- get("last_plot.phylo", envir = .PlotPhyloEnv)
-    if ( missing(tip) ){ 
-		tip <- 1:lastPP$Ntip
-	}
-    XX <- lastPP$xx[tip]
-    YY <- lastPP$yy[tip]
-	text( (XX + adj[1] - 0.5), (YY + adj[2] - 0.5), ... )
-}
-################################################################################
-#' Plot and annotate tree-tip using base/ape graphics
-#'
-#' Requires a \code{\link{phyloseq-class}} that contains a tree (\code{\link{tre}}), 
-#' sample data (\code{\link{sampleData}}),
-#' and abundance table (\code{\link{otuTable}}).
-#'
-#' @usage plot_tree_phyloseq(physeq, color_factor=NULL, shape_factor=NULL, 
-#'  base_size=1, size_scaling_factor = 0.2, opacity=2/3,
-#'  custom_color_scale=NULL, custom_shape_scale=NULL, 
-#'  type_abundance_value=FALSE, printTheseTaxa=NULL, treeTitle="Annotated Tree", ...)
-#'
-#' @param physeq (Required). \code{\link{phyloseq-class}} with non-empty 
-#'  tree, sampleData, and otuTable components.
-#'
-#' @param color_factor A character string specifying the column
-#'  of the sampleData that will be used for setting the color of symbols.
-#'
-#' @param shape_factor A character string specifying the column
-#'  of the sampleData that will be used for setting the shape of symbols.
-#'  
-#' @param base_size The minimum size expansion factor of symbols plotted next
-#'  to tips. The default value is 1. 
-#'
-#' @param size_scaling_factor A numeric, greater than or equal to 0, that is
-#'  multiplied by the log10 of taxa abundance; the product of which is summed
-#'  with the \code{base_size} argument to determine the size scaling factor provided
-#'  to \code{\link{tipsymbols}}. The default value is 0.15. The larger the value,
-#'  the larger the symbols representing sites with many idividuals of a
-#'  particular taxa. A value of zero means there will be no scaling symbol
-#'  size by the abundance value.
-#'
-#' @param opacity The opacity (or alpha value). Numeric between 0, 1.
-#'  Defaul value is 2/3.
-#'
-#' @param custom_color_scale A character vector of the desired custom color scale.
-#'  This should
-#'  be a scale, not an aesthetic map. Therefore, it will in most-cases 
-#'  contain only unique elements, unless two different categories of data
-#'  are supposed to have the same color. Default value is NULL, which
-#'  invokes a default color scale using the \code{\link{rainbow}} function.
-#' 
-#' @param custom_shape_scale An integer vector of values in the categorical
-#'  scale of symbol shapes, analogous to \code{custom_color_scale}. Default
-#'  value is \code{NULL}, which uses the fill-able symbols described in
-#'  \code{\link{points}}, beginning with 21. 
-#' 
-#' @param type_abundance_value Logical. Whether or not the otuTable value
-#'  (the number of individuals, typically) should be added to the center
-#'  of symbols when the value is greater than one. 
-#'  Default is FALSE, indicating no labels.
-#'
-#' @param printTheseTaxa a character vector of the taxa names in \code{physeq}
-#'  that should be labeled on the tree plot adjacent to the right. Default is
-#'  NULL. Not yet implemented.
-#'
-#' @param treeTitle (Optional). Character string, for the title
-#'  of the graphic. Default is \code{"Annotated Tree"}.
-#'
-#' @param ... Additional parameters passed on to \code{\link{tipsymbols}}.
-#'
-#' @return Creates a phylogenetic tree, with additional symbols annotated on
-#'  each tip to indicate in which samples the particular taxa was observed.
-#'
-#' @import ape
-#' @export
-#'
-#' @examples
-#' # data(GlobalPatterns)
-#' # GP <- GlobalPatterns
-#' # GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
-#' # plot_tree_phyloseq(GP.chl, color_factor="SampleType",
-#' # 			type_abundance_value=TRUE, 
-#' # 			treeTitle="Chlamydiae in Global Patterns Data")
-plot_tree_phyloseq <- function(physeq, color_factor=NULL, shape_factor=NULL, 
-	base_size=1, size_scaling_factor = 0.2, opacity=2/3,
-	custom_color_scale=NULL, custom_shape_scale=NULL, 
-	type_abundance_value=FALSE, printTheseTaxa=NULL, treeTitle="Annotated Tree", ...){
-
-	# Initialize categories vector, giving the sampleData index of aesthetics.
-	categories <- character(2); names(categories) <- c("color", "shape")
-	
-	# Only look for default factors if color_factor AND shape_factor absent.
-	if( is.null(color_factor) & is.null(shape_factor) ){
-		# Want to use up to the first two factors in sampleData as default.
-		smdf_factor_types <- lapply(data.frame(sampleData(physeq)), class) == "factor"
-		available_factors <- colnames(sampleData(physeq))[	smdf_factor_types ]
-		categories["color"] <- available_factors[1]
-		if( length(available_factors) > 1 ){
-			categories["shape"] <- available_factors[2]
-		}	
-	}
-	
-	# If categories were specified by user, get them.
-	if(!is.null(color_factor)){ categories["color"] <- color_factor }
-	if(!is.null(shape_factor)){ categories["shape"] <- shape_factor }
-	
-	# color
-	if( categories["color"] != "" ){
-		color_factor <- data.frame(sampleData(physeq))[, categories["color"]]
-		# determine the color scale.
-		if( is.null(custom_color_scale) ){
-			avail_colors <- rainbow(length(levels(color_factor)), alpha=opacity)
-		} else {
-			avail_colors <- custom_color_scale
-		}
-		names(avail_colors) <- levels(color_factor) 
-		# set the color vector.
-		color_vec    <- avail_colors[color_factor]
-	} else {
-		color_vec <- rep("black", nsamples(physeq))
-	}
-	names(color_vec) <- sample.names(physeq)
-
-	# shape	 custom_shape_scale
-	if( categories["shape"] != "" ){
-		shape_factor <- data.frame(sampleData(physeq))[, categories["shape"]]
-		# determine the shape scale.
-		if( is.null(custom_shape_scale) ){
-			avail_shapes <- (1:(length(levels(shape_factor)))) + 20
-		} else {
-			avail_shapes <- custom_shape_scale
-		}
-		names(avail_shapes) <- levels(shape_factor) 
-		# set the shape vector
-		shape_vec <- avail_shapes[shape_factor]
-	} else {
-		shape_vec <- rep(22, nsamples(physeq))
-	}
-	names(shape_vec) <- sample.names(physeq)
-	
-	# Access phylo-class tree. Error if it is missing.
-	tree <- tre(physeq)
-	
-	# Now plot the initial, symbol-less tree. Must be first to get the proper
-	# x, y limits to calculate the scales of the annotation objects.
-	plot.phylo(tree, type="phylogram", show.tip.label=FALSE,
-		xpd=NA, no.margin=TRUE, edge.width=1.5)
-
-	# Store information about the tree-plot
-	lastPP <- get("last_plot.phylo", envir = .PlotPhyloEnv)
-	#str(lastPP)
-	xlims <- lastPP$x.lim
-	ylims <- lastPP$y.lim	
-
-	# Add title of tree
-	text(x=(0.35*xlims[2]), y=(1.02*ylims[2]), labels=treeTitle[1], pos=4, cex=1.5)
-
-	# Add scale bar
-	add.scale.bar(x=(0.5*xlims[2]), y=0, length=0.1)
-	adj.j.start <- 0.5 + (0.01 * xlims[2])
-	adj.step    <- 0.0155 * xlims[2]
-	########################################
-	# Now loop over sample variables
-	########################################
-	for( i in species.names(physeq) ){ # i loops over species
-		#i = species.names(physeq)[speciesSums(physeq) == max(speciesSums(physeq))]
-		# sitesi should hold the sites that are relevant to species "i"
-		sitesi <- getSamples( physeq, i)
-		sitesi <- sitesi[sitesi >= 1] 
-		
-		# assign to pchi / coli values if species "i" is in the associated site
-		tipi  <- which( tree$tip.label %in% i )
-		
-		# Now loop through to indicate multiple symbols if multiple samples
-		adj.j <- adj.j.start
-		for( j in names(sitesi) ){ # j loops over sites w/in a given species
-			size_i = base_size + size_scaling_factor * log(sitesi[j], 10)
-			tipsymbols(tip=tipi, adj=c(adj.j, 0.5), pch=shape_vec[j], bg=color_vec[j],
-				col=color_vec[j], cex=size_i, ...)
-				
-			# print the number of individuals observed of this species if > 1
-			# And if user has asked to plot the abundance values.
-			if( type_abundance_value ){
-				if( sitesi[j] > 1 ){
-					tiptext(tip=tipi, adj=c(adj.j, 0.5),
-						labels=as.character(sum(sitesi[j])),
-						col="black", cex=(size_i/3))
-				}				
-			}
-			
-			# Increase the horizontal coordinate by adj.step, for next loop.
-			adj.j <- adj.j + adj.step
-		}
-		
-		# Add taxa names if requested.
-		# if( i %in% printTheseTaxa ){
-			# ref_species_name <- species_table[i, "taxa"]
-			# tiptext(tip=tipi, adj=c(adj.j-0.03, 0.3), labels=ref_species_name,
-				# col="black", pos=4, cex=(cex.symbol/3))		
-		# }	
-	}
-	
-	# Need to add legends module. Probably best accomplished with a separate margin
-	# on the right side of the plot.	
-
-}
-################################################################################
-# colname2hex
-################################################################################
-#' Convert color name to hex value.
-#'
-#' For converting color name to color hex and providing an optional
-#' opacity parameter (alpha)
-#'
-#' @param colname A character vector of \code{R} color names.
-#' 
-#' @param alpha The standard alpha parameter specifying opacity/transparency.
-#'
-#' @return A color hex value of length equal to length of \code{colname}.
-#' @seealso col2rgb rgb2hsv colors
-#'
-#' @keywords internal 
-colname2hex <- function(colname, alpha=1){
-	if( length(colname) == 1){
-		do.call("hsv", c(as.list(rgb2hsv(col2rgb(colname))[, 1]), alpha=alpha))
-	} else if( length(colname) >1 ){
-		sapply(colname, colname2hex, alpha)
-	}	
-}
 ################################################################################
 ################################################################################
 ################################################################################
@@ -2086,23 +1800,23 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' @importFrom scales log_trans
 #' @export
 #' @examples
-#' # # # Using plot_tree with the esophagus dataset.
-#' # data(esophagus)
-#' # plot_tree(esophagus)
-#' # plot_tree(esophagus, color="samples")
-#' # plot_tree(esophagus, size="abundance")
-#' # plot_tree(esophagus, size="abundance", color="samples")
-#' # plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
-#' # # #
-#' # # # Using plot_tree with the Global Patterns dataset
-#' # # Subset Global Patterns dataset to just the observed Archaea
-#' # gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
-#' # # The number of different Archaeal species from this dataset is small enough ...
-#' # nspecies(gpa)
-#' # # ... that it is reasonable to consider displaying the phylogenetic tree directly.
-#' # # (probably not true of the total dataset)
-#' # nspecies(GlobalPatterns)
-#' # # Some patterns are immediately discernable with minimal parameter choices:
+#' # # Using plot_tree() with the esophagus dataset.
+#' data(esophagus)
+#' plot_tree(esophagus)
+#' plot_tree(esophagus, color="samples")
+#' plot_tree(esophagus, size="abundance")
+#' plot_tree(esophagus, size="abundance", color="samples")
+#' plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+#' # # Using plot_tree with the Global Patterns dataset
+#' data("GlobalPatterns")
+#' # Subset Global Patterns dataset to just the observed Archaea
+#' gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
+#' # The number of different Archaeal species from this dataset is small enough ...
+#' nspecies(gpa)
+#' # ... that it is reasonable to consider displaying the phylogenetic tree directly.
+#' # (probably not true of the total dataset)
+#' nspecies(GlobalPatterns)
+#' # Some patterns are immediately discernable with minimal parameter choices:
 #' # plot_tree(gpa, color="SampleType")
 #' # plot_tree(gpa, color="Phylum")
 #' # plot_tree(gpa, color="SampleType", shape="Phylum")
@@ -2112,8 +1826,8 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # # somewhat crowded graphic. 
 #' # # 
 #' # # Let's instead subset further ot just the Crenarchaeota
-#' # gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
-#' # plot_tree(gpac, color="SampleType", shape="Genus")
+#' gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
+#' plot_tree(gpac, color="SampleType", shape="Genus")
 #' # plot_tree(gpac, color="SampleType", label.tips="Genus")
 #' # # Let's add some abundance information.
 #' # # Notice that the default spacing gets a little crowded when we map

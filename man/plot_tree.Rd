@@ -122,23 +122,23 @@
   feature you really want to have soon.
 }
 \examples{
-# # # Using plot_tree with the esophagus dataset.
-# data(esophagus)
-# plot_tree(esophagus)
-# plot_tree(esophagus, color="samples")
-# plot_tree(esophagus, size="abundance")
-# plot_tree(esophagus, size="abundance", color="samples")
-# plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
-# # #
-# # # Using plot_tree with the Global Patterns dataset
-# # Subset Global Patterns dataset to just the observed Archaea
-# gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
-# # The number of different Archaeal species from this dataset is small enough ...
-# nspecies(gpa)
-# # ... that it is reasonable to consider displaying the phylogenetic tree directly.
-# # (probably not true of the total dataset)
-# nspecies(GlobalPatterns)
-# # Some patterns are immediately discernable with minimal parameter choices:
+# # Using plot_tree() with the esophagus dataset.
+data(esophagus)
+plot_tree(esophagus)
+plot_tree(esophagus, color="samples")
+plot_tree(esophagus, size="abundance")
+plot_tree(esophagus, size="abundance", color="samples")
+plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+# # Using plot_tree with the Global Patterns dataset
+data("GlobalPatterns")
+# Subset Global Patterns dataset to just the observed Archaea
+gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
+# The number of different Archaeal species from this dataset is small enough ...
+nspecies(gpa)
+# ... that it is reasonable to consider displaying the phylogenetic tree directly.
+# (probably not true of the total dataset)
+nspecies(GlobalPatterns)
+# Some patterns are immediately discernable with minimal parameter choices:
 # plot_tree(gpa, color="SampleType")
 # plot_tree(gpa, color="Phylum")
 # plot_tree(gpa, color="SampleType", shape="Phylum")
@@ -148,8 +148,8 @@
 # # somewhat crowded graphic.
 # #
 # # Let's instead subset further ot just the Crenarchaeota
-# gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
-# plot_tree(gpac, color="SampleType", shape="Genus")
+gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
+plot_tree(gpac, color="SampleType", shape="Genus")
 # plot_tree(gpac, color="SampleType", label.tips="Genus")
 # # Let's add some abundance information.
 # # Notice that the default spacing gets a little crowded when we map

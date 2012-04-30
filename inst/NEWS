@@ -15,6 +15,12 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.7
+===========
+* Removed the old plot_tree_phyloseq() function, in favor of the new ggplot2-based plot_tree()
+* Uncommented / tested formal examples in documentation of plot-functions
+* Updated variable names and doc for the plot_taxa_bar() function
+
 phyloseq 1.1.6
 ===========
 * Update vignette with plot_tree() example, replacing the 

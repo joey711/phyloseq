@@ -73,27 +73,22 @@
   "se.ACE", "shannon", "simpson")}
 }
 \examples{
-# data(GlobalPatterns)
-# plot_richness_estimates(GlobalPatterns, "SampleType")
-# plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
-#
+data(GlobalPatterns)
+plot_richness_estimates(GlobalPatterns, "SampleType")
+plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
 # # Define a human-associated versus non-human categorical variable:
-# GP <- GlobalPatterns
-# human.levels <- levels( getVariable(GP, "SampleType") ) \%in\%
-# c("Feces", "Mock", "Skin", "Tongue")
-# human <- human.levels[getVariable(GP, "SampleType")]
-# names(human) <- sample.names(GP)
+GP <- GlobalPatterns
+human <- getVariable(GP, "SampleType") \%in\%
+c("Feces", "Mock", "Skin", "Tongue")
+names(human) <- sample.names(GP)
 # # Replace current SD with new one that includes human variable:
-# sampleData(GP) <- sampleData(data.frame(sampleData(GP), human))
-#
+sampleData(GP)$human <- human
 # # Can use new "human" variable within GP as a discrete variable in the plot
-# plot_richness_estimates(GP, "human", "SampleType")
-# plot_richness_estimates(GP, "SampleType", "human")
-#
+plot_richness_estimates(GP, "human", "SampleType")
+plot_richness_estimates(GP, "SampleType", "human")
 # # Can also provide custom factor directly:
-# plot_richness_estimates(GP, "SampleType", human)
-# plot_richness_estimates(GP, human, "SampleType")
-#
+plot_richness_estimates(GP, "SampleType", human)
+plot_richness_estimates(GP, human, "SampleType")
 # # Not run: Should cause an error:
 # plot_richness_estimates(GP, "value", "value")
 # #

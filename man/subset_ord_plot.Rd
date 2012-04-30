@@ -57,28 +57,33 @@
   argument description below.
 }
 \examples{
-##
-# data(GlobalPatterns)
-# # Need to clean the zeros from GlobalPatterns:
-# GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
-# sampleData(GP)$human <- factor(human)
-# # Get the names of the most-abundant phyla
-# top.TaxaGroup <- sort(
-#   	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
-#   decreasing = TRUE)
-# top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-# # Prune to just the most-abundant phyla
-# GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
-# # Perform a correspondence analysis
-# gpca <- ordinate(GP, "CCA")
-# # # Make species topo with a subset of points layered
-# # First, make a basic plot of just the species
-# p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
-# # Re-draw this as topo without points, and facet
-# p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
-# # Add a layer of a subset of species-points that are furthest from origin.
-# p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1)
-# print(p53)
+data(GlobalPatterns)
+# Need to clean the zeros from GlobalPatterns:
+GP <- GlobalPatterns
+GP <- prune_species(speciesSums(GP)>0, GP)
+# # Add "human" variable to GP
+human <- getVariable(GP, "SampleType") \%in\%
+c("Feces", "Mock", "Skin", "Tongue")
+names(human) <- sample.names(GP)
+sampleData(GP)$human <- human
+# Get the names of the most-abundant phyla
+top.TaxaGroup <- sort(
+tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+decreasing = TRUE)
+top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+# Prune to just the most-abundant phyla
+GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
+# Perform a correspondence analysis
+gpca <- ordinate(GP, "CCA")
+# # Make species topo with a subset of points layered
+# First, make a basic plot of just the species
+p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
+# Re-draw this as topo without points, and facet
+library("ggplot2")
+p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
+# Add a layer of a subset of species-points that are furthest from origin.
+p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1)
+print(p53)
 }
 \seealso{
   \code{\link{plot_ordination}}
