@@ -15,6 +15,12 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+
+phyloseq 1.1.8-9
+===========
+* Fix bug for some variants of new BIOM format
+* Add import_RDP_otu() import function for new RDP pipeline export format
+
 phyloseq 1.1.7
 ===========
 * Removed the old plot_tree_phyloseq() function, in favor of the new ggplot2-based plot_tree()
