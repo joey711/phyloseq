@@ -1289,12 +1289,19 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
 		taxtab <- NULL
 	} else {
-		if( is.null(taxaPrefix) ){
-			taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
-		} else if( taxaPrefix == "greengenes" ){
-			taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
-		} else {
-			taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		# taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		# Figure out the max number of columns (could be jagged in BIOM format)
+		ncols <- max(sapply(head(x$rows), function(i){length(i$metadata$taxonomy)}))
+		# Initialize character matrix
+		taxdf <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
+		# Fill in the matrix by row.
+		for( i in 1:length(x$rows) ){
+			if( sum(taxaPrefix %in% "greengenes") > 0 ){
+				# taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
+				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
+			} else {
+				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
+			}
 		}
 		# Now convert to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
 		taxtab           <- as(taxdf, "matrix")
@@ -1309,7 +1316,13 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	if(  all( sapply(sapply(x$columns, function(i){i$metadata}), is.null) )  ){
 		samdata <- NULL
 	} else {
-		samdata           <- ldply(x$columns, function(i){i$metadata}, .parallel=parallel)
+		samdata <- ldply(x$columns, function(i){
+			if( class(i$metadata) == "list"){
+				return(i$metadata[[1]])
+			} else {
+				return(i$metadata)				
+			}
+		}, .parallel=parallel)
 		rownames(samdata) <- sapply(x$columns, function(i){i$id})
 		samdata <- sampleData(samdata)
 	}
