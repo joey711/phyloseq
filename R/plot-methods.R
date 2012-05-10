@@ -2061,9 +2061,9 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 					axis.text.y = theme_text(size=text.size)#, plot.background=theme_rect(colour = "black")
 				)
 	if( !is.null(trans) ){
-		p <- p + scale_fill_gradient(high="green", trans=trans, na.value=na.value)		
+		p <- p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
 	} else {
-		p <- p + scale_fill_gradient(na.value="black")	
+		p <- p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
 	}
 	
 	# Axis Relabeling:
