@@ -1540,7 +1540,7 @@ plot_tree_only <- function(physeq){
 # The "sampledodge" plot_tree subset function.
 #' @keywords internal
 #' @import reshape 
-#' @importFrom scales log_trans
+#' @import scales
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
 plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
@@ -1797,7 +1797,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
 #' @import reshape
-#' @importFrom scales log_trans
+#' @import scales
 #' @export
 #' @examples
 #' # # Using plot_tree() with the esophagus dataset.
@@ -1857,6 +1857,240 @@ plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size
 			panel.grid.major = theme_blank()
 			)
 	
+	return(p)
+}
+################################################################################
+################################################################################
+################################################################################
+# Borrowed shamelessly from NeatMap-package.
+#' @keywords internal
+RadialCoords <- function(pos)
+{
+    pos <- as.matrix(pos)
+    n.points = dim(pos)[1]
+    radial <- matrix(nrow = n.points, ncol = 2)
+    xc <- mean(pos[, 1])
+    yc <- mean(pos[, 2])
+    for (i in 1:n.points) {
+        radial[i, 1] <- sqrt((pos[i, 2] - yc)^2 + (pos[i, 1] - 
+            xc)^2)
+        radial[i, 2] <- atan2(pos[i, 2] - yc, pos[i, 1] - xc)
+    }
+    rownames(radial) <- rownames(pos)
+    colnames(radial) <- c("r", "theta")
+    radial
+}
+################################################################################
+#' Create an ecologically-organized heatmap using ggplot2 graphics
+#'
+#' In a 2010 article in BMC Genomics, Rajaram and Oono show describe an 
+#' approach to creating a heatmap using ordination methods to organize the 
+#' rows and columns instead of (hierarchical) cluster analysis. In many cases
+#' the ordination-based ordering does a much better job than h-clustering. 
+#' An immediately useful example of their approach is provided in the NeatMap
+#' package for R. The NeatMap package can be used directly on the abundance 
+#' table (\code{\link{otuTable-class}}) of phylogenetic-sequencing data, but 
+#' the NMDS or PCA ordination options that it supports are not based on ecological
+#' distances. To fill this void, phyloseq provides the \code{plot_heatmap()}
+#' function as an ecology-oriented variant of the NeatMap approach to organizing
+#' a heatmap and build it using ggplot2 graphics tools.
+#' The \code{distance} and \code{method} arguments are the same as for the
+#' \code{\link{plot_ordination}} function, and support large number of
+#' distances and ordination methods, respectively, with a strong leaning toward
+#' ecology.
+#' This function also provides the options to re-label the OTU and sample 
+#' axis-ticks with a taxonomic name and/or sample variable, respectively, 
+#' in the hope that this might hasten your interpretation of the patterns
+#' (See the \code{sample.label} and \code{species.label} documentation, below). 
+#' Note that this function makes no attempt to overlay hierarchical 
+#' clustering trees on the axes, as hierarchical clustering is not used to 
+#' organize the plot. Also note that each re-ordered axis repeats at the edge,
+#' and so apparent clusters at the far right/left or top/bottom of the 
+#' heat-map may actually be the same. For now, the placement of this edge
+#' can be considered arbitrary, so beware of this artifact of this graphical
+#' representation. If you benefit from this phyloseq-specific implementation
+#' of the NeatMap approach, please cite both our packages/articles.
+#'
+#' This approach borrows heavily from the \code{heatmap1} function in the
+#' \code{NeatMap} package. Highly recommended, and we are grateful for their
+#' package and ideas, which we have adapted for our specific purposes here,
+#' but did not use an explicit dependency. At the time of the first version
+#' of this implementation, the NeatMap package depends on the rgl-package,
+#' which is not needed in phyloseq, at present. Although likely a transient
+#' issue, the rgl-package has some known installation issues that have further
+#' influenced to avoid making NeatMap a formal dependency (Although we love
+#' both NeatMap and rgl!).
+#' 
+#' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
+#'  sample.label=NULL, species.label=NULL,
+#'  low="#000033", high="lightgreen", na.value="black", trans=log_trans(4), ...)
+#'
+#' @param physeq (Required). The data, in the form of an instance of the
+#'  \code{\link{phyloseq-class}}. This should be what you get as a result
+#'  from one of the
+#'  \code{\link{import}} functions, or any of the processing downstream.
+#'  No data components beyond the \code{\link{otuTable}} are strictly 
+#'  necessary, though they may be useful if you want to re-label the 
+#'  axis ticks according to some observable or taxonomic rank, for instance,
+#'  or if you want to use a \code{\link{UniFrac}}-based distance
+#'  (in which case your \code{physeq} data would need to have a tree included).
+#'
+#' @param method (Optional).
+#'  The ordination method to use for organizing the 
+#'  heatmap. A great deal of the usefulness of a heatmap graphic depends upon 
+#'  the way in which the rows and columns are ordered. 
+#'
+#' @param distance (Optional). A character string. 
+#'  The ecological distance method to use in the ordination.
+#'  See \code{\link{distance}}.
+#'
+#' @param sample.label (Optional). A character string.
+#'  The sample variable by which you want to re-label the sample (horizontal) axis.
+#'
+#' @param species.label (Optional). A character string.
+#'  The taxonomic rank by which you want to re-label the species/OTU (vertical) axis.
+#'
+#' @param low (Optional). Character string. A color.
+#'  The color that represents the lowest non-zero value
+#'  in the heatmap. Default is a dark blue color, \code{"#000033"}.
+#' 
+#' @param high (Optional). Character string. A color.
+#'  The color that will represent the highest 
+#'  value in the heatmap. The default is \code{"lightgreen"}.
+#'  Zero-values are treated as \code{NA}, and set to \code{"black"}, to represent
+#'  a background color.
+#'
+#' @param na.value (Optional). Character string. A color.
+#'  The color to represent what is essentially the background of the plot,
+#'  the non-observations that occur as \code{NA} or
+#'  \code{0} values in the abundance table. The default is \code{"black"}, which 
+#'  works well on computer-screen graphics devices, but may be a poor choice for
+#'  printers, in which case you might want this value to be \code{"white"}, and
+#'  reverse the values of \code{high} and \code{low}, above.
+#'
+#' @param trans (Optional). \code{"trans"}-class transformer-definition object.
+#'  A numerical transformer to use in 
+#'  the continuous color scale. See \code{\link[scales]{trans_new}} for details.
+#'  The default is \code{log_trans(4)}.
+#'
+#' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
+#' 
+#' @return
+#'  A heatmap plot, in the form of a \code{\link{ggplot}} plot object,
+#'  which can be further saved and modified.
+#'
+#' @references
+#'  Because this function relies so heavily in principle, and in code, on some of the
+#'  functionality in NeatMap, please site their article if you use this function
+#'  in your work.
+#' 
+#'  Rajaram, S., & Oono, Y. (2010). NeatMap--non-clustering heat map alternatives in R. BMC Bioinformatics, 11, 45.
+#'
+#' @import vegan
+#' @import scales 
+#' 
+#' @export
+#' @examples
+#' data("GlobalPatterns")
+#' gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
+#' # FYI, the base-R function uses a non-ecological ordering scheme,
+#' # but does add potentially useful hclust dendrogram to the sides...
+#' heatmap(otuTable(gpac))
+#' plot_heatmap(gpac)
+#' # example relabelling based on a sample variable and taxonomic rank.
+#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
+#' # Now repeat the plot, but change the color scheme in various ways.
+#' # This may be worthwhile, depending on the graphics device or paper
+#' # on which you want to discplay the heatmap.
+#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#CCFF66")
+#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#FF3300")
+#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#66CCFF")
+#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#66CCFF", high="#000033", na.value="white")
+#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#FFFFCC", high="#000033", na.value="white")
+#' # Now try the default color scheme, but using different ecological distances/ordinations
+#' plot_heatmap(gpac, "NMDS", "jaccard")
+#' plot_heatmap(gpac, "DCA")
+#' plot_heatmap(gpac, "RDA")
+#' plot_heatmap(gpac, "MDS", "bray")
+#' plot_heatmap(gpac, "MDS", "unifrac")
+#' plot_heatmap(gpac, "MDS", "unifrac", weighted=TRUE)
+plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
+	sample.label=NULL, species.label=NULL,
+	low="#000033", high="lightgreen", na.value="black", trans=log_trans(4), ...){
+	
+	# Enforce orientation
+	if( !speciesAreRows(physeq) ){ physeq <- t(physeq) }
+	# convert orientation-enforced abundance table into matrix class
+	mot <- as(otuTable(physeq), "matrix")
+
+	# Initialize sample and species order vectors as NULL
+	species.order <- sample.order <- NULL
+	
+	# Copy the approach from NeatMap by doing ordination on samples, but use 
+	# phyloseq-wrapped distance/ordination procedures.
+	# Reorder by the angle in radial coordinates on the 2-axis plane.
+	if( !is.null(method) ){
+		# Capture the NMDS iterations cat() output with capture.output
+		# junk <- capture.output( ps.ord <- ordinate(physeq, method, distance), file=NULL)
+		junk <- capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
+		reduction.result <- scores(ps.ord, choices=c(1, 2), display="sites")
+		sample.order <- sample.names(physeq)[order(RadialCoords(reduction.result)[, "theta"])]
+		# re-ordered matrix
+		mot <- mot[, sample.order]
+
+		# Also want to re-order species, if possible
+		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
+		if( class(test) != "try-error"){			
+			species.reduct <- scores(ps.ord, choices=c(1, 2), display="species")
+			species.order  <- species.names(physeq)[order(RadialCoords(species.reduct)[, "theta"])]
+			# re-ordered matrix
+			mot <- mot[species.order, ]	
+		}
+	}
+
+	# Alternative to melt that won't re-order your carefully-re-ordered stuff...
+	adf <- data.frame(expand.grid(y=rownames(mot), x=colnames(mot)), value=as(mot, "vector"))
+
+	# Now the plotting part
+	p <- ggplot(adf, aes(x=as.factor(x), y=as.factor(y), fill=value))
+	p <- p + geom_tile()
+	p <- update_labels(p, list(fill = "Abundance", y="OTU", x="Samples"))	
+
+	text.size <- treetextsize(0.10*nspecies(physeq))
+	p <- p + opts(axis.text.x = theme_text(angle = -90, hjust = 0),
+					axis.text.y = theme_text(size=text.size)#, plot.background=theme_rect(colour = "black")
+				)
+	if( !is.null(trans) ){
+		p <- p + scale_fill_gradient(high="green", trans=trans, na.value=na.value)		
+	} else {
+		p <- p + scale_fill_gradient(na.value="black")	
+	}
+	
+	# Axis Relabeling:
+	# Re-write sample-labels to some sample variable...
+	if( !is.null(sample.label) ){
+		# Make a sample-named vector of the values for sample.label
+		labvec <- as(getVariable(physeq, sample.label), "vector")
+		names(labvec) <- sample.names(physeq)
+		if( !is.null(sample.order) ){
+			# Re-order according to sample.order
+			labvec <- labvec[sample.order]			
+		}
+		# Add the sample.label re-labeling layer
+		p <- p + scale_x_discrete(sample.label, labels=labvec)
+	}
+	if( !is.null(species.label) ){
+		# Make a species-named vector of the values for species.label
+		labvec <- as(taxTab(physeq)[, species.label], "vector")
+		names(labvec) <- species.names(physeq)
+		if( !is.null(sample.order) ){		
+			# Re-order according to species.order
+			labvec <- labvec[species.order]
+		}
+		# Add the species.label re-labeling layer
+		p <- p + scale_y_discrete(species.label, labels=labvec)
+	}
+		
 	return(p)
 }
 ################################################################################

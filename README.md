@@ -14,6 +14,7 @@ More concretely, `phyloseq` provides:
  * Native, parallelized implementation of [UniFrac](https://github.com/joey711/phyloseq/wiki/Fast-Parallel-UniFrac) distance calculations.
 
  * Powerful, flexible custom plot methods using ggplot2 for rapid, convenient exploratory analysis.
+	- [plot_heatmap](https://github.com/joey711/phyloseq/wiki/plot_heatmap)
 	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
 	- [plot_ordination](https://github.com/joey711/phyloseq/wiki/plot_ordination)
 	- [plot_sample_network](https://github.com/joey711/phyloseq/wiki/plot_sample_network)
