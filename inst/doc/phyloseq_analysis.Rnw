@@ -233,8 +233,34 @@ Figure~\ref{fig:barplot} summarizes quantitatively the increased abundances of \
 \section{Exploratory analysis and graphics}\label{sec:analysisplots}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% makenetwork
+% plot_heatmap
 %\clearpage
+\subsection{Exploratory Heat Map}\label{sec:heatmap}
+As the number of taxa in a dataset gets very large, the ability to effectively display all of the elements of the data becomes compromised, and a heatmap representation is no exception. It can also be time-consuming to render. To address both these issues, we show an example in which we have subsetted the Global Patterns dataset to a manageable portion, in this case, the Crenarchaeota phylum.
+
+<<GPheatmap, fig=FALSE, eval=TRUE>>=
+data("GlobalPatterns")
+gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
+(p <- plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family"))
+@
+<<echo=FALSE>>=
+ggsave("phyloseq_analysis-plot_heatmap01.pdf", p, width=7, height=10)
+@
+
+Note that it is possible to order the sample/species indices by any of the ordination methods supported in the \code{ordinate} function; and also that the color scheme can be modified with additional arguments. For additional details and examples, try the function-level documentation in the phyloseq-package itself, or the wiki-page showing detailed code/plot examples for heat maps at:
+
+\url{https://github.com/joey711/phyloseq/wiki/plot_heatmap}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-plot_heatmap01.pdf}
+\caption{Heat map representation of the Crenarchaeota phylum abundance pattern across different sample types in the Global Patterns dataset.}
+\label{fig:heatmap}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% makenetwork
+\clearpage
 \subsection{Microbiome Network Representation}\label{sec:network}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Continuing with the \code{enterotype} dataset, here are some examples for creating a custom network representation of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} and \code{ggplot2} packages to create a network display of the ``connectedness'' of samples according to some user-provided ecological similarity. By default, the position of points (samples) are determined using an algorithm that optimizes the clarity of the display of network ``edges'', but the spatial position of points does not imply any continuous similarity information like would be the case in an ordination. In this example, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
