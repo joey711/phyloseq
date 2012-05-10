@@ -1923,7 +1923,7 @@ RadialCoords <- function(pos)
 #' 
 #' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
 #'  sample.label=NULL, species.label=NULL,
-#'  low="#000033", high="lightgreen", na.value="black", trans=log_trans(4), ...)
+#'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
@@ -1950,17 +1950,20 @@ RadialCoords <- function(pos)
 #' @param species.label (Optional). A character string.
 #'  The taxonomic rank by which you want to re-label the species/OTU (vertical) axis.
 #'
-#' @param low (Optional). Character string. A color.
+#' @param low (Optional). A character string. An R color.
+#'  See \code{\link{colors}} for options support in R (there are lots).
 #'  The color that represents the lowest non-zero value
 #'  in the heatmap. Default is a dark blue color, \code{"#000033"}.
 #' 
-#' @param high (Optional). Character string. A color.
+#' @param high (Optional). A character string. An R color.
+#'  See \code{\link{colors}} for options support in R (there are lots).
 #'  The color that will represent the highest 
-#'  value in the heatmap. The default is \code{"lightgreen"}.
+#'  value in the heatmap. The default is \code{"#66CCFF"}.
 #'  Zero-values are treated as \code{NA}, and set to \code{"black"}, to represent
 #'  a background color.
 #'
-#' @param na.value (Optional). Character string. A color.
+#' @param na.value (Optional). A character string. An R color.
+#'  See \code{\link{colors}} for options support in R (there are lots).
 #'  The color to represent what is essentially the background of the plot,
 #'  the non-observations that occur as \code{NA} or
 #'  \code{0} values in the abundance table. The default is \code{"black"}, which 
@@ -2016,7 +2019,7 @@ RadialCoords <- function(pos)
 #' plot_heatmap(gpac, "MDS", "unifrac", weighted=TRUE)
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
 	sample.label=NULL, species.label=NULL,
-	low="#000033", high="lightgreen", na.value="black", trans=log_trans(4), ...){
+	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), ...){
 	
 	# Enforce orientation
 	if( !speciesAreRows(physeq) ){ physeq <- t(physeq) }

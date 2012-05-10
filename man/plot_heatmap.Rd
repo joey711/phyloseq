@@ -4,7 +4,7 @@
 \usage{
   plot_heatmap(physeq, method="NMDS", distance="bray",
   sample.label=NULL, species.label=NULL, low="#000033",
-  high="lightgreen", na.value="black", trans=log_trans(4),
+  high="#66CCFF", na.value="black", trans=log_trans(4),
   ...)
 }
 \arguments{
@@ -37,20 +37,25 @@
   taxonomic rank by which you want to re-label the
   species/OTU (vertical) axis.}
 
-  \item{low}{(Optional). Character string. A color. The
-  color that represents the lowest non-zero value in the
-  heatmap. Default is a dark blue color, \code{"#000033"}.}
+  \item{low}{(Optional). A character string. An R color.
+  See \code{\link{colors}} for options support in R (there
+  are lots). The color that represents the lowest non-zero
+  value in the heatmap. Default is a dark blue color,
+  \code{"#000033"}.}
 
-  \item{high}{(Optional). Character string. A color. The
-  color that will represent the highest value in the
-  heatmap. The default is \code{"lightgreen"}. Zero-values
-  are treated as \code{NA}, and set to \code{"black"}, to
-  represent a background color.}
+  \item{high}{(Optional). A character string. An R color.
+  See \code{\link{colors}} for options support in R (there
+  are lots). The color that will represent the highest
+  value in the heatmap. The default is \code{"#66CCFF"}.
+  Zero-values are treated as \code{NA}, and set to
+  \code{"black"}, to represent a background color.}
 
-  \item{na.value}{(Optional). Character string. A color.
-  The color to represent what is essentially the background
-  of the plot, the non-observations that occur as \code{NA}
-  or \code{0} values in the abundance table. The default is
+  \item{na.value}{(Optional). A character string. An R
+  color. See \code{\link{colors}} for options support in R
+  (there are lots). The color to represent what is
+  essentially the background of the plot, the
+  non-observations that occur as \code{NA} or \code{0}
+  values in the abundance table. The default is
   \code{"black"}, which works well on computer-screen
   graphics devices, but may be a poor choice for printers,
   in which case you might want this value to be
