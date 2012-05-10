@@ -1,6 +1,7 @@
 phyloseq
 ===========
 * plot_ordination() powerful, flexible ordination plots built with ggplot2
+* plot_heatmap() easy, flexible heat maps built with ggplot2
 * plot_tree() easy, flexible annotated tree plots built with ggplot2
 * make_sample_network(), plot_sample_network() - microbiome network visualization
 * plot_richness_estimates() for easy, flexible summary of species richness
@@ -15,6 +16,9 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.10
+===========
+* Add plot_heatmap() function, for easy flexible heat maps built with ggplot2
 
 phyloseq 1.1.8-9
 ===========
