@@ -2043,7 +2043,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 
 		# Also want to re-order species, if possible
 		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
-		if( class(test) != "try-error"){			
+		if( class(test) != "try-error" & !is.null(test) ){			
 			species.reduct <- scores(ps.ord, choices=c(1, 2), display="species")
 			species.order  <- species.names(physeq)[order(RadialCoords(species.reduct)[, "theta"])]
 			# re-ordered matrix

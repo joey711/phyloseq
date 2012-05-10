@@ -10,7 +10,14 @@ scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 	if(is.null(choices)){
 		choices <- colnames(x$vectors)
 	}
-	return( x$vectors[, choices] )
+	if( !display %in% c("sites", "samples") ){
+		# MDS/PCoA only provides coordinates of the elements in the
+		# distance matrix, usually sites/samples, so species (etc.)
+		# not an option...
+		return( NULL )
+	} else {
+		return( x$vectors[, choices] )		
+	}
 }
 # dpcoa-class, from ade4::dpcoa or phyloseq::DPCoA
 # @import ade4
