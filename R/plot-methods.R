@@ -28,7 +28,7 @@
 #' @seealso 
 #'  \code{\link{plot_ordination}}
 #'  \code{\link{plot_taxa_bar}}
-#'  \code{\link{plot_sample_network}}
+#'  \code{\link{plot_network}}
 #'  \code{\link{plot_tree}}
 #'  \code{\link{plot_richness_estimates}}
 #'
@@ -62,18 +62,25 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' phylogenetic sequencing experiment (\code{\link{phyloseq-class}}),
 #' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #'
-#' @usage plot_sample_network(g, physeq=NULL,
+#' @usage plot_network(g, physeq=NULL, type="samples", 
 #' 	color=NULL, shape=NULL, point_size=4, alpha=1,
 #' 	label="value", hjust = 1.35, 
 #' 	line_weight=0.5, line_color=color, line_alpha=0.4,
 #' 	layout.method=layout.fruchterman.reingold)
 #'
 #' @param g (Required). An \code{\link[igraph]{igraph}}-class object created
-#'  either by the convenience wrapper \code{\link{make_sample_network}}, 
+#'  either by the convenience wrapper \code{\link{make_network}}, 
 #'  or directly by the tools in the igraph-package.
 #'
 #' @param physeq (Optional). Default \code{NULL}. 
 #'  A \code{\link{phyloseq-class}} object on which \code{g} is based.
+#'
+#' @param type (Optional). Default \code{"samples"}.
+#'  Whether the network represented in the primary argument, \code{g},
+#'  is samples or taxa/species.
+#'  Supported arguments are \code{"samples"}, \code{"species"},
+#'  where \code{"species"} indicates using the taxa indices,
+#'  whether they actually represent species or some other taxonomic rank.
 #'
 #' @param color (Optional). Default \code{NULL}.
 #'  The name of the sample variable in \code{physeq} to use for color mapping
@@ -118,7 +125,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
 #' @seealso 
-#'  \code{\link{make_sample_network}}
+#'  \code{\link{make_network}}
 #'
 #' @references
 #'  Code modified from code now hosted on GitHub by Scott Chamberlain:
@@ -135,12 +142,12 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' @examples 
 #' 
 #' data(enterotype)
-#' ig <- make_sample_network(enterotype, max.dist=0.3)
-#' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+#' ig <- make_network(enterotype, max.dist=0.3)
+#' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 #' # Change distance parameter
-#' ig <- make_sample_network(enterotype, max.dist=0.2)
-#' plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-plot_sample_network <- function(g, physeq=NULL,
+#' ig <- make_network(enterotype, max.dist=0.2)
+#' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+plot_network <- function(g, physeq=NULL, type="samples", 
 	color=NULL, shape=NULL, point_size=4, alpha=1,
 	label="value", hjust = 1.35, 
 	line_weight=0.5, line_color=color, line_alpha=0.4,
@@ -155,9 +162,15 @@ plot_sample_network <- function(g, physeq=NULL,
 	colnames(vertDF) <- c("x", "y")
 	vertDF    <- data.frame(value=g[[9]][[3]][["name"]], vertDF)
 	
-	# If phyloseq object provided, add its sample data to vertDF
+	# If phyloseq object provided, add 
+	# the relevant taxa or sample data to vertDF
+	# FIX: this should also check if sampleData/taxTab is present...
 	if( !is.null(physeq) ){
-		SD     <- sampleData(physeq)[as.character(vertDF$value), ]
+		if( type == "samples" ){
+			SD <- sampleData(physeq)[as.character(vertDF$value), ]
+		} else if( type == "species" ){
+			SD <- taxTab(physeq)[as.character(vertDF$value), ]
+		}
 		vertDF <- data.frame(vertDF, SD) 
 	}
 

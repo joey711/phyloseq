@@ -1,8 +1,8 @@
-\name{plot_sample_network}
-\alias{plot_sample_network}
+\name{plot_network}
+\alias{plot_network}
 \title{Plot sample-wise microbiome network (ggplot2)}
 \usage{
-  plot_sample_network(g, physeq=NULL, color=NULL,
+  plot_network(g, physeq=NULL, type="samples", color=NULL,
   shape=NULL, point_size=4, alpha=1, label="value", hjust =
   1.35, line_weight=0.5, line_color=color, line_alpha=0.4,
   layout.method=layout.fruchterman.reingold)
@@ -10,13 +10,20 @@
 \arguments{
   \item{g}{(Required). An
   \code{\link[igraph]{igraph}}-class object created either
-  by the convenience wrapper
-  \code{\link{make_sample_network}}, or directly by the
-  tools in the igraph-package.}
+  by the convenience wrapper \code{\link{make_network}}, or
+  directly by the tools in the igraph-package.}
 
   \item{physeq}{(Optional). Default \code{NULL}. A
   \code{\link{phyloseq-class}} object on which \code{g} is
   based.}
+
+  \item{type}{(Optional). Default \code{"samples"}. Whether
+  the network represented in the primary argument,
+  \code{g}, is samples or taxa/species. Supported arguments
+  are \code{"samples"}, \code{"species"}, where
+  \code{"species"} indicates using the taxa indices,
+  whether they actually represent species or some other
+  taxonomic rank.}
 
   \item{color}{(Optional). Default \code{NULL}. The name of
   the sample variable in \code{physeq} to use for color
@@ -74,11 +81,11 @@
 }
 \examples{
 data(enterotype)
-ig <- make_sample_network(enterotype, max.dist=0.3)
-plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+ig <- make_network(enterotype, max.dist=0.3)
+plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 # Change distance parameter
-ig <- make_sample_network(enterotype, max.dist=0.2)
-plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+ig <- make_network(enterotype, max.dist=0.2)
+plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 }
 \references{
   Code modified from code now hosted on GitHub by Scott
@@ -90,6 +97,6 @@ plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_we
   \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
 }
 \seealso{
-  \code{\link{make_sample_network}}
+  \code{\link{make_network}}
 }
 

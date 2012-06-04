@@ -149,15 +149,25 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	
 	# get the extra arguments to pass to functions (this can be empty)
 	extrargs <- list(...)	
-	
+
+	# # non-phyloseq methods are assumed to be based on otuTable-only (for now)
 	# # If necessary (non phyloseq funs), enforce orientation, build function.
 	OTU <- otuTable(physeq)
-	# coerce to vegan-style samples-are-rows orientation
-	if( speciesAreRows(physeq) ){OTU <- t(OTU)}
-	OTU <- as(OTU, "matrix")		
-	fun.args <- c(list(OTU, method=method), extrargs)	
 
-	return( do.call(dfun, fun.args) )	
+	# Test type, and enforce orientation accordingly	
+	if( type == "species"){
+		# For species-distance, species need to be rows (vegan-style)
+		if( !speciesAreRows(OTU) ){OTU <- t(OTU)}	
+	} else if( type == "samples" ){
+		# For sample-distance, samples need to be rows (vegan-style)
+		if( speciesAreRows(OTU) ){OTU <- t(OTU)}
+	} else {
+		stop("type argument must be one of \n (1) samples \n or \n (2) species")
+	}	
+
+	OTU <- as(OTU, "matrix")
+	fun.args <- c(list(OTU, method=method), extrargs)	
+	return( do.call(dfun, fun.args) )
 } 
 ################################################################################
 ################################################################################
