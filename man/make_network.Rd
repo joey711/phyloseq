@@ -25,7 +25,7 @@
   part of their calculation between samples, and there is
   no transpose-equivalent for this tree.}
 
-  \item{distance}{(Optional). Default "jaccard". Any
+  \item{distance}{(Optional). Default \code{"jaccard"}. Any
   supported argument to the \code{method} parameter of the
   \code{\link{distance}} function is supported here. Some
   distance methods, like \code{"unifrac"}, may take a
@@ -62,10 +62,11 @@
   A \code{\link[igraph]{igraph}}-class object.
 }
 \description{
-  A specialized function for creating graphical models of
-  microbiomes, sample-wise or taxa-wise, based on a
-  user-defined ecological distance and threshold. The graph
-  is ultimately built with tools from the
+  A specialized function for creating a network
+  representation of microbiomes, sample-wise or taxa-wise,
+  based on a user-defined ecological distance and
+  (potentially arbitrary) threshold. The graph is
+  ultimately represented using the
   \code{\link[igraph]{igraph}}-package.
 }
 \examples{

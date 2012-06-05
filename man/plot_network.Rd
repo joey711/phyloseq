@@ -1,6 +1,6 @@
 \name{plot_network}
 \alias{plot_network}
-\title{Plot sample-wise microbiome network (ggplot2)}
+\title{Plot a network using ggplot2 (represent microbiome)}
 \usage{
   plot_network(g, physeq=NULL, type="samples", color=NULL,
   shape=NULL, point_size=4, alpha=1, label="value", hjust =
@@ -70,14 +70,25 @@
   \code{\link[igraph]{layout.fruchterman.reingold}}}
 }
 \value{
-  A \code{\link{ggplot}}2 plot.
+  A \code{\link{ggplot}}2 plot representing the network,
+  with optional mapping of variable(s) to point color or
+  shape.
 }
 \description{
-  A custom plotting function for displaying graph objects
-  created by \code{\link[igraph]{igraph}} from a
-  phylogenetic sequencing experiment
-  (\code{\link{phyloseq-class}}), using advanced
-  \code{\link[ggplot2]{ggplot}}2 formatting.
+  A custom plotting function for displaying networks using
+  advanced \code{\link[ggplot2]{ggplot}}2 formatting. The
+  network itself should be represented using the
+  \code{\link[igraph]{igraph}} package. For the
+  \code{\link{phyloseq-package}} it is suggested that the
+  network object (argument \code{g}) be created using the
+  \code{\link{make_network}} function, and based upon
+  sample-wise or species-wise microbiome ecological
+  distances calculated from a phylogenetic sequencing
+  experiment (\code{\link{phyloseq-class}}). In this case,
+  edges in the network are created if the distance between
+  nodes is below a potentially arbitrary threshold, and
+  special care should be given to considering the choice of
+  this threshold.
 }
 \examples{
 data(enterotype)
@@ -88,8 +99,8 @@ ig <- make_network(enterotype, max.dist=0.2)
 plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 }
 \references{
-  Code modified from code now hosted on GitHub by Scott
-  Chamberlain:
+  This code was adapted from a repo original hosted on
+  GitHub by Scott Chamberlain:
   \url{https://github.com/SChamberlain/gggraph}
 
   The code most directly used/modified was first posted

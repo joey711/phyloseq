@@ -1,10 +1,10 @@
 ################################################################################
 #' Make microbiome network (igraph)
 #'
-#' A specialized function for creating graphical models of microbiomes,
+#' A specialized function for creating a network representation of microbiomes,
 #' sample-wise or taxa-wise,
-#' based on a user-defined ecological distance and threshold.
-#' The graph is ultimately built with tools from the 
+#' based on a user-defined ecological distance and (potentially arbitrary) threshold.
+#' The graph is ultimately represented using the 
 #' \code{\link[igraph]{igraph}}-package.
 #'
 #' @usage make_network(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
@@ -27,7 +27,7 @@
 #'  a taxa-wise tree as part of their calculation between samples, and
 #'  there is no transpose-equivalent for this tree.
 #'
-#' @param distance (Optional). Default "jaccard".
+#' @param distance (Optional). Default \code{"jaccard"}.
 #'  Any supported argument to the \code{method} parameter of the 
 #'  \code{\link{distance}} function is supported here.
 #'  Some distance methods, like \code{"unifrac"}, may take 
