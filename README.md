@@ -17,7 +17,7 @@ More concretely, `phyloseq` provides:
 	- [plot_heatmap](https://github.com/joey711/phyloseq/wiki/plot_heatmap)
 	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
 	- [plot_ordination](https://github.com/joey711/phyloseq/wiki/plot_ordination)
-	- [plot_sample_network](https://github.com/joey711/phyloseq/wiki/plot_sample_network)
+	- [plot_network](https://github.com/joey711/phyloseq/wiki/plot_network)
 	- [plot_richness_estimates](https://github.com/joey711/phyloseq/wiki/Graphics-Examples)
 	- [plot_taxa_bar](https://github.com/joey711/phyloseq/wiki/plot_taxa_bar)
 
