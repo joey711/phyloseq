@@ -180,9 +180,9 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	# AND it has the relevant additional data
 	# THEN add it to vertDF
 	if( !is.null(physeq) ){
-		if( type == "samples" & !is.null(sampleData(physeq)) ){
+		if( type == "samples" & !is.null(sampleData(physeq, FALSE)) ){
 			extraData <- sampleData(physeq)[as.character(vertDF$value), ]
-		} else if( type == "species" & !is.null(taxTab(physeq)) ){
+		} else if( type == "species" & !is.null(taxTab(physeq, FALSE)) ){
 			extraData <- taxTab(physeq)[as.character(vertDF$value), ]
 		}
 		vertDF <- data.frame(vertDF, extraData) 
