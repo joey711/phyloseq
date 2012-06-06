@@ -93,7 +93,7 @@ all.equal(ig, ii)
 # Try out making a trivial "network" of the 3-sample esophagus data,
 # with weighted-UniFrac as distance
 data(esophagus)
-ij <- make_network(esophagus, "unifrac", weighted=TRUE)
+ij <- make_network(esophagus, "samples", "unifrac", weighted=TRUE)
 }
 \seealso{
   \code{\link{plot_network}}

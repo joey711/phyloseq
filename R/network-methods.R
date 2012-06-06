@@ -93,7 +93,7 @@
 #' # Try out making a trivial "network" of the 3-sample esophagus data,
 #' # with weighted-UniFrac as distance
 #' data(esophagus)
-#' ij <- make_network(esophagus, "unifrac", weighted=TRUE)
+#' ij <- make_network(esophagus, "samples", "unifrac", weighted=TRUE)
 make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
 	keep.isolates=FALSE, ...){
 
