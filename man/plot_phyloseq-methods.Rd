@@ -33,8 +33,12 @@ data(esophagus)
 plot_phyloseq(esophagus)
 }
 \seealso{
-  \code{\link{plot_ordination}} \code{\link{plot_taxa_bar}}
-  \code{\link{plot_network}} \code{\link{plot_tree}}
+  \href{https://github.com/joey711/phyloseq/wiki/Graphics-Examples}{phyloseq
+  graphics examples (wiki)}.
+
+  \code{\link{plot_ordination}} \code{\link{plot_heatmap}}
+  \code{\link{plot_tree}} \code{\link{plot_network}}
+  \code{\link{plot_taxa_bar}}
   \code{\link{plot_richness_estimates}}
 }
 

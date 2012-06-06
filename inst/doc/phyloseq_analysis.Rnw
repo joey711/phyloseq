@@ -44,6 +44,7 @@
 
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \title{ Vignette for phyloseq: A Bioconductor package for handling and analysis of high-throughput phylogenetic sequence data }
 
@@ -263,12 +264,15 @@ Note that it is possible to order the sample/species indices by any of the ordin
 \clearpage
 \subsection{Microbiome Network Representation}\label{sec:network}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Continuing with the \code{enterotype} dataset, here are some examples for creating a custom network representation of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} and \code{ggplot2} packages to create a network display of the ``connectedness'' of samples according to some user-provided ecological similarity. By default, the position of points (samples) are determined using an algorithm that optimizes the clarity of the display of network ``edges'', but the spatial position of points does not imply any continuous similarity information like would be the case in an ordination. In this example, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
+Continuing with the \code{enterotype} dataset, here are some examples for creating a custom network representation of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} and \code{ggplot2} packages to create a network display of the ``connectedness'' of samples according to some user-provided ecological similarity. By default, points represent microbiom samples, and are
+determined using an algorithm that optimizes the clarity of the display of network ``edges'', 
+but the spatial position of points does not imply any continuous similarity information like would be the case in an ordination. 
+In this example, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
 
 <<ent-network, fig=FALSE, eval=TRUE>>=
 data(enterotype)
-ig <- make_sample_network(enterotype, max.dist=0.3)
-(p  <- plot_sample_network(ig, enterotype, color="SeqTech",
+ig <- make_network(enterotype, max.dist=0.3)
+(p  <- plot_network(ig, enterotype, color="SeqTech",
     shape="Enterotype", line_weight=0.4, label=NULL))
 @
 <<echo=FALSE>>=
