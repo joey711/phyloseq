@@ -26,8 +26,10 @@
   number of taxa/species/OTUs. Default value is
   \code{NULL}. ALTERNATIVELY, this argument can be a tree
   object (\code{\link[ape]{phylo}}-class), in case the tree
-  has already been imported, or is in a different format
-  than NEXUS.}
+  has already been imported, or the data source file is in
+  a format other than NEXUS. For example, if tree is in
+  Newick (New Hampshire) format, use
+  \code{\link[ape]{read.tree}}.}
 
   \item{biotaxonomy}{(Optional). A character vector
   indicating the name of each taxonomic level in the

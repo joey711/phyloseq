@@ -130,7 +130,8 @@ import <- function(pipelineName, ...){
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
 #'  Default value is \code{NULL}. ALTERNATIVELY, this argument can be a tree object
 #'  (\code{\link[ape]{phylo}}-class), in case the tree has already been
-#'  imported, or is in a different format than NEXUS.
+#'  imported, or the data source file is in a format other than NEXUS.
+#'  For example, if tree is in Newick (New Hampshire) format, use \code{\link[ape]{read.tree}}.
 #'
 #' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
 #'  in the taxonomy-portion of the otu-file, which may not specify these levels 
@@ -186,7 +187,6 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
 		} else {
-			#tree <- read.tree(treefilename, ...)
 			tree <- read.nexus(treefilename, ...)
 		}
 		argumentlist <- c(argumentlist, list(tree) )
@@ -224,36 +224,50 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	 	biotaxonomy=c("Root", "Domain", "Phylum", "Class", "Order",
 		 	"Family", "Genus", "Species", "Strain")
 	 }
+
 	##########################################
-	# Process otu table. "otuID" convention
-	# specific to Qiime. Might need to be abstracted.
+	# Process OTU table.
 	##########################################
 	# first read the table. Skip line 1, avoid comment character "#"
 	otutab <- read.table(file=otufilename, header=TRUE,
 		sep="\t", comment.char="", skip=1)
-	# name the rows by otuID
-	rownames(otutab) <- paste("otuID", as.character(otutab[,1]), sep="_")
-	# remove the otuID column
-	otutab <- otutab[, 2:ncol(otutab)]
-	##########################################
-	# Process/separate the lineage information
-	##########################################
-	splitaxa <- strsplit(as.character(otutab[,"Consensus.Lineage"]),";")
-	taxtab   <- matrix(NA, nrow(otutab), length(biotaxonomy))
-	colnames(taxtab) <- biotaxonomy
-	# If present, place the taxonomy labels in matrix
-	# starting on the left column (root)
-	for( i in 1:nrow(otutab) ){
-		taxtab[i, 1:length(splitaxa[[i]])] <- splitaxa[[i]]
-	}
-	rownames(taxtab) <- rownames(otutab)
-	taxtab <- taxTab( as.matrix(taxtab) )
+
+	# "otuID" convention might only be in old versions of qiime
+	# rownames(otutab) <- paste("otuID", as.character(otutab[,1]), sep="_")
 	
-	# Remove taxonomy column from otutab
-	otutab <- otutab[, which(colnames(otutab)!="Consensus.Lineage")]
+	# remove the otuID (first) column
+	otutab <- otutab[, -1]
+	
+	##########################################
+	# Taxonomy Table
+	# If present, process/separate the lineage information
+	##########################################
+	if( "Consensus.Lineage" %in% colnames(otutab) ){
+		splitaxa <- strsplit(as.character(otutab[, "Consensus.Lineage"]),";")
+		taxtab   <- matrix(NA, nrow(otutab), length(biotaxonomy))
+		colnames(taxtab) <- biotaxonomy
+		# If present, place the taxonomy labels in matrix
+		# starting on the left column (root)
+		for( i in 1:nrow(otutab) ){
+			taxtab[i, 1:length(splitaxa[[i]])] <- splitaxa[[i]]
+		}
+		# Force rownames of taxtab to match otutab.
+		rownames(taxtab) <- rownames(otutab)
+		
+		# Coerce to (character) matrix, and label as taxonomyTable-class
+		taxtab <- taxTab( as.matrix(taxtab) )
+		
+		# Remove taxonomy column from otutab
+		otutab <- otutab[, which(colnames(otutab)!="Consensus.Lineage")]		
+	}
+
 	# convert to matrix of integers, and then otuTable object
 	otutab <- otuTable( as(otutab, "matrix"), speciesAreRows=TRUE )
 
+	##########################################
+	# Combine taxonomyTable and otuTable 
+	# as phyloseq object and return.
+	##########################################
 	return( phyloseq(otutab, taxtab) )
 }
 ######################################################################################
