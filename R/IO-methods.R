@@ -184,12 +184,27 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	}
 
 	if( !is.null(treefilename) ){
+		# "phylo" object provided directly
 		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
+		# file path to tree file provided (NEXUS)
 		} else {
-			tree <- read.nexus(treefilename, ...)
+			# # # Protect tree-read error:
+			tree <- NULL
+			try(tree <- read.nexus(trefile, ...), TRUE)
+			# Automatically try Newick import if nexus didn't work.
+			if(is.null(tree)){
+				try(tree <- read.tree(trefile, ...), TRUE)
+			}
+			# If neither tree-import worked (still NULL), report warning
+			if(is.null(tree)){
+				warning("treefilename could not be read. It is omitted from output.\n Please retry with valid tree.")
+			}			
 		}
-		argumentlist <- c(argumentlist, list(tree) )
+		# If a valid (phylo-class) tree, add it to argument list.
+		if( !is.null(tree) ){
+			argumentlist <- c(argumentlist, list(tree) )
+		}
 	}
 
 	do.call("phyloseq", argumentlist)
