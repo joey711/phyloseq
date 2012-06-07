@@ -176,16 +176,20 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	colnames(vertDF) <- c("x", "y")
 	vertDF    <- data.frame(value=g[[9]][[3]][["name"]], vertDF)
 	
-	# If phyloseq object provided, add 
-	# the relevant taxa or sample data to vertDF
-	# FIX: this should also check if sampleData/taxTab is present...
+	# If phyloseq object provided,
+	# AND it has the relevant additional data
+	# THEN add it to vertDF
 	if( !is.null(physeq) ){
-		if( type == "samples" ){
-			SD <- sampleData(physeq)[as.character(vertDF$value), ]
-		} else if( type == "species" ){
-			SD <- taxTab(physeq)[as.character(vertDF$value), ]
+		extraData <- NULL
+		if( type == "samples" & !is.null(sampleData(physeq, FALSE)) ){
+			extraData <- sampleData(physeq)[as.character(vertDF$value), ]
+		} else if( type == "species" & !is.null(taxTab(physeq, FALSE)) ){
+			extraData <- taxTab(physeq)[as.character(vertDF$value), ]
 		}
-		vertDF <- data.frame(vertDF, SD) 
+		# Only mod vertDF if extraData exists
+		if( !is.null(extraData) ){
+			vertDF <- data.frame(vertDF, extraData) 			
+		}
 	}
 
 	# Combine vertex and edge coordinate data.frames

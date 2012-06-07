@@ -5,7 +5,8 @@ The analysis of microbiological communities brings many challenges: the integrat
 More concretely, `phyloseq` provides:
 
  * Import abundance and related data from popular OTU clustering pipelines:
-	- [QIIME](http://qiime.org/), [mothur](http://www.mothur.org/), [BIOM](http://www.qiime.org/svn_documentation/documentation/biom_format.html), [PyroTagger](http://pyrotagger.jgi-psf.org/cgi-bin/index.pl), [RDP](http://pyro.cme.msu.edu/). More planned.
+	- [QIIME](http://qiime.org/), [mothur](http://www.mothur.org/), [BIOM](http://www.qiime.org/svn_documentation/documentation/biom_format.html), [PyroTagger](http://pyrotagger.jgi-psf.org/cgi-bin/index.pl), [RDP](http://pyro.cme.msu.edu/). 
+ 	- Additional importers planned for [MG-RAST](http://metagenomics.anl.gov/), [CLoVR-16S](http://clovr.org/methods/clovr-16s/), [Genboree Microbiome](http://genboree.org/theCommons/projects/pub-gen-microbiome), [PANGEA](http://www.microgator.org/pangea/), and others.
 
  * Convenience analysis wrappers for common analysis tasks, e.g.
 	- [distance](https://github.com/joey711/phyloseq/wiki/distance)  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
@@ -17,7 +18,7 @@ More concretely, `phyloseq` provides:
 	- [plot_heatmap](https://github.com/joey711/phyloseq/wiki/plot_heatmap)
 	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
 	- [plot_ordination](https://github.com/joey711/phyloseq/wiki/plot_ordination)
-	- [plot_sample_network](https://github.com/joey711/phyloseq/wiki/plot_sample_network)
+	- [plot_network](https://github.com/joey711/phyloseq/wiki/plot_network)
 	- [plot_richness_estimates](https://github.com/joey711/phyloseq/wiki/Graphics-Examples)
 	- [plot_taxa_bar](https://github.com/joey711/phyloseq/wiki/plot_taxa_bar)
 
