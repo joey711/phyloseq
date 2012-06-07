@@ -125,13 +125,19 @@ import <- function(pipelineName, ...){
 #' followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
-#' @param treefilename (Optional). A phylogenetic tree in NEXUS format. For the QIIME pipeline
-#'  this is typically a tree of the representative 16S rRNA sequences from each OTU
+#' @param treefilename (Optional). A file representing a phylogenetic tree.
+#'  Expectation is first NEXUS format (via \code{\link[ape]{read.nexus}}), 
+#'  and if that fails, the file will be read as a Newick file (via \code{\link[ape]{read.tree}}). 
+#'  If provided, the tree should have the same OTUs/labels as the OTUs in the other
+#'  files. 
+#'  Anything missing in one of the files is removed from all. 
+#'  For the QIIME pipeline
+#'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
-#'  Default value is \code{NULL}. ALTERNATIVELY, this argument can be a tree object
-#'  (\code{\link[ape]{phylo}}-class), in case the tree has already been
-#'  imported, or the data source file is in a format other than NEXUS.
-#'  For example, if tree is in Newick (New Hampshire) format, use \code{\link[ape]{read.tree}}.
+#'  Default value is \code{NULL}. 
+#'  ALTERNATIVELY, this argument can be a tree object
+#'  (\code{\link[ape]{phylo}}-class). in case the tree has already been
+#'  imported, or the data source file is in a format other than NEXUS or Newick.
 #'
 #' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
 #'  in the taxonomy-portion of the otu-file, which may not specify these levels 
