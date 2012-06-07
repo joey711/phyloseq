@@ -234,6 +234,9 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 
 	# "otuID" convention might only be in old versions of qiime
 	# rownames(otutab) <- paste("otuID", as.character(otutab[,1]), sep="_")
+
+	# Assign otuID from the first column, after coercing to character
+	rownames(otutab) <- as.character(otutab[, 1])
 	
 	# remove the otuID (first) column
 	otutab <- otutab[, -1]
