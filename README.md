@@ -6,7 +6,7 @@ More concretely, `phyloseq` provides:
 
  * Import abundance and related data from popular OTU clustering pipelines:
 	- [QIIME](http://qiime.org/), [mothur](http://www.mothur.org/), [BIOM](http://www.qiime.org/svn_documentation/documentation/biom_format.html), [PyroTagger](http://pyrotagger.jgi-psf.org/cgi-bin/index.pl), [RDP](http://pyro.cme.msu.edu/). 
- 	- Additional importers from planned for [MG-RAST](http://metagenomics.anl.gov/), [CLoVR-16S](http://clovr.org/methods/clovr-16s/), [Genboree Microbiome](http://genboree.org/theCommons/projects/pub-gen-microbiome), [PANGEA](http://www.microgator.org/pangea/), and others.
+ 	- Additional importers planned for [MG-RAST](http://metagenomics.anl.gov/), [CLoVR-16S](http://clovr.org/methods/clovr-16s/), [Genboree Microbiome](http://genboree.org/theCommons/projects/pub-gen-microbiome), [PANGEA](http://www.microgator.org/pangea/), and others.
 
  * Convenience analysis wrappers for common analysis tasks, e.g.
 	- [distance](https://github.com/joey711/phyloseq/wiki/distance)  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
