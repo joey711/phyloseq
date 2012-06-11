@@ -5,7 +5,7 @@
   plot_heatmap(physeq, method="NMDS", distance="bray",
   sample.label=NULL, species.label=NULL, low="#000033",
   high="#66CCFF", na.value="black", trans=log_trans(4),
-  ...)
+  max.label=250, ...)
 }
 \arguments{
   \item{physeq}{(Required). The data, in the form of an
@@ -67,6 +67,16 @@
   use in the continuous color scale. See
   \code{\link[scales]{trans_new}} for details. The default
   is \code{log_trans(4)}.}
+
+  \item{max.label}{(Optional). Integer. Default is 250. The
+  maximum number of labeles to fit on a given axis (either
+  x or y). If number of taxa or samples exceeds this value,
+  the corresponding axis will be stripped of any labels.
+
+  This supercedes any arguments provided to
+  \code{sample.label} or \code{species.label}. Make sure to
+  increase this value if, for example, you want a special
+  label for an axis that has 300 indices.}
 
   \item{...}{(Optional). Additional parameters passed to
   \code{\link{ordinate}}.}

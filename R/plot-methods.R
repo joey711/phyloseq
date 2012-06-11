@@ -1954,7 +1954,8 @@ RadialCoords <- function(pos)
 #' 
 #' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
 #'  sample.label=NULL, species.label=NULL,
-#'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), ...)
+#'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4),
+#'  max.label=250, ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
@@ -2007,6 +2008,15 @@ RadialCoords <- function(pos)
 #'  the continuous color scale. See \code{\link[scales]{trans_new}} for details.
 #'  The default is \code{log_trans(4)}.
 #'
+#' @param max.label (Optional). Integer. Default is 250.
+#'  The maximum number of labeles to fit on a given axis (either x or y). 
+#'  If number of taxa or samples exceeds this value, 
+#'  the corresponding axis will be stripped of any labels. 
+#'
+#'  This supercedes any arguments provided to \code{sample.label} or \code{species.label}.
+#'  Make sure to increase this value if, for example, you want a special label
+#'  for an axis that has 300 indices.
+#'
 #' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
 #' 
 #' @return
@@ -2049,8 +2059,9 @@ RadialCoords <- function(pos)
 #' plot_heatmap(gpac, "MDS", "unifrac")
 #' plot_heatmap(gpac, "MDS", "unifrac", weighted=TRUE)
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
-	sample.label=NULL, species.label=NULL,
-	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), ...){
+	sample.label=NULL, species.label=NULL, 
+	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 
+	max.label=250, ...){
 	
 	# Enforce orientation
 	if( !speciesAreRows(physeq) ){ physeq <- t(physeq) }
@@ -2088,21 +2099,28 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	# Now the plotting part
 	p <- ggplot(adf, aes(x=as.factor(x), y=as.factor(y), fill=value))
 	p <- p + geom_tile()
-	p <- update_labels(p, list(fill = "Abundance", y="OTU", x="Samples"))	
+	p <- update_labels(p, list(fill = "Abundance", y="OTU", x="Samples"))
 
-	text.size <- treetextsize(0.10*nspecies(physeq))
-	p <- p + opts(axis.text.x = theme_text(angle = -90, hjust = 0),
-					axis.text.y = theme_text(size=text.size)#, plot.background=theme_rect(colour = "black")
-				)
-	if( !is.null(trans) ){
-		p <- p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
+
+	# # Don't render labels if more than max.label
+	# Samples
+	if( nsamples(physeq) <= max.label ){
+		p <- p + opts(axis.text.x = theme_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
 	} else {
-		p <- p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
+		# p <- p + scale_x_discrete("Samples", labels=NULL)
+		p <- p + scale_x_discrete("Samples", labels="")
+	}
+	# species
+	if( nspecies(physeq) <= max.label ){
+		p <- p + opts(axis.text.y = theme_text(size=treetextsize(0.10*nspecies(physeq))))	
+	} else {
+		# p <- p + scale_y_discrete("OTU", labels=NULL)
+		p <- p + scale_y_discrete("OTU", labels="")
 	}
 	
-	# Axis Relabeling:
+	# # Axis Relabeling (Skipped if more than max.label):
 	# Re-write sample-labels to some sample variable...
-	if( !is.null(sample.label) ){
+	if( !is.null(sample.label) & nsamples(physeq) <= max.label){
 		# Make a sample-named vector of the values for sample.label
 		labvec <- as(getVariable(physeq, sample.label), "vector")
 		names(labvec) <- sample.names(physeq)
@@ -2113,7 +2131,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Add the sample.label re-labeling layer
 		p <- p + scale_x_discrete(sample.label, labels=labvec)
 	}
-	if( !is.null(species.label) ){
+	if( !is.null(species.label) & nspecies(physeq) <= max.label){
 		# Make a species-named vector of the values for species.label
 		labvec <- as(taxTab(physeq)[, species.label], "vector")
 		names(labvec) <- species.names(physeq)
@@ -2124,6 +2142,13 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Add the species.label re-labeling layer
 		p <- p + scale_y_discrete(species.label, labels=labvec)
 	}
+	
+	# Color scale transformations
+	if( !is.null(trans) ){
+		p <- p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
+	} else {
+		p <- p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
+	}	
 		
 	return(p)
 }

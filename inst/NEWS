@@ -16,7 +16,11 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
-phyloseq 1.1.13
+phyloseq 1.1.15
+===========
+plot_heatmap: Added default (but adjustable) threshold to omit taxa/sample labels
+
+phyloseq 1.1.14
 ===========
 Update import_qiime() function to import latest non-BIOM qiime output files.
 	Also added check for presence of taxonomy information (consensus lineage).
