@@ -582,8 +582,25 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	if( type=="biplot" ){	
 		if( is.null(color) ){
 			# Rename color title in legend.
-			p <- p + scale_color_discrete(name="type")
+			p <- update_labels(p, list(colour = "type")) #p + scale_color_discrete(name="type")
 		} else {
+			# Check if variable is discrete. 
+			# Note that you probalby need to adjust this function to accommodate continuous variables, anyway. Post an issue.
+			# plyr::is.discrete
+			if( is.discrete(DF[, color]) ){
+				# The following function reproduces ggplot2's default color scale.
+				# From: http://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+				gg_color_hue <- function(n) {
+					hues = seq(15, 375, length=n+1)
+					hcl(h=hues, l=65, c=100)[1:n]
+				}
+				colvals <- gg_color_hue(length(levels(as(DF[, color], "factor"))))
+				names(colvals) <- levels(as(DF[, color], "factor"))
+				# Now make the species or sample dark grey
+				colvals[names(colvals) %in% c("samples", "species")] <- "grey45"
+				# Now add the manually re-scaled layer with species/samples as grey
+				p <- p + scale_colour_manual(values=colvals)
+			}
 			# Adjust size so that samples are bigger than species by default.
 			p <- p + scale_size_manual("type", values=c(samples=5, species=2))		
 		}
