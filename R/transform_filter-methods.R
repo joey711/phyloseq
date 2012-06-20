@@ -88,14 +88,14 @@ setMethod("tipglom", signature("phylo"), function(tree, speciationMinLength=0.02
 #'  Output class matches the class of \code{tree}.
 #'
 #' @seealso tipglom
-#' @importFrom igraph graph.adjacency
-#' @importFrom igraph get.edgelist
+#' @importFrom igraph0 graph.adjacency
+#' @importFrom igraph0 get.edgelist
 #' @keywords internal
 tipglom.internal <- function(tree, speciationMinLength){
 	# Create adjacency matrix, where tips are adjacent
 	# if their distance is below the threshold speciationMinLength
 	tipAdjacent <- (getTipDistMatrix( tree ) < speciationMinLength)
-	# Define igraph object based on the tree-tip adjacenecy matrix
+	# Define igraph0 object based on the tree-tip adjacenecy matrix
 	ig          <- graph.adjacency(tipAdjacent, diag=FALSE)
 	# Define the species cliques to loop through
 	spCliques   <- edgelist2clique( get.edgelist(ig) )

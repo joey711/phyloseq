@@ -16,6 +16,10 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.17
+===========
+Fix possible bug that results from the latest version (0.6+) of igraph not being backward compatible. A stable igraph0 package is available on CRAN as a stop-gap, and so all igraph dependencies were migrated to "igraph0" until the phyloseq-source can be updated to match the igraph latest.
+
 phyloseq 1.1.15
 ===========
 plot_heatmap: Added default (but adjustable) threshold to omit taxa/sample labels
