@@ -8,10 +8,10 @@
   layout.method=layout.fruchterman.reingold)
 }
 \arguments{
-  \item{g}{(Required). An
-  \code{\link[igraph]{igraph}}-class object created either
-  by the convenience wrapper \code{\link{make_network}}, or
-  directly by the tools in the igraph-package.}
+  \item{g}{(Required). An \code{igraph0}-class object
+  created either by the convenience wrapper
+  \code{\link{make_network}}, or directly by the tools in
+  the igraph0-package.}
 
   \item{physeq}{(Optional). Default \code{NULL}. A
   \code{\link{phyloseq-class}} object on which \code{g} is
@@ -60,14 +60,14 @@
   \item{layout.method}{(Optional). Default
   \code{layout.fruchterman.reingold}. A function (closure)
   that determines the placement of the vertices for drawing
-  a graph. Should be able to take an
-  \code{\link{igraph}}-class as sole argument, and return a
-  two-column coordinate matrix with \code{nrow} equal to
-  the number of vertices. For possible options already
-  included in \code{igraph}-package, see the others also
-  described in the help file:
+  a graph. Should be able to take an \code{igraph0}-class
+  as sole argument, and return a two-column coordinate
+  matrix with \code{nrow} equal to the number of vertices.
+  For possible options already included in
+  \code{igraph0}-package, see the others also described in
+  the help file:
 
-  \code{\link[igraph]{layout.fruchterman.reingold}}}
+  \code{\link[igraph0]{layout.fruchterman.reingold}}}
 }
 \value{
   A \code{\link{ggplot}}2 plot representing the network,
@@ -78,7 +78,7 @@
   A custom plotting function for displaying networks using
   advanced \code{\link[ggplot2]{ggplot}}2 formatting. The
   network itself should be represented using the
-  \code{\link[igraph]{igraph}} package. For the
+  \code{igraph0} package. For the
   \code{\link{phyloseq-package}} it is suggested that the
   network object (argument \code{g}) be created using the
   \code{\link{make_network}} function, and based upon

@@ -63,7 +63,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' A custom plotting function for displaying networks
 #' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #' The network itself should be represented using
-#' the \code{\link[igraph]{igraph}} package.
+#' the \code{igraph0} package.
 #' For the \code{\link{phyloseq-package}} it is suggested that the network object
 #' (argument \code{g})
 #' be created using the
@@ -81,9 +81,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 	line_weight=0.5, line_color=color, line_alpha=0.4,
 #' 	layout.method=layout.fruchterman.reingold)
 #'
-#' @param g (Required). An \code{\link[igraph]{igraph}}-class object created
+#' @param g (Required). An \code{igraph0}-class object created
 #'  either by the convenience wrapper \code{\link{make_network}}, 
-#'  or directly by the tools in the igraph-package.
+#'  or directly by the tools in the igraph0-package.
 #'
 #' @param physeq (Optional). Default \code{NULL}. 
 #'  A \code{\link{phyloseq-class}} object on which \code{g} is based.
@@ -128,12 +128,12 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'
 #' @param layout.method (Optional). Default \code{layout.fruchterman.reingold}.
 #'  A function (closure) that determines the placement of the vertices
-#'  for drawing a graph. Should be able to take an \code{\link{igraph}}-class
+#'  for drawing a graph. Should be able to take an \code{igraph0}-class
 #'  as sole argument, and return a two-column coordinate matrix with \code{nrow}
 #'  equal to the number of vertices. For possible options already included in 
-#'  \code{igraph}-package, see the others also described in the help file:
+#'  \code{igraph0}-package, see the others also described in the help file:
 #' 
-#' \code{\link[igraph]{layout.fruchterman.reingold}}
+#' \code{\link[igraph0]{layout.fruchterman.reingold}}
 #'
 #' @return A \code{\link{ggplot}}2 plot representing the network,
 #'  with optional mapping of variable(s) to point color or shape.
@@ -150,8 +150,8 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 
 #' @import ggplot2
 #' @import reshape
-#' @importFrom igraph layout.fruchterman.reingold
-#' @importFrom igraph get.edgelist
+#' @importFrom igraph0 layout.fruchterman.reingold
+#' @importFrom igraph0 get.edgelist
 #' @export
 #' @examples 
 #' 
