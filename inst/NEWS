@@ -1,15 +1,281 @@
-phyloseq 0.99.x
+phyloseq
 ===========
-* Bioconductor development release updates.
-* BIOM format import: import_biom() function
+* plot_ordination() powerful, flexible ordination plots built with ggplot2
+* plot_heatmap() easy, flexible heat maps built with ggplot2
+* plot_tree() easy, flexible annotated tree plots built with ggplot2
+* make_sample_network(), plot_sample_network() - microbiome network visualization
+* plot_richness_estimates() for easy, flexible summary of species richness
 * Parallel Fast UniFrac
 * distance() wrapper for ecological distance calculations
 * ordinate() wrapper, calculates many different ordination methods.
-* plot_ordination() powerful, flexible ordination plotting using ggplot2
-* make_sample_network(), plot_sample_network() - microbiome network visualization
-* plot_richness_estimates() for easy, flexible summary of species richness
+* General importer for all supported data formats: import()
+* BIOM format import: import_biom() function
 * Support for Double Principle Coordinate Analysis (DPCoA)
 * Several published exampled datasets included
-* General importer for all supported data formats: import()
+* Bioconductor development release updates.
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+
+phyloseq 1.1.18
+===========
+Added replicate labels as a "Sample" factor in the soilrep dataset.
+
+phyloseq 1.1.17
+===========
+Fix possible bug that results from the latest version (0.6+) of igraph not being backward compatible. A stable igraph0 package is available on CRAN as a stop-gap, and so all igraph dependencies were migrated to "igraph0" until the phyloseq-source can be updated to match the igraph latest.
+
+phyloseq 1.1.15
+===========
+plot_heatmap: Added default (but adjustable) threshold to omit taxa/sample labels
+
+phyloseq 1.1.14
+===========
+Update import_qiime() function to import latest non-BIOM qiime output files.
+	Also added check for presence of taxonomy information (consensus lineage).
+
+phyloseq 1.1.10
+===========
+* Add plot_heatmap() function, for easy flexible heat maps built with ggplot2
+
+phyloseq 1.1.8-9
+===========
+* Fix bug for some variants of new BIOM format
+* Add import_RDP_otu() import function for new RDP pipeline export format
+
+phyloseq 1.1.7
+===========
+* Removed the old plot_tree_phyloseq() function, in favor of the new ggplot2-based plot_tree()
+* Uncommented / tested formal examples in documentation of plot-functions
+* Updated variable names and doc for the plot_taxa_bar() function
+
+phyloseq 1.1.6
+===========
+* Update vignette with plot_tree() example, replacing the 
+   old base-graphics function, plot_tree_phyloseq().
+* Fix bug in legend for trees with size mapped to abundance
+
+phyloseq 1.1.5
+===========
+* Add initial version of tree_plot(), built with ggplot2
+* Adds several internal functions borrowed from devel version of ggphylo
+
+phyloseq 1.1.4
+===========
+* Add errorIfNULL option to auxiliary accessors
+  (e.g. sample.variables(), rank.names())
+
+phyloseq 1.1.1-3
+===========
+* R version updated to match Bioconductor, R-2.15.0+
+* ape-package version updated to 3.0+
+* ape-package now import dependency
+* ggplot2-package version updated to 0.9.0+
+* ggplot2-package now import dependency
+
+v0.99.48
+===========
+* Updated README.md
+
+v0.99.47
+===========
+* Add support for ordinate() to take dist-object instead of distance-method string.
+* Update the documentation for ordinate() to reflect change.
+* Updated README.md to describe new tools, distance() and ordinate()
+* Update JSD documentation.
+
+v0.99.46
+===========
+* Added support and documentation for Jensen-Shannon Divergence to distance().
+* Some updates to distance() function and its documentation.
+
+v0.99.45
+===========
+* Completely remove vegdist documentation from phyloseq by omitting all roxygen2
+  headers except for 
+  #' keywords internal
+  This finally fixes it, without build warnings/errors, once and for all.
+
+v0.99.44
+===========
+* Make the phyloseq::vegdist() wrapper an internal function. Documentation updated as well.
+  This is a solution to Issue 87
+  https://github.com/joey711/phyloseq/issues/87
+* Remove rda.phyloseq and cca.phyloseq from exported methods.
+  Documentation had already been removed when these were first attempted to be converted
+  to internal methods in v0.99.42
+* Modify make_sample_network to use the new distance() function, and be able to pass on
+  additional parameters to distance().
+* Re-order arguments to make_sample_network to better represent the stability of defaults.
+* Removed redundant parameters from make_sample_network(). Transformations to abundance
+  tables should be performed upstream using phyloseq tools, not embedded in this function.
+* Modify vignettes to reflect these changes.
+* Rebuild vignette.
+* Update import() documentation to reflect support for BIOM format, import_biom() function.
+
+v0.99.43
+===========
+* Revise component assignment operators, e.g. "sampleData(physeq)<-" to coerce/access
+  from more diverse objects based on context. Documentation for these operators updated.
+  This is a more general solution to Issue 68
+  https://github.com/joey711/phyloseq/issues/68
+
+v0.99.42
+===========
+* purge rda.phyloseq and cca.phyloseq from documentation, vignettes. Internal functions.
+* analysis vignette revisions
+
+v0.99.41
+===========
+* Added ordinate() function, general ordination wrapper.
+
+v0.99.40
+===========
+* Fixed case issues with source filenames. 
+  Required multiple commits, break in versioning for source files that had improper letter case (e.g. ".r")
+
+v0.99.37 - 0.99.39
+===========
+* Vignette updates.
+
+v0.99.36
+===========
+* Added general distance calculation wrapper, distance()
+* Consolidated it with unifrac.R code in a new "distance-methods.R" source file.
+
+v0.99.35
+===========
+* Added tool to retain user-defined subset of points from an ordination, subset_ord_plot
+* Updates to vignette
+* Remove a poorly-documented, unpublished example dataset, ex1 -> and all references to it in documentation
+
+v0.99.34
+===========
+* Updates to vignette
+
+v0.99.33
+===========
+* Allow color specification for "biplot" type in plot_ordination()
+* bug fix for certain combinations of biplot options.
+
+v0.99.32
+===========
+* Remove plot_ordination_biplot() from phyloseq -> replaced by: plot_ordination()
+*  |-> also removed from vignette.
+* Remove calcplot(). -> Will be replaced by pipeline_() methods
+* plot_ordination() shown in vignette for "species" plot type.
+* Fix - Allow flexible axis labels for plot_ordination()
+
+v0.99.31
+===========
+* Aesthetic fixes in plot_ordination()
+* Remove plot_ordination_samples() -> redundant, covered by plot_ordination().
+
+v0.99.30
+===========
+* Added plot_ordination -> general ordination plotting function
+
+v0.99.29
+===========
+* Added first-draft of analysis vignette to package
+* Total package-space and build/check times tested
+
+v0.99.28
+===========
+* Fixed bug when specifying alternative axes in plot_ordination_samples()
+
+v0.99.27
+===========
+* Added DPCoA() function for Double Principle Coordinate Analysis, relies heavily on ade4.
+* Added ade4 dependency. Some masking, but no errors apparent.
+* Added dpcoa extension for scores()
+* minor bugfix in plot_ordination_biplot().
+
+v0.99.26
+===========
+* Add plot_ordination_samples() for convenient ordination plotting
+* Renamed plot_ordination_phyloseq to more precise, plot_ordination_biplot()
+* Added extension to vegan::scores for ape:pcoa results, scores.pcoa()
+
+v0.99.25
+===========
+* Fix build warning from duplicate import in namespace
+* Update README.md
+
+v0.99.24
+===========
+* Advanced network/graph plotting/visualization wrappers: make_sample_network(), plot_sample_network()
+* Advanced alpha diversity wrappers: plot_richness_estimates(), estimate_richness()
+* Added taxafilter() function for even more convenient filtering of species/taxa
+* Added reshape dependency for explicit use of melt() function.
+
+v0.99.23
+===========
+* Added a rooted tree to "GlobalPatterns" dataset
+* Allow multi-class tests with mt()
+
+v0.99.20
+===========
+* Added "GlobalPatterns" dataset, and some other minor improvements
+* added "GlobalPatterns" dataset, with doc and some analysis
+  examples. More examples will be added to the vignette.
+* add getVariable accessor function, for streamlining access
+  to values/vectors/factors/etc of the variates contained in
+  the sampleData component
+* revise documentation about parallelization of import_biom()
+* revise documentation for enterotype dataset
+
+v0.99.19
+===========
+* fixed a bug in general import() function in which it properly processed import command, but then failed to return result.
+
+v0.99.18
+===========
+* Added import_biom() function to import BIOM format OTU-clustered data / metadata
+* Added (direct) dependency for plyr, as well as RJSONIO 
+
+
+phyloseq 0.4.2 - 0.4.7
+===========
+
+* Improvements to import_mothur() via import_mothur_otulist().
+* merge_samples() function added, in preparation for hypergeometric (fisher.test) test wrapper.
+* Fixed bug in merge_phyloseq() for certain combinations of objects. 
+* Various other fixes and improvements.
+
+phyloseq 0.4.1
+===========
+
+* First official submission to Bioconductor
+* Includes many build-fixes, bug-fixes
+* Final tweaks to conform to Bioconductor guidelines
+
+phyloseq 0.3
+===========
+
+* Added Importers for mothur, RDP-pipeline, and PyroTagger
+* Lots of new plotting and analysis support
+* Parallelized UniFrac calculations using foreach package
+* Some improvements to the class inheritance structure to simplify method extension and future development.
+* Function-level documentation
+* Vignette-level documentation
+* Package dependencies achieved via import for all packages with a namespace. Depends (full load) otherwise.
+
+phyloseq 0.2.4
+===========
+
+* Added ordination and plotting pipeline, calcplot() and plot.ordination.phyloseq()
+* All trees converted to phylo4 by default. Support for phyla achieved by coercion to phylo4.
+
+phyloseq 0.2
+===========
+
+* Modifications for proper build, and bug tests.
+
+phyloseq 0.1
+===========
+
+* basic data structure in place.
+* some support for phylo4 objects
+* import_qiime(): A Qiime input wrapper
+

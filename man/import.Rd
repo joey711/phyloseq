@@ -65,5 +65,7 @@
   For BIOM format, see: \code{\link{import_biom}}
 
   For RDP pipeline, see: \code{\link{import_RDP_cluster}}
+
+  \code{\link{import_RDP_otu}}
 }
 

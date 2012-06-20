@@ -105,8 +105,8 @@ validphyloseq <- function(object){
 	}
 	# intersection of species-names must have non-zero length
 	if( length(intersect_species(object)) <= 0 ){
-		return(ggplot2::ps("\n Component species/taxa names do not match.\n",
-			" Taxa indices are critical to analysis.\n Try species.names()"))
+		return(paste("\n Component species/taxa names do not match.\n",
+			" Taxa indices are critical to analysis.\n Try species.names()", sep=""))
 	}
 	# If there is sample data, check that sample-names overlap
 	if( !is.null(object@samData) ){

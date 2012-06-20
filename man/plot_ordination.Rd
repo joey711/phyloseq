@@ -7,9 +7,8 @@
   title=NULL, justDF=FALSE)
 }
 \arguments{
-  \item{physeq}{(Required). \code{\link{phyloseq-class}},
-  or alternatively, an \code{\link{sampleData-class}}. The
-  data about which you want to plot and annotate the
+  \item{physeq}{(Required). \code{\link{phyloseq-class}}.
+  The data about which you want to plot and annotate the
   ordination.}
 
   \item{ordination}{(Required). An ordination object. Many
@@ -101,36 +100,39 @@
   variables.
 }
 \examples{
-##
-# data(GlobalPatterns)
-# # Define a human-associated versus non-human binary variable:
-# human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) \%in\%
-# c("Feces", "Mock", "Skin", "Tongue")
-# human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
-# names(human) <- sample.names(GlobalPatterns)
-# # Need to clean the zeros from GlobalPatterns:
-# GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
-# # Get the names of the most-abundant
-# top.TaxaGroup <- sort(
-# tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
-# decreasing = TRUE)
-# top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-# # Now prune further, to just the most-abundant phyla
-# GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
-# topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
-# GP1   <- prune_species(topsp, GP)
-# GP.dpcoa <- ordinate(GP1, "DPCoA")
-# plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
-# plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
-# plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human) +
-# geom_line() + geom_point(size=5)
+data(GlobalPatterns)
+# Define a human-associated versus non-human binary variable:
+human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) \%in\%
+c("Feces", "Mock", "Skin", "Tongue")
+human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
+names(human) <- sample.names(GlobalPatterns)
+# Need to clean the zeros from GlobalPatterns:
+GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+# Get the names of the most-abundant
+top.TaxaGroup <- sort(
+tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+decreasing = TRUE)
+top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
+# Now prune further, to just the most-abundant phyla
+GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
+topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
+GP1   <- prune_species(topsp, GP)
+GP.dpcoa <- ordinate(GP1, "DPCoA")
+plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
+# Customize with ggplot2 layers added directly to output
+library("ggplot2")
+plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
+p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human)
+print(p)
+# library("ggplot2")
+# p + geom_line() + geom_point(size=5)
 # plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
-# plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
-# plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
-# plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
-# plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
-# plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
-# plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
+plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
+plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
+plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
+plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
+plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
+plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
 }
 \seealso{
   \code{\link{plot_phyloseq}}

@@ -33,16 +33,18 @@
 \newcommand{\Rmethod}[1]{{\textit{#1}}}
 \newcommand{\Rfunarg}[1]{{\textit{#1}}}
 
+\bibliographystyle{unsrt} % built-in. maintains citation order
 %\bibliographystyle{plainnat} % works
 %\bibliographystyle{nature}
 %\bibliographystyle{biblatex-nature}
 %\bibliographystyle{science}
 %\bibliographystyle{biblatex-science}
 %\bibliographystyle{pnas2009} % works
-\bibliographystyle{naturemag}
+%\bibliographystyle{naturemag}
 
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \title{ Vignette for phyloseq: A Bioconductor package for handling and analysis of high-throughput phylogenetic sequence data }
 
@@ -82,7 +84,10 @@ Let's start by loading the \code{phyloseq-package}:
 
 <<>>=
 library("phyloseq")
+library("ggplot2")
 @
+
+And because we will show examples of custom modifications to \code{ggplot2} plots, we also loaded \code{ggplot2} as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data}\label{sec:data}
@@ -100,10 +105,7 @@ Later on we will use an additional categorical designation --- human versus non-
 # prune OTUs that are not present in at least one sample
 GP <- prune_species(speciesSums(GlobalPatterns) > 0, GlobalPatterns)
 # Define a human-associated versus non-human categorical variable:
-human.levels <- levels( getVariable(GP, "SampleType") ) %in% 
-	c("Feces", "Mock", "Skin", "Tongue")
-human <- human.levels[getVariable(GP, "SampleType")]
-names(human) <- sample.names(GP)
+human <- getVariable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
 # Add new human variable to sample data:
 sampleData(GP)$human <- factor(human)
 @
@@ -137,7 +139,7 @@ ggsave("phyloseq_analysis-richness_estimates.pdf", p, width=11, height=7)
 \clearpage
 \subsection{Exploratory tree plots}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\emph{phyloseq} also contains a method for easily annotating a phylogenetic tree with information regarding the sample in which a particular taxa was observed, and optionally the number of individuals that were observed. 
+\emph{phyloseq} also contains a method for easily plotting an annotated phylogenetic tree with information regarding the sample in which a particular taxa was observed, and optionally the number of individuals that were observed. 
 
 For the sake of creating a readable tree, let's subset the data to just the \href{http://en.wikipedia.org/wiki/Chlamydiae}{Chlamydiae} phylum, which consists of obligate intracellular pathogens and is present in only a subset of environments in this dataset.
 <<>>=
@@ -145,10 +147,21 @@ GP.chl <- subset_species(GP, Phylum=="Chlamydiae")
 @
 
 And now we will create the tree graphic form this subset of \code{GlobalPatterns}, shading by the \code{"SampleType"} variable, which indicates the environment category from which the microbiome samples originated.  The following command also takes the option of labelling the number of individuals observed in each sample (if at all) of each taxa. The symbols are slightly enlarged as the number of individuals increases.
-<<fig=TRUE>>=
-plot_tree_phyloseq(GP.chl, color_factor="SampleType",
-			type_abundance_value=TRUE, treeTitle="")
+<<fig=FALSE>>=
+(p <- plot_tree(GP.chl, color="SampleType", shape="Family",
+					label.tips="Genus", size="abundance"))
 @
+<<echo=FALSE>>=
+ggsave("phyloseq_analysis-plot_tree_example.pdf", p, width=7, height=7)
+@
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-plot_tree_example.pdf}
+\caption{Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
+\label{fig:treeplot}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
@@ -221,16 +234,45 @@ Figure~\ref{fig:barplot} summarizes quantitatively the increased abundances of \
 \section{Exploratory analysis and graphics}\label{sec:analysisplots}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% makenetwork
+% plot_heatmap
 %\clearpage
+\subsection{Exploratory Heat Map}\label{sec:heatmap}
+As the number of taxa in a dataset gets very large, the ability to effectively display all of the elements of the data becomes compromised, and a heatmap representation is no exception. It can also be time-consuming to render. To address both these issues, we show an example in which we have subsetted the Global Patterns dataset to a manageable portion, in this case, the Crenarchaeota phylum.
+
+<<GPheatmap, fig=FALSE, eval=TRUE>>=
+data("GlobalPatterns")
+gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
+(p <- plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family"))
+@
+<<echo=FALSE>>=
+ggsave("phyloseq_analysis-plot_heatmap01.pdf", p, width=7, height=10)
+@
+
+Note that it is possible to order the sample/species indices by any of the ordination methods supported in the \code{ordinate} function; and also that the color scheme can be modified with additional arguments. For additional details and examples, try the function-level documentation in the phyloseq-package itself, or the wiki-page showing detailed code/plot examples for heat maps at:
+
+\url{https://github.com/joey711/phyloseq/wiki/plot_heatmap}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{phyloseq_analysis-plot_heatmap01.pdf}
+\caption{Heat map representation of the Crenarchaeota phylum abundance pattern across different sample types in the Global Patterns dataset.}
+\label{fig:heatmap}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% makenetwork
+\clearpage
 \subsection{Microbiome Network Representation}\label{sec:network}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Continuing with the \code{enterotype} dataset, here are some examples for creating a custom network representation of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} and \code{ggplot2} packages to create a network display of the ``connectedness'' of samples according to some user-provided ecological similarity. By default, the position of points (samples) are determined using an algorithm that optimizes the clarity of the display of network ``edges'', but the spatial position of points does not imply any continuous similarity information like would be the case in an ordination. In this example, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
+Continuing with the \code{enterotype} dataset, here are some examples for creating a custom network representation of the relationship between microbiome samples in an experiment. This relies heavily on the \code{igraph} and \code{ggplot2} packages to create a network display of the ``connectedness'' of samples according to some user-provided ecological similarity. By default, points represent microbiom samples, and are
+determined using an algorithm that optimizes the clarity of the display of network ``edges'', 
+but the spatial position of points does not imply any continuous similarity information like would be the case in an ordination. 
+In this example, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
 
 <<ent-network, fig=FALSE, eval=TRUE>>=
 data(enterotype)
-ig <- make_sample_network(enterotype, max.dist=0.3)
-(p  <- plot_sample_network(ig, enterotype, color="SeqTech",
+ig <- make_network(enterotype, max.dist=0.3)
+(p  <- plot_network(ig, enterotype, color="SeqTech",
     shape="Enterotype", line_weight=0.4, label=NULL))
 @
 <<echo=FALSE>>=
@@ -451,6 +493,7 @@ ggsave("phyloseq_analysis-GPCAspecplotTopo.pdf", p3, width=10, height=7)
 Figs~\ref{fig:GPCAspecplot} and \ref{fig:GPCAspecplotTopo} reveal some useful patterns and interesting outliers, but what if we want a complete summary of how each phylum is represented along each axis? The following code is a way to show this using boxplots, while still avoiding the occlusion problem (points layered on top of each other), and also conveying some useful information about the pattern of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
 
 <<GPCAjitter0, include=FALSE, fig=FALSE>>=
+library("reshape")
 # Melt the species-data.frame, DF, to facet each CA axis separately
 mdf <- melt(p1$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
             id=c("Phylum", "Family", "Genus") )

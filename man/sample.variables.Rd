@@ -2,11 +2,15 @@
 \alias{sample.variables}
 \title{Get the sample variables present in sampleData}
 \usage{
-  sample.variables(physeq)
+  sample.variables(physeq, errorIfNULL=TRUE)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{sampleData-class}},
   or \code{\link{phyloseq-class}}.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
   Character vector. The names of the variables in the

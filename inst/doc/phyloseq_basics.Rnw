@@ -32,13 +32,14 @@
 \newcommand{\Rmethod}[1]{{\textit{#1}}}
 \newcommand{\Rfunarg}[1]{{\textit{#1}}}
 
+\bibliographystyle{unsrt} % built-in. maintains citation order
 %\bibliographystyle{plainnat} % works
 %\bibliographystyle{nature}
 %\bibliographystyle{biblatex-nature}
 %\bibliographystyle{science}
 %\bibliographystyle{biblatex-science}
 %\bibliographystyle{pnas2009} % works
-\bibliographystyle{naturemag}
+%\bibliographystyle{naturemag} % works if bst provided
  
 \begin{document}
 %\setkeys{Gin}{width=0.55\textwidth}

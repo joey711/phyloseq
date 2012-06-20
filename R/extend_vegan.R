@@ -3,15 +3,24 @@
 # to work for other ordination results
 # vegan:::scores.default
 ################################################################################
-# pcoa-class, from ape::pcoa
+# pcoa-class, from pcoa{ape}
+#' @import ape
 #' @keywords internal
 scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 	if(is.null(choices)){
 		choices <- colnames(x$vectors)
 	}
-	return( x$vectors[, choices] )
+	if( !display %in% c("sites", "samples") ){
+		# MDS/PCoA only provides coordinates of the elements in the
+		# distance matrix, usually sites/samples, so species (etc.)
+		# not an option...
+		return( NULL )
+	} else {
+		return( x$vectors[, choices] )		
+	}
 }
 # dpcoa-class, from ade4::dpcoa or phyloseq::DPCoA
+# @import ade4
 #' @keywords internal
 scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 	ifelse(display=="species", coords <- x$l1, coords <- x$l2)

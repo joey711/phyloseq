@@ -47,6 +47,8 @@
 #' 
 #' For RDP pipeline, see:
 #' \code{\link{import_RDP_cluster}}
+#'
+#' \code{\link{import_RDP_otu}}
 #' 
 #' @references 
 #' mothur: \url{http://www.mothur.org/wiki/Main_Page}
@@ -123,12 +125,19 @@ import <- function(pipelineName, ...){
 #' followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
-#' @param treefilename (Optional). A phylogenetic tree in NEXUS format. For the QIIME pipeline
-#'  this is typically a tree of the representative 16S rRNA sequences from each OTU
+#' @param treefilename (Optional). A file representing a phylogenetic tree.
+#'  Expectation is first NEXUS format (via \code{\link[ape]{read.nexus}}), 
+#'  and if that fails, the file will be read as a Newick file (via \code{\link[ape]{read.tree}}). 
+#'  If provided, the tree should have the same OTUs/labels as the OTUs in the other
+#'  files. 
+#'  Anything missing in one of the files is removed from all. 
+#'  For the QIIME pipeline
+#'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
-#'  Default value is \code{NULL}. ALTERNATIVELY, this argument can be a tree object
-#'  (\code{\link[ape]{phylo}}-class), in case the tree has already been
-#'  imported, or is in a different format than NEXUS.
+#'  Default value is \code{NULL}. 
+#'  ALTERNATIVELY, this argument can be a tree object
+#'  (\code{\link[ape]{phylo}}-class). in case the tree has already been
+#'  imported, or the data source file is in a format other than NEXUS or Newick.
 #'
 #' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
 #'  in the taxonomy-portion of the otu-file, which may not specify these levels 
@@ -154,6 +163,7 @@ import <- function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
+#' @import ape
 #' @export
 #' @examples
 #'  # import_qiime(myOtuTaxFilePath, myMapFilePath)
@@ -180,13 +190,27 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	}
 
 	if( !is.null(treefilename) ){
+		# "phylo" object provided directly
 		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
+		# file path to tree file provided (NEXUS)
 		} else {
-			#tree <- ape::read.tree(treefilename, ...)
-			tree <- ape::read.nexus(treefilename, ...)
+			# # # Protect tree-read error:
+			tree <- NULL
+			try(tree <- read.nexus(trefile, ...), TRUE)
+			# Automatically try Newick import if nexus didn't work.
+			if(is.null(tree)){
+				try(tree <- read.tree(trefile, ...), TRUE)
+			}
+			# If neither tree-import worked (still NULL), report warning
+			if(is.null(tree)){
+				warning("treefilename could not be read. It is omitted from output.\n Please retry with valid tree.")
+			}			
 		}
-		argumentlist <- c(argumentlist, list(tree) )
+		# If a valid (phylo-class) tree, add it to argument list.
+		if( !is.null(tree) ){
+			argumentlist <- c(argumentlist, list(tree) )
+		}
 	}
 
 	do.call("phyloseq", argumentlist)
@@ -221,36 +245,53 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	 	biotaxonomy=c("Root", "Domain", "Phylum", "Class", "Order",
 		 	"Family", "Genus", "Species", "Strain")
 	 }
+
 	##########################################
-	# Process otu table. "otuID" convention
-	# specific to Qiime. Might need to be abstracted.
+	# Process OTU table.
 	##########################################
 	# first read the table. Skip line 1, avoid comment character "#"
 	otutab <- read.table(file=otufilename, header=TRUE,
 		sep="\t", comment.char="", skip=1)
-	# name the rows by otuID
-	rownames(otutab) <- paste("otuID", as.character(otutab[,1]), sep="_")
-	# remove the otuID column
-	otutab <- otutab[, 2:ncol(otutab)]
-	##########################################
-	# Process/separate the lineage information
-	##########################################
-	splitaxa <- strsplit(as.character(otutab[,"Consensus.Lineage"]),";")
-	taxtab   <- matrix(NA, nrow(otutab), length(biotaxonomy))
-	colnames(taxtab) <- biotaxonomy
-	# If present, place the taxonomy labels in matrix
-	# starting on the left column (root)
-	for( i in 1:nrow(otutab) ){
-		taxtab[i, 1:length(splitaxa[[i]])] <- splitaxa[[i]]
-	}
-	rownames(taxtab) <- rownames(otutab)
-	taxtab <- taxTab( as.matrix(taxtab) )
+
+	# "otuID" convention might only be in old versions of qiime
+	# rownames(otutab) <- paste("otuID", as.character(otutab[,1]), sep="_")
+
+	# Assign otuID from the first column, after coercing to character
+	rownames(otutab) <- as.character(otutab[, 1])
 	
-	# Remove taxonomy column from otutab
-	otutab <- otutab[, which(colnames(otutab)!="Consensus.Lineage")]
+	# remove the otuID (first) column
+	otutab <- otutab[, -1]
+	
+	##########################################
+	# Taxonomy Table
+	# If present, process/separate the lineage information
+	##########################################
+	if( "Consensus.Lineage" %in% colnames(otutab) ){
+		splitaxa <- strsplit(as.character(otutab[, "Consensus.Lineage"]),";")
+		taxtab   <- matrix(NA, nrow(otutab), length(biotaxonomy))
+		colnames(taxtab) <- biotaxonomy
+		# If present, place the taxonomy labels in matrix
+		# starting on the left column (root)
+		for( i in 1:nrow(otutab) ){
+			taxtab[i, 1:length(splitaxa[[i]])] <- splitaxa[[i]]
+		}
+		# Force rownames of taxtab to match otutab.
+		rownames(taxtab) <- rownames(otutab)
+		
+		# Coerce to (character) matrix, and label as taxonomyTable-class
+		taxtab <- taxTab( as.matrix(taxtab) )
+		
+		# Remove taxonomy column from otutab
+		otutab <- otutab[, which(colnames(otutab)!="Consensus.Lineage")]		
+	}
+
 	# convert to matrix of integers, and then otuTable object
 	otutab <- otuTable( as(otutab, "matrix"), speciesAreRows=TRUE )
 
+	##########################################
+	# Combine taxonomyTable and otuTable 
+	# as phyloseq object and return.
+	##########################################
 	return( phyloseq(otutab, taxtab) )
 }
 ######################################################################################
@@ -493,6 +534,42 @@ import_RDP_cluster <- function(RDP_cluster_file){
 	
 	# Return the abundance table.
 	return( otuTable(otumat, speciesAreRows=TRUE) )
+}
+################################################################################
+#' Import new RDP OTU-table format
+#' 
+#' Recently updated tools on RDP Pyro site make it easier to import Pyrosequencing output 
+#' into R. The modified tool ``Cluster To R Formatter'' can take a cluster file 
+#' (generated from RDP Clustering tools) to create a community data matrix file
+#' for distance cutoff range you are interested in. The resulting output file 
+#' is a tab-delimited file containing the number of sequences for each sample 
+#' for each OTU. The OTU header naming convention is \code{"OTU_"} followed by the OTU
+#' number in the cluster file. It pads ``0''s to make the OTU header easy to sort.
+#' The OTU numbers are not necessarily in order.
+#'
+#' @usage import_RDP_otu(otufile)
+#'
+#' @param otufile (Optional). 
+#'  A character string indicating the file location of the OTU file, 
+#'  produced/exported according to the instructions above.
+#'
+#' @return A \code{\link{otuTable-class}} object.
+#'
+#' @seealso
+#' An alternative ``cluster'' file importer for RDP results:
+#' \code{\link{import_RDP_cluster}}
+#'
+#' The main RDP-pyrosequencing website
+#' \url{http://pyro.cme.msu.edu/index.jsp}
+#'
+#' @export
+#' @examples
+#' otufile <- "http://cloud.github.com/downloads/joey711/phyloseq/rformat_dist_0.03.txt"
+#' ex_otu  <- import_RDP_otu(otufile)
+#' head(t(ex_otu))
+import_RDP_otu <- function(otufile){
+	otumat <- read.table(otufile, TRUE, sep="\t", row.names=1)	
+	return(otuTable(otumat, FALSE))
 }
 ################################################################################
 ################################################################################
@@ -1121,6 +1198,7 @@ export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 #' @param return (Optional). Should the ENV table be returned to the R workspace?
 #'  Default is \code{FALSE}.
 #'
+#' @import ape
 #' @export
 #' 
 #' @examples
@@ -1161,8 +1239,8 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 	
 	# If needed, also write the associated tree-file. 
 	if( writeTree ){
-		fileTree <- ps(file, ".nex")
-		ape::write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
+		fileTree <- paste(file, ".nex", sep="")
+		write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
 	}
 
 	# If return argument is TRUE, return the environment table
@@ -1287,12 +1365,19 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
 		taxtab <- NULL
 	} else {
-		if( is.null(taxaPrefix) ){
-			taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
-		} else if( taxaPrefix == "greengenes" ){
-			taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
-		} else {
-			taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		# taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		# Figure out the max number of columns (could be jagged in BIOM format)
+		ncols <- max(sapply(head(x$rows), function(i){length(i$metadata$taxonomy)}))
+		# Initialize character matrix
+		taxdf <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
+		# Fill in the matrix by row.
+		for( i in 1:length(x$rows) ){
+			if( sum(taxaPrefix %in% "greengenes") > 0 ){
+				# taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
+				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
+			} else {
+				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
+			}
 		}
 		# Now convert to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
 		taxtab           <- as(taxdf, "matrix")
@@ -1307,7 +1392,13 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	if(  all( sapply(sapply(x$columns, function(i){i$metadata}), is.null) )  ){
 		samdata <- NULL
 	} else {
-		samdata           <- ldply(x$columns, function(i){i$metadata}, .parallel=parallel)
+		samdata <- ldply(x$columns, function(i){
+			if( class(i$metadata) == "list"){
+				return(i$metadata[[1]])
+			} else {
+				return(i$metadata)				
+			}
+		}, .parallel=parallel)
 		rownames(samdata) <- sapply(x$columns, function(i){i$id})
 		samdata <- sampleData(samdata)
 	}

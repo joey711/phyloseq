@@ -3,17 +3,17 @@
 \title{Convert an otuTable object into a data.frame useful for plotting
 in the ggplot2 framework.}
 \usage{
-  otu2df(otu, taxavec, map, keepOnlyTheseTaxa=NULL,
+  otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL,
   threshold=NULL)
 }
 \arguments{
-  \item{otu}{An \code{otuTable} object.}
+  \item{physeq}{An \code{otuTable} object.}
 
   \item{taxavec}{A character vector of the desired
-  taxonomic names to categorize each species in otu.}
+  taxonomic names to categorize each species in physeq.}
 
   \item{map}{The corresponding sampleData object for
-  \code{otu}.}
+  \code{physeq}.}
 
   \item{keepOnlyTheseTaxa}{A vector of the taxonomic labels
   that you want included. If NULL, the default, then all

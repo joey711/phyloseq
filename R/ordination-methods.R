@@ -129,6 +129,7 @@
 #' \href{http://cran.r-project.org/web/views/Multivariate.html}{Multivariate Statistics}
 #' 
 #' @import vegan
+#' @import ape
 #' @export
 #' @examples
 #' # # Take a subset of the GP dataset for quicker computation of examples
@@ -235,7 +236,7 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 
 	# Vanilla MDS/PCoA
 	if( method %in% c("PCoA", "MDS")){
-		return(ape::pcoa(ps.dist))
+		return(pcoa(ps.dist))
 	}
 	# NMDS with non-vegdist-method
 	if(method == "NMDS"){
@@ -299,6 +300,7 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' @author Julia Fukuyama \email{julia.fukuyama@@gmail.com}.
 #'  Adapted for phyloseq by Paul J. McMurdie.
 #'
+#' @import ape
 #' @export
 #' @references
 #' Pavoine, S., Dufour, A.B. and Chessel, D. (2004) 
@@ -338,7 +340,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	if( !speciesAreRows(OTU) ){ OTU <- t(OTU) }
   
 	# get the patristic distances between the species from the tree 
-	patristicDist <- as.dist(ape::cophenetic.phylo(tree))
+	patristicDist <- as.dist(cophenetic.phylo(tree))
 	
 	# if the patristic distances are not Euclidean, 
 	# then correct them or throw meaningful error.

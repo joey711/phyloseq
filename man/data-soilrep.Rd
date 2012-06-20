@@ -86,21 +86,27 @@ data(soilrep)
 # Alpha diversity (richness) example. Accept null hypothesis:
 # No convincing difference in species richness between warmed/unwarmed soils.
 ################################################################################
-DF <- data.frame(sampleData(soilrep), estimate_richness(soilrep) )
-# Create ggplot2-boxplot comparing the different treatments.
+# Graphically compare richness between the different treatments.
 man.col <- c(WC="red", WU="brown", UC="blue", UU="darkgreen")
-p <- plot_richness_estimates(soilrep, x="Treatment", color="Treatment")
-p + geom_boxplot() + scale_color_manual(values=man.col)
+(p <- plot_richness_estimates(soilrep, x="Treatment", color="Treatment") )
+# Add boxplots using ggplot2
+# library(ggplot2)
+# p + geom_boxplot() + scale_color_manual(values=man.col)
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # The treatments do not appear to have affected the
 # estimated total richness between warmed/unwarmed soil samples
+# Test this formally:
+DF <- data.frame(sampleData(soilrep), estimate_richness(soilrep) )
 t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
 ################################################################################
 # A beta diversity comparison.
 ################################################################################
 # Perform non-metric multidimensional scaling, using Bray-Curtis distance
 soil.NMDS <- ordinate(soilrep, "NMDS", "bray")
-p <- plot_ordination(soilrep, soil.NMDS, "samples", color="Treatment")
-( p <- p + geom_point(size=5, alpha=0.5) + facet_grid(warmed ~ clipped) )
+(p <- plot_ordination(soilrep, soil.NMDS, "samples", color="Treatment") )
+# Additional formatting using ggplot2
+# library(ggplot2)
+# ( p <- p + geom_point(size=5, alpha=0.5) + facet_grid(warmed ~ clipped) )
 }
 \author{
   Jizhong Zhou, et al.

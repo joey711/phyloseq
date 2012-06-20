@@ -367,9 +367,13 @@ setMethod("getSpecies", "phyloseq", function(physeq, i){
 #' the taxonomic ranks that are available in a given \code{\link{phyloseq-class}}
 #' object. 
 #'
-#' @usage rank.names(physeq)
+#' @usage rank.names(physeq, errorIfNULL=TRUE)
 #' 
-#' @param physeq (Required). \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}}.
+#' @param physeq (Required). 
+#'  \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}}.
+#'
+#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
+#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
 #' @return Character vector. The names of the available taxonomic ranks.
 #' 
@@ -380,8 +384,8 @@ setMethod("getSpecies", "phyloseq", function(physeq, i){
 #' @examples
 #' data(enterotype)
 #' rank.names(enterotype)
-rank.names <- function(physeq){
-	colnames(taxTab(physeq))	
+rank.names <- function(physeq, errorIfNULL=TRUE){
+	colnames(taxTab(physeq, errorIfNULL))	
 }
 ################################################################################
 #' Get a unique vector of the observed taxa at a particular taxonomic rank
@@ -390,13 +394,16 @@ rank.names <- function(physeq){
 #' the different taxa present for a particular taxonomic rank
 #' in a given \code{\link{phyloseq-class}} object. 
 #'
-#' @usage getTaxa(physeq, taxonomic.rank=rank.names(physeq)[1])
+#' @usage getTaxa(physeq, taxonomic.rank=rank.names(physeq)[1], errorIfNULL=TRUE)
 #' 
 #' @param physeq (Required). \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}}.
 #'
 #' @param taxonomic.rank (Optional). Character. The taxonomic rank to use. Must select
 #'  from the set indicated by \code{getTaxa}. Default is
 #'  to take the first column of the \code{taxonomyTable} component.
+#'
+#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
+#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
 #' @return Character vector. Unique vector of the observed taxa 
 #'  at a particular taxonomic rank
@@ -410,8 +417,8 @@ rank.names <- function(physeq){
 #' getTaxa(enterotype)
 #' data(GlobalPatterns)
 #' getTaxa(GlobalPatterns, "Family")
-getTaxa <- function(physeq, taxonomic.rank=rank.names(physeq)[1]){
-	unique(as(taxTab(physeq)[, taxonomic.rank], "character"))
+getTaxa <- function(physeq, taxonomic.rank=rank.names(physeq)[1], errorIfNULL=TRUE){
+	unique(as(taxTab(physeq, errorIfNULL)[, taxonomic.rank], "character"))
 }
 ################################################################################
 #' Get the sample variables present in sampleData
@@ -419,9 +426,12 @@ getTaxa <- function(physeq, taxonomic.rank=rank.names(physeq)[1]){
 #' This is a simple accessor function to make it more convenient to determine
 #' the sample variable names of a particular \code{\link{phyloseq-class}} object. 
 #'
-#' @usage sample.variables(physeq)
+#' @usage sample.variables(physeq, errorIfNULL=TRUE)
 #' 
 #' @param physeq (Required). \code{\link{sampleData-class}}, or \code{\link{phyloseq-class}}.
+#'
+#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
+#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
 #' @return Character vector. The names of the variables in the sampleData
 #'  data.frame. Essentially the column names. Useful for selecting model 
@@ -434,8 +444,8 @@ getTaxa <- function(physeq, taxonomic.rank=rank.names(physeq)[1]){
 #' @examples
 #' data(enterotype)
 #' sample.variables(enterotype)
-sample.variables <- function(physeq){
-	colnames(sampleData(physeq))
+sample.variables <- function(physeq, errorIfNULL=TRUE){
+	colnames(sampleData(physeq, errorIfNULL))
 }
 ################################################################################
 #' Get the values for a particular variable in sampleData
@@ -463,6 +473,10 @@ sample.variables <- function(physeq){
 #' # Look at the different values for SampleType 
 #' getVariable(GlobalPatterns, "SampleType")
 getVariable <- function(physeq, varName){
+	if( is.null(sampleData(physeq, FALSE)) ){
+		stop("Your phyloseq data object does not have a sample-data component\n",
+			"Try ?sampleData for more details.")
+	}
 	return( as(sampleData(physeq), "data.frame")[, varName] )
 }
 ################################################################################
