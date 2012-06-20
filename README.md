@@ -1,7 +1,9 @@
 # phyloseq
 
+## Wiki
 See alternate documentation in the form of a [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
 
+## Workshop
 [A workshop session](https://secure.bioconductor.org/BioC2012/labs.php) regarding the use of [the phyloseq package](http://joey711.github.com/phyloseq/) in amplicon sequencing analysis will be provided at the
 
 [Bioconductor Workshop (BioC 2012)](https://secure.bioconductor.org/BioC2012/)
@@ -9,6 +11,9 @@ See alternate documentation in the form of a [phyloseq wiki](https://github.com/
 on July 24-25, 2012 
 
 At the Fred Hutchinson Cancer Research Center - Seattle, WA
+
+## Installation
+Please see the [phyloseq installation instructions](https://github.com/joey711/phyloseq/wiki/Installation) provided on the [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
 
 ## Description
 
