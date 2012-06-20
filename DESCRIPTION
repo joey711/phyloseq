@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 1.1.16
+Version: 1.1.17
 Date: 2012-06-11
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
@@ -11,7 +11,7 @@ Author: Paul J. McMurdie <mcmurdie@stanford.edu>, Susan
     Holmes <susan@stat.stanford.edu>
 License: AGPL-3
 Imports:
-    igraph (>= 0.5),
+    igraph0 (>= 0.5),
     multtest (>= 2.8),
     vegan (>= 2.0),
     foreach (>= 1.3),
