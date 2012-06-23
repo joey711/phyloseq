@@ -26,11 +26,18 @@
   identity information.
 }
 \details{
-  Add reference to the QIIME pipeline.
+  See \url{"http://www.qiime.org/"} for details on using
+  QIIME. While there are many complex dependencies, QIIME
+  can be downloaded as a pre-installed linux virtual
+  machine that runs ``off the shelf''.
+}
+\examples{
+# import_qiime_otu_tax(mapfilename)
 }
 \seealso{
-  \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-  \code{\link{import_qiime_sampleData}}
+  \code{\link{import}}, \code{\link{merge_phyloseq}},
+  \code{\link{phyloseq}}, \code{\link{import_qiime}}
+  \code{\link{import_qiime_otu_tax}}
+  \code{\link{import_env_file}}
 }
-\keyword{internal}
 

@@ -5,13 +5,15 @@
   import_qiime_sampleData(mapfilename)
 }
 \arguments{
-  \item{mapfilename}{(Required). A character string. The
-  name of the QIIME map file required for processing
-  pyrosequencing tags in QIIME as well as some of the
-  post-clustering analysis. This is a required input file
-  for running QIIME. Its strict formatting specification is
-  expected by this function, do not attempt to modify it
-  manually once it has worked properly in QIIME.}
+  \item{mapfilename}{(Required). A character string or
+  connection. That is, any suitable \code{file} argument to
+  the \code{\link{read.table}} function. The name of the
+  QIIME map file required for processing pyrosequencing
+  tags in QIIME as well as some of the post-clustering
+  analysis. This is a required input file for running
+  QIIME. Its strict formatting specification is expected by
+  this function, do not attempt to modify it manually once
+  it has worked properly in QIIME.}
 }
 \value{
   A \code{sampleData} object.
@@ -29,10 +31,13 @@
   QIIME. It is also the suggested function for importing
   QIIME-produced data files.
 }
-\seealso{
-  \code{\link{import_qiime}}, \code{\link{merge_phyloseq}},
-  \code{\link{phyloseq}},
-  \code{\link{import_qiime_otu_tax}}
+\examples{
+# import_qiime_sampleData(mapfilename)
 }
-\keyword{internal}
+\seealso{
+  \code{\link{import}}, \code{\link{merge_phyloseq}},
+  \code{\link{phyloseq}}, \code{\link{import_qiime}}
+  \code{\link{import_qiime_otu_tax}}
+  \code{\link{import_env_file}}
+}
 

@@ -103,7 +103,7 @@ import <- function(pipelineName, ...){
 #' phylogenetic tree with a tip for each OTU, which can also be imported by this
 #' function.
 #' 
-#' See \code{"http://www.qiime.org/"} for details on using QIIME. While there are
+#' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
 #' many complex dependencies, QIIME can be downloaded as a pre-installed 
 #' linux virtual machine that runs ``off the shelf''. 
 #'
@@ -112,7 +112,7 @@ import <- function(pipelineName, ...){
 #' example of where ot find the relevant files in the output directory. 
 #'
 #' @usage import_qiime(otufilename=NULL, mapfilename=NULL,
-#'	treefilename=NULL, biotaxonomy=NULL, ...)
+#'	treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE, ...)
 #'
 #' @param otufilename (Optional). A character string indicating the file location of the OTU file.
 #' The combined OTU abundance and taxonomic identification file,
@@ -144,6 +144,10 @@ import <- function(pipelineName, ...){
 #'  explicitly.
 #'  Default value is \code{NULL}. 
 #'
+#' @param showProgress (Optional). A logical. 
+#'  Indicates whether import progress/status should be printed to the terminal.
+#'  Default value is \code{TRUE}, meaning the progress will be shown. 
+#'
 #' @param ... Additional arguments passed to \code{\link[ape]{read.nexus}}, as necessary.
 #'  Make sure that your phylogenetic tree file is readable by \code{\link[ape]{read.nexus}}
 #'  prior to calling this function.
@@ -168,7 +172,7 @@ import <- function(pipelineName, ...){
 #' @examples
 #'  # import_qiime(myOtuTaxFilePath, myMapFilePath)
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
-	treefilename=NULL, biotaxonomy=NULL, ...){
+	treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE, ...){
 
 	# initialize the argument-list for phyloseq. Start empty.
 	argumentlist <- list()
@@ -179,17 +183,25 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	 }
 
 	if( !is.null(mapfilename) ){	
-		# Process mapfile. Name rows as samples.
+		if( showProgress==TRUE ){
+			cat("Processing map file...", fill=TRUE)
+		}
 		QiimeMap     <- import_qiime_sampleData(mapfilename)
 		argumentlist <- c(argumentlist, list(QiimeMap))
 	}
 
 	if( !is.null(otufilename) ){
+		if( showProgress==TRUE ){
+			cat("Processing otu/tax file...", fill=TRUE)
+		}		
 		otutax       <- import_qiime_otu_tax(otufilename, biotaxonomy)	
 		argumentlist <- c(argumentlist, list(otuTable(otutax)), list(taxTab(otutax)) )
 	}
 
 	if( !is.null(treefilename) ){
+		if( showProgress==TRUE ){
+			cat("Processing phylogenetic tree file...", fill=TRUE)
+		}		
 		# "phylo" object provided directly
 		if( class(treefilename) %in% c("phylo") ){ 
 			tree <- treefilename
@@ -222,7 +234,9 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' including especially an OTU file that typically contains both OTU-abundance
 #' and taxonomic identity information.   
 #' 
-#' Add reference to the QIIME pipeline.
+#' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
+#' many complex dependencies, QIIME can be downloaded as a pre-installed 
+#' linux virtual machine that runs ``off the shelf''. 
 #'
 #' @param otufilename A character string indicating the file location of the OTU file.
 #' The combined OTU abundance and taxonomic identification file,
@@ -236,10 +250,13 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #'
 #' @return An \code{otuTax} object.
 #'
-#' @seealso \code{\link{merge_phyloseq}}, \code{\link{phyloseq}}, 
-#'   \code{\link{import_qiime_sampleData}}
-#'
-#' @keywords internal
+#' @seealso \code{\link{import}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
+#'  \code{\link{import_qiime}}
+#'  \code{\link{import_qiime_otu_tax}}
+#'  \code{\link{import_env_file}}
+#' @export
+#' @examples 
+#' # import_qiime_otu_tax(mapfilename)
 import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 	if( is.null(biotaxonomy) ){
 	 	biotaxonomy=c("Root", "Domain", "Phylum", "Class", "Order",
@@ -300,14 +317,16 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
 #' This includes the map-file, which is an important \emph{input}
 #' to QIIME that can also indicate sample covariates. It is converted naturally to the 
-#' sampleData component data type in phyloseq-package, based on the R data.frame.   
+#' sampleData component data type in phyloseq-package, based on the R data.frame.
 #' 
 #' See \code{\link{import_qiime}} for more information about QIIME. It is also the
 #' suggested function for importing QIIME-produced data files. 
 #'
 #' @usage import_qiime_sampleData(mapfilename)
 #'
-#' @param mapfilename (Required). A character string. The name of the QIIME map
+#' @param mapfilename (Required). A character string or connection.
+#'  That is, any suitable \code{file} argument to the \code{\link{read.table}} function. 
+#'  The name of the QIIME map
 #'  file required for processing pyrosequencing tags
 #'  in QIIME as well as some of the post-clustering analysis. This is a required
 #'  input file for running QIIME. Its strict formatting specification is expected by
@@ -316,10 +335,13 @@ import_qiime_otu_tax <- function(otufilename, biotaxonomy=NULL){
 #'
 #' @return A \code{sampleData} object.
 #'
-#' @seealso \code{\link{import_qiime}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-#'	 \code{\link{import_qiime_otu_tax}}
-#'
-#' @keywords internal
+#' @seealso \code{\link{import}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
+#'  \code{\link{import_qiime}}
+#'  \code{\link{import_qiime_otu_tax}}
+#'  \code{\link{import_env_file}}
+#' @export
+#' @examples 
+#' # import_qiime_sampleData(mapfilename)
 import_qiime_sampleData <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,

@@ -3,7 +3,8 @@
 \title{Import function to read files created by the QIIME pipeline.}
 \usage{
   import_qiime(otufilename=NULL, mapfilename=NULL,
-  treefilename=NULL, biotaxonomy=NULL, ...)
+  treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE,
+  ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
@@ -40,6 +41,11 @@
   taxonomy-portion of the otu-file, which may not specify
   these levels explicitly. Default value is \code{NULL}.}
 
+  \item{showProgress}{(Optional). A logical. Indicates
+  whether import progress/status should be printed to the
+  terminal. Default value is \code{TRUE}, meaning the
+  progress will be shown.}
+
   \item{...}{Additional arguments passed to
   \code{\link[ape]{read.nexus}}, as necessary. Make sure
   that your phylogenetic tree file is readable by
@@ -61,7 +67,7 @@
   also be imported by this function.
 }
 \details{
-  See \code{"http://www.qiime.org/"} for details on using
+  See \url{"http://www.qiime.org/"} for details on using
   QIIME. While there are many complex dependencies, QIIME
   can be downloaded as a pre-installed linux virtual
   machine that runs ``off the shelf''.
