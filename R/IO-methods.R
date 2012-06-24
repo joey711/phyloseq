@@ -202,32 +202,44 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 		if( showProgress==TRUE ){
 			cat("Processing phylogenetic tree file...", fill=TRUE)
 		}		
-		# "phylo" object provided directly
-		if( class(treefilename) %in% c("phylo") ){ 
-			tree <- treefilename
-		# file path to tree file provided (NEXUS)
+		
+		tree <- readTree(treefilename)
+		
+		# Add to argument list or warn
+		if( is.null(tree) ){
+			warning("treefilename failed import. It not included.")
 		} else {
-			# # # Protect tree-read error:
-			tree <- NULL
-			try(tree <- read.nexus(trefile, ...), TRUE)
-			# Automatically try Newick import if nexus didn't work.
-			if(is.null(tree)){
-				try(tree <- read.tree(trefile, ...), TRUE)
-			}
-			# If neither tree-import worked (still NULL), report warning
-			if(is.null(tree)){
-				warning("treefilename could not be read. It is omitted from output.\n Please retry with valid tree.")
-			}			
-		}
-		# If a valid (phylo-class) tree, add it to argument list.
-		if( !is.null(tree) ){
 			argumentlist <- c(argumentlist, list(tree) )
 		}
 	}
 
 	do.call("phyloseq", argumentlist)
 }
-######################################################################################
+################################################################################
+# Make flexible tree-import function
+# 
+# Returns NULL if neither tree-reading function worked.
+################################################################################
+#' @keywords internal
+readTree <- function(trefile, errorIfNULL=FALSE, ...){
+	# "phylo" object provided directly
+	if( class(trefile)[1] %in% c("phylo") ){ 
+		tree <- trefile
+	# file path to tree file provided (NEXUS)
+	} else {
+		# # Try Nexus first, protected, then newick if it fails
+		tree <- NULL
+		try(tree <- read.nexus(trefile, ...), TRUE)
+		# Try Newick if nexus didn't work.
+		if(is.null(tree)) try(tree <- read.tree(trefile, ...), TRUE)
+	}
+	# If neither tree-import worked (still NULL), report warning
+	if( errorIfNULL & is.null(tree) ){
+		stop("tree file could not be read.\nPlease retry with valid tree.")
+	}
+	return(tree)
+}
+################################################################################
 #' Import just OTU/Taxonomy file from QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
