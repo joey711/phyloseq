@@ -4,7 +4,7 @@
 \usage{
   import_qiime(otufilename=NULL, mapfilename=NULL,
   treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE,
-  ...)
+  chunk.size=1000L, ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
@@ -46,11 +46,16 @@
   terminal. Default value is \code{TRUE}, meaning the
   progress will be shown.}
 
+  \item{chunk.size}{(Optional). Positive integer. Default
+  is \code{1000L}. This is the number of lines to be read
+  and processed at a time, passed directly to the
+  \code{\link{import_qiime_otu_tax}} function. A lower
+  value helps control memory-fault, but slows down the
+  import.}
+
   \item{...}{Additional arguments passed to
-  \code{\link[ape]{read.nexus}}, as necessary. Make sure
-  that your phylogenetic tree file is readable by
-  \code{\link[ape]{read.nexus}} prior to calling this
-  function.}
+  \code{\link[ape]{read.nexus}}, or
+  \code{\link[ape]{read.tree}}.}
 }
 \value{
   A \code{\link{phyloseq-class}} object.
