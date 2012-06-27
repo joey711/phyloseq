@@ -17,6 +17,12 @@ phyloseq
 * Lots and lots of fixes and improvements.
 
 
+phyloseq 1.1.19-22
+===========
+Improving import_qiime() importer to handle large datasets,
+like the HMPv35 dataset, for example, while also providing useful status messages
+during non-trivial imports that might take 10 minutes or more to complete.
+
 phyloseq 1.1.18
 ===========
 Added replicate labels as a "Sample" factor in the soilrep dataset.

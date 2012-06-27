@@ -385,7 +385,7 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 	if(verbose) cat("Building Taxonomy Table...", fill=TRUE)
 
 	taxtab <- parse_qiime_tax_string(taxstring, biotaxonomy)
-	rownames(taxtab) <- taxaNames
+	rownames(taxtab) <- rownames(otutab)
 
 	# Call garbage collection one more time. Lots of unneeded stuff.
 	garbage.collection <- gc(FALSE)
