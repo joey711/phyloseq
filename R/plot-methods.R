@@ -464,19 +464,23 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #'  the ordination result for the specified axes.
 #' 
 #' @seealso 
-#'  \code{\link{plot_phyloseq}}
+#'  The examples on the phyloseq wiki page for \code{plot_ordination} show 
+#'  many more examples:
+#'
+#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'
+#' Also see the general wrapping function:
+#'
+#' \code{\link{plot_phyloseq}}
 #'
 #' @import ggplot2
 #' @export
 #' @examples 
 #' data(GlobalPatterns)
-#' # Define a human-associated versus non-human binary variable:
-#' human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in%
-#'    c("Feces", "Mock", "Skin", "Tongue")
-#' human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
-#' names(human) <- sample.names(GlobalPatterns)
 #' # Need to clean the zeros from GlobalPatterns:
 #' GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' # Define a human-associated versus non-human binary variable:
+#' sampleData(GP)$human <- getVariable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
 #' # Get the names of the most-abundant
 #' top.TaxaGroup <- sort(
 #'    tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
