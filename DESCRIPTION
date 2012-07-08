@@ -28,6 +28,7 @@ Depends:
     picante (>= 1.3)
 Suggests:
     genefilter
+    testthat
 Enhances: doParallel (>= 1.0)
 biocViews: Clustering, Classification, MultipleComparisons,
     QualityControl, GeneticVariability,

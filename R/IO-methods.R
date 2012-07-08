@@ -1084,9 +1084,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	otulist <- import_mothur_otulist(mothur_list_file, cutoff)
 
 	# Read the original all-sequences tree from mothur
-	# # original_tree <- read.tree(mothur_tree_file)
-	# # tree          <- original_tree
-	tree <- read.tree(mothur_tree_file)
+	tree <- readTree(mothur_tree_file)
 	
 	# Loop to merge the sequences in the tree by OTU
 	# cycle through each otu, and sum the number of seqs observed for each sample
