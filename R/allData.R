@@ -84,19 +84,20 @@ NA
 #' @author Arumugam, M., Raes, J., et al.
 #' @keywords data
 #' @examples
-#' # # Try simple network-analysis plot
-#' # data(enterotype)
-#' # ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
-#' # plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-#' #
-#' # # Filter samples that don't have Enterotype
-#' # x <- subset_samples(enterotype, !is.na(Enterotype))
+#' # Try simple network-analysis plot
+#' data(enterotype)
+#' ig <- make_network(enterotype, "samples", max.dist=0.3)
+#' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 #' # 
-#' # # Alternatively. . .
-#' # ent.cca <- ordinate(x ~ Enterotype, "CCA")
-#' # plot_ordination(x, ent.cca, color="Enterotype")
-#' # plot_ordination(x, ent.cca, "biplot")
-#' # plot_ordination(x, ent.cca, "split", color="Enterotype)
+#' # Filter samples that don't have Enterotype
+#' x <- subset_samples(enterotype, !is.na(Enterotype))
+#' # 
+#' # Alternatively. . .
+#' ent.cca <- ordinate(x ~ Enterotype, "CCA")
+#' plot_ordination(x, ent.cca, color="Enterotype")
+#' plot_ordination(x, ent.cca, "biplot")
+#' plot_ordination(x, ent.cca, "split", color="Enterotype")
+#' # 
 #' # # multiple testing of genera correlating with enterotype 2
 #' # mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
 #' # # Should return a data.frame, with the following head()
