@@ -27,7 +27,7 @@ Depends:
     ade4 (>= 1.4),
     picante (>= 1.3)
 Suggests:
-    genefilter
+    genefilter,
     testthat
 Enhances: doParallel (>= 1.0)
 biocViews: Clustering, Classification, MultipleComparisons,
