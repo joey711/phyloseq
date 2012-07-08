@@ -495,7 +495,7 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #' # Customize with ggplot2 layers added directly to output
 #' library("ggplot2")
 #' plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
-#' p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human)
+#' p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape="human")
 #' print(p)
 #' # library("ggplot2")
 #' # p + geom_line() + geom_point(size=5)

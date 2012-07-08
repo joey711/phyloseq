@@ -229,8 +229,10 @@ NA
 #' # Perform ordination (in this case, detrended correspondence analysis)
 #' gpdca <- ordinate(GP0, "DCA")
 #' # Create plot of samples
-#' plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes") + geom_line()
+#' plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes")
 #' # # More complicated plot facetting by phylum.
+#' # library("ggplot2")
+#' # plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes") + geom_line()
 #' # plot_ordination(GP0, gpdca, "taxa", color="Kingdom") + facet_wrap(~Phylum, 8)
 ################################################################################
 NA
