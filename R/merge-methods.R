@@ -492,21 +492,19 @@ setMethod("merge_samples", signature("otuTable"), function(x, group){
 setMethod("merge_samples", signature("phyloseq"), function(x, group, fun=mean){
 
 	# Check if phyloseq object has a sampleData
-	if( !is.null(access(x, "sampleData")) ){
+	if( !is.null(samData(x, FALSE)) ){
 		# Check class of group and modify if single "character" (column name)
 		if( class(group)=="character" & length(group)==1 ){
-			x1 <- data.frame(sampleData(x))		
+			x1 <- data.frame(samData(x))		
 			if( !group %in% colnames(x1) ){stop("group not found among sample variable names.")}
 			group <- x1[, group]
 		}
-		if( class(group)!="factor" ){
-			# attempt to coerce to factor
-			group <- factor(group)
-		}
-		newSM <- merge_samples(sampleData(x), group, fun)
+		# coerce to factor
+		if( class(group)!="factor" ){ group <- factor(group) }
+		# Perform merges.
+		newSM <- merge_samples(samData(x), group, fun)
 		newOT <- merge_samples(otuTable(x), group)
 		phyloseqList <- list(newOT, newSM)
-		
 	# Else, the only relevant object to "merge_samples" is the otuTable
 	} else {
 		if( class(group)!="factor" ){ group <- factor(group) }
