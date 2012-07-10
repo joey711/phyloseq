@@ -27,8 +27,13 @@
   order.
 }
 \examples{
-otufile <- "http://cloud.github.com/downloads/joey711/phyloseq/rformat_dist_0.03.txt"
+otufile <- system.file("extdata", "rformat_dist_0.03.txt.gz", package="phyloseq")
+### the gzipped file is automatically recognized, and read using R-connections
 ex_otu  <- import_RDP_otu(otufile)
+class(ex_otu)
+nspecies(ex_otu)
+nsamples(ex_otu)
+sampleSums(ex_otu)
 head(t(ex_otu))
 }
 \seealso{
