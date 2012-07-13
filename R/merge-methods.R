@@ -98,7 +98,7 @@ merge_phyloseq <- function(...){
 #'
 #' The \code{\link{merge_phyloseq}} function is recommended in general.
 #' 
-#' Special note: trees are merged using \code{\link[ape]{consensus}}.
+#' Special note: non-identical trees are merged using \code{\link[ape]{consensus}}.
 #'
 #' @usage merge_phyloseq_pair(x, y) 
 #'
@@ -225,7 +225,11 @@ setMethod("merge_phyloseq_pair", signature("sampleData", "sampleData"), function
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
-	consensus(x, y)
+	if(identical(x, y)){
+		return(x)
+	} else {
+		return( consensus(x, y)	)
+	}
 })
 ################################################################################
 ################################################################################

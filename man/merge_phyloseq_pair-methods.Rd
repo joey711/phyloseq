@@ -43,7 +43,7 @@
   The \code{\link{merge_phyloseq}} function is recommended
   in general.
 
-  Special note: trees are merged using
+  Special note: non-identical trees are merged using
   \code{\link[ape]{consensus}}.
 }
 \examples{
