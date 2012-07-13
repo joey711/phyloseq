@@ -17,6 +17,10 @@ phyloseq
 * Lots and lots of fixes and improvements.
 
 
+phyloseq 1.1.23-26
+===========
+Added unit tests and bugfixes
+
 phyloseq 1.1.19-22
 ===========
 Improving import_qiime() importer to handle large datasets,
