@@ -3,7 +3,7 @@ Version: 1.1.26
 Date: 2012-07-12
 Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
-Description: phyloseq is a set of classes, and tools to
+Description: phyloseq provides a set of classes and tools to
     facilitate the import, storage, analysis, and graphical
     display of phylogenetic sequencing data.
 Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
