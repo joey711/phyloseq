@@ -557,17 +557,13 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "species") }		
 	}
 	
-	# Enforce DF class as data.frame.
-	# Important in cases where no merging happens, scores may return a matrix, and then ggplot() fails.
-	if(class(DF)!="data.frame"){ DF <- data.frame(DF) }
-	
 	# In case user wants the plot-DF for some other purpose, return early
 	if(justDF){return(DF)}
 
 	# If there is nothing to map (data.frame only has two columns), just return simple plot
 	if(ncol(DF)<=2){
-		ord_map <- aes_string(x=x, y=y, na.rm=TRUE)
-		p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)		
+		ord_map <- aes_string(x=x, y=y)
+		p <- ggplot(DF, ord_map) + geom_point()		
 		return(p)
 	}
 	
@@ -601,8 +597,6 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 			p <- update_labels(p, list(colour = "type")) #p + scale_color_discrete(name="type")
 		} else {
 			# Check if variable is discrete. 
-			# Note that you probalby need to adjust this function to accommodate continuous variables, anyway. Post an issue.
-			# plyr::is.discrete
 			if( is.discrete(DF[, color]) ){
 				# The following function reproduces ggplot2's default color scale.
 				# From: http://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
@@ -653,7 +647,7 @@ ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2
 	# Define supplemental data
 	if( !is.null(sampleData(physeq, FALSE)) & type == "sites"){
 		supp  <- sampleData(physeq) # Supplemental data, samples
-	}else if( !is.null(taxTab(physeq, FALSE)) & type == "species"){
+	} else if( !is.null(taxTab(physeq, FALSE)) & type == "species"){
 		supp  <- taxTab(physeq) # Supplemental data, taxa
 	}
 	if( is.null(supp) ){
@@ -668,6 +662,10 @@ ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2
 		DF <- data.frame(coord, supp)		
 	}
 
+	# Enforce DF class as data.frame.
+	# Important in cases where no merging happens, scores may return a matrix, and then ggplot() fails.
+	if( class(DF) != "data.frame"){ DF <- data.frame(DF) }
+	
 	return(DF)		
 }
 ################################################################################
