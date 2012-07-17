@@ -509,7 +509,9 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
-	if(class(physeq)!="phyloseq"){stop("physeq must be phyloseq-class.")}
+	if(class(physeq)!="phyloseq"){
+		warning("Full functionality requires physeq be phyloseq-class with multiple components.")
+	}
 	if(type == "samples"){type <- "sites"} # Compatibility with phyloseq
 	if(type == "taxa"){type <- "species"} # Compatibility with phyloseq
 	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
@@ -644,10 +646,10 @@ ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2
 	
 	# If there is supplemental data, add it, else, return coord
 	supp <- NULL
-	# Define supplemental data
-	if( !is.null(sampleData(physeq, FALSE)) & type == "sites"){
+	# Define supplemental data. Use explicit accessor to avoid constructor options.
+	if( !is.null(access(physeq, "samData")) & type == "sites"){
 		supp  <- sampleData(physeq) # Supplemental data, samples
-	} else if( !is.null(taxTab(physeq, FALSE)) & type == "species"){
+	} else if( !is.null(access(physeq, "taxTab")) & type == "species"){
 		supp  <- taxTab(physeq) # Supplemental data, taxa
 	}
 	if( is.null(supp) ){
