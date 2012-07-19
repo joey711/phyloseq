@@ -16,6 +16,17 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.29
+===========
+Add unit tests and example files for import_biom (as well as import("biom",...) ).
+
+phyloseq 1.1.28
+===========
+Added rarefy_even_depth() function for random subsampling of microbiome samples to the same number of reads. Default uses the minimum total reads among the samples in the dataset. This is based on the core "sample" function, which can have its random number generator fixed by set.seed for reproducibility.
+
+phyloseq 1.1.27
+===========
+Fix bug in plot_ordination that caused an error rather than produce unannotated plots when sampleData absent in the input.
 
 phyloseq 1.1.23-26
 ===========

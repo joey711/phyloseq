@@ -99,3 +99,75 @@ test_that("Features of the abundance data are consistent, match known values", {
 })
 
 ################################################################################
+# import_biom tests
+
+rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
+rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
+min_dense_biom   <- system.file("extdata", "min_dense_otu_table.biom",   package="phyloseq")
+min_sparse_biom  <- system.file("extdata", "min_sparse_otu_table.biom",  package="phyloseq")
+
+test_that("The different types of biom files yield phyloseq objects", {
+	rich_dense  <- import_biom(rich_dense_biom,  taxaPrefix="greengenes")
+	rich_sparse <- import_biom(rich_sparse_biom, taxaPrefix="greengenes")
+	min_dense   <- import_biom(min_dense_biom,   taxaPrefix="greengenes")
+	min_sparse  <- import_biom(min_sparse_biom,  taxaPrefix="greengenes")
+	
+	expect_that(rich_dense,  is_a("phyloseq"))
+	expect_that(rich_sparse, is_a("phyloseq"))
+	expect_that(min_dense,   is_a("otuTable"))
+	expect_that(min_sparse,  is_a("otuTable"))
+
+	# # Component classes
+	# sampleData
+	expect_that(access(rich_dense,  "samData"), is_a("sampleData"))
+	expect_that(access(rich_sparse, "samData"), is_a("sampleData"))
+	expect_that(access(min_dense,   "samData"), is_a("NULL"))
+	expect_that(access(min_sparse,  "samData"), is_a("NULL"))
+
+	# taxonomyTable
+	expect_that(access(rich_dense,  "taxTab"), is_a("taxonomyTable"))
+	expect_that(access(rich_sparse, "taxTab"), is_a("taxonomyTable"))
+	expect_that(access(min_dense,   "taxTab"), is_a("NULL"))
+	expect_that(access(min_sparse,  "taxTab"), is_a("NULL"))		
+	
+	# phylo tree
+	expect_that(access(rich_dense,  "tre"), is_a("NULL"))
+	expect_that(access(rich_sparse, "tre"), is_a("NULL"))
+	expect_that(access(min_dense,   "tre"), is_a("NULL"))
+	expect_that(access(min_sparse,  "tre"), is_a("NULL"))
+		
+	# otuTable		
+	expect_that(access(rich_dense,  "otuTable"), is_a("otuTable"))
+	expect_that(access(rich_sparse, "otuTable"), is_a("otuTable"))
+	expect_that(access(min_dense,   "otuTable"), is_a("otuTable"))
+	expect_that(access(min_sparse,  "otuTable"), is_a("otuTable"))
+	
+	# Compare values in the otuTable. For some reason the otuTables are not identical
+	# one position is plus-two, another is minus-two
+	combrich <- c(access(rich_dense, "otuTable"), access(rich_sparse, "otuTable"))
+	expect_that(sum(diff(combrich, length(access(rich_dense, "otuTable")))), is_identical_to(0))
+	expect_that(max(diff(combrich, length(access(rich_dense, "otuTable")))), is_identical_to(2))
+	expect_that(min(diff(combrich, length(access(rich_dense, "otuTable")))), is_identical_to(-2))
+	combmin <- c(access(min_dense, "otuTable"), access(min_sparse, "otuTable"))
+	expect_that(sum(diff(combmin, length(access(min_dense, "otuTable")))), is_identical_to(0))
+	expect_that(max(diff(combmin, length(access(min_dense, "otuTable")))), is_identical_to(2))
+	expect_that(min(diff(combmin, length(access(min_dense, "otuTable")))), is_identical_to(-2))
+
+	expect_that(access(min_dense, "otuTable"),  is_identical_to(access(rich_dense, "otuTable")))
+	expect_that(access(min_sparse, "otuTable"), is_identical_to(access(rich_sparse, "otuTable")))
+
+	# Compare values in the sampleData
+	expect_that(access(rich_dense, "samData"), is_identical_to(access(rich_sparse, "samData")))
+	
+	# Compare values in the taxonomyTable
+	expect_that(access(rich_dense, "taxTab"), is_identical_to(access(rich_sparse, "taxTab")))
+	
+})
+
+test_that("the import_biom and import(\"biom\", ) syntax give same result", {
+	x1 <- import_biom(rich_dense_biom, taxaPrefix="greengenes")
+	x2 <- import("biom", BIOMfilename=rich_dense_biom, taxaPrefix="greengenes")	
+	expect_that(x1, is_identical_to(x2))
+})
+################################################################################
+# Next import function's test...
