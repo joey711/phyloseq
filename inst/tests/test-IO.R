@@ -170,4 +170,20 @@ test_that("the import_biom and import(\"biom\", ) syntax give same result", {
 	expect_that(x1, is_identical_to(x2))
 })
 ################################################################################
+# readTree tests
+test_that("The readTree function works as expected:", {
+	GPNewick <- readTree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+	expect_that(GPNewick, is_a("phylo"))
+	expect_that(nspecies(GPNewick), equals(length(GPNewick$tip.label)))
+	expect_that(nspecies(GPNewick), equals(500))
+	expect_that(GPNewick$Nnode, equals(499))
+	expect_that(species.names(GPNewick), is_identical_to(GPNewick$tip.label))	
+	# Now read a nexus tree... 
+	# Some error-handling expectations
+	expect_that(readTree("alskflsakjsfskfhas.akshfaksj"), gives_warning()) # file not exist
+	not_tree <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
+	expect_that(readTree(not_tree), is_a("NULL")) # file not a tree, gives NULL
+	expect_that(readTree(not_tree, TRUE), throws_error()) # file not a tree, check turned on/TRUE
+})
+################################################################################
 # Next import function's test...

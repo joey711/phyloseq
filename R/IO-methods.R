@@ -221,23 +221,52 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	do.call("phyloseq", argumentlist)
 }
 ################################################################################
-# Make flexible tree-import function
-# 
-# Returns NULL if neither tree-reading function worked.
-################################################################################
+#' Somewhat flexible tree-import function
+#'
+#' This function is a convenience wrapper around the
+#' \code{\link[ape]{read.tree}} (Newick-format) and
+#' \code{\link[ape]{read.nexus}} (Nexus-format) importers provided by
+#' the \code{\link[ape]{ape-package}}. This function attempts to return a valid
+#' tree if possible using either format importer. If it fails, it silently 
+#' returns \code{NULL} by default, rather than throwing a show-stopping error.
+#'
+#' readTree(treefile, errorIfNULL=FALSE, ...)
+#'
+#' @param treefile (Required). A character string implying a file \code{\link{connection}}
+#'  (like a path or URL), or an actual \code{\link{connection}}.
+#'  Must be a Newick- or Nexus-formatted tree.
+#'
+#' @param errorIfNULL (Optional). Logical. Should an error be thrown if no tree
+#'  can be extracted from the connection?
+#'  Default is \code{FALSE}, indicating that \code{NULL} will be 
+#'  SILENTLY returned, rather than an error. 
+#'  Be cautious about this behavior. Useful for phyloseq internals, but might
+#'  be hard to track in treefileyour own code if you're not aware of this
+#'  ``no error by default'' setting. If this is a problem, change this value
+#'  to \code{TRUE}, and you can still use the function.
+#'
+#' @param ... (Optional). Additional parameter(s) passed to the
+#'  relevant tree-importing function.
+#'
+#' @return If successful, returns a \code{\link{phylo}}-class object as defined
+#'  in the \code{\link[ape]{ape-package}}. Returns NULL if neither tree-reading function worked.
+#'
 #' @import ape
-#' @keywords internal
-readTree <- function(trefile, errorIfNULL=FALSE, ...){
+#' @export
+#' @examples
+#' readTree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
+#' readTree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+readTree <- function(treefile, errorIfNULL=FALSE, ...){
 	# "phylo" object provided directly
-	if( class(trefile)[1] %in% c("phylo") ){ 
-		tree <- trefile
+	if( class(treefile)[1] %in% c("phylo") ){ 
+		tree <- treefile
 	# file path to tree file provided (NEXUS)
 	} else {
 		# # Try Nexus first, protected, then newick if it fails
 		tree <- NULL
-		try(tree <- read.nexus(trefile, ...), TRUE)
+		try(tree <- read.nexus(treefile, ...), TRUE)
 		# Try Newick if nexus didn't work.
-		if(is.null(tree)) try(tree <- read.tree(trefile, ...), TRUE)
+		if(is.null(tree)) try(tree <- read.tree(treefile, ...), TRUE)
 	}
 	# If neither tree-import worked (still NULL), report warning
 	if( errorIfNULL & is.null(tree) ){
