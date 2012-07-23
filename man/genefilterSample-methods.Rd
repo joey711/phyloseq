@@ -66,8 +66,8 @@
   \code{\link{filterfunSample}}, \code{\link[phyloseq]{t}},
   \code{\link{prune_species}}
 }
+\keyword{OTU}
 \keyword{agglomerate}
 \keyword{cluster}
-\keyword{OTU}
 \keyword{tree}
 
