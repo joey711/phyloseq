@@ -644,12 +644,15 @@ setMethod("prune_samples", signature("character", "sampleData"), function(sample
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	x@samData  <- prune_samples(samples, sampleData(x) )
-	x@otuTable <- prune_samples(samples, otuTable(x) )
+	# protect missing sampleData component. Don't need to prune if empty
+	if( !is.null(access(x, "samData", FALSE)) ){
+		x@samData  <- prune_samples(samples, access(x, "samData", FALSE) )
+	}
+	# Don't need to protect otuTable, it is mandatory for phyloseq-class
+	x@otuTable <- prune_samples(samples, access(x, "otuTable", FALSE) )
 	return(x)
 })
 ################################################################################
-####################################################################################
 #' Thresholded rank transformation.
 #' 
 #' The lowest \code{thresh} values in \code{x} all get the value 'thresh'.
