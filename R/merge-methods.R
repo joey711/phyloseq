@@ -365,42 +365,6 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ################################################################################
-# # Example of higher-order phyloseq object species merge
-# merge_species(ex4, species.names(ex4)[1:5])
-# merge_species(phyloseqTree(ex4), species.names(ex4)[1:5])
-# merge_species(phyloseq(ex4), 1:5)
-# ################################################################################
-# # Example of otuTree species merge
-# otutree  = otuTree(ex4)
-# otutree1 = merge_species(otutree, tre(otutree)$tip.label[1:9300])
-# plot(tre(otutree1))
-# # Not run, species indices not equivalent between phylo and otuTable.
-# # Must use names (character):
-# otutree2 = merge_species(otutree, 1:9300)
-################################################################################
-# # Examples of tree species merge:
-# tree = tre(ex4)
-# tree1 = merge_species(tree, tree$tip.label[1:500], 2)
-# tree2 = merge_species(tree, 12:15, 1)
-# tree3 = merge_species(tree, 12:15, 2)
-# # Not run, won't know what merged:
-# #tree3 = merge_species(tree, sample(1:32,15), 2)
-# par(mfcol=c(2,2))
-# plot(tree,  main="Tree 0")
-# plot(tree1, main="Tree 1")
-# plot(tree2, main="Tree 2")
-# plot(tree3, main="Tree 3")
-################################################################################
-# # Example of otuTable species merge
-# x4 = otuTable(matrix(sample(0:15,100,TRUE),40,10), speciesAreRows=TRUE)
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28"), "sp10")
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )@.Data
-# merge_species(x4, 5:25)@.Data
-# Not run:
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35", "") )
-################################################################################
-################################################################################
 #' Merge samples based on a sample variable or factor.
 #'
 #' The purpose of this method is to merge/agglomerate the sample indices of a 

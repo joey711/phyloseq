@@ -101,13 +101,13 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	# method <- "bray"
 	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
 		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
-		"mountford", "raup" , "binomial", "chao")
+		"mountford", "raup" , "binomial", "chao", "cao")
 
 	# Special methods (re)defined in phyloseq
 	phyloseq_methods <- c("unifrac", "dpcoa", "jsd")
 	
 	# The standard distance methods
-	dist_methods <- c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")
+	dist_methods <- c("maximum", "binary", "minkowski")
 	# Only keep the ones that are NOT already in vegdist_methods
 	dist_methods <- dist_methods[!dist_methods %in% intersect(vegdist_methods, dist_methods)]
 
@@ -116,19 +116,27 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		"sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
 		"sim", "gl", "z")
 	
-	method.table <- c(phyloseq_methods, vegdist_methods, dist_methods, betadiver_methods)
+	method.list <- list(
+		UniFrac    = "unifrac",
+		DPCoA      = "dpcoa",
+		JSD        = "jsd",
+		vegdist    = vegdist_methods,
+		betadiver  = betadiver_methods,
+		dist       = dist_methods,
+		designdist = "ANY"
+	)
 	
 	if(class(physeq) == "character"){
 		if( physeq=="help" ){
 			cat("Available arguments to methods:\n")
-			print(c(method.table))
+			print(method.list)
 			cat("Please be exact, partial-matching not supported.\n")
 			cat("Can alternatively provide a custom distance.\n")
 			cat("See:\n help(\"distance\") \n")
 			return()
 		}
 		if( physeq=="list" ){
-			return(c(method.table))
+			return(c(method.list))
 		}		
 	}
 

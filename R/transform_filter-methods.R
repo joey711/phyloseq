@@ -469,15 +469,10 @@ taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\
 	
 	# successively merge taxa in physeq.
 	for( i in names(spCliques)){
-		# print(i)
 		physeq <- merge_species(physeq, eqspecies=spCliques[[i]])
 	}
 	return(physeq)
 }
-################################################################################
-# test <- taxglom.internal(GlobalPatterns, as(taxTab(GlobalPatterns), "matrix")[, "Phylum"])
-# testvec <- as(taxTab(GlobalPatterns), "matrix")[, "Phylum", drop=TRUE]
-# tapply(names(testvec), factor(testvec), length)
 ################################################################################
 #' Prune unwanted species / taxa from a phylogenetic object.
 #' 
