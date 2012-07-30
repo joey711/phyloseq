@@ -313,7 +313,10 @@ setMethod("merge_species", "otuTable", function(x, eqspecies, archetype=1){
 #' @aliases merge_species,phylo-method
 #' @rdname merge_species-methods
 setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
-	if( length(eqspecies) < 2 ){ return(x) }
+	# If there is nothing to merge, return x as-is
+	if( length(eqspecies) < 2 ){
+		return(x)
+	}
 
 	if( class(eqspecies) != "character" ){
 		eqspecies <- x$tip.label[eqspecies]
@@ -324,8 +327,16 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- drop.tip(x, removeIndex)
-	return(x)
+
+	# If there is too much to merge (tree would have one or 0 branches), return NULL/warning
+	if( length(removeIndex) >= (nspecies(x)-1) ){
+		# Can't have a tree with 1 or fewer tips
+		warning("merge_species attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		return(NULL)
+	# Else, drop the removeIndex tips and returns the pruned tree.	
+	} else {
+		return( drop.tip(x, removeIndex) )		
+	}
 })
 ################################################################################
 #' @aliases merge_species,phyloseq-method

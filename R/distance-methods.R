@@ -98,7 +98,6 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	# # Can't do partial matching directly, because too many similar options.
 	# # Determine if method argument matches any options exactly.
 	# # If not, call designdist
-	# method <- "bray"
 	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
 		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
 		"mountford", "raup" , "binomial", "chao", "cao")
