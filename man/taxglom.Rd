@@ -1,39 +1,21 @@
-\docType{methods}
 \name{taxglom}
 \alias{taxglom}
-\alias{taxglom,otuTable,character-method}
-\alias{taxglom,otuTable,taxonomyTable-method}
-\alias{taxglom,phyloseq,ANY-method}
 \title{Agglomerate taxa of the same type.}
 \usage{
-  taxglom(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE,
+  taxglom(physeq, taxrank="Phylum", NArm=TRUE,
   bad_empty=c(NA, "", " ", "\t"))
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} or
   \code{\link{otuTable}}.}
 
-  \item{tax}{(Optional). Either a
-  \code{link{taxonomyTable-class}}, or alternatively, a
-  character vector specifying the desired taxonomic group
-  of each taxa in \code{physeq}. If \code{tax} is a
-  character vector, it must have length equal to the
-  (original) number of taxa in \code{physeq}
-  (\code{nspecies(physeq)}), and each element must be named
-  according to the taxa ID (that is, the result of
-  \code{species.names(physeq)}). If \code{tax} is a
-  character vector, than the \code{taxlevel} argument is
-  ignored. If \code{physeq} already contains a
-  \code{taxonomyTable} component in its \code{taxTab} slot,
-  then the \code{tax} argument is ignored.}
-
-  \item{taxlevel}{A single-element character specifying the
-  taxonomic level (column name) in \code{tax}, the
-  \code{taxonomyTable}, that you want to agglomerate over.
-  The default value is \code{"Phylum"}. Note that this
-  default may agglomerate too broadly for a given
-  experiment, and the user is strongly encouraged to try
-  different taxonomic levels.}
+  \item{taxrank}{A character string specifying the
+  taxonomic level that you want to agglomerate over. Should
+  be among the results of \code{rank.names(physeq)}. The
+  default value is \code{rank.names(physeq)[1]}, which may
+  agglomerate too broadly for a given experiment. You are
+  strongly encouraged to try different values for this
+  argument.}
 
   \item{NArm}{(Optional). Logical, length equal to one.
   Default is \code{TRUE}. CAUTION. The decision to prune
@@ -65,19 +47,23 @@
   with class matching the class of \code{physeq}.
 }
 \description{
-  This method merges species if, at a certain taxaonomic
-  rank, their taxonomy is the same. Its approach is
-  analogous to \code{tipglom}, but uses categorical data
-  instead of a tree. In principal, other categorical data
-  known for all taxa could also be used in place of
-  taxonomy.
+  This method merges species that have the same taxonomy at
+  a certain taxaonomic rank. Its approach is analogous to
+  \code{tipglom}, but uses categorical data instead of a
+  tree. In principal, other categorical data known for all
+  taxa could also be used in place of taxonomy, but for the
+  moment, this must be stored in the \code{taxonomyTable}
+  of the data. Also, columns/ranks to the right of the rank
+  chosen to use for agglomeration will be replaced with
+  \code{NA}, because they should be meaningless following
+  agglomeration.
 }
 \examples{
 # data(GlobalPatterns)
 # ## print the available taxonomic ranks
 # colnames(taxTab(GlobalPatterns))
 # ## agglomerate at the Family taxonomic rank
-# (x1 <- taxglom(GlobalPatterns, taxlevel="Family") )
+# (x1 <- taxglom(GlobalPatterns, taxrank="Family") )
 # ## How many taxa before/after agglomeration?
 # nspecies(GlobalPatterns); nspecies(x1)
 # ## Look at enterotype dataset...

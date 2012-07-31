@@ -1,6 +1,10 @@
 \name{taxTab<-}
 \alias{assign-taxTab}
 \alias{taxTab<-}
+\alias{taxTab<-,phyloseq,ANY-method}
+\alias{taxTab<-,phyloseq,taxonomyTable-method}
+\alias{taxTab<-,taxonomyTable,ANY-method}
+\alias{taxTab<-,taxonomyTable,taxonomyTable-method}
 \title{Assign a (new) Taxonomy Table to \code{x}}
 \usage{
   taxTab(x) <- value

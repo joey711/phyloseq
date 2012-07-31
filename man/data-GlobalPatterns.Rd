@@ -1,7 +1,7 @@
 \docType{data}
 \name{data-GlobalPatterns}
-\alias{GlobalPatterns}
 \alias{data-GlobalPatterns}
+\alias{GlobalPatterns}
 \title{(Data) Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample (2011)}
 \description{
   Published in PNAS in early 2011. This work compared the

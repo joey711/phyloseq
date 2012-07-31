@@ -1,8 +1,7 @@
 Package: phyloseq
 Version: 1.1.33
 Date: 2012-07-30
-Title:
-    Handling and analysis of high-throughput
+Title: Handling and analysis of high-throughput
     phylogenetic sequence data.
 Description: phyloseq provides a set of classes and tools
     to facilitate the import, storage, analysis, and
@@ -34,10 +33,8 @@ Enhances: doParallel (>= 1.0)
 biocViews: Clustering, Classification, MultipleComparisons,
     QualityControl, GeneticVariability,
     HighThroughputSequencing
-URL:
-    http://joey711.github.com/phyloseq/
-BugReports:
-    https://github.com/joey711/phyloseq/issues
+URL: http://joey711.github.com/phyloseq/
+BugReports: https://github.com/joey711/phyloseq/issues
 Collate:
     'allClasses.R'
     'allPackage.R'
