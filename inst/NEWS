@@ -16,6 +16,20 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.33
+===========
+Revise taxglom() such that it handles phyloseq and taxonomyTable classes,
+throws warning otherwise. It should not take a manually-produced character
+vector, as this is roughly equivalent to functionality supported in other method,
+especially prune_species()/merge_species().
+Also added unit-tests and executable examples for taxglom().
+Got rid of taxglom.internal, incorporated directly into taxglom().
+taxglom() is no longer an S4-method, and 
+doesn't need to be now that the character-vector argument option is omitted,
+with S4-class handling delegated to merge_species().
+Updated "taxTab<-" to be S4 assignment, clearer handling of taxonomy Table assignments,
+especially useful for taxglom.
+
 phyloseq 1.1.29
 ===========
 Add unit tests and example files for import_biom (as well as import("biom",...) ).

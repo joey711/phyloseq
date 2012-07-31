@@ -173,10 +173,27 @@ setMethod("speciesarerows<-", c("phyloseq", "logical"), function(x, value){
 #' # ex2c <- phyloseq(otuTable(ex2b), sampleData(ex2b), tre(ex2b))
 #' # taxTab(ex2c) <- as(taxTab(ex2b), "matrix")
 #' # identical(ex2a, ex2c)
-"taxTab<-" <- function(x, value){
-	if(class(value) != "taxonomyTable"){value <- taxTab(value)}
+setGeneric("taxTab<-", function(x, value) standardGeneric("taxTab<-"))
+#' @rdname assign-taxTab
+#' @aliases taxTab<-,phyloseq,taxonomyTable-method
+setMethod("taxTab<-", c("phyloseq", "taxonomyTable"), function(x, value){
 	phyloseq(otuTable=x@otuTable, samData=x@samData, taxTab=value, tre=x@tre)
-}
+})
+#' @rdname assign-taxTab
+#' @aliases taxTab<-,phyloseq,ANY-method
+setMethod("taxTab<-", c("phyloseq", "ANY"), function(x, value){
+	phyloseq(otuTable=x@otuTable, samData=x@samData, taxTab=taxTab(value, FALSE), tre=x@tre)
+})
+#' @rdname assign-taxTab
+#' @aliases taxTab<-,taxonomyTable,taxonomyTable-method
+setMethod("taxTab<-", c("taxonomyTable", "taxonomyTable"), function(x, value){
+	value
+})
+#' @rdname assign-taxTab
+#' @aliases taxTab<-,taxonomyTable,ANY-method
+setMethod("taxTab<-", c("taxonomyTable", "ANY"), function(x, value){
+	taxTab(value, FALSE)
+})
 ################################################################################
 #' Assign a (new) phylogenetic tree to \code{x}
 #'

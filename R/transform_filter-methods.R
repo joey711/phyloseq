@@ -343,33 +343,26 @@ edgelist2clique = function(EdgeList){
 ################################################################################
 #' Agglomerate taxa of the same type.
 #'
-#' This method merges species if, at a certain taxaonomic rank, their taxonomy
-#' is the same. 
+#' This method merges species that have the same taxonomy at a certain 
+#' taxaonomic rank. 
 #' Its approach is analogous to \code{tipglom}, but uses categorical data
 #' instead of a tree. In principal, other categorical data known for all taxa
-#' could also be used in place of taxonomy. 
+#' could also be used in place of taxonomy,
+#' but for the moment, this must be stored in the \code{taxonomyTable}
+#' of the data. Also, columns/ranks to the right of the rank chosen to use
+#' for agglomeration will be replaced with \code{NA},
+#' because they should be meaningless following agglomeration.
 #'
-#' @usage taxglom(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+#' @usage taxglom(physeq, taxrank=rank.names(physeq)[1], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} or \code{\link{otuTable}}.
 #'
-#' @param tax (Optional). Either a \code{link{taxonomyTable-class}}, or alternatively, a 
-#'  character vector specifying the desired taxonomic group of each taxa in 
-#'  \code{physeq}. If \code{tax} is a character vector, it must have length equal
-#'  to the (original) number of taxa in \code{physeq} (\code{nspecies(physeq)}), 
-#'  and each element must be
-#'  named according to the taxa ID (that is, the result of 
-#'  \code{species.names(physeq)}). If \code{tax} is a character vector, than
-#'  the \code{taxlevel} argument is ignored. If \code{physeq} already contains
-#'  a \code{taxonomyTable} component in its \code{taxTab} slot, then 
-#'  the \code{tax} argument is ignored. 
-#'
-#' @param taxlevel A single-element character specifying the taxonomic level
-#'  (column name)
-#'  in \code{tax}, the \code{taxonomyTable}, that you want to agglomerate over.
-#'  The default value is \code{"Phylum"}. Note that this default may
-#'  agglomerate too broadly for a given experiment, and the user is strongly
-#'  encouraged to try different taxonomic levels.
+#' @param taxrank A character string specifying the taxonomic level
+#'  that you want to agglomerate over.
+#'  Should be among the results of \code{rank.names(physeq)}.
+#'  The default value is \code{rank.names(physeq)[1]},
+#'  which may agglomerate too broadly for a given experiment.
+#'  You are strongly encouraged to try different values for this argument.
 #'
 #' @param NArm (Optional). Logical, length equal to one. Default is \code{TRUE}.
 #'  CAUTION. The decision to prune (or not) taxa for which you lack categorical
@@ -393,10 +386,13 @@ edgelist2clique = function(EdgeList){
 #' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
 #' the class of \code{physeq}.
 #'
-#' @seealso \code{\link{tipglom}}, \code{\link{prune_species}}, \code{\link{merge_species}}
+#' @seealso
+#' \code{\link{tipglom}}
 #' 
-#' @rdname taxglom-methods
-#' @docType methods
+#' \code{\link{prune_species}}
+#' 
+#' \code{\link{merge_species}}
+#' 
 #' @export
 #'
 #' @examples
@@ -404,61 +400,40 @@ edgelist2clique = function(EdgeList){
 #' # ## print the available taxonomic ranks
 #' # colnames(taxTab(GlobalPatterns))
 #' # ## agglomerate at the Family taxonomic rank
-#' # (x1 <- taxglom(GlobalPatterns, taxlevel="Family") )
+#' # (x1 <- taxglom(GlobalPatterns, taxrank="Family") )
 #' # ## How many taxa before/after agglomeration?
 #' # nspecies(GlobalPatterns); nspecies(x1)
 #' # ## Look at enterotype dataset...
 #' # data(enterotype)
 #' # ## print the available taxonomic ranks. Shows only 1 rank available, not useful for taxglom
 #' # colnames(taxTab(enterotype))
-setGeneric("taxglom", 
-	function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
-	standardGeneric("taxglom")
-})
-#' @rdname taxglom-methods
-#' @aliases taxglom,otuTable,taxonomyTable-method
-setMethod("taxglom", c("otuTable", "taxonomyTable"),
-				function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
-	# vectorize the taxonomy table.
-	tax <- as(tax, "matrix")[, taxlevel]
-	taxglom.internal(physeq, tax, NArm, bad_empty)
-})
-#' @rdname taxglom-methods
-#' @aliases taxglom,otuTable,character-method
-setMethod("taxglom", c("otuTable", "character"),
-				function(physeq, tax=NULL,taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
-	taxglom.internal(physeq, tax, NArm, bad_empty)
-})
-#' @rdname taxglom-methods
-#' @aliases taxglom,phyloseq,ANY-method
-setMethod("taxglom", "phyloseq",
-				function(physeq, tax=NULL, taxlevel="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
-	# vectorize the taxonomy table.
-	tax <- as(taxTab(physeq), "matrix")[, taxlevel]
-	taxglom.internal(physeq, tax, NArm, bad_empty)
-})
-################################################################################
-#' taxglom core internal function.
-#'
-#' taxglom.internal makes all the glomming happen, and delegates the
-#' object-handling issues to \code{merge_species()}.
-#'
-#' @param physeq the object on which agglomeration is to take place.
-#'
-#' @param tax for this internal function, tax must be a character vector.
-#' \code{tax} is a vector in the core internal function.
-#' 
-#' @return the agglomerated object. Class matches argument \code{physeq}.
-#'
-#' @keywords internal
-taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\t") ){
+taxglom <- function(physeq, taxrank=rank.names(physeq)[1],
+					NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
 
+	# Error if taxTab slot is empty
+	if( is.null(access(physeq, "taxTab")) ){
+		stop("The taxglom() function requires that physeq contain a taxonomyTable")
+	}
+	
+	# Error if bad taxrank
+	if( !taxrank[1] %in% rank.names(physeq) ){
+		stop("Bad taxrank argument. Must be among the values of rank.names(physeq)")		
+	}
+
+	# Make a vector from the taxonomic data.
+	CN  <- which( rank.names(physeq) %in% taxrank[1] )
+	tax <- as(access(physeq, "taxTab"), "matrix")[, CN]
+	
 	# if NArm is TRUE, remove the empty, white-space, NA values from 
 	if( NArm ){
 		keep_species <- names(tax)[ !(tax %in% bad_empty) ]
 		physeq <- prune_species(keep_species, physeq)
 	}
 
+	# Concatenate data up to the taxrank column, use this for agglomeration
+	tax <- as(access(physeq, "taxTab"), "matrix")[, 1:CN]
+	tax <- apply(tax, 1, function(i){paste(i, sep=";_;", collapse=";_;")})
+	
 	# Remove NAs and useless from the vector/factor for looping.
 	# This does not remove the taxa that have an unknown (NA)
 	# taxonomic designation at this particular taxonomic rank.
@@ -467,17 +442,17 @@ taxglom.internal <- function(physeq, tax, NArm=TRUE, bad_empty=c(NA, "", " ", "\
 	# Define the species cliques to loop through
 	spCliques <- tapply(names(tax), factor(tax), list)
 	
-	# successively merge taxa in physeq.
+	# Successively merge taxa in physeq.
 	for( i in names(spCliques)){
-		# print(i)
 		physeq <- merge_species(physeq, eqspecies=spCliques[[i]])
 	}
+	# Empty the values to the right of the rank.
+	taxTab(physeq)[, (CN+1):length(rank.names(physeq))] <- NA
+	
+	# Return.
 	return(physeq)
 }
 ################################################################################
-# test <- taxglom.internal(GlobalPatterns, as(taxTab(GlobalPatterns), "matrix")[, "Phylum"])
-# testvec <- as(taxTab(GlobalPatterns), "matrix")[, "Phylum", drop=TRUE]
-# tapply(names(testvec), factor(testvec), length)
 ################################################################################
 #' Prune unwanted species / taxa from a phylogenetic object.
 #' 
@@ -526,10 +501,17 @@ setMethod("prune_species", signature("NULL"), function(species, x){
 #' @aliases prune_species,character,phylo-method
 #' @rdname prune_species-methods
 setMethod("prune_species", signature("character", "phylo"), function(species, x){
+	if( length(species) <= 1 ){
+		# Can't have a tree with 1 or fewer tips
+		warning("prune_species attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		return(NULL)
+	}
 	trimTaxa <- setdiff(x$tip.label, species)
 	if( length(trimTaxa) > 0 ){
-		drop.tip(x, trimTaxa)
-	} else x
+		return( drop.tip(x, trimTaxa) )
+	} else {
+		return(x)
+	}
 })
 ################################################################################
 #' @aliases prune_species,character,otuTable-method

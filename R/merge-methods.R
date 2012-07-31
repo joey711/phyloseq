@@ -313,7 +313,10 @@ setMethod("merge_species", "otuTable", function(x, eqspecies, archetype=1){
 #' @aliases merge_species,phylo-method
 #' @rdname merge_species-methods
 setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
-	if( length(eqspecies) < 2 ){ return(x) }
+	# If there is nothing to merge, return x as-is
+	if( length(eqspecies) < 2 ){
+		return(x)
+	}
 
 	if( class(eqspecies) != "character" ){
 		eqspecies <- x$tip.label[eqspecies]
@@ -324,8 +327,16 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- drop.tip(x, removeIndex)
-	return(x)
+
+	# If there is too much to merge (tree would have one or 0 branches), return NULL/warning
+	if( length(removeIndex) >= (nspecies(x)-1) ){
+		# Can't have a tree with 1 or fewer tips
+		warning("merge_species attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		return(NULL)
+	# Else, drop the removeIndex tips and returns the pruned tree.	
+	} else {
+		return( drop.tip(x, removeIndex) )		
+	}
 })
 ################################################################################
 #' @aliases merge_species,phyloseq-method
@@ -360,46 +371,25 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	
-	removeIndex <- which( species.names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_species(species.names(x)[-removeIndex], x)	
+	removeIndex <- which( species.names(x) %in% eqspecies[-keepIndex] )	
+		
+	# # # Taxonomy is trivial in ranks after disagreement among merged taxa
+	# # # Make those values NA_character_
+	taxmerge  <- as(taxTab(x), "matrix")[eqspecies, ]
+	bad_ranks <- apply(taxmerge, 2, function(i){ length(unique(i)) != 1 })
+	# Test if all taxonomies agree. If so, do nothing. Just continue to pruning.
+	if( any(bad_ranks) ){
+		# The col indices of the bad ranks
+		bad_ranks <- min(which(bad_ranks)):length(bad_ranks)
+		# Replace bad taxonomy elements in the archetype only (others are pruned)
+		taxTab(x)[eqspecies[keepIndex], bad_ranks] <- NA_character_		
+	}
+	
+	# Finally, prune all the merging taxa, except the archetype
+	x <- prune_species(species.names(x)[-removeIndex], x)
+		
 	return(x)
 })
-################################################################################
-# # Example of higher-order phyloseq object species merge
-# merge_species(ex4, species.names(ex4)[1:5])
-# merge_species(phyloseqTree(ex4), species.names(ex4)[1:5])
-# merge_species(phyloseq(ex4), 1:5)
-# ################################################################################
-# # Example of otuTree species merge
-# otutree  = otuTree(ex4)
-# otutree1 = merge_species(otutree, tre(otutree)$tip.label[1:9300])
-# plot(tre(otutree1))
-# # Not run, species indices not equivalent between phylo and otuTable.
-# # Must use names (character):
-# otutree2 = merge_species(otutree, 1:9300)
-################################################################################
-# # Examples of tree species merge:
-# tree = tre(ex4)
-# tree1 = merge_species(tree, tree$tip.label[1:500], 2)
-# tree2 = merge_species(tree, 12:15, 1)
-# tree3 = merge_species(tree, 12:15, 2)
-# # Not run, won't know what merged:
-# #tree3 = merge_species(tree, sample(1:32,15), 2)
-# par(mfcol=c(2,2))
-# plot(tree,  main="Tree 0")
-# plot(tree1, main="Tree 1")
-# plot(tree2, main="Tree 2")
-# plot(tree3, main="Tree 3")
-################################################################################
-# # Example of otuTable species merge
-# x4 = otuTable(matrix(sample(0:15,100,TRUE),40,10), speciesAreRows=TRUE)
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28"), "sp10")
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )@.Data
-# merge_species(x4, 5:25)@.Data
-# Not run:
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35", "") )
-################################################################################
 ################################################################################
 #' Merge samples based on a sample variable or factor.
 #'
