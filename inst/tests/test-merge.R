@@ -1,4 +1,4 @@
-# The following code should work, and return TRUE at the end
+# testthat tests don't do anything when successful.
 library("phyloseq")
 library("testthat")
 
@@ -139,9 +139,68 @@ test_that("merge_species() properly handles standard-cases", {
 		)
 	)
 })
-# Need to check the taxonomyTable results from these merges...
-# taxTab(n3)["547579", ]
-# taxTab(GP.chl)["24341", ]
+test_that("merge_species() replaces disagreements in taxonomy with NA", {
+	# Try a more difficult merge from a different subset
+	GP20 <- prune_species(species.names(GlobalPatterns)[1:20], GlobalPatterns)
+	
+	# Arbitrary merge into taxa "951", NA in ranks after Phylum
+	merge_these <- c("951", "586076", "141782", "30678", "30405")
+	n5 <- merge_species(GP20, merge_these)
+	# Test that none of the non-archetype taxa are left after the merge
+	expect_that(all( !c("586076", "141782", "30678", "30405") %in% species.names(n5)), equals(TRUE))
+	# Test that the archetype taxa remains
+	expect_that( "951" %in% species.names(n5), equals(TRUE))
+	# Test that the taxonomy is NA after Phylum
+	n5_merged_taxonomy <- as(taxTab(n5), "matrix")["951", ]
+	expect_that(any(is.na(n5_merged_taxonomy[1:2])), equals(FALSE))
+	expect_that(all(is.na(n5_merged_taxonomy[3:7])), equals(TRUE))	
+	
+	# Test how well it works at a different level (say first or last ranks)
+	merge_these <- c("1126", "31759")
+	n6 <- merge_species(GP20, merge_these)
+	# Test that the non-archetype taxa is gone
+	expect_that( !"31759" %in% species.names(n6), equals(TRUE))
+	# Test that the archetype taxa remains
+	expect_that( "1126" %in% species.names(n6), equals(TRUE))
+	# Test that the taxonomy is NA after Order
+	n6_merged_taxonomy <- as(taxTab(n6), "matrix")["1126", ]
+	expect_that( any(is.na(n6_merged_taxonomy[1:4])), equals(FALSE))
+	expect_that( all(is.na(n6_merged_taxonomy[5:7])), equals(TRUE))	
+
+	# Test that it works for differences at the first rank
+	GP20f <- GP20
+	taxTab(GP20f)[1, 1] <- "Bacteria"
+	n7 <- merge_species(GP20f, species.names(GP20f)[1:2])
+	# Should be all NA taxonomy
+	expect_that( all(is.na(as(taxTab(n7), "matrix")[1, ])), equals(TRUE))
+
+	# Test that it works for differences at the last rank
+	# First, make the first taxa the same as "951"
+	taxTab(GP20f)[1, ] <- taxTab(GP20f)["951", ]
+	# Now change the last rank of this entry to something else
+	taxTab(GP20f)[1, length(rank.names(GP20f))] <- "species_phyloseq_test"
+	n8 <- merge_species(GP20f, c("951", species.names(GP20f)[1]))
+	t951 <- as(taxTab(n8), "matrix")["951", ]	
+	expect_that( sum(is.na(t951)), equals(1L))
+	expect_that( is.na(t951[length(rank.names(n8))]), is_equivalent_to(TRUE))
+	expect_that( t951[-7], is_identical_to(as(taxTab(GP20f), "matrix")["951", ][-7]))
+
+	# Test that it works if the taxonomies completely agree
+	GP20f <- GP20	
+	# Make the first taxa the same as "951"
+	taxTab(GP20f)[1, ] <- taxTab(GP20f)["951", ]
+		
+	merge_these <- c("549322", "951")
+	n9   <- merge_species(GP20f, merge_these)
+	n9t1 <- as(taxTab(n9), "matrix")["549322", ]
+	# None should be NA
+	expect_that(any(is.na(n9t1)), equals(FALSE))
+	expect_that(length(n9t1), equals(7L))
+	# Merge worked, "951" is gone.
+	expect_that("951" %in% species.names(n9), equals(FALSE))	
+
+})
+
 
 
 

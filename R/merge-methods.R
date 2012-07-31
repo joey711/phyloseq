@@ -371,8 +371,23 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	
-	removeIndex <- which( species.names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_species(species.names(x)[-removeIndex], x)	
+	removeIndex <- which( species.names(x) %in% eqspecies[-keepIndex] )	
+		
+	# # # Taxonomy is trivial in ranks after disagreement among merged taxa
+	# # # Make those values NA_character_
+	taxmerge  <- as(taxTab(x), "matrix")[eqspecies, ]
+	bad_ranks <- apply(taxmerge, 2, function(i){ length(unique(i)) != 1 })
+	# Test if all taxonomies agree. If so, do nothing. Just continue to pruning.
+	if( any(bad_ranks) ){
+		# The col indices of the bad ranks
+		bad_ranks <- min(which(bad_ranks)):length(bad_ranks)
+		# Replace bad taxonomy elements in the archetype only (others are pruned)
+		taxTab(x)[eqspecies[keepIndex], bad_ranks] <- NA_character_		
+	}
+	
+	# Finally, prune all the merging taxa, except the archetype
+	x <- prune_species(species.names(x)[-removeIndex], x)
+		
 	return(x)
 })
 ################################################################################
