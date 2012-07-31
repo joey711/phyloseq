@@ -353,7 +353,7 @@ edgelist2clique = function(EdgeList){
 #' for agglomeration will be replaced with \code{NA},
 #' because they should be meaningless following agglomeration.
 #'
-#' @usage taxglom(physeq, taxrank="Phylum", NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+#' @usage taxglom(physeq, taxrank=rank.names(physeq)[1], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} or \code{\link{otuTable}}.
 #'
@@ -386,7 +386,12 @@ edgelist2clique = function(EdgeList){
 #' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
 #' the class of \code{physeq}.
 #'
-#' @seealso \code{\link{tipglom}}, \code{\link{prune_species}}, \code{\link{merge_species}}
+#' @seealso
+#' \code{\link{tipglom}}
+#' 
+#' \code{\link{prune_species}}
+#' 
+#' \code{\link{merge_species}}
 #' 
 #' @export
 #'

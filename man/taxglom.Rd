@@ -2,7 +2,7 @@
 \alias{taxglom}
 \title{Agglomerate taxa of the same type.}
 \usage{
-  taxglom(physeq, taxrank="Phylum", NArm=TRUE,
+  taxglom(physeq, taxrank=rank.names(physeq)[1], NArm=TRUE,
   bad_empty=c(NA, "", " ", "\t"))
 }
 \arguments{
@@ -72,7 +72,10 @@
 # colnames(taxTab(enterotype))
 }
 \seealso{
-  \code{\link{tipglom}}, \code{\link{prune_species}},
+  \code{\link{tipglom}}
+
+  \code{\link{prune_species}}
+
   \code{\link{merge_species}}
 }
 
