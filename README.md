@@ -1,19 +1,13 @@
-# phyloseq
+# [phyloseq](http://joey711.github.com/phyloseq/)
 
 ## Wiki
 See alternate documentation in the form of a [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
 
-## Workshop
-[A workshop session](https://secure.bioconductor.org/BioC2012/labs.php) regarding the use of [the phyloseq package](http://joey711.github.com/phyloseq/) in amplicon sequencing analysis will be provided at the
-
-[Bioconductor Workshop (BioC 2012)](https://secure.bioconductor.org/BioC2012/)
-
-on July 24-25, 2012 
-
-At the Fred Hutchinson Cancer Research Center - Seattle, WA
-
 ## Installation
 Please see the [phyloseq installation instructions](https://github.com/joey711/phyloseq/wiki/Installation) provided on the [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
+
+## phyloseq-demo Repository
+[The phyloseq-demo repository](https://github.com/joey711/phyloseq-demo) contains many additional documentation materials created to support workshops on the use of phyloseq in microbiome research. These materials are available under an open-access copyright license.
 
 ## Description
 
@@ -63,3 +57,14 @@ phyloseq is under active development, hosted and versioned at GitHub:
 https://github.com/joey711/phyloseq
 
 I make lots of effort to cite/attribute author contributions within official package documentation, citations, and anywhere else it is appropriate. Please feel free to fork and contribute!
+
+## Workshop
+[A workshop session](https://secure.bioconductor.org/BioC2012/labs.php) regarding the use of [the phyloseq package](http://joey711.github.com/phyloseq/) in amplicon sequencing analysis was provided at the
+
+[Bioconductor Workshop (BioC 2012)](https://secure.bioconductor.org/BioC2012/)
+
+on July 24-25, 2012 
+
+At the Fred Hutchinson Cancer Research Center - Seattle, WA.
+
+See [the phyloseq-demo materials](https://github.com/joey711/phyloseq-demo) for more details and documentation. 
