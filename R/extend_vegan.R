@@ -117,17 +117,17 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #'  # plot_richness_estimates(GlobalPatterns, "SampleType")
 #'  # plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
 #'  # For more plotting examples, see plot_richness_estimates()
-#' 
 estimate_richness <- function(physeq, split=TRUE){
 	# Check for singletons, and then warning if they are missing.
 	# These metrics only really meaningful if singletons are included.
 	if( !any(otuTable(physeq)==1) ){
-		warning("The experiment object you have provided does not have\n",
-		"any singletons. This is highly suspicious. Results of richness\n",
-		"estimates are probably unreliable, or wrong, if you have already\n",
-		"trimmed low-abundance taxa from the data.\n",
-		"\n",
-		"It is recommended that you find the un-trimmed data and retry.",
+		warning(
+			"The experiment object you have provided does not have\n",
+			"any singletons. This is highly suspicious. Results of richness\n",
+			"estimates are probably unreliable, or wrong, if you have already\n",
+			"trimmed low-abundance taxa from the data.\n",
+			"\n",
+			"It is recommended that you find the un-trimmed data and retry."
 		)
 	}
 	
