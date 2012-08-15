@@ -1544,24 +1544,38 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
 		tax_table <- NULL
 	} else {
-		# taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
-		# Figure out the max number of columns (could be jagged in BIOM format)
-		ncols <- max(sapply(head(x$rows), function(i){length(i$metadata$taxonomy)}))
-		# Initialize character matrix
-		taxdf <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
-		# Fill in the matrix by row.
-		for( i in 1:length(x$rows) ){
-			if( sum(taxaPrefix %in% "greengenes") > 0 ){
-				# taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
-				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
+		# Test if it is jagged
+		nranks <- sapply(x$rows, function(i){length(i$metadata$taxonomy)})
+		jagged <- any( nranks != max(nranks))
+		
+		# Use the much faster/easier laply if not-jagged
+		if( !jagged ){
+			if( taxaPrefix == "greengenes" ){
+				taxmat <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
 			} else {
-				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
+				taxmat <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
 			}
+		# Else it is jagged. Act accordingly.	
+		} else {
+			# Figure out the max number of columns 
+			ncols <- max(nranks)
+			# Initialize character matrix
+			taxmat <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
+			# Fill in the matrix by row.
+			for( i in 1:length(x$rows) ){
+				if( taxaPrefix == "greengenes" ){
+					taxmat[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
+				} else {
+					taxmat[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
+				}
+			}			
 		}
+		# Convert functionally empty elements to NA
+		taxmat[taxmat==""] <- NA_character_
 		# Now convert to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
-		tax_table           <- as(taxdf, "matrix")
-		rownames(tax_table) <- sapply(x$rows, function(i){i$id})
-		tax_table <- tax_table(tax_table)	
+		taxmat			 <- as(taxmat, "matrix")
+		rownames(taxmat) <- sapply(x$rows, function(i){i$id})
+		tax_table <- tax_table(taxmat)	
 	}
 	
 	########################################
