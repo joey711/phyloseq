@@ -4,19 +4,19 @@
 library("phyloseq"); library("testthat"); library("ggplot2")
 data("GlobalPatterns")
 # Subset to small dataset for quicker testing
-GP <- prune_species(speciesSums(GlobalPatterns)>10000, GlobalPatterns)
+GP <- prune_species(taxa_sums(GlobalPatterns)>10000, GlobalPatterns)
 
-# Pretend GP doesn't have sampleData or taxTab
-GP.tax <- taxTab(GP)
-GP.sd  <- samData(GP)
-GP.tr  <- tre(GP)
-# GP <- phyloseq(otuTable(GP), GP.tr)
-GP.otu <- otuTable(GP)
+# Pretend GP doesn't have sample_data or tax_table
+GP.tax <- tax_table(GP)
+GP.sd  <- sam_data(GP)
+GP.tr  <- phy_tree(GP)
+# GP <- phyloseq(otu_table(GP), GP.tr)
+GP.otu <- otu_table(GP)
 
 # Try ordination
 GP.ord <- ordinate(GP.otu, "DCA")
 
-test_that("plot_ordination: Naked otuTable results in warning, but no error", {
+test_that("plot_ordination: Naked otu_table results in warning, but no error", {
 	# samples-only
 	expect_that(plot_ordination(GP.otu, GP.ord, "samples"), gives_warning())
 	# species. 
@@ -118,7 +118,7 @@ test_that("plot_ordination: When variables are present or not, label SamplyType"
 test_that("plot_ordination: Continuous variables still mapped, uses added dummy variable", {
 	# GP <- merge_phyloseq(GP.otu, GP.tr, GP.sd, GP.tax)
 	# Add the fake continuous variable
-	sampleData(GP)$OMEGA3_FA_CONC <- sample(1:100, nsamples(GP)) 
+	sample_data(GP)$OMEGA3_FA_CONC <- sample(1:100, nsamples(GP)) 
 	
 	expect_that(p1 <- plot_ordination(GP, GP.ord, "samples", color="OMEGA3_FA_CONC"), is_a("ggplot"))
 	expect_that(p2 <- plot_ordination(GP, GP.ord, "samples", shape="OMEGA3_FA_CONC"), is_a("ggplot"))

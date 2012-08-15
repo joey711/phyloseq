@@ -4,7 +4,7 @@
 #' \code{phyloseq()} is a constructor method, This is the main method
 #' suggested for constructing an experiment-level (\code{\link{phyloseq-class}})
 #' object from its component data 
-#' (component data classes: \code{\link{otuTable-class}}, \code{\link{sampleData-class}}, 
+#' (component data classes: \code{\link{otu_table-class}}, \code{\link{sample_data-class}}, 
 #'  \code{\link{taxonomyTable-class}}, \code{\link{phylo-class}}).
 #'
 #' @usage phyloseq(...)
@@ -29,12 +29,12 @@
 #' @examples #
 #' # # data(GlobalPatterns)
 #' # # GP <- GlobalPatterns
-#' # # phyloseq(sampleData(GP), otuTable(GP))
-#' # # phyloseq(otuTable(GP), tre(GP))
-#' # # phyloseq(taxTab(GP), otuTable(GP))
-#' # # phyloseq(tre(GP), otuTable(GP), sampleData(GP))
-#' # # phyloseq(otuTable(GP), taxTab(GP), sampleData(GP))
-#' # # phyloseq(otuTable(GP), tre(GP), taxTab(GP), sampleData(GP))
+#' # # phyloseq(sample_data(GP), otu_table(GP))
+#' # # phyloseq(otu_table(GP), phy_tree(GP))
+#' # # phyloseq(tax_table(GP), otu_table(GP))
+#' # # phyloseq(phy_tree(GP), otu_table(GP), sample_data(GP))
+#' # # phyloseq(otu_table(GP), tax_table(GP), sample_data(GP))
+#' # # phyloseq(otu_table(GP), phy_tree(GP), tax_table(GP), sample_data(GP))
 phyloseq <- function(...){
 	
 	arglist <- list(...)
@@ -70,34 +70,34 @@ phyloseq <- function(...){
 		ps <- phyloseq:::reconcile_samples(ps)		
 	}
 	# ENFORCE CONSISTENT ORDER OF TAXA INDICES.
-	# If there is a phylogenetic tree included, re-order the otuTable based 
+	# If there is a phylogenetic tree included, re-order the otu_table based 
 	# according to the order of taxa-names on the tree, and optionally for
 	# the taxonomyTable, if present.
-	if( !is.null(tre(ps, FALSE)) ){
-		otu <- as(otuTable(ps), "matrix")
+	if( !is.null(phy_tree(ps, FALSE)) ){
+		otu <- as(otu_table(ps), "matrix")
 		# Re-order the matrix order matches tree
-		if( speciesAreRows(ps) ){
-			otu <- otu[species.names(tre(ps)), ]
+		if( taxa_are_rows(ps) ){
+			otu <- otu[species.names(phy_tree(ps)), ]
 		} else {
-			otu <- otu[, species.names(tre(ps))]
+			otu <- otu[, species.names(phy_tree(ps))]
 		}
-		ps@otuTable <- otuTable(otu, speciesAreRows(ps))
+		ps@otu_table <- otu_table(otu, taxa_are_rows(ps))
 		
 		# If there is a taxonomyTable, re-order that too.
-		if( !is.null(taxTab(ps, FALSE)) ){
-			tax <- as(taxtab(ps), "matrix")
-			tax <- tax[species.names(tre(ps)), ]
-			ps@taxTab <- taxTab(tax)
+		if( !is.null(tax_table(ps, FALSE)) ){
+			tax <- as(tax_table(ps), "matrix")
+			tax <- tax[species.names(phy_tree(ps)), ]
+			ps@tax_table <- tax_table(tax)
 		}
 	}
 
 	# ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
 	# Other errors have been detected for when sample indices do not match.
-	# check first that ps has sampleData
-	if( !is.null(sampleData(ps, FALSE)) ){
-		if( !all(sample.names(otuTable(ps)) == rownames(sampleData(ps))) ){
-			# Reorder the sampleData rows so that they match the otuTable order.
-			ps@samData <- sampleData(ps)[sample.names(otuTable(ps)), ]
+	# check first that ps has sample_data
+	if( !is.null(sample_data(ps, FALSE)) ){
+		if( !all(sample.names(otu_table(ps)) == rownames(sample_data(ps))) ){
+			# Reorder the sample_data rows so that they match the otu_table order.
+			ps@sam_data <- sample_data(ps)[sample.names(otu_table(ps)), ]
 		}		
 	}
 	
@@ -121,9 +121,9 @@ phyloseq <- function(...){
 #' #get.component.classes()
 get.component.classes <- function(){
 	# define classes vector
-	component.classes <- c("otuTable", "sampleData", "phylo", "taxonomyTable")
+	component.classes <- c("otu_table", "sample_data", "phylo", "taxonomyTable")
 	# the names of component.classes needs to be the slot names to match getSlots / splat
-	names(component.classes) <- c("otuTable", "samData", "tre", "taxTab")	
+	names(component.classes) <- c("otu_table", "sam_data", "phy_tree", "tax_table")	
 	return(component.classes)
 }
 ################################################################################
@@ -211,8 +211,8 @@ getslots.phyloseq <- function(physeq){
 #' If something is wrong, or the slot is missing, the expected behavior is that
 #' this function will return NULL. Thus, the output can be tested by 
 #' \code{\link{is.null}} as verification of the presence of a particular 
-#' data component. Unlike the component-specific accessors (e.g. \code{\link{otuTable}},
-#' or \code{\link{tre}}),
+#' data component. Unlike the component-specific accessors (e.g. \code{\link{otu_table}},
+#' or \code{\link{phy_tree}}),
 #' the default behavior is not to stop with an error if the desired slot is empty.
 #' In all cases this is controlled by the \code{errorIfNULL} argument, which can
 #' be set to \code{TRUE} if an error is desired. 
@@ -235,13 +235,13 @@ getslots.phyloseq <- function(physeq){
 #' @export
 #' @examples #
 #' ## data(GlobalPatterns)
-#' ## access(GlobalPatterns, "taxTab")
-#' ## access(GlobalPatterns, "tre")
-#' ## access(otuTable(GlobalPatterns), "otuTable")
+#' ## access(GlobalPatterns, "tax_table")
+#' ## access(GlobalPatterns, "phy_tree")
+#' ## access(otu_table(GlobalPatterns), "otu_table")
 #' ## # Should return NULL:
-#' ## access(otuTable(GlobalPatterns), "sampleData")
-#' ## access(otuTree(GlobalPatterns), "sampleData")
-#' ## access(otuSam(GlobalPatterns), "tre")
+#' ## access(otu_table(GlobalPatterns), "sample_data")
+#' ## access(otuTree(GlobalPatterns), "sample_data")
+#' ## access(otuSam(GlobalPatterns), "phy_tree")
 access <- function(physeq, slot, errorIfNULL=FALSE){
 	component.classes <- get.component.classes()
 	# Check if class of x is among the component classes (not H.O.)
@@ -288,7 +288,7 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' ## head(intersect_species(GlobalPatterns), 10)
 intersect_species <- function(x){
 	component_list  <- splat.phyloseq.objects(x)
-	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("samData") )
+	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("sam_data") )
 	if( length(doesnt_have_species) > 0 ){
 		species_vectors <- lapply(component_list[-doesnt_have_species], species.names)		
 	} else {
@@ -310,7 +310,7 @@ intersect_species <- function(x){
 #'
 #' @param x (Required). A phyloseq object. Only meaningful if \code{x} has at
 #'  least two non-empty slots of the following slots that describe species:
-#'  \code{\link{otuTable}}, \code{\link{taxTab}}, \code{\link{tre}}.
+#'  \code{\link{otu_table}}, \code{\link{tax_table}}, \code{\link{phy_tree}}.
 #'
 #' @return A trimmed version of the argument, \code{x}, in which each component
 #'  describes exactly the same set of species/taxa. Class of return should match
@@ -325,7 +325,7 @@ intersect_species <- function(x){
 #' ## reconcile_species(GlobalPatterns)
 #' # # data(phylocom)
 #' # # tree <- phylocom$phylo
-#' # # OTU  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+#' # # OTU  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 #' # # ex3  <- phyloseq(OTU, tree)
 #' # # reconcile_species(ex3)
 #' # # intersect_species(ex3)
@@ -366,12 +366,12 @@ setMethod("reconcile_species", signature("phyloseq"), function(x){
 #' ## reconcile_samples(GlobalPatterns)
 reconcile_samples <- function(x){
 	# prevent infinite recursion issues by checking if intersection already satisfied
-	if( setequal(sample.names(sampleData(x)), sample.names(otuTable(x))) ){
+	if( setequal(sample.names(sample_data(x)), sample.names(otu_table(x))) ){
 		return(x)
 	} else {
-		samples <- intersect(sample.names(sampleData(x)), sample.names(otuTable(x)))		
-		x@samData <- prune_samples(samples, x@samData)
-		x@otuTable  <- prune_samples(samples, x@otuTable)
+		samples <- intersect(sample.names(sample_data(x)), sample.names(otu_table(x)))		
+		x@sam_data <- prune_samples(samples, x@sam_data)
+		x@otu_table  <- prune_samples(samples, x@otu_table)
 		return(x)
 	}
 }

@@ -27,10 +27,10 @@
 #' @usage distance(physeq, method="unifrac", type="samples", ...)
 #' 
 #' @param physeq (Required).  A \code{\link{phyloseq-class}} or
-#'  an \code{\link{otuTable-class}} object. The latter is only appropriate
+#'  an \code{\link{otu_table-class}} object. The latter is only appropriate
 #'  for methods that do not require any additional data (one-table). 
 #'  For example, the ``unifrac'' option (\code{\link{UniFrac}}) requires
-#'  \code{\link{phyloseq-class}} that contains both an \code{otuTable}
+#'  \code{\link{phyloseq-class}} that contains both an \code{otu_table}
 #'  and a phylogenetic tree (\code{phylo}).
 #'
 #' @param method (Optional). A character string. Default is \code{"unifrac"}.
@@ -157,17 +157,17 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	# get the extra arguments to pass to functions (this can be empty)
 	extrargs <- list(...)	
 
-	# # non-phyloseq methods are assumed to be based on otuTable-only (for now)
+	# # non-phyloseq methods are assumed to be based on otu_table-only (for now)
 	# # If necessary (non phyloseq funs), enforce orientation, build function.
-	OTU <- otuTable(physeq)
+	OTU <- otu_table(physeq)
 
 	# Test type, and enforce orientation accordingly	
 	if( type == "species"){
 		# For species-distance, species need to be rows (vegan-style)
-		if( !speciesAreRows(OTU) ){OTU <- t(OTU)}	
+		if( !taxa_are_rows(OTU) ){OTU <- t(OTU)}	
 	} else if( type == "samples" ){
 		# For sample-distance, samples need to be rows (vegan-style)
-		if( speciesAreRows(OTU) ){OTU <- t(OTU)}
+		if( taxa_are_rows(OTU) ){OTU <- t(OTU)}
 	} else {
 		stop("type argument must be one of \n (1) samples \n or \n (2) species")
 	}	
@@ -256,23 +256,23 @@ JSD.pair <- function(x, y){
 #' # p <- plot_ordination(enterotype, ent.PCoA, color="Enterotype", shape="SeqTech") 
 #' # (p <- p + geom_point(size=5, alpha=0.5))
 JSD <- function(physeq, parallel=FALSE){
-	OTU <- otuTable(physeq)
+	OTU <- otu_table(physeq)
 	### Some parallel-foreach housekeeping.    
     # If user specifies not-parallel run (the default), register the sequential "back-end"
     if( !parallel ){ registerDoSEQ() }
     
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(sample.names(OTU), 2, simplify=FALSE)
+    spn <- combn(sample_names(OTU), 2, simplify=FALSE)
     
     # initialize DistMat with NAs
     DistMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
     # define the rows/cols of DistMat with the sample names (rownames)    
-    rownames(DistMat) <- sample.names(OTU)
-    colnames(DistMat) <- sample.names(OTU)
+    rownames(DistMat) <- sample_names(OTU)
+    colnames(DistMat) <- sample_names(OTU)
     
 	## Format coercion
 	# Coerce to the picante/vegan orientation, with species as columns
-	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
+	if( taxa_are_rows(OTU) ){ OTU <- t( otu_table(OTU) ) }
    	# Coerce OTU to matrix for calculations.
     OTU <- as(OTU, "matrix")
 	
@@ -354,7 +354,7 @@ internal2tips.self = function (phy, int.node, return.names = TRUE){
 #' @param samples Character vector of length 2, giving the pair of
 #'  samples under comparison.
 #'
-#' @param occ \code{otuTable} object in samples-by-species orientation
+#' @param occ \code{otu_table} object in samples-by-species orientation
 #'
 #' @param tree object of class \code{phylo}
 #'
@@ -388,7 +388,7 @@ ufnum <- function(edge, samples, occ, tree){
 #' @param samples Character vector of length 2, giving the pair of
 #'  samples under comparison.
 #'
-#' @param OTU \code{otuTable} object in samples-by-species orientation
+#' @param OTU \code{otu_table} object in samples-by-species orientation
 #'
 #' @param tree object of class \code{phylo}
 #'
@@ -484,7 +484,7 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 		# Get the tip ages from their associated edges (node.age gives the age of edges, ironically)
 		tipAges <- picante::node.age(tree)$ages[which(tree$edge[, 2] %in% 1:length(tree$tip.label))]
 		names(tipAges) <- tree$tip.label
-		# denominator (assumes tree-indices and otuTable indices are same order)
+		# denominator (assumes tree-indices and otu_table indices are same order)
 		denominator <- sum( tipAges * (OTU[A, ]/AT + OTU[B, ]/BT) )
 		# return the normalized weighted UniFrac values
 		return(numerator / denominator)
@@ -495,8 +495,8 @@ wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
 originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE){
 	# # # require(picante); require(ape); require(foreach)
 	# Access the needed components. Note, will error if missing in physeq.
-	OTU  <- otuTable(physeq)
-	tree <- tre(physeq)
+	OTU  <- otu_table(physeq)
+	tree <- phy_tree(physeq)
 
 	# Some important checks.
     if( is.null(tree$edge.length) ) {
@@ -511,22 +511,22 @@ originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FA
     if( !parallel ){ registerDoSEQ() }
     
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(sample.names(OTU), 2, simplify=FALSE)
+    spn <- combn(sample_names(OTU), 2, simplify=FALSE)
     # initialize UniFracMat with NAs
     UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
     # define the rows/cols of UniFracMat with the sample names (rownames)    
-    rownames(UniFracMat) <- sample.names(OTU)
-    colnames(UniFracMat) <- sample.names(OTU)
+    rownames(UniFracMat) <- sample_names(OTU)
+    colnames(UniFracMat) <- sample_names(OTU)
     
 	## Format coercion
 	# Coerce to the picante orientation, with species as columns
-	if( speciesAreRows(OTU) ){ OTU <- t( otuTable(OTU) ) }
+	if( taxa_are_rows(OTU) ){ OTU <- t( otu_table(OTU) ) }
    	# Coerce OTU to matrix for calculations.
     OTU <- as(OTU, "matrix")
-   	# Enforce that tree and otuTable indices are the same order, 
+   	# Enforce that tree and otu_table indices are the same order, 
    	# by re-ordering OTU if needed
-	if( !all(colnames(OTU) == species.names(tree)) ){
-		OTU <- OTU[, species.names(tree)]
+	if( !all(colnames(OTU) == taxa_names(tree)) ){
+		OTU <- OTU[, taxa_names(tree)]
 	}    
 	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
 	if(!weighted){
@@ -561,13 +561,13 @@ originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FA
 #' in a \code{\link{phyloseq-class}} object.
 #'
 #' \code{UniFrac()} accesses the abundance
-#' (\code{\link{otuTable-class}}) and a phylogenetic tree (\code{\link{phylo-class}})
+#' (\code{\link{otu_table-class}}) and a phylogenetic tree (\code{\link{phylo-class}})
 #' data within an experiment-level (\code{\link{phyloseq-class}}) object.
 #' If the tree and contingency table are separate objects, suggested solution
 #' is to combine them into an experiment-level class
 #' using the \code{\link{phyloseq}} function. For example, the following code
 #'
-#' \code{phyloseq(myOTUtable, myTree)}
+#' \code{phyloseq(myotu_table, myTree)}
 #'
 #' returns a \code{phyloseq}-class object that has been pruned and comprises
 #' the minimum arguments necessary for \code{UniFrac()}. 
@@ -607,7 +607,7 @@ originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FA
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}}, containing at minimum
 #'  a phylogenetic tree (\code{\link{phylo-class}}) and 
-#'  contingency table (\code{\link{otuTable-class}}). See
+#'  contingency table (\code{\link{otu_table-class}}). See
 #'  examples below for coercions that might be necessary.
 #'
 #' @param weighted (Optional). Logical. Should use weighted-UniFrac calculation?
@@ -635,7 +635,7 @@ originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FA
 #'  Moreover, the original UniFrac algorithm
 #'  only outperforms this implementation of fast-UniFrac if the datasets are so
 #'  small 
-#'  (approximated by the value of \code{nspecies(physeq) * nsamples(physeq)}) 
+#'  (approximated by the value of \code{ntaxa(physeq) * nsamples(physeq)}) 
 #'  that the difference in time is inconsequential (less than 1 second). In practice
 #'  it does not appear that this parameter should ever be set to \code{FALSE}, but
 #'  the option is nevertheless included in the package for comparisons and 
@@ -681,13 +681,13 @@ originalUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FA
 #' # (y <- UniFrac(esophagus, TRUE))
 #' # UniFrac(esophagus, TRUE, FALSE)
 #' # UniFrac(esophagus, FALSE)
-#' # picante::unifrac(as(t(otuTable(esophagus)), "matrix"), tre(esophagus))
+#' # picante::unifrac(as(t(otu_table(esophagus)), "matrix"), tre(esophagus))
 #' # ################################################################################
 #' # # Try phylocom example data from picante package
 #' # # It comes as a list, so you must construct the phyloseq object first.
 #' # ################################################################################
 #' # data("phylocom")
-#' # (x1 <- phyloseq(otuTable(phylocom$sample, FALSE), phylocom$phylo))
+#' # (x1 <- phyloseq(otu_table(phylocom$sample, FALSE), phylocom$phylo))
 #' # UniFrac(x1, TRUE)
 #' # UniFrac(x1, TRUE, FALSE)
 #' # UniFrac(x1, FALSE)
@@ -746,8 +746,8 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	# # # require(picante); require(ape); require(foreach)
 
 	# Access the needed components. Note, will error if missing in physeq.
-	OTU  <- otuTable(physeq)
-	tree <- tre(physeq)
+	OTU  <- otu_table(physeq)
+	tree <- phy_tree(physeq)
 
 	# Some important checks.
     if( is.null(tree$edge.length) ) {
@@ -762,19 +762,19 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
     if( !parallel ){ registerDoSEQ() }
     
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(sample.names(OTU), 2, simplify=FALSE)
+    spn <- combn(sample_names(OTU), 2, simplify=FALSE)
     # initialize UniFracMat with NAs
     UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
     # define the rows/cols of UniFracMat with the sample names (rownames)    
-    rownames(UniFracMat) <- sample.names(OTU)
-    colnames(UniFracMat) <- sample.names(OTU)
+    rownames(UniFracMat) <- sample_names(OTU)
+    colnames(UniFracMat) <- sample_names(OTU)
 
 	# Make sure OTU is in species-are-rows orientation
-	if( !speciesAreRows(OTU) ){OTU <- t(OTU)}    
-   	# Enforce that tree and otuTable indices are the same order, 
+	if( !taxa_are_rows(OTU) ){OTU <- t(OTU)}    
+   	# Enforce that tree and otu_table indices are the same order, 
    	# by re-ordering OTU, if needed
-	if( !all(rownames(OTU) == species.names(tree)) ){
-		OTU <- OTU[species.names(tree), ]
+	if( !all(rownames(OTU) == taxa_names(tree)) ){
+		OTU <- OTU[taxa_names(tree), ]
 	}
 
 	########################################
@@ -787,7 +787,7 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	# Begin by building the edge array (edge-by-sample matrix)
 	edges <- 1:nrow(tree$edge)
 	edge_array <- matrix(0, nrow=length(edges), ncol=nsamples(OTU), 
-		dimnames=list(edge_index=edges, sample.names=sample.names(OTU)))
+		dimnames=list(edge_index=edges, sample_names=sample_names(OTU)))
 
 	# loop over each edge in the tree. Parallel version.
   	edge_array_list <- foreach( edge = edges, .packages="phyloseq") %dopar% {		
@@ -825,8 +825,8 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
   	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
 		A  <- i[1]
 		B  <- i[2]
-		AT <- sampleSums(OTU)[A]
-		BT <- sampleSums(OTU)[B]		
+		AT <- sample_sums(OTU)[A]
+		BT <- sample_sums(OTU)[B]		
 		if( weighted ){ # weighted UniFrac
 			# subset matrix to just columns A and B
 			edge_array_AB <- edge_array[, c(A, B)]
@@ -841,7 +841,7 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 			if(!normalized){
 				return(numerator)
 			} else {
-				# denominator (assumes tree-indices and otuTable indices are same order)
+				# denominator (assumes tree-indices and otu_table indices are same order)
 				denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
 				# return the normalized weighted UniFrac values
 				return(numerator / denominator)

@@ -99,15 +99,15 @@ Because this data is included in the package, the examples can easily be run on 
 data(GlobalPatterns)
 @
 
-Later on we will use an additional categorical designation --- human versus non-human associated samples --- that was not in the original dataset. Now is a good time to add it as an explicit variable of the \code{sampleData}, and because we don't want to type long words over and over, we'll choose a shorter name for this modified version of \code{GlobalPatterns}, call it \code{GP}, and also remove a handful of taxa that are not present in any of the samples included in this dataset (probably an artifact):
+Later on we will use an additional categorical designation --- human versus non-human associated samples --- that was not in the original dataset. Now is a good time to add it as an explicit variable of the \code{sample_data}, and because we don't want to type long words over and over, we'll choose a shorter name for this modified version of \code{GlobalPatterns}, call it \code{GP}, and also remove a handful of taxa that are not present in any of the samples included in this dataset (probably an artifact):
 
 <<>>=
 # prune OTUs that are not present in at least one sample
-GP <- prune_species(speciesSums(GlobalPatterns) > 0, GlobalPatterns)
+GP <- prune_species(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
 # Define a human-associated versus non-human categorical variable:
-human <- getVariable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
+human <- get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
 # Add new human variable to sample data:
-sampleData(GP)$human <- factor(human)
+sample_data(GP)$human <- factor(human)
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,27 +176,27 @@ We start with a simple rank-abundance barplot, using the cumulative fractional a
 <<EntAbundPlot, include=FALSE, fig=TRUE, height=6, width=8>>=
 par(mar = c(10, 4, 4, 2) + 0.1) # make more room on bottom margin
 N <- 30
-barplot(sort(speciesSums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
+barplot(sort(taxa_sums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
 @
 \begin{figure}[htbp]
 \centering
 \includegraphics[trim = 10mm 10mm 10mm 15mm, clip, width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
-\caption{An example exploratory barplot using base \code{R} graphics and the \code{speciesSums} and \code{nsamples} functions.}
+\caption{An example exploratory barplot using base \code{R} graphics and the \code{taxa_sums} and \code{nsamples} functions.}
 \label{fig:abundbarplot}
 \end{figure}
 
-Note that this first barplot is clipped at the \Sexpr{N}th OTU. This was chosen because \code{nspecies(enterotype) =} \Sexpr{nspecies(enterotype)} OTUs would not be legible on the plot. As you can see, the relative abundances have decreased dramatically by the 10th-ranked OTU.  
+Note that this first barplot is clipped at the \Sexpr{N}th OTU. This was chosen because \code{ntaxa(enterotype) =} \Sexpr{ntaxa(enterotype)} OTUs would not be legible on the plot. As you can see, the relative abundances have decreased dramatically by the 10th-ranked OTU.  
 
 So what are these OTUs? In the \code{enterotype} dataset, only a single taxonomic rank type is present:
 <<>>=
-rank.names(enterotype)
+rank_names(enterotype)
 @
 This means the OTUs in this dataset have been grouped at the level of genera, and no other taxonomic grouping/transformation is possible without additional information (like might be present in a phylogenetic tree, or with further taxonomic classification analysis).
 
 We need to know which taxonomic rank classifiers, if any, we have available to specify in the second barplot function in this example, \code{plot{\_}taxa{\_}bar()}. We have already observed how quickly the abundance decreases with rank, so wo we will subset the enterotype dataset to the most abundant \code{N} taxa in order to make the barplot legible on this page.
 
 <<>>=
-TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
+TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
 ent10   <- prune_species(TopNOTUs, enterotype)
 print(ent10)
 @
@@ -204,10 +204,10 @@ print(ent10)
 Note also that there are \Sexpr{nsamples(ent10)} samples in this dataset, and so a remaining challenge is to consolidate these samples into meaningful groups. A good place to look is the available sample variables, which in most cases will carry more ``meaning'' than the sample names alone.
 
 <<>>=
-sample.variables(ent10)
+sample_variables(ent10)
 @
 
-The parameters to \code{plot{\_}taxa{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sampleData}, the \code{plot{\_}taxa{\_}bar()} function recognizes a special parameter name \code{"TaxaGroup"}, which is not (should not be) a sample variable name in \mbox{\code{sampleData(enterotype)}}, but instead indicates that the particular graphic parameter should group values by the taxanomic rank specified in the \code{taxavec} argument. In this example we have also elected to separate the samples by ``facets'' (separate, adjacent sub-plots) according to the enterotype to which they have been assigned. Within each enterotype facet, the samples are further separated by sequencing technology, and the genera is indicated by fill color. Multiple samples having the same enterotype designation and sequencing technology are plotted side-by-side as separate bars. 
+The parameters to \code{plot{\_}taxa{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sample_data}, the \code{plot{\_}taxa{\_}bar()} function recognizes a special parameter name \code{"TaxaGroup"}, which is not (should not be) a sample variable name in \mbox{\code{sample_data(enterotype)}}, but instead indicates that the particular graphic parameter should group values by the taxanomic rank specified in the \code{taxavec} argument. In this example we have also elected to separate the samples by ``facets'' (separate, adjacent sub-plots) according to the enterotype to which they have been assigned. Within each enterotype facet, the samples are further separated by sequencing technology, and the genera is indicated by fill color. Multiple samples having the same enterotype designation and sequencing technology are plotted side-by-side as separate bars. 
 
 <<entbarplot0, include=FALSE, fig=FALSE, height=6, width=8>>=
 (p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
@@ -410,13 +410,13 @@ First, let's severely subset the number of species for the sake of run-time.\foo
 <<GPCAscree0, fig=FALSE>>=
 data(GlobalPatterns)
 # Take a subset of the GP dataset, top 200 species
-topsp <- names(sort(speciesSums(GlobalPatterns), TRUE)[1:200])
+topsp <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:200])
 GP    <- prune_species(topsp, GlobalPatterns)
 # Subset further to top 5 phyla, among the top 200 OTUs.
-top5ph <- sort(tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
+top5ph <- sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
 GP     <- subset_species(GP, Phylum %in% names(top5ph))
 # Re-add human variable to sample data:
-sampleData(GP)$human <- factor(human)
+sample_data(GP)$human <- factor(human)
 @
 
 Now perform the correspondence analysis.
@@ -623,9 +623,9 @@ Another potentially useful and popular way to visualize/decompose sample-distanc
 data(GlobalPatterns)
 load("Unweighted_UniFrac.RData") # reloads GPUF variable
 # Manually define color-shading vector based on sample type.
-colorScale    <- rainbow(length(levels(getVariable(GlobalPatterns, "SampleType"))))
-cols          <- colorScale[getVariable(GlobalPatterns, "SampleType")] 
-GP.tip.labels <- as(getVariable(GlobalPatterns, "SampleType"), "character")
+colorScale    <- rainbow(length(levels(get_variable(GlobalPatterns, "SampleType"))))
+cols          <- colorScale[get_variable(GlobalPatterns, "SampleType")] 
+GP.tip.labels <- as(get_variable(GlobalPatterns, "SampleType"), "character")
 GP.hclust     <- hclust(GPUF, method="average")
 @
 
@@ -667,7 +667,7 @@ tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
 \subsection{Multiple Inference Correction}\label{sec:multtest}
 The \emph{phyloseq} package includes support for significance testing with correction for multiple inference. This is particularly important when testing for significance of the abundance patterns among thousands of microbes (OTUs). This is a common question of phylogenetic sequence data, that is, ``what is the subset of microbes that significantly correlate with a scientifically-interesting sample variable''. Although we plan to include support for other types of multiple-inference corrected tests, this ``which taxa?'' test is the only directly supported test at the moment.
 
-Our initial implementation of this support is via an extension to the \code{mt.maxT()} and \code{mt.minP} functions in the \emph{multtest} package~\cite{multtest} (Bioconductor repo). This uses permutation-adjusted p-values in a multiple testing procedure that provides strong control of the Family-Wise Error Rate (FWER) among the taxa being tested. The user specifies a sample-variable among the \code{sampleData} component, or alternatively provides a sample-wise vector or factor that classifies the samples into groups. Additional optional parameters can be provided that specify the type of test (``\code{test=}''), the sidedness of the test (``\code{side=}''), as well as some additional technical/computational parameters.
+Our initial implementation of this support is via an extension to the \code{mt.maxT()} and \code{mt.minP} functions in the \emph{multtest} package~\cite{multtest} (Bioconductor repo). This uses permutation-adjusted p-values in a multiple testing procedure that provides strong control of the Family-Wise Error Rate (FWER) among the taxa being tested. The user specifies a sample-variable among the \code{sample_data} component, or alternatively provides a sample-wise vector or factor that classifies the samples into groups. Additional optional parameters can be provided that specify the type of test (``\code{test=}''), the sidedness of the test (``\code{side=}''), as well as some additional technical/computational parameters.
 
 In the following example we test whether a particular genera correlates with the Enterotype classification of each sample. Note that we have to specify an alternate test, \code{test="f"}, because the default test (t-test) can only handle up to 2 classes, and there are three enterotype classes.
 

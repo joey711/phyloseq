@@ -12,7 +12,7 @@
 #'
 #' @param physeq (Required). Default \code{NULL}. 
 #'  A \code{\link{phyloseq-class}} object,
-#'  or \code{\link{otuTable-class}} object,
+#'  or \code{\link{otu_table-class}} object,
 #'  on which \code{g} is based. \code{phyloseq-class} recommended.
 #'
 #' @param type (Optional). Default \code{"samples"}.
@@ -97,16 +97,16 @@
 make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
 	keep.isolates=FALSE, ...){
 
-	if( type == "species"){
+	if( type %in% c("taxa", "species", "OTUs")){
 	    # Calculate or asign species-wise distance matrix
 	    if( class(distance) == "dist" ){ # If argument is already a distance matrix.
 	    	# If distance a distance object, use it rather than re-calculate
 	    	obj.dist <- distance
-	    	if( attributes(obj.dist)$Size != nspecies(physeq) ){
-	    		stop("nspecies(physeq) does not match size of dist object in distance")
+	    	if( attributes(obj.dist)$Size != ntaxa(physeq) ){
+	    		stop("ntaxa(physeq) does not match size of dist object in distance")
 	    	}
-	    	if( !setequal(attributes(obj.dist)$Labels, species.names(physeq)) ){
-	    		stop("species.names does not exactly match dist-indices")
+	    	if( !setequal(attributes(obj.dist)$Labels, taxa_names(physeq)) ){
+	    		stop("taxa_names does not exactly match dist-indices")
 	    	}
 	
 	    # If character string, pass on to distance(), assume supported
@@ -116,16 +116,16 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 		# Else, assume a custom function and attempt to calculate.
 	    } else { 	
 	    	# Enforce orientation for species-wise distances
-		    if( !speciesAreRows(physeq) ){ physeq <- t(physeq) }
+		    if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
 		    
 		    # Calculate distances
-		    obj.dist <- distance(as(otuTable(physeq), "matrix"))	    
+		    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
 	    }
 	    # coerce distance-matrix back into vanilla matrix, Taxa Distance Matrix, TaDiMa
 	    TaDiMa  <- as.matrix(obj.dist)
 	    
 	    # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
-	    TaDiMa <- TaDiMa + diag(Inf, nspecies(physeq), nspecies(physeq))
+	    TaDiMa <- TaDiMa + diag(Inf, ntaxa(physeq), ntaxa(physeq))
 	    
 	    # Convert distance matrix to coincidence matrix, CoMa, using max.dist
 		CoMa <- TaDiMa < max.dist   
@@ -139,8 +139,8 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 	    	if( attributes(obj.dist)$Size != nsamples(physeq) ){
 	    		stop("nsamples(physeq) does not match size of dist object in distance")
 	    	}
-	    	if( !setequal(attributes(obj.dist)$Labels, sample.names(physeq)) ){
-	    		stop("sample.names does not exactly match dist-indices")
+	    	if( !setequal(attributes(obj.dist)$Labels, sample_names(physeq)) ){
+	    		stop("sample_names does not exactly match dist-indices")
 	    	}
 	    	
 	    # If character string, pass on to distance(), assume supported    	
@@ -150,10 +150,10 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 		# Else, assume a custom function and attempt to calculate.	    
 	    } else { 
 	    	# Enforce orientation for sample-wise distances
-		    if(speciesAreRows(physeq)){ physeq <- t(physeq) }
+		    if(taxa_are_rows(physeq)){ physeq <- t(physeq) }
 		    
 		    # Calculate distances
-		    obj.dist <- distance(as(otuTable(physeq), "matrix"))	    
+		    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
 	    }
 	    # coerce distance-matrix back into vanilla matrix, Sample Distance Matrix, SaDiMa
 	    SaDiMa  <- as.matrix(obj.dist)

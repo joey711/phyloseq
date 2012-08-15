@@ -3,7 +3,7 @@
 #'
 #' This is the suggested method for both constructing and accessing a table of
 #' taxonomic names, organized with ranks as columns (\code{\link{taxonomyTable-class}}). 
-#' When the argument is a character matrix, taxTab() will create and return a 
+#' When the argument is a character matrix, tax_table() will create and return a 
 #' \code{\link{taxonomyTable-class}} object.
 #' In this case, the rows should be named to match the
 #' \code{species.names} of the other objects to which it will ultimately be paired.
@@ -14,7 +14,7 @@
 #' error if \code{object} is a \code{phyloseq-class} but does not 
 #' contain a \code{taxonomyTable}. 
 #'
-#' @usage taxTab(object, errorIfNULL=TRUE)
+#' @usage tax_table(object, errorIfNULL=TRUE)
 #'
 #' @param object An object among the set of classes defined by the phyloseq 
 #' package that contain taxonomyTable.
@@ -27,27 +27,27 @@
 #' character matrix representing the taxonomic classification of species in the
 #' experiment.
 #'
-#' @seealso \code{\link{tre}}, \code{\link{sampleData}}, \code{\link{otuTable}}
+#' @seealso \code{\link{phy_tree}}, \code{\link{sample_data}}, \code{\link{otu_table}}
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #'
-#' @rdname taxTab-methods
+#' @rdname tax_table-methods
 #' @docType methods
 #' @export
 #'
 #' @examples #
-#' # tax1 <- taxTab(matrix("abc", 30, 8))
+#' # tax1 <- tax_table(matrix("abc", 30, 8))
 #' # data(GlobalPatterns)
-#' # taxTab(GlobalPatterns)
-setGeneric("taxTab", function(object, errorIfNULL=TRUE) standardGeneric("taxTab"))
-#' @rdname taxTab-methods
-#' @aliases taxTab,ANY-method
-setMethod("taxTab",  "ANY", function(object, errorIfNULL=TRUE){
-	access(object, "taxTab", errorIfNULL)
+#' # tax_table(GlobalPatterns)
+setGeneric("tax_table", function(object, errorIfNULL=TRUE) standardGeneric("tax_table"))
+#' @rdname tax_table-methods
+#' @aliases tax_table,ANY-method
+setMethod("tax_table",  "ANY", function(object, errorIfNULL=TRUE){
+	access(object, "tax_table", errorIfNULL)
 })
 # Constructor; for creating taxonomyTable from a matrix.
-#' @rdname taxTab-methods
-#' @aliases taxTab,matrix-method
-setMethod("taxTab", "matrix", function(object){
+#' @rdname tax_table-methods
+#' @aliases tax_table,matrix-method
+setMethod("tax_table", "matrix", function(object){
 	# instantiate first to check validity
 	TT <- new("taxonomyTable", object)
 		
@@ -60,10 +60,16 @@ setMethod("taxTab", "matrix", function(object){
 	}	
 	return(TT)
 })
-#' @rdname taxTab-methods
-#' @aliases taxTab taxtab
+## Backward compatibility alias (deprecated)
+#' @rdname tax_table-methods
+#' @aliases tax_table
 #' @export
-taxtab <- taxTab
+taxtab <- tax_table
+## Backward compatibility alias (deprecated)
+#' @rdname tax_table-methods
+#' @aliases tax_table
+#' @export
+taxTab <- tax_table
 ################################################################################
 #' Subset species by taxonomic expression
 #'
@@ -71,12 +77,12 @@ taxtab <- taxTab
 #' It is intended to speed subsetting complex experimental objects with one
 #' function call. In the case of \code{subset_species}, the subsetting will be
 #' based on an expression related to the columns and values within the 
-#' \code{taxTab} (\code{taxonomyTable} component) slot of \code{physeq}.
+#' \code{tax_table} (\code{taxonomyTable} component) slot of \code{physeq}.
 #'
 #' @usage subset_species(physeq, ...)
 #'
 #' @param physeq A \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}} that contains a
-#'  taxonomyTable. If the \code{taxTab} slot is missing in \code{physeq}, then \code{physeq}
+#'  taxonomyTable. If the \code{tax_table} slot is missing in \code{physeq}, then \code{physeq}
 #'  will be returned as-is and a warning will be printed to screen.
 #'
 #' @param ... The subsetting expression that should be applied to the 
@@ -94,18 +100,18 @@ taxtab <- taxTab
 #' @examples
 #' ## ex3 <- subset_species(GlobalPatterns, Phylum=="Bacteroidetes")
 subset_species <- function(physeq, ...){
-	if( is.null(taxTab(physeq)) ){ 
+	if( is.null(tax_table(physeq)) ){ 
 		cat("Nothing subset. No taxonomyTable in physeq.\n")
 		return(physeq)
 	} else {
-		oldMA <- as(taxTab(physeq), "matrix")
+		oldMA <- as(tax_table(physeq), "matrix")
 		oldDF <- data.frame(oldMA)
 		newDF <- subset(oldDF, ...)
 		newMA <- as(newDF, "matrix")
 		if( class(physeq) == "taxonomyTable" ){
-			return(taxTab(newMA))
+			return(tax_table(newMA))
 		} else {
-			taxTab(physeq) <- taxTab(newMA)
+			tax_table(physeq) <- tax_table(newMA)
 			return(physeq)
 		}
 	}

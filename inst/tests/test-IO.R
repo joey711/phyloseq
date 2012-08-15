@@ -27,18 +27,18 @@ test_that("import_mothur: Test mothur file import on the (esophagus data).", {
 })
 
 test_that("import_mothur: abundances can be manipulated mathematically", {
-	x1 <- as(otuTable(esophman), "matrix")
+	x1 <- as(otu_table(esophman), "matrix")
 	expect_that(2*x1-x1, is_identical_to(x1) )
 })
 
 test_that("import_mothur: empty stuff is NULL", {
-	expect_that(taxTab(esophman, FALSE), is_a("NULL"))
-	expect_that(sampleData(esophman, FALSE), is_a("NULL"))
+	expect_that(tax_table(esophman, FALSE), is_a("NULL"))
+	expect_that(sample_data(esophman, FALSE), is_a("NULL"))
 })
 
 test_that("import_mothur: Expected classes of non-empty components", {
-	expect_that(otuTable(esophman), is_a("otuTable"))
-	expect_that(tre(esophman), is_a("phylo"))
+	expect_that(otu_table(esophman), is_a("otu_table"))
+	expect_that(phy_tree(esophman), is_a("phylo"))
 })
 
 test_that("import_mothur: imported files become S4 object", {
@@ -56,10 +56,10 @@ test_that("the import_RDP_otu function can properly read gzipped-example", {
 	ex_otu  <- import_RDP_otu(otufile)	
 
 	expect_that(head(t(ex_otu)), prints_text("OTU Table:"))
-	expect_that(ex_otu, is_a("otuTable"))
-	expect_that(nspecies(ex_otu), equals(5276))
+	expect_that(ex_otu, is_a("otu_table"))
+	expect_that(ntaxa(ex_otu), equals(5276))
 	expect_that(nsamples(ex_otu), equals(14))
-	expect_that(sampleSums(ex_otu), is_a("numeric"))
+	expect_that(sample_sums(ex_otu), is_a("numeric"))
 })
 
 
@@ -75,10 +75,10 @@ test_that("Class of import result is phyloseq-class", {
 })
 
 test_that("Classes of components are as expected", {
-	expect_that(otuTable(t0), is_a("otuTable"))
-	expect_that(taxTab(t0), is_a("taxonomyTable"))
-	expect_that(samData(t0), is_a("sampleData"))
-	expect_that(tre(t0), is_a("phylo"))		
+	expect_that(otu_table(t0), is_a("otu_table"))
+	expect_that(tax_table(t0), is_a("taxonomyTable"))
+	expect_that(sam_data(t0), is_a("sample_data"))
+	expect_that(phy_tree(t0), is_a("phylo"))		
 })
 
 test_that("Changing the chunk.size does not affect resulting tables", {
@@ -89,13 +89,13 @@ test_that("Changing the chunk.size does not affect resulting tables", {
 })	
 
 test_that("Features of the abundance data are consistent, match known values", {
-	expect_that(sum(speciesSums(t0)), equals(1269671L))
-	expect_that(sum(speciesSums(t0)==0), equals(5L))
-	expect_that(sum(speciesSums(t0)>=100), equals(183L))
-	expect_that(sum(speciesSums(t0)), equals(sum(sampleSums(t0))))
-	expect_that(sum(sampleSums(t0) > 10000L), equals(20L))
+	expect_that(sum(taxa_sums(t0)), equals(1269671L))
+	expect_that(sum(taxa_sums(t0)==0), equals(5L))
+	expect_that(sum(taxa_sums(t0)>=100), equals(183L))
+	expect_that(sum(taxa_sums(t0)), equals(sum(sample_sums(t0))))
+	expect_that(sum(sample_sums(t0) > 10000L), equals(20L))
 	expect_that(nsamples(t0), equals(26L))
-	expect_that(nspecies(t0), equals(500L))
+	expect_that(ntaxa(t0), equals(500L))
 })
 
 ################################################################################
@@ -114,53 +114,53 @@ test_that("The different types of biom files yield phyloseq objects", {
 	
 	expect_that(rich_dense,  is_a("phyloseq"))
 	expect_that(rich_sparse, is_a("phyloseq"))
-	expect_that(min_dense,   is_a("otuTable"))
-	expect_that(min_sparse,  is_a("otuTable"))
+	expect_that(min_dense,   is_a("otu_table"))
+	expect_that(min_sparse,  is_a("otu_table"))
 
 	# # Component classes
-	# sampleData
-	expect_that(access(rich_dense,  "samData"), is_a("sampleData"))
-	expect_that(access(rich_sparse, "samData"), is_a("sampleData"))
-	expect_that(access(min_dense,   "samData"), is_a("NULL"))
-	expect_that(access(min_sparse,  "samData"), is_a("NULL"))
+	# sample_data
+	expect_that(access(rich_dense,  "sam_data"), is_a("sample_data"))
+	expect_that(access(rich_sparse, "sam_data"), is_a("sample_data"))
+	expect_that(access(min_dense,   "sam_data"), is_a("NULL"))
+	expect_that(access(min_sparse,  "sam_data"), is_a("NULL"))
 
 	# taxonomyTable
-	expect_that(access(rich_dense,  "taxTab"), is_a("taxonomyTable"))
-	expect_that(access(rich_sparse, "taxTab"), is_a("taxonomyTable"))
-	expect_that(access(min_dense,   "taxTab"), is_a("NULL"))
-	expect_that(access(min_sparse,  "taxTab"), is_a("NULL"))		
+	expect_that(access(rich_dense,  "tax_table"), is_a("taxonomyTable"))
+	expect_that(access(rich_sparse, "tax_table"), is_a("taxonomyTable"))
+	expect_that(access(min_dense,   "tax_table"), is_a("NULL"))
+	expect_that(access(min_sparse,  "tax_table"), is_a("NULL"))		
 	
 	# phylo tree
-	expect_that(access(rich_dense,  "tre"), is_a("NULL"))
-	expect_that(access(rich_sparse, "tre"), is_a("NULL"))
-	expect_that(access(min_dense,   "tre"), is_a("NULL"))
-	expect_that(access(min_sparse,  "tre"), is_a("NULL"))
+	expect_that(access(rich_dense,  "phy_tree"), is_a("NULL"))
+	expect_that(access(rich_sparse, "phy_tree"), is_a("NULL"))
+	expect_that(access(min_dense,   "phy_tree"), is_a("NULL"))
+	expect_that(access(min_sparse,  "phy_tree"), is_a("NULL"))
 		
-	# otuTable		
-	expect_that(access(rich_dense,  "otuTable"), is_a("otuTable"))
-	expect_that(access(rich_sparse, "otuTable"), is_a("otuTable"))
-	expect_that(access(min_dense,   "otuTable"), is_a("otuTable"))
-	expect_that(access(min_sparse,  "otuTable"), is_a("otuTable"))
+	# otu_table		
+	expect_that(access(rich_dense,  "otu_table"), is_a("otu_table"))
+	expect_that(access(rich_sparse, "otu_table"), is_a("otu_table"))
+	expect_that(access(min_dense,   "otu_table"), is_a("otu_table"))
+	expect_that(access(min_sparse,  "otu_table"), is_a("otu_table"))
 	
-	# Compare values in the otuTable. For some reason the otuTables are not identical
+	# Compare values in the otu_table. For some reason the otu_tables are not identical
 	# one position is plus-two, another is minus-two
-	combrich <- c(access(rich_dense, "otuTable"), access(rich_sparse, "otuTable"))
-	expect_that(sum(diff(combrich, length(access(rich_dense, "otuTable")))), is_identical_to(0))
-	expect_that(max(diff(combrich, length(access(rich_dense, "otuTable")))), is_identical_to(2))
-	expect_that(min(diff(combrich, length(access(rich_dense, "otuTable")))), is_identical_to(-2))
-	combmin <- c(access(min_dense, "otuTable"), access(min_sparse, "otuTable"))
-	expect_that(sum(diff(combmin, length(access(min_dense, "otuTable")))), is_identical_to(0))
-	expect_that(max(diff(combmin, length(access(min_dense, "otuTable")))), is_identical_to(2))
-	expect_that(min(diff(combmin, length(access(min_dense, "otuTable")))), is_identical_to(-2))
+	combrich <- c(access(rich_dense, "otu_table"), access(rich_sparse, "otu_table"))
+	expect_that(sum(diff(combrich, length(access(rich_dense, "otu_table")))), is_identical_to(0))
+	expect_that(max(diff(combrich, length(access(rich_dense, "otu_table")))), is_identical_to(2))
+	expect_that(min(diff(combrich, length(access(rich_dense, "otu_table")))), is_identical_to(-2))
+	combmin <- c(access(min_dense, "otu_table"), access(min_sparse, "otu_table"))
+	expect_that(sum(diff(combmin, length(access(min_dense, "otu_table")))), is_identical_to(0))
+	expect_that(max(diff(combmin, length(access(min_dense, "otu_table")))), is_identical_to(2))
+	expect_that(min(diff(combmin, length(access(min_dense, "otu_table")))), is_identical_to(-2))
 
-	expect_that(access(min_dense, "otuTable"),  is_identical_to(access(rich_dense, "otuTable")))
-	expect_that(access(min_sparse, "otuTable"), is_identical_to(access(rich_sparse, "otuTable")))
+	expect_that(access(min_dense, "otu_table"),  is_identical_to(access(rich_dense, "otu_table")))
+	expect_that(access(min_sparse, "otu_table"), is_identical_to(access(rich_sparse, "otu_table")))
 
-	# Compare values in the sampleData
-	expect_that(access(rich_dense, "samData"), is_identical_to(access(rich_sparse, "samData")))
+	# Compare values in the sample_data
+	expect_that(access(rich_dense, "sam_data"), is_identical_to(access(rich_sparse, "sam_data")))
 	
 	# Compare values in the taxonomyTable
-	expect_that(access(rich_dense, "taxTab"), is_identical_to(access(rich_sparse, "taxTab")))
+	expect_that(access(rich_dense, "tax_table"), is_identical_to(access(rich_sparse, "tax_table")))
 	
 })
 
@@ -174,10 +174,10 @@ test_that("the import_biom and import(\"biom\", ) syntax give same result", {
 test_that("The readTree function works as expected:", {
 	GPNewick <- readTree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
 	expect_that(GPNewick, is_a("phylo"))
-	expect_that(nspecies(GPNewick), equals(length(GPNewick$tip.label)))
-	expect_that(nspecies(GPNewick), equals(500))
+	expect_that(ntaxa(GPNewick), equals(length(GPNewick$tip.label)))
+	expect_that(ntaxa(GPNewick), equals(500))
 	expect_that(GPNewick$Nnode, equals(499))
-	expect_that(species.names(GPNewick), is_identical_to(GPNewick$tip.label))	
+	expect_that(taxa_names(GPNewick), is_identical_to(GPNewick$tip.label))	
 	# Now read a nexus tree... 
 	# Some error-handling expectations
 	expect_that(readTree("alskflsakjsfskfhas.akshfaksj"), gives_warning()) # file not exist
