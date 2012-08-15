@@ -60,6 +60,21 @@ setMethod("tax_table", "matrix", function(object){
 	}	
 	return(TT)
 })
+# Constructor; coerce to matrix, then pass on for creating taxonomyTable.
+#' @rdname tax_table-methods
+#' @aliases tax_table,data.frame-method
+setMethod("tax_table", "data.frame", function(object){
+	# Warn first
+	warning(
+		"Coercing from data.frame class to character matrix prior to building taxonomyTable.",
+		"\n",
+		"This could introduce artifacts. Check your taxonomyTable, or coerce to matrix manually."
+	)
+	# Coerce everything to a matrix, then char-vector, then back to matrix.
+	TT <- matrix(as(as(object, "matrix"), "character"), nrow=nrow(object), ncol=ncol(object))
+	# Pass on to matrix-method.
+	tax_table(TT)
+})
 ## Backward compatibility alias (deprecated)
 #' @rdname tax_table-methods
 #' @aliases tax_table
