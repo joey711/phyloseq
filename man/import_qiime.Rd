@@ -21,20 +21,19 @@
   parsing by this function. Default value is \code{NULL}.}
 
   \item{treefilename}{(Optional). A file representing a
-  phylogenetic tree. Expectation is first NEXUS format (via
-  \code{\link[ape]{read.nexus}}), and if that fails, the
-  file will be read as a Newick file (via
-  \code{\link[ape]{read.tree}}). If provided, the tree
-  should have the same OTUs/labels as the OTUs in the other
-  files. Anything missing in one of the files is removed
-  from all. For the QIIME pipeline this tree is typically a
-  tree of the representative 16S rRNA sequences from each
-  OTU cluster, with the number of leaves/tips equal to the
-  number of taxa/species/OTUs. Default value is
-  \code{NULL}. ALTERNATIVELY, this argument can be a tree
-  object (\code{\link[ape]{phylo}}-class). in case the tree
-  has already been imported, or the data source file is in
-  a format other than NEXUS or Newick.}
+  phylogenetic tree or a \code{\link{phylo}} object. Files
+  can be NEXUS or Newick format. See
+  \code{\link{read_tree}} for more details. If provided,
+  the tree should have the same OTUs/tip-labels as the OTUs
+  in the other files. Any taxa or samples missing in one of
+  the files is removed from all. For the QIIME pipeline
+  this tree is typically a tree of the representative 16S
+  rRNA sequences from each OTU cluster, with the number of
+  leaves/tips equal to the number of taxa/species/OTUs.
+  Default value is \code{NULL}. Note that this argument can
+  be a tree object (\code{\link[ape]{phylo}}-class) for
+  cases where the tree has been --- or needs to be ---
+  imported separately.}
 
   \item{biotaxonomy}{(Optional). A character vector
   indicating the name of each taxonomic level in the
@@ -54,8 +53,7 @@
   import.}
 
   \item{...}{Additional arguments passed to
-  \code{\link[ape]{read.nexus}}, or
-  \code{\link[ape]{read.tree}}.}
+  \code{\link{read_tree}}}
 }
 \value{
   A \code{\link{phyloseq-class}} object.
@@ -102,8 +100,10 @@
   Methods, 2010; doi:10.1038/nmeth.f.303
 }
 \seealso{
-  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
-  \code{\link[ape]{read.tree}},
-  \code{\link[ape]{read.nexus}}
+  \code{\link{phyloseq}}
+
+  \code{\link{merge_phyloseq}}
+
+  \code{\link{read_tree}}
 }
 

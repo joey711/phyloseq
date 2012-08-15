@@ -1,8 +1,8 @@
-\name{readTree}
-\alias{readTree}
+\name{read_tree}
+\alias{read_tree}
 \title{Somewhat flexible tree-import function}
 \usage{
-  readTree(treefile, errorIfNULL = FALSE, ...)
+  read_tree(treefile, errorIfNULL = FALSE, ...)
 }
 \arguments{
   \item{treefile}{(Required). A character string implying a
@@ -40,10 +40,14 @@
   show-stopping error.
 }
 \details{
-  readTree(treefile, errorIfNULL=FALSE, ...)
+  read_tree(treefile, errorIfNULL=FALSE, ...)
 }
 \examples{
-readTree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
-readTree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
+read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+}
+\seealso{
+  \code{\link{phylo}}, \code{\link[ape]{read.tree}},
+  \code{\link[ape]{read.nexus}}
 }
 

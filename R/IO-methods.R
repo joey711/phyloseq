@@ -125,19 +125,20 @@ import <- function(pipelineName, ...){
 #' followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
-#' @param treefilename (Optional). A file representing a phylogenetic tree.
-#'  Expectation is first NEXUS format (via \code{\link[ape]{read.nexus}}), 
-#'  and if that fails, the file will be read as a Newick file (via \code{\link[ape]{read.tree}}). 
-#'  If provided, the tree should have the same OTUs/labels as the OTUs in the other
-#'  files. 
-#'  Anything missing in one of the files is removed from all. 
+#' @param treefilename (Optional).
+#'  A file representing a phylogenetic tree
+#'  or a \code{\link{phylo}} object.
+#'  Files can be NEXUS or Newick format.
+#'  See \code{\link{read_tree}} for more details. 
+#'  If provided, the tree should have the same OTUs/tip-labels
+#'  as the OTUs in the other files. 
+#'  Any taxa or samples missing in one of the files is removed from all. 
 #'  For the QIIME pipeline
 #'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
 #'  Default value is \code{NULL}. 
-#'  ALTERNATIVELY, this argument can be a tree object
-#'  (\code{\link[ape]{phylo}}-class). in case the tree has already been
-#'  imported, or the data source file is in a format other than NEXUS or Newick.
+#'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
+#'  for cases where the tree has been --- or needs to be --- imported separately.
 #'
 #' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
 #'  in the taxonomy-portion of the otu-file, which may not specify these levels 
@@ -153,13 +154,17 @@ import <- function(pipelineName, ...){
 #'  passed directly to the \code{\link{import_qiime_otu_tax}} function.
 #'  A lower value helps control memory-fault, but slows down the import.
 #'
-#' @param ... Additional arguments passed to \code{\link[ape]{read.nexus}}, 
-#'  or \code{\link[ape]{read.tree}}.
+#' @param ... Additional arguments passed to \code{\link{read_tree}}
 #'
 #' @return A \code{\link{phyloseq-class}} object.
 #'
-#' @seealso \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
-#'	 \code{\link[ape]{read.tree}}, \code{\link[ape]{read.nexus}}
+#' @seealso
+#'
+#' \code{\link{phyloseq}}
+#'
+#' \code{\link{merge_phyloseq}}
+#' 
+#' \code{\link{read_tree}}
 #'
 #' @references \url{http://qiime.org/}
 #'
@@ -208,7 +213,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 			cat("Processing phylogenetic tree file...", fill=TRUE)
 		}		
 		
-		tree <- readTree(treefilename)
+		tree <- read_tree(treefilename, ...)
 		
 		# Add to argument list or warn
 		if( is.null(tree) ){
@@ -230,7 +235,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' tree if possible using either format importer. If it fails, it silently 
 #' returns \code{NULL} by default, rather than throwing a show-stopping error.
 #'
-#' readTree(treefile, errorIfNULL=FALSE, ...)
+#' read_tree(treefile, errorIfNULL=FALSE, ...)
 #'
 #' @param treefile (Required). A character string implying a file \code{\link{connection}}
 #'  (like a path or URL), or an actual \code{\link{connection}}.
@@ -251,12 +256,15 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' @return If successful, returns a \code{\link{phylo}}-class object as defined
 #'  in the \code{\link[ape]{ape-package}}. Returns NULL if neither tree-reading function worked.
 #'
+#' @seealso
+#'	\code{\link{phylo}}, \code{\link[ape]{read.tree}}, \code{\link[ape]{read.nexus}}
+#'
 #' @import ape
 #' @export
 #' @examples
-#' readTree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
-#' readTree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
-readTree <- function(treefile, errorIfNULL=FALSE, ...){
+#' read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
+#' read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 	# "phylo" object provided directly
 	if( class(treefile)[1] %in% c("phylo") ){ 
 		tree <- treefile
@@ -1118,7 +1126,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	otulist <- import_mothur_otulist(mothur_list_file, cutoff)
 
 	# Read the original all-sequences tree from mothur
-	tree <- readTree(mothur_tree_file)
+	tree <- read_tree(mothur_tree_file)
 	
 	# Loop to merge the sequences in the tree by OTU
 	# cycle through each otu, and sum the number of seqs observed for each sample

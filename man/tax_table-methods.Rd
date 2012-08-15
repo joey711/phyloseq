@@ -1,10 +1,10 @@
 \docType{methods}
 \name{tax_table}
+\alias{taxTab}
 \alias{tax_table}
 \alias{tax_table,ANY-method}
 \alias{tax_table,matrix-method}
 \alias{taxtab}
-\alias{taxTab}
 \title{Build or access the taxonomyTable.}
 \usage{
   tax_table(object, errorIfNULL=TRUE)

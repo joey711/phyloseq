@@ -1,8 +1,8 @@
 \docType{methods}
 \name{transformsamplecounts}
-\alias{transformsamplecounts}
-\alias{transformSampleCounts}
 \alias{TransformSampleCounts}
+\alias{transformSampleCounts}
+\alias{transformsamplecounts}
 \title{Transform the abundance count data in an \code{otu_table}, sample-by-sample.}
 \usage{
   transformsamplecounts(physeq, fun)

@@ -1,11 +1,11 @@
 \docType{methods}
 \name{sample_data}
-\alias{sam_data}
 \alias{samData}
+\alias{sam_data}
+\alias{sampleMap}
 \alias{sample_data}
 \alias{sample_data,ANY-method}
 \alias{sample_data,data.frame-method}
-\alias{sampleMap}
 \title{Build or access sample_data.}
 \usage{
   sample_data(object, errorIfNULL=TRUE)
