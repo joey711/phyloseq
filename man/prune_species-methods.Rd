@@ -1,12 +1,12 @@
 \name{prune_species}
 \alias{prune_species}
-\alias{prune_species,NULL,ANY-method}
-\alias{prune_species,character,otuTable-method}
+\alias{prune_species,character,otu_table-method}
 \alias{prune_species,character,phylo-method}
 \alias{prune_species,character,phyloseq-method}
-\alias{prune_species,character,sampleData-method}
+\alias{prune_species,character,sample_data-method}
 \alias{prune_species,character,taxonomyTable-method}
 \alias{prune_species,logical,ANY-method}
+\alias{prune_species,NULL,ANY-method}
 \title{Prune unwanted species / taxa from a phylogenetic object.}
 \arguments{
   \item{species}{(Required). A character vector of the
@@ -15,14 +15,14 @@
   are TRUE, and length is equal to the number of species in
   object x. If \code{species} is a named logical, the
   species retained is based on those names. Make sure they
-  are compatible with the \code{species.names} of the
-  object you are modifying (\code{x}).}
+  are compatible with the \code{taxa_names} of the object
+  you are modifying (\code{x}).}
 
   \item{x}{(Required). A phylogenetic object, including
   \code{phylo} trees, as well as all phyloseq classes that
   represent taxa / species. If the function
-  \code{\link{species.names}} returns a non-\code{NULL}
-  value, then your object can be pruned by this function.}
+  \code{\link{taxa_names}} returns a non-\code{NULL} value,
+  then your object can be pruned by this function.}
 }
 \value{
   The class of the object returned by \code{prune_species}
@@ -39,15 +39,15 @@
 }
 \examples{
 #
-## testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
 ## f1  <- filterfunSample(topk(2))
 ## wh1 <- genefilterSample(testOTU, f1, A=2)
 ## wh2 <- c(T, T, T, F, F)
 ## prune_species(wh1, testOTU)
 ## prune_species(wh2, testOTU)
 ##
-## taxtab1 <- taxTab(matrix("abc", 5, 5))
-## prune_species(wh1, taxtab1)
-## prune_species(wh2, taxtab1)
+## tax_table1 <- tax_table(matrix("abc", 5, 5))
+## prune_species(wh1, tax_table1)
+## prune_species(wh2, tax_table1)
 }
 

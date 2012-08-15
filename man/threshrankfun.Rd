@@ -30,11 +30,11 @@
 \examples{
 data(GlobalPatterns)
 GP <- GlobalPatterns
-## These three approaches result in identical otuTable
-(x1 <- transformsamplecounts( otuTable(GP), threshrankfun(500)) )
-(x2 <- otuTable(apply(otuTable(GP), 2, threshrankfun(500)), speciesAreRows(GP)) )
+## These three approaches result in identical otu_table
+(x1 <- transformsamplecounts( otu_table(GP), threshrankfun(500)) )
+(x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
 identical(x1, x2)
-(x3 <- otuTable(apply(otuTable(GP), 2, threshrank, thresh=500), speciesAreRows(GP)) )
+(x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
 identical(x1, x3)
 }
 \seealso{

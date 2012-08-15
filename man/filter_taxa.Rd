@@ -37,7 +37,7 @@
 # flist <- filterfun(kOverA(5, 2e-08), allNA)
 # ans   <- filter_taxa(enterotype, flist)
 # trimmed.enterotype <- prune_species(ans, enterotype)
-# sum(!ans); nspecies(trimmed.enterotype)
+# sum(!ans); ntaxa(trimmed.enterotype)
 # filter_taxa(enterotype, flist, TRUE)
 }
 \seealso{

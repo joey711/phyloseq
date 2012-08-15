@@ -2,7 +2,7 @@
 \name{tipglom}
 \alias{tipglom}
 \alias{tipglom,phylo,ANY-method}
-\alias{tipglom,phylo,otuTable-method}
+\alias{tipglom,phylo,otu_table-method}
 \alias{tipglom,phyloseq,ANY-method}
 \title{Agglomerate closely-related taxa using single-linkage clustering.}
 \usage{
@@ -14,7 +14,7 @@
   \code{tree} is a \code{\link{phylo-class}}, then
   \code{OTU} is required.}
 
-  \item{OTU}{An otuTable object. Optional. Ignored if
+  \item{OTU}{An otu_table object. Optional. Ignored if
   \code{tree} is a \code{\link{phyloseq-class}} object. If
   \code{tree} is a \code{phylo} object and \code{OTU} is
   provided, then return will be an \code{phyloseq} object.}
@@ -50,18 +50,18 @@
 \examples{
 #
 # # # data(phylocom)
-# # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 # # # x1   <- phyloseq(otu, phylocom$phylo)
-# # # print(x1); par(mfrow=c(2, 1)); plot(tre(x1))
+# # # print(x1); par(mfrow=c(2, 1)); plot(phy_tree(x1))
 # # # x2 <- tipglom(x1, speciationMinLength = 2.5)
-# # # plot(tre(x2))
+# # # plot(phy_tree(x2))
 # # # ## Try on example datset 1
-# # # data(GlobalPatterns); nspecies(GlobalPatterns)
+# # # data(GlobalPatterns); ntaxa(GlobalPatterns)
 # # # ex7 <- tipglom(GlobalPatterns, speciationMinLength = 0.05)
-# # # nspecies(ex7)
-# data(esophagus); nspecies(esophagus); par(mfrow=c(2, 1)); plot(tre(esophagus))
-# tre(esophagus)$edge.length
+# # # ntaxa(ex7)
+# data(esophagus); ntaxa(esophagus); par(mfrow=c(2, 1)); plot(phy_tree(esophagus))
+# phy_tree(esophagus)$edge.length
 # x3 <- tipglom(esophagus, speciationMinLength = 0.20)
-# nspecies(x3); plot(tre(x3))
+# ntaxa(x3); plot(phy_tree(x3))
 }
 

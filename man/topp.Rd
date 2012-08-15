@@ -24,8 +24,8 @@
 \examples{
 ## Use simulated abundance matrix
 # set.seed(711)
-# testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
-# sampleSums(testOTU)
+# testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+# sample_sums(testOTU)
 # f1  <- filterfunSample(topp(0.2))
 # (wh1 <- genefilterSample(testOTU, f1, A=1))
 # wh2 <- c(T, T, T, F, F)

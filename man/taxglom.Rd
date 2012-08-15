@@ -2,17 +2,17 @@
 \alias{taxglom}
 \title{Agglomerate taxa of the same type.}
 \usage{
-  taxglom(physeq, taxrank=rank.names(physeq)[1], NArm=TRUE,
+  taxglom(physeq, taxrank=rank_names(physeq)[1], NArm=TRUE,
   bad_empty=c(NA, "", " ", "\t"))
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} or
-  \code{\link{otuTable}}.}
+  \code{\link{otu_table}}.}
 
   \item{taxrank}{A character string specifying the
   taxonomic level that you want to agglomerate over. Should
-  be among the results of \code{rank.names(physeq)}. The
-  default value is \code{rank.names(physeq)[1]}, which may
+  be among the results of \code{rank_names(physeq)}. The
+  default value is \code{rank_names(physeq)[1]}, which may
   agglomerate too broadly for a given experiment. You are
   strongly encouraged to try different values for this
   argument.}
@@ -61,15 +61,15 @@
 \examples{
 # data(GlobalPatterns)
 # ## print the available taxonomic ranks
-# colnames(taxTab(GlobalPatterns))
+# colnames(tax_table(GlobalPatterns))
 # ## agglomerate at the Family taxonomic rank
 # (x1 <- taxglom(GlobalPatterns, taxrank="Family") )
 # ## How many taxa before/after agglomeration?
-# nspecies(GlobalPatterns); nspecies(x1)
+# ntaxa(GlobalPatterns); ntaxa(x1)
 # ## Look at enterotype dataset...
 # data(enterotype)
 # ## print the available taxonomic ranks. Shows only 1 rank available, not useful for taxglom
-# colnames(taxTab(enterotype))
+# colnames(tax_table(enterotype))
 }
 \seealso{
   \code{\link{tipglom}}

@@ -66,10 +66,10 @@
   typically contains both OTU-abundance and taxonomic
   identity information. The map-file is also an important
   input to QIIME that stores sample covariates, converted
-  naturally to the \code{\link{sampleData-class}} component
-  data type in the phyloseq-package. QIIME may also produce
-  a phylogenetic tree with a tip for each OTU, which can
-  also be imported by this function.
+  naturally to the \code{\link{sample_data-class}}
+  component data type in the phyloseq-package. QIIME may
+  also produce a phylogenetic tree with a tip for each OTU,
+  which can also be imported by this function.
 }
 \details{
   See \url{"http://www.qiime.org/"} for details on using

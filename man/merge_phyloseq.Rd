@@ -16,7 +16,7 @@
   re-building a merged-object according to the constructor
   behavior of the \code{\link{phyloseq}} method. If the
   arguments contain only a single component type -- several
-  otuTable objects, for example -- then a single merged
+  otu_table objects, for example -- then a single merged
   object of the relevant component type is returned.
 
   Merges between 2 or more tree objects are ultimately done
@@ -46,7 +46,7 @@
   By contrast, this method is intended for situations in
   which one wants to combine multiple higher-order objects,
   or multiple core component data objects (e.g. more than
-  one \code{otuTable}) that should be combined into one
+  one \code{otu_table}) that should be combined into one
   object.
 
   Merges are performed by first separating higher-order
@@ -57,21 +57,21 @@
   back up a merged-object according to the constructor
   behavior of the \code{\link{phyloseq}} method. If the
   arguments contain only a single component type -- several
-  otuTable objects, for example -- then a single merged
+  otu_table objects, for example -- then a single merged
   object of that component type is returned.
 }
 \examples{
 #
 ## # Make a random complex object
-## OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
-## tax1 <- taxTab(matrix("abc", 30, 8))
+## OTU1 <- otu_table(matrix(sample(0:5,250,TRUE),25,10), taxa_are_rows=TRUE)
+## tax1 <- tax_table(matrix("abc", 30, 8))
 ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10),
 ##   matrix(sample(c("a","b","c"),150,TRUE), 25, 6) )
-## map1 <- sampleData(map1)
+## map1 <- sample_data(map1)
 ## exam1 <- phyloseq(OTU1, map1, tax1)
 ## x <- exam1
 ## x <- phyloseq(exam1)
-## y <- taxTab(exam1)
+## y <- tax_table(exam1)
 ## merge_phyloseq(x, y)
 ## merge_phyloseq(y, y, y, y)
 }

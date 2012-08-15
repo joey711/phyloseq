@@ -1,9 +1,9 @@
 \docType{methods}
 \name{transformsamplecounts}
-\alias{TransformSampleCounts}
-\alias{transformSampleCounts}
 \alias{transformsamplecounts}
-\title{Transform the abundance count data in an \code{otuTable}, sample-by-sample.}
+\alias{transformSampleCounts}
+\alias{TransformSampleCounts}
+\title{Transform the abundance count data in an \code{otu_table}, sample-by-sample.}
 \usage{
   transformsamplecounts(physeq, fun)
 
@@ -13,15 +13,15 @@
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} of
-  \code{\link{otuTable-class}}.}
+  \code{\link{otu_table-class}}.}
 
   \item{fun}{(Required). A single-argument function that
   will be applied to the abundance counts of each sample.
   Can be an anonymous \code{\link[base]{function}}.}
 }
 \value{
-  A transformed \code{otuTable} -- or \code{phyloseq}
-  object with its transformed \code{otuTable}. In general,
+  A transformed \code{otu_table} -- or \code{phyloseq}
+  object with its transformed \code{otu_table}. In general,
   trimming is not expected by this method, so it is
   suggested that the user provide only functions that
   return a full-length vector. Filtering/trimming can
@@ -43,11 +43,11 @@
 #
 data(GlobalPatterns)
 GP <- GlobalPatterns
-## transformsamplecounts can work on phyloseq-class, modifying otuTable only
+## transformsamplecounts can work on phyloseq-class, modifying otu_table only
 (GPr <- transformsamplecounts(GP, rank) )
-## These two approaches result in identical otuTable
-(x1 <- transformsamplecounts( otuTable(GP), threshrankfun(500)) )
-(x2 <- otuTable(apply(otuTable(GP), 2, threshrankfun(500)), speciesAreRows(GP)) )
+## These two approaches result in identical otu_table
+(x1 <- transformsamplecounts( otu_table(GP), threshrankfun(500)) )
+(x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
 identical(x1, x2)
 }
 \seealso{

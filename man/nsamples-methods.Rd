@@ -2,17 +2,17 @@
 \name{nsamples}
 \alias{nsamples}
 \alias{nsamples,ANY-method}
-\alias{nsamples,otuTable-method}
+\alias{nsamples,otu_table-method}
 \alias{nsamples,phyloseq-method}
-\alias{nsamples,sampleData-method}
+\alias{nsamples,sample_data-method}
 \title{Get the number of samples.}
 \usage{
   nsamples(physeq)
 }
 \arguments{
   \item{physeq}{A \code{\link{phyloseq-class}},
-  \code{\link{sampleData}}, or
-  \code{\link{otuTable-class}}.}
+  \code{\link{sample_data}}, or
+  \code{\link{otu_table-class}}.}
 }
 \value{
   An integer indicating the total number of samples.
@@ -25,13 +25,13 @@
 # # From "picante" package
 # data("phylocom")
 # tree <- phylocom$phylo
-# OTU1 <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# OTU1 <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 # nsamples(OTU1)
 # physeq1 <- phyloseq(OTU1, tree)
 # nsamples(physeq1)
 }
 \seealso{
-  \code{\link{species.names}}, \code{\link{sample.names}},
-  \code{\link{nspecies}}
+  \code{\link{taxa_names}}, \code{\link{sample_names}},
+  \code{\link{ntaxa}}
 }
 

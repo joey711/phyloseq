@@ -1,7 +1,7 @@
 \docType{data}
 \name{data-GlobalPatterns}
-\alias{GlobalPatterns}
 \alias{data-GlobalPatterns}
+\alias{GlobalPatterns}
 \title{(Data) Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample (2011)}
 \description{
   Published in PNAS in early 2011. This work compared the
@@ -50,7 +50,7 @@
 \examples{
 data(GlobalPatterns)
 # Remove unobserved taxa
-GP0   <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+GP0   <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 # Perform ordination (in this case, detrended correspondence analysis)
 gpdca <- ordinate(GP0, "DCA")
 # Create plot of samples

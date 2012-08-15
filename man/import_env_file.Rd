@@ -9,7 +9,7 @@
   ENV filename (relative or absolute)}
 
   \item{tree}{(Optional). \code{\link{phylo-class}} object
-  to be paired with the output otuTable.}
+  to be paired with the output otu_table.}
 
   \item{sep}{A character string indicating the delimiter
   used in the file. The default is \code{"\t"}.}
@@ -18,7 +18,7 @@
   \code{\link{read.table}}.}
 }
 \value{
-  An \code{\link{otuTable-class}}, or
+  An \code{\link{otu_table-class}}, or
   \code{\link{phyloseq-class}} if a
   \code{\link{phylo-class}} argument is provided to
   \code{tree}.

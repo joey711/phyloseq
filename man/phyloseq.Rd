@@ -27,8 +27,8 @@
   main method suggested for constructing an
   experiment-level (\code{\link{phyloseq-class}}) object
   from its component data (component data classes:
-  \code{\link{otuTable-class}},
-  \code{\link{sampleData-class}},
+  \code{\link{otu_table-class}},
+  \code{\link{sample_data-class}},
   \code{\link{taxonomyTable-class}},
   \code{\link{phylo-class}}).
 }
@@ -36,12 +36,12 @@
 #
 # # data(GlobalPatterns)
 # # GP <- GlobalPatterns
-# # phyloseq(sampleData(GP), otuTable(GP))
-# # phyloseq(otuTable(GP), tre(GP))
-# # phyloseq(taxTab(GP), otuTable(GP))
-# # phyloseq(tre(GP), otuTable(GP), sampleData(GP))
-# # phyloseq(otuTable(GP), taxTab(GP), sampleData(GP))
-# # phyloseq(otuTable(GP), tre(GP), taxTab(GP), sampleData(GP))
+# # phyloseq(sample_data(GP), otu_table(GP))
+# # phyloseq(otu_table(GP), phy_tree(GP))
+# # phyloseq(tax_table(GP), otu_table(GP))
+# # phyloseq(phy_tree(GP), otu_table(GP), sample_data(GP))
+# # phyloseq(otu_table(GP), tax_table(GP), sample_data(GP))
+# # phyloseq(otu_table(GP), phy_tree(GP), tax_table(GP), sample_data(GP))
 }
 \seealso{
   \code{\link{merge_phyloseq}}

@@ -1,18 +1,18 @@
 \name{otu2df}
 \alias{otu2df}
-\title{Convert an otuTable object into a data.frame useful for plotting
+\title{Convert an otu_table object into a data.frame useful for plotting
 in the ggplot2 framework.}
 \usage{
   otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL,
   threshold=NULL)
 }
 \arguments{
-  \item{physeq}{An \code{otuTable} object.}
+  \item{physeq}{An \code{otu_table} object.}
 
   \item{taxavec}{A character vector of the desired
   taxonomic names to categorize each species in physeq.}
 
-  \item{map}{The corresponding sampleData object for
+  \item{map}{The corresponding sample_data object for
   \code{physeq}.}
 
   \item{keepOnlyTheseTaxa}{A vector of the taxonomic labels
@@ -28,7 +28,7 @@ in the ggplot2 framework.}
   taxonomic groups are included.}
 }
 \description{
-  Convert an otuTable object into a data.frame useful for
+  Convert an otu_table object into a data.frame useful for
   plotting in the ggplot2 framework.
 }
 \keyword{internal}

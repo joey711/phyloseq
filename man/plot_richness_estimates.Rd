@@ -7,27 +7,27 @@
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
-  or alternatively, an \code{\link{otuTable-class}}. The
+  or alternatively, an \code{\link{otu_table-class}}. The
   data about which you want to estimate the richness.}
 
   \item{x}{(Optional). A variable to map to the horizontal
   axis. The vertical axis will be mapped to richness
   estimates and have units of total species. This parameter
   (\code{x}) can be either a character string indicating a
-  variable in \code{sampleData} (among the set returned by
-  \code{sample.variables(physeq)} ); or a custom supplied
+  variable in \code{sample_data} (among the set returned by
+  \code{sample_variables(physeq)} ); or a custom supplied
   vector with length equal to the number of samples in the
   dataset (nsamples(physeq)).
 
-  The default value is \code{"sample.names"}, which will
+  The default value is \code{"sample_names"}, which will
   map each sample's name to a separate horizontal position
   in the plot.}
 
   \item{color}{(Optional). Default \code{NULL}. The sample
   variable to map to different colors. Like \code{x}, this
   can be a single character string of the variable name in
-  \code{sampleData} (among the set returned by
-  \code{sample.variables(physeq)} ); or a custom supplied
+  \code{sample_data} (among the set returned by
+  \code{sample_variables(physeq)} ); or a custom supplied
   vector with length equal to the number of samples in the
   dataset (nsamples(physeq)). The color scheme is chosen
   automatically by \code{link{ggplot}}, but it can be
@@ -37,8 +37,8 @@
   \item{shape}{(Optional). Default \code{NULL}. The sample
   variable to map to different shapes. Like \code{x} and
   \code{color}, this can be a single character string of
-  the variable name in \code{sampleData} (among the set
-  returned by \code{sample.variables(physeq)} ); or a
+  the variable name in \code{sample_data} (among the set
+  returned by \code{sample_variables(physeq)} ); or a
   custom supplied vector with length equal to the number of
   samples in the dataset (nsamples(physeq)). The shape
   scale is chosen automatically by \code{link{ggplot}}, but
@@ -78,11 +78,11 @@ plot_richness_estimates(GlobalPatterns, "SampleType")
 plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
 # # Define a human-associated versus non-human categorical variable:
 GP <- GlobalPatterns
-human <- getVariable(GP, "SampleType") \%in\%
+human <- get_variable(GP, "SampleType") \%in\%
 c("Feces", "Mock", "Skin", "Tongue")
-names(human) <- sample.names(GP)
+names(human) <- sample_names(GP)
 # # Replace current SD with new one that includes human variable:
-sampleData(GP)$human <- human
+sample_data(GP)$human <- human
 # # Can use new "human" variable within GP as a discrete variable in the plot
 plot_richness_estimates(GP, "human", "SampleType")
 plot_richness_estimates(GP, "SampleType", "human")

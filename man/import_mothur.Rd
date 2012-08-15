@@ -14,7 +14,7 @@
   \code{make.group()} function. It contains information
   about the sample source of individual sequences,
   necessary for creating a species/taxa abundance table
-  (\code{otuTable}). See
+  (\code{otu_table}). See
   \code{http://www.mothur.org/wiki/Make.group}}
 
   \item{mothur_tree_file}{Optional. The tree file name
@@ -41,11 +41,12 @@
   The object class depends on the provided arguments. If
   the first three arguments are provided, then an
   \code{otuTree} object should be returned, containing both
-  an OTU-only tree and its associated \code{otuTable}-class
-  abundance table. If only a list and group file are
-  provided, then an \code{otuTable} object is returned.
-  Similarly, if only a list and tree file are provided,
-  then only a tree is returned (\code{"phylo"} class).
+  an OTU-only tree and its associated
+  \code{otu_table}-class abundance table. If only a list
+  and group file are provided, then an \code{otu_table}
+  object is returned. Similarly, if only a list and tree
+  file are provided, then only a tree is returned
+  (\code{"phylo"} class).
 }
 \description{
   General function for importing mothur files into
@@ -66,7 +67,7 @@
 # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
 # # Returns just a tree
 # import_mothur(mothur_list_file, mothur_tree_file=mothur_tree_file)
-# # Returns just an otuTable
+# # Returns just an otu_table
 # import_mothur(mothur_list_file, mothur_group_file=mothur_group_file)
 # # Returns an error
 # import_mothur(mothur_list_file)

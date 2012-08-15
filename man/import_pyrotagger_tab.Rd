@@ -23,7 +23,7 @@
   default.}
 }
 \value{
-  An \code{otuTax} object containing both the otuTable and
+  An \code{otuTax} object containing both the otu_table and
   TaxonomyTable data components, parsed from the pyrotagger
   output.
 }

@@ -1,10 +1,10 @@
 \docType{methods}
 \name{merge_species}
 \alias{merge_species}
-\alias{merge_species,otuTable-method}
+\alias{merge_species,otu_table-method}
 \alias{merge_species,phylo-method}
 \alias{merge_species,phyloseq-method}
-\alias{merge_species,sampleData-method}
+\alias{merge_species,sample_data-method}
 \alias{merge_species,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \usage{
@@ -13,7 +13,7 @@
 \arguments{
   \item{x}{(Required). An object that describes species
   (taxa). This includes \code{\link{phyloseq-class}},
-  \code{\link{otuTable-class}},
+  \code{\link{otu_table-class}},
   \code{\link{taxonomyTable-class}},
   \code{\link[ape]{phylo}}.}
 
@@ -38,7 +38,7 @@
 \description{
   Takes as input an object that describes species/taxa
   (e.g. \code{\link{phyloseq-class}},
-  \code{\link{otuTable-class}}, \code{\link{phylo-class}},
+  \code{\link{otu_table-class}}, \code{\link{phylo-class}},
   \code{\link{taxonomyTable-class}}), as well as a vector
   of species that should be merged. It is intended to be
   able to operate at a low-level such that related methods,
@@ -50,7 +50,7 @@
 #
 # # data(phylocom)
 # # tree <- phylocom$phylo
-# # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 # # otutree0 <- phyloseq(otu, tree)
 # # plot(otutree0)
 # # otutree1 <- merge_species(otutree0, tree$tip.label[1:8], 2)

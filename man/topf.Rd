@@ -29,7 +29,7 @@
 # topf(0.6)(t1)
 ## Use simulated abundance matrix
 # set.seed(711)
-# testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
+# testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
 # f1  <- filterfunSample(topf(0.4))
 # (wh1 <- genefilterSample(testOTU, f1, A=1))
 # wh2 <- c(T, T, T, F, F)

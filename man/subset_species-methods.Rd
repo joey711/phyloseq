@@ -8,7 +8,7 @@
 \arguments{
   \item{physeq}{A \code{\link{taxonomyTable-class}}, or
   \code{\link{phyloseq-class}} that contains a
-  taxonomyTable. If the \code{taxTab} slot is missing in
+  taxonomyTable. If the \code{tax_table} slot is missing in
   \code{physeq}, then \code{physeq} will be returned as-is
   and a warning will be printed to screen.}
 
@@ -26,7 +26,7 @@
   subsetting complex experimental objects with one function
   call. In the case of \code{subset_species}, the
   subsetting will be based on an expression related to the
-  columns and values within the \code{taxTab}
+  columns and values within the \code{tax_table}
   (\code{taxonomyTable} component) slot of \code{physeq}.
 }
 \examples{
