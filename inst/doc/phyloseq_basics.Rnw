@@ -254,7 +254,7 @@ Function                    & Input Class      & Output Description \\
 \Rfunction{otu\_table}        & data.frame       & \code{otu\_table} object storing taxa abundance \\
 \Rfunction{sample_data}       & data.frame       & \code{sample_data} object storing sample variables \\
 \Rfunction{tax\_table}          & character string & \code{taxonomyTable} object storing taxonomic identities \\
-\Rfunction{readTree}             & file path char   & phylo-class tree, read from file \\
+\Rfunction{read\_tree}             & file path char   & phylo-class tree, read from file \\
 \Rfunction{read.table}      & table file path  & A matrix or data.frame (Std \R core function)  \\
 \Rfunction{read.tree}       & Newick file path & phylo-class tree object (ape) \\
 \Rfunction{read.nexus}      & Nexus file path  & phylo-class tree object (ape) \\
