@@ -913,12 +913,19 @@ filterfun_sample = function(...){
 	return(f)
 }
 ################################################################################
-#' Filter taxa based on abundance criteria
+#' Filter taxa based on across-sample OTU abundance criteria
 #'
-#' This is analogous to \code{\link[genefilter]{genefilter}}
-#' for microarray filtering. 
-#' Basically an extension of \code{\link[genefilter]{genefilter}}
-#' (from the Bioconductor repository) for phyloseq objects.
+#' This function is directly analogous to the
+#' \code{\link[genefilter]{genefilter}} function for microarray filtering,
+#' but is used for filtering OTUs from phyloseq objects.
+#' It applies an arbitrary set of functions ---
+#' as a function list, for instance, created by \code{\link[genefilter]{filterfun}} ---
+#' as across-sample criteria, one OTU at a time.
+#' It takes as input a phyloseq object,
+#' and returns a logical vector
+#' indicating whether or not each OTU passed the criteria.
+#' Alternatively, if the \code{"prune"} option is set to \code{FALSE},
+#' it returns the already-trimmed version of the phyloseq object.
 #' 
 #' @usage filter_taxa(physeq, flist, prune=FALSE)
 #'
@@ -945,26 +952,37 @@ filterfun_sample = function(...){
 #' \code{\link{filterfun_sample}}
 #' 
 #' @examples
-#' # library("genefilter")
-#' # data("enterotype")
-#' # flist <- filterfun(kOverA(5, 2e-08), allNA)
-#' # ans   <- filter_taxa(enterotype, flist)
-#' # trimmed.enterotype <- prune_taxa(ans, enterotype)
-#' # sum(!ans); ntaxa(trimmed.enterotype)
-#' # filter_taxa(enterotype, flist, TRUE)
+#'  data("enterotype")
+#'  require("genefilter")
+#'  flist    <- filterfun(kOverA(5, 2e-05))
+#'  ent.logi <- filter_taxa(enterotype, flist)
+#'  ent.trim <- filter_taxa(enterotype, flist, TRUE)
+#'  identical(ent.trim, prune_taxa(ent.logi, enterotype)) 
+#'  identical(sum(ent.logi), ntaxa(ent.trim))
+#'  filter_taxa(enterotype, flist, TRUE)
 filter_taxa <- function(physeq, flist, prune=FALSE){
-	OTU <- otu_table(enterotype)
+	# access OTU table
+	OTU <- access(physeq, "otu_table", TRUE)
+	# Enforce orientation (we are filtering taxa, not samples)
 	if(!taxa_are_rows(OTU)) {
 		OTU <- t(OTU)
 	}
-	ans <- apply(expr, 1, flist)
+	# Coerce to vanilla matrix
+	OTU <- as(OTU, "matrix")
+	# Apply filtering function(s), get logical of length ntaxa(physeq)
+	ans <- apply(OTU, 1, flist)
+	# sanity check
+	if( ntaxa(physeq) != length(ans) ){
+		stop("Logic error in applying function(s). Logical result not same length as ntaxa(physeq)")
+	}
+	# Now return logical or pruned phyloseq-class instance.	
 	if( prune ){
 		return( prune_taxa(ans, physeq) )
 	} else {
 		return( ans )		
 	}
 }
-############################################################
+################################################################################
 #' Make filter fun. the most abundant \code{k} taxa
 #'
 #' @usage topk(k, na.rm=TRUE)

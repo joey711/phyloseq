@@ -37,3 +37,19 @@ test_that("prune_samples works on sample_data-only and otu_table-only data", {
 })
 
 ################################################################################
+# test filter_taxa and other filter methods.
+################################################################################
+library("genefilter")
+data("enterotype")
+
+test_that("filter_taxa gives correct, reliable logicals and pruning", {
+	flist    <- filterfun(kOverA(5, 2e-05))
+	ent.logi <- filter_taxa(enterotype, flist)
+	expect_that(ent.logi, is_a("logical"))		
+	ent.trim <- filter_taxa(enterotype, flist, TRUE)
+	expect_that(ent.trim, is_a("phyloseq"))
+	expect_that(sum(ent.logi), equals(ntaxa(ent.trim)))
+	expect_that(prune_taxa(ent.logi, enterotype), is_identical_to(ent.trim)) 
+	expect_that(ntaxa(ent.trim), equals(416L))
+	expect_that(nsamples(ent.trim), equals(nsamples(enterotype)))	
+})
