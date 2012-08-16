@@ -1,8 +1,11 @@
 \docType{methods}
-\name{subset_species}
+\name{subset_taxa}
 \alias{subset_species}
+\alias{subset_taxa}
 \title{Subset species by taxonomic expression}
 \usage{
+  subset_taxa(physeq, ...)
+
   subset_species(physeq, ...)
 }
 \arguments{
@@ -24,13 +27,13 @@
   This is a convenience wrapper around the
   \code{\link{subset}} function. It is intended to speed
   subsetting complex experimental objects with one function
-  call. In the case of \code{subset_species}, the
-  subsetting will be based on an expression related to the
-  columns and values within the \code{tax_table}
-  (\code{taxonomyTable} component) slot of \code{physeq}.
+  call. In the case of \code{subset_taxa}, the subsetting
+  will be based on an expression related to the columns and
+  values within the \code{tax_table} (\code{taxonomyTable}
+  component) slot of \code{physeq}.
 }
 \examples{
-## ex3 <- subset_species(GlobalPatterns, Phylum=="Bacteroidetes")
+## ex3 <- subset_taxa(GlobalPatterns, Phylum=="Bacteroidetes")
 }
 \seealso{
   \code{\link{subset_samples}}

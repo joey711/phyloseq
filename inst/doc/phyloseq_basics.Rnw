@@ -168,7 +168,7 @@ PyroTagger returns a single excel spreadsheet file (\code{.xls}) containing both
 This single output file is sufficient for \code{import{\textunderscore}RDP{\textunderscore}tab()}, provided the file has been converted to a tab-delimited plain-text format. Any spreadsheet application should suffice. No other changes should be made to the \code{.xls} file.
 
 \subsubsection{Output}
-\code{import{\textunderscore}RDP{\textunderscore}tab()} returns an object from the \code{"otuTax"} class, containing the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like \code{tipglom()} are not applicable.
+\code{import{\textunderscore}RDP{\textunderscore}tab()} returns an object from the \code{"otuTax"} class, containing the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like \code{tip\_glom()} are not applicable.
 
 \subsubsection{Example}
 Here is an example, importing a PyroTagger file:
@@ -344,22 +344,22 @@ Function                    & Returns \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Trimming, subsetting, filtering phyloseq data}\label{sec:trim}
-\subsection{Trimming: \code{prune{\textunderscore}species()} and \code{prune{\textunderscore}samples()}}
+\subsection{Trimming: \code{prune{\textunderscore}taxa()} and \code{prune{\textunderscore}samples()}}
 Trimming high-throughput phylogenetic sequencing data can be useful, or even necessary, for certain types of analyses. However, it is important that the original data always be available for reference and reproducibility; and that the methods used for trimming be transparent to others, so they can perform the same trimming or filtering steps on the same or related data.
 
 To facilitate this, \emph{phyloseq} contains many ways to trim/filter the data from a phylogenetic sequencing project. Because matching indices for taxa and samples is strictly enforced, subsetting one of the data components automatically subsets the corresponding indices from the others. Variables holding trimmed versions of your original data can be declared, and further trimmed, without losing track of the original data.
 
-In general, most trimming should be accomplished using the S4 methods \code{prune{\textunderscore}species()} or \code{prune{\textunderscore}samples()}.
+In general, most trimming should be accomplished using the S4 methods \code{prune{\textunderscore}taxa()} or \code{prune{\textunderscore}samples()}.
 
 \subsection{Simple filtering example}
 <<echo=FALSE>>=
 topN <- 20
 @
-For example, lets make a new object that only holds the most abundant \Sexpr{topN} taxa in the experiment. To accomplish this, we will use the \code{prune{\textunderscore}species()} function.
+For example, lets make a new object that only holds the most abundant \Sexpr{topN} taxa in the experiment. To accomplish this, we will use the \code{prune{\textunderscore}taxa()} function.
 <<>>=
 data(GlobalPatterns)
 most_abundant_taxa <- sort(taxa_sums(GlobalPatterns), TRUE)[1:topN]
-ex2 <- prune_species(names(most_abundant_taxa), GlobalPatterns)
+ex2 <- prune_taxa(names(most_abundant_taxa), GlobalPatterns)
 @
 
 Now we can ask the question, ``what taxonomic Family are these OTUs?'' (Subsetting still returns a \code{taxonomyTable} object, which is summarized. We will need to convert to a vector)
@@ -374,25 +374,25 @@ as(topFamilies, "vector")
 \subsection{Arbitrarily complex abundance filtering}
 The previous example was a relatively simple filtering in which we kept only the most abundant \Sexpr{topN} in the whole experiment. But what if we wanted to keep the most abundant \Sexpr{topN} taxa of each sample? And of those, keep only the taxa that are also found in at least one-third of our samples? 
 
-For this more complicated filtering \emph{phyloseq} contains a function, \code{genefilterSample()}, that takes as an argument a \emph{phyloseq} object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (\code{otu_table}), as well as an integer argument, \code{A}, that specifies for how many samples the filtering function must return \code{TRUE} for a particular taxa to avoid removal from the object. A supporting function \code{filterfunSample} is also included in \emph{phyloseq} to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. \code{genefilterSample} returns a logical vector suitable for sending directly to prune{\textunderscore}species() for the actual trimming.
+For this more complicated filtering \emph{phyloseq} contains a function, \code{genefilter_sample()}, that takes as an argument a \emph{phyloseq} object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (\code{otu_table}), as well as an integer argument, \code{A}, that specifies for how many samples the filtering function must return \code{TRUE} for a particular taxa to avoid removal from the object. A supporting function \code{filterfun\_sample} is also included in \emph{phyloseq} to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. \code{genefilter_sample} returns a logical vector suitable for sending directly to prune{\textunderscore}taxa() for the actual trimming.
 
 Here is an example on a completely fabricated \code{otu_table} called \code{testOTU}.
 <<eval=FALSE>>=
 testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-f1  <- filterfunSample(topk(2))
-wh1 <- genefilterSample(testOTU, f1, A=2)
+f1  <- filterfun_sample(topk(2))
+wh1 <- genefilter_sample(testOTU, f1, A=2)
 wh2 <- c(T, T, T, F, F)
-prune_species(wh1, testOTU)
-prune_species(wh2, testOTU)
+prune_taxa(wh1, testOTU)
+prune_taxa(wh2, testOTU)
 @
 
-Here is a second example using the included dataset, \code{GlobalPatterns}. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset \code{GlobalPatterns}. Note that it is not necessary to subset \code{GlobalPatterns} in order to do this filtering. The S4 method \code{prune{\_}species()} subsets each of the relavent component objects, and returns the complex object back.
+Here is a second example using the included dataset, \code{GlobalPatterns}. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset \code{GlobalPatterns}. Note that it is not necessary to subset \code{GlobalPatterns} in order to do this filtering. The S4 method \code{prune{\_}taxa()} subsets each of the relavent component objects, and returns the complex object back.
 <<>>=
 data(GlobalPatterns)
-f1  <- filterfunSample(topp(0.1))
-wh1 <- genefilterSample(GlobalPatterns, f1, A=(1/2*nsamples(GlobalPatterns)))
+f1  <- filterfun_sample(topp(0.1))
+wh1 <- genefilter_sample(GlobalPatterns, f1, A=(1/2*nsamples(GlobalPatterns)))
 sum(wh1)
-ex2 <- prune_species(wh1, GlobalPatterns)
+ex2 <- prune_taxa(wh1, GlobalPatterns)
 @
 \begin{scriptsize}
 <<>>=
@@ -405,10 +405,10 @@ If instead of the most abundant fraction of taxa, you are interested in the most
 
 <<eval=FALSE>>=
 data(GlobalPatterns)
-f1  <- filterfunSample(topf(0.9))
-wh1 <- genefilterSample(GlobalPatterns, f1, A=(1/3*nsamples(GlobalPatterns)))
+f1  <- filterfun_sample(topf(0.9))
+wh1 <- genefilter_sample(GlobalPatterns, f1, A=(1/3*nsamples(GlobalPatterns)))
 sum(wh1)
-prune_species(wh1, GlobalPatterns)
+prune_taxa(wh1, GlobalPatterns)
 @
 
 
@@ -430,10 +430,10 @@ subset(sample_data(GlobalPatterns), SampleType%in%c("Freshwater", "Ocean", "Fres
 @
 \end{scriptsize}
 
-\subsection{\code{subset{\textunderscore}species()}: subset by taxonomic categories}
-It is possible to subset by specific taxonomic category using the \code{subset{\textunderscore}species()} function. For example, if we wanted to subset \code{GlobalPatterns} so that it only contains data regarding the phylum \emph{Firmicutes}:
+\subsection{\code{subset{\textunderscore}taxa()}: subset by taxonomic categories}
+It is possible to subset by specific taxonomic category using the \code{subset{\textunderscore}taxa()} function. For example, if we wanted to subset \code{GlobalPatterns} so that it only contains data regarding the phylum \emph{Firmicutes}:
 <<>>=
-ex4 <- subset_species(GlobalPatterns, Phylum=="Firmicutes")
+ex4 <- subset_taxa(GlobalPatterns, Phylum=="Firmicutes")
 @
 \begin{scriptsize}
 <<>>=
@@ -445,7 +445,7 @@ ex4
 Can also randomly subset, for example a random subset of 100 taxa from the full dataset.
 <<>>=
 randomSpecies100 <- sample(taxa_names(GlobalPatterns), 100, replace=FALSE)
-ex5 <- prune_species(randomSpecies100, GlobalPatterns)
+ex5 <- prune_taxa(randomSpecies100, GlobalPatterns)
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -453,11 +453,11 @@ ex5 <- prune_species(randomSpecies100, GlobalPatterns)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Transform abundance data}\label{sec:transform}
-Sample-wise transformation can be achieved with the \code{transformsamplecounts()} function. It requires two arguments, (1) the \emph{phyloseq} object that you want to transform, and the function that you want to use to perform the transformation. Any arbitrary function can be provided as the second argument, as long as it returns a numeric vector with the same length as its input. In the following trivial example, we create a second object, \code{ex2}, that has been ``transformed'' by the identity function such that it is actually identical to \code{GlobalPatterns}.
+Sample-wise transformation can be achieved with the \code{transform\_sample\_counts()} function. It requires two arguments, (1) the \emph{phyloseq} object that you want to transform, and the function that you want to use to perform the transformation. Any arbitrary function can be provided as the second argument, as long as it returns a numeric vector with the same length as its input. In the following trivial example, we create a second object, \code{ex2}, that has been ``transformed'' by the identity function such that it is actually identical to \code{GlobalPatterns}.
 
 <<eval=FALSE>>=
 data(GlobalPatterns)
-ex2 <- transformsamplecounts(GlobalPatterns, I)
+ex2 <- transform_sample_counts(GlobalPatterns, I)
 @
 
 For certain kinds of analyis we may want to transform the abundance data. For example, for RDA we want to transform abundance counts to within-sample ranks, and to further include a threshold beyond which all taxa receive the same rank value. The ranking for each sample is performed independently, so that the rank of a particular taxa within a particular sample is not influenced by that sample's total quantity of sequencing relative to the other samples in the project. 
@@ -465,7 +465,7 @@ For certain kinds of analyis we may want to transform the abundance data. For ex
 The following example shows how to perform such a thresholded-rank transformation of the abundance table in the complex \emph{phyloseq} object \code{GlobalPatterns} with an arbitrary threshold of 500.
 
 <<>>=
-ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
+ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -473,18 +473,18 @@ ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Phylogenetic smoothing}\label{sec:glom}
-\subsection{\code{taxglom()} method}
-Suppose we are skeptical about the importance of species-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{taxglom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
+\subsection{\code{tax\_glom()} method}
+Suppose we are skeptical about the importance of species-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{tax\_glom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
 
 <<eval=FALSE>>=
-ex6 <- taxglom(GlobalPatterns, taxlevel="Genus")
+ex6 <- tax_glom(GlobalPatterns, taxlevel="Genus")
 @
 
-\subsection{\code{tipglom()} method}
-Similarly, our original example object (\code{GlobalPatterns}) also contains a phlyogenetic tree corresponding to each OTU, which we could also use as a means to merge taxa in our dataset that are closely related. In this case, we specify a threshold patristic distance. Taxa more closely related than this threshold are merged. This is especially useful when a dataset has many taxa that lack a taxonomic assignment at the level you want to investigate, a problem when using \code{taxglom()}. Note that for datasets with a large number of taxa, \code{taxglom} will be noticeably faster than \code{tipglom}. Also, keep in mind that \code{tipglom} requires that its first argument be an object that contains a tree, while \code{taxglom} instead requires a \code{taxonomyTable} (See Appendix~\ref{sec:app-classes}).
+\subsection{\code{tip\_glom()} method}
+Similarly, our original example object (\code{GlobalPatterns}) also contains a phlyogenetic tree corresponding to each OTU, which we could also use as a means to merge taxa in our dataset that are closely related. In this case, we specify a threshold patristic distance. Taxa more closely related than this threshold are merged. This is especially useful when a dataset has many taxa that lack a taxonomic assignment at the level you want to investigate, a problem when using \code{tax\_glom()}. Note that for datasets with a large number of taxa, \code{tax\_glom} will be noticeably faster than \code{tip\_glom}. Also, keep in mind that \code{tip\_glom} requires that its first argument be an object that contains a tree, while \code{tax\_glom} instead requires a \code{taxonomyTable} (See Appendix~\ref{sec:app-classes}).
 
 <<eval=FALSE>>=
-ex7 <- tipglom(GlobalPatterns, speciationMinLength = 0.05)
+ex7 <- tip_glom(GlobalPatterns, speciationMinLength = 0.05)
 @
 Command output not provided here to save time during compilation of the vignette. The user is encouraged to try this out on your dataset, or even this example, if interested. It may take a while to run on the full, untrimmed data.
 

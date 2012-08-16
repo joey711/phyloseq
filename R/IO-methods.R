@@ -530,7 +530,7 @@ import_qiime_sample_data <- function(mapfilename){
 #'
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{import}}, \code{\link{tipglom}}
+#' @seealso \code{\link{import}}, \code{\link{tip_glom}}
 #' @export
 #' @examples 
 #' # import_env_file(myEnvFile, myTree)
@@ -552,7 +552,7 @@ import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 #' each species-row has only one non-zero value. We call this sparse abundance
 #' table the trivial OTU table, where every sequence is treated as a separate 
 #' species. If a phylogenetic tree is available, it can be submitted with this
-#' table as arguments to \code{\link{tipglom}} to create an object with a
+#' table as arguments to \code{\link{tip_glom}} to create an object with a
 #' non-trivial \code{otu_table}.  
 #'
 #' @usage envHash2otu_table(tipSampleTable)
@@ -566,7 +566,7 @@ import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 #' 
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{import_env_file}}, \code{\link{tipglom}}, \code{\link{otu_table}}
+#' @seealso \code{\link{import_env_file}}, \code{\link{tip_glom}}, \code{\link{otu_table}}
 #'
 #' @keywords internal
 #' @examples #
@@ -1133,7 +1133,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	for( i in names(otulist) ){
 		# i <- names(otulist)[1]
 		# First merge the reads that are in the same OTU ("eqspecies" argument)
-		tree <- merge_species(tree, otulist[[i]])
+		tree <- merge_taxa(tree, otulist[[i]])
 		# Rename the tip that was kept to the otuID.
 		# By default, the first element of eqspecies is used as archetype.
 		# This also ensures reliable behavior in the instances of singleton OTUs

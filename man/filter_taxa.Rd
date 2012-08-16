@@ -21,7 +21,7 @@
 \value{
   A logical vector equal to the number of species (taxa) in
   \code{physeq}. This can be provided directly to
-  \code{\link{prune_species}} as first argument.
+  \code{\link{prune_taxa}} as first argument.
   Alternatively, if \code{prune==TRUE}, the pruned
   \code{\link{phyloseq-class}} object is returned instead.
 }
@@ -36,13 +36,13 @@
 # data("enterotype")
 # flist <- filterfun(kOverA(5, 2e-08), allNA)
 # ans   <- filter_taxa(enterotype, flist)
-# trimmed.enterotype <- prune_species(ans, enterotype)
+# trimmed.enterotype <- prune_taxa(ans, enterotype)
 # sum(!ans); ntaxa(trimmed.enterotype)
 # filter_taxa(enterotype, flist, TRUE)
 }
 \seealso{
   \code{\link[genefilter]{filterfun}},
-  \code{\link{genefilterSample}},
-  \code{\link{filterfunSample}}
+  \code{\link{genefilter_sample}},
+  \code{\link{filterfun_sample}}
 }
 

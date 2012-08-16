@@ -75,26 +75,16 @@ setMethod("tax_table", "data.frame", function(object){
 	# Pass on to matrix-method.
 	tax_table(TT)
 })
-## Backward compatibility alias (deprecated)
-#' @rdname tax_table-methods
-#' @aliases tax_table
-#' @export
-taxtab <- tax_table
-## Backward compatibility alias (deprecated)
-#' @rdname tax_table-methods
-#' @aliases tax_table
-#' @export
-taxTab <- tax_table
 ################################################################################
 #' Subset species by taxonomic expression
 #'
 #' This is a convenience wrapper around the \code{\link{subset}} function.
 #' It is intended to speed subsetting complex experimental objects with one
-#' function call. In the case of \code{subset_species}, the subsetting will be
+#' function call. In the case of \code{subset_taxa}, the subsetting will be
 #' based on an expression related to the columns and values within the 
 #' \code{tax_table} (\code{taxonomyTable} component) slot of \code{physeq}.
 #'
-#' @usage subset_species(physeq, ...)
+#' @usage subset_taxa(physeq, ...)
 #'
 #' @param physeq A \code{\link{taxonomyTable-class}}, or \code{\link{phyloseq-class}} that contains a
 #'  taxonomyTable. If the \code{tax_table} slot is missing in \code{physeq}, then \code{physeq}
@@ -108,13 +98,13 @@ taxTab <- tax_table
 #' 
 #' @seealso \code{\link{subset_samples}}
 #'
-#' @rdname subset_species-methods
+#' @rdname subset_taxa-methods
 #' @docType methods
 #' @export
 #'
 #' @examples
-#' ## ex3 <- subset_species(GlobalPatterns, Phylum=="Bacteroidetes")
-subset_species <- function(physeq, ...){
+#' ## ex3 <- subset_taxa(GlobalPatterns, Phylum=="Bacteroidetes")
+subset_taxa <- function(physeq, ...){
 	if( is.null(tax_table(physeq)) ){ 
 		cat("Nothing subset. No taxonomyTable in physeq.\n")
 		return(physeq)

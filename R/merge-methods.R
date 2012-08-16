@@ -118,7 +118,7 @@ merge_phyloseq <- function(...){
 #' for those elements that describe the same species and sample in \code{x}
 #' and \code{y}. 
 #'
-#' @seealso \code{\link{merge_phyloseq}} \code{\link{merge_species}}
+#' @seealso \code{\link{merge_phyloseq}} \code{\link{merge_taxa}}
 #'
 #' @rdname merge_phyloseq_pair-methods
 #' @docType methods
@@ -241,10 +241,10 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' as well as 
 #' a vector of species that should be merged.
 #' It is intended to be able to operate at a low-level such that 
-#' related methods, such as \code{\link{tipglom}} and \code{\link{taxglom}}
-#' can both reliably call \code{merge_species} for their respective purposes.
+#' related methods, such as \code{\link{tip_glom}} and \code{\link{tax_glom}}
+#' can both reliably call \code{merge_taxa} for their respective purposes.
 #'
-#' @usage merge_species(x, eqspecies, archetype=1)
+#' @usage merge_taxa(x, eqspecies, archetype=1)
 #'
 #' @param x (Required). An object that describes species (taxa). This includes
 #'  \code{\link{phyloseq-class}}, \code{\link{otu_table-class}}, \code{\link{taxonomyTable-class}}, 
@@ -264,33 +264,33 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' @return The object, \code{x}, in its original class, but with the specified
 #'   species merged into one entry in all relevant components.
 #'
-#' @seealso \code{\link{tipglom}}, \code{\link{taxglom}}, \code{\link{merge_phyloseq}},
+#' @seealso \code{\link{tip_glom}}, \code{\link{tax_glom}}, \code{\link{merge_phyloseq}},
 #'  \code{\link{merge_samples}}
 #'
 #' @import ape
 #' @export
 #' @docType methods
-#' @rdname merge_species-methods
+#' @rdname merge_taxa-methods
 #' @examples #
 #' # # data(phylocom)
 #' # # tree <- phylocom$phylo
 #' # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 #' # # otutree0 <- phyloseq(otu, tree)
 #' # # plot(otutree0)
-#' # # otutree1 <- merge_species(otutree0, tree$tip.label[1:8], 2)
+#' # # otutree1 <- merge_taxa(otutree0, tree$tip.label[1:8], 2)
 #' # # plot(otutree1)
-setGeneric("merge_species", function(x, eqspecies, archetype=1) standardGeneric("merge_species"))
+setGeneric("merge_taxa", function(x, eqspecies, archetype=1) standardGeneric("merge_taxa"))
 ###############################################################################
-#' @aliases merge_species,otu_table-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "otu_table", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,otu_table-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "otu_table", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
 		eqspecies <- taxa_names(x)[eqspecies]
 	}
 	# Shrink newx table to just those species in eqspecies
-	newx <- prune_species(eqspecies, x)
+	newx <- prune_taxa(eqspecies, x)
 	
 	if( class(archetype) != "character" ){
 		keepIndex = archetype
@@ -305,14 +305,14 @@ setMethod("merge_species", "otu_table", function(x, eqspecies, archetype=1){
 	}
 	
 	removeIndex <- which( taxa_names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_species(taxa_names(x)[-removeIndex], x)	
+	x <- prune_taxa(taxa_names(x)[-removeIndex], x)	
 	return(x)
 })
 ###############################################################################
 # require(ape)
-#' @aliases merge_species,phylo-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,phylo-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "phylo", function(x, eqspecies, archetype=1){
 	# If there is nothing to merge, return x as-is
 	if( length(eqspecies) < 2 ){
 		return(x)
@@ -331,7 +331,7 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 	# If there is too much to merge (tree would have one or 0 branches), return NULL/warning
 	if( length(removeIndex) >= (ntaxa(x)-1) ){
 		# Can't have a tree with 1 or fewer tips
-		warning("merge_species attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		warning("merge_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
 		return(NULL)
 	# Else, drop the removeIndex tips and returns the pruned tree.	
 	} else {
@@ -339,26 +339,26 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 	}
 })
 ################################################################################
-#' @aliases merge_species,phyloseq-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "phyloseq", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,phyloseq-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "phyloseq", function(x, eqspecies, archetype=1){
 	comp_list   <- splat.phyloseq.objects(x)
-	merged_list <- lapply(comp_list, merge_species, eqspecies, archetype)
+	merged_list <- lapply(comp_list, merge_taxa, eqspecies, archetype)
 	# the element names can wreak havoc on do.call
 	names(merged_list) <- NULL
 	# Re-instantiate the combined object using the species-merged object.
 	do.call("phyloseq", merged_list)
 })
 ###############################################################################
-#' @aliases merge_species,sample_data-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "sample_data", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,sample_data-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "sample_data", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
-#' @aliases merge_species,taxonomyTable-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,taxonomyTable-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "taxonomyTable", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
@@ -386,7 +386,7 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 	}
 	
 	# Finally, prune all the merging taxa, except the archetype
-	x <- prune_species(taxa_names(x)[-removeIndex], x)
+	x <- prune_taxa(taxa_names(x)[-removeIndex], x)
 		
 	return(x)
 })
@@ -420,7 +420,7 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #'  the factor indicated by the \code{group} argument. The output class
 #'  matches \code{x}.  
 #'
-#' @seealso \code{\link{merge_species}}, code{\link{merge_phyloseq}}
+#' @seealso \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
 #'
 #' @rdname merge_samples-methods
 #' @docType methods

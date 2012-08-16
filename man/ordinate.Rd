@@ -112,10 +112,10 @@
 # data(GlobalPatterns)
 # # Keep top 200 species
 # topsp <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:200])
-# GP    <- prune_species(topsp, GlobalPatterns)
+# GP    <- prune_taxa(topsp, GlobalPatterns)
 # # Subset further to top 5 phyla
 # top5ph <- sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
-# GP     <- subset_species(GP, Phylum \%in\% names(top5ph))
+# GP     <- subset_taxa(GP, Phylum \%in\% names(top5ph))
 # #
 # # Examples performing ordination with NMDS. Default distance is unweighted UniFrac
 # GP.NMDS.UF.ord   <- ordinate(GP, "NMDS")

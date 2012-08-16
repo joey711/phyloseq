@@ -1,14 +1,17 @@
 \docType{methods}
-\name{merge_species}
+\name{merge_taxa}
 \alias{merge_species}
-\alias{merge_species,otu_table-method}
-\alias{merge_species,phylo-method}
-\alias{merge_species,phyloseq-method}
-\alias{merge_species,sample_data-method}
-\alias{merge_species,taxonomyTable-method}
+\alias{merge_taxa}
+\alias{merge_taxa,otu_table-method}
+\alias{merge_taxa,phylo-method}
+\alias{merge_taxa,phyloseq-method}
+\alias{merge_taxa,sample_data-method}
+\alias{merge_taxa,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \usage{
-  merge_species(x, eqspecies, archetype=1)
+  merge_taxa(x, eqspecies, archetype=1)
+
+  merge_species(x, eqspecies, archetype = 1)
 }
 \arguments{
   \item{x}{(Required). An object that describes species
@@ -42,8 +45,8 @@
   \code{\link{taxonomyTable-class}}), as well as a vector
   of species that should be merged. It is intended to be
   able to operate at a low-level such that related methods,
-  such as \code{\link{tipglom}} and \code{\link{taxglom}}
-  can both reliably call \code{merge_species} for their
+  such as \code{\link{tip_glom}} and \code{\link{tax_glom}}
+  can both reliably call \code{merge_taxa} for their
   respective purposes.
 }
 \examples{
@@ -53,11 +56,11 @@
 # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 # # otutree0 <- phyloseq(otu, tree)
 # # plot(otutree0)
-# # otutree1 <- merge_species(otutree0, tree$tip.label[1:8], 2)
+# # otutree1 <- merge_taxa(otutree0, tree$tip.label[1:8], 2)
 # # plot(otutree1)
 }
 \seealso{
-  \code{\link{tipglom}}, \code{\link{taxglom}},
+  \code{\link{tip_glom}}, \code{\link{tax_glom}},
   \code{\link{merge_phyloseq}}, \code{\link{merge_samples}}
 }
 

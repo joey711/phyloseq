@@ -54,11 +54,6 @@ setMethod("phy_tree", "ANY", function(physeq, errorIfNULL=TRUE){
 #' @rdname phy_tree-methods
 #' @aliases phy_tree,phylo-method
 setMethod("phy_tree", "phylo", function(physeq){ return(physeq) })
-## Backward compatibility alias (deprecated)
-#' @rdname phy_tree-methods
-#' @aliases phy_tree
-#' @export
-tre <- phy_tree
 ################################################################################
 #' Access taxa_are_rows slot from otu_table objects.
 #'
@@ -85,16 +80,6 @@ setMethod("taxa_are_rows", "otu_table", function(physeq){physeq@taxa_are_rows})
 setMethod("taxa_are_rows", "phyloseq", function(physeq){
 	taxa_are_rows(otu_table(physeq))
 })
-## Backward compatibility alias (deprecated)
-#' @rdname taxa_are_rows-methods
-#' @aliases taxa_are_rows
-#' @export
-taxa_are_rows <- taxa_are_rows
-## Backward compatibility alias (deprecated)
-#' @rdname taxa_are_rows-methods
-#' @aliases taxa_are_rows
-#' @export
-taxa_are_rows <- taxa_are_rows
 ################################################################################
 #' Get the number of taxa/species.
 #'
@@ -141,11 +126,6 @@ setMethod("ntaxa", "taxonomyTable", function(physeq){ nrow(physeq) })
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,phylo-method
 setMethod("ntaxa", "phylo", function(physeq) length(physeq$tip.label) )
-## Backward compatibility alias (deprecated)
-#' @rdname ntaxa-methods
-#' @aliases ntaxa
-#' @export
-nspecies <- ntaxa
 ################################################################################
 #' Get species / taxa names.
 #'
@@ -200,11 +180,6 @@ setMethod("taxa_names", "sample_data", function(physeq) NULL )
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,phylo-method
 setMethod("taxa_names", "phylo", function(physeq) physeq$tip.label )
-## Backward compatibility alias (deprecated)
-#' @rdname taxa_names-methods
-#' @aliases taxa_names
-#' @export
-species.names <- taxa_names
 ################################################################################
 #' Get the number of samples.
 #'
@@ -298,16 +273,6 @@ setMethod("sample_names", "otu_table", function(physeq){
 		return( rownames(physeq) )
 	}
 })
-## Backward compatibility alias (deprecated)
-#' @rdname sample_names-methods
-#' @aliases sample_names
-#' @export
-sampleNames <- sample_names
-## Backward compatibility alias (deprecated)
-#' @rdname sample_names-methods
-#' @aliases sample_names
-#' @export
-sample.names <- sample_names
 ################################################################################
 #' Returns all abundance values for species \code{i}.
 #'
@@ -352,11 +317,6 @@ setMethod("get_sample", "otu_table", function(physeq, i){
 setMethod("get_sample", "phyloseq", function(physeq, i){
 	get_sample(otu_table(physeq), i)
 })
-## Backward compatibility alias (deprecated)
-#' @rdname get_sample-methods
-#' @aliases get_sample
-#' @export
-getSamples <- get_sample
 ################################################################################
 #' Returns all abundance values of sample \code{i}.
 #'
@@ -400,11 +360,6 @@ setMethod("get_taxa", "otu_table", function(physeq, i){
 setMethod("get_taxa", "phyloseq", function(physeq, i){
 	get_taxa(otu_table(physeq), i)
 })
-## Backward compatibility alias (deprecated)
-#' @rdname get_taxa-methods
-#' @aliases get_taxa
-#' @export
-getSpecies <- get_taxa
 ################################################################################
 #' Retrieve the names of the taxonomic ranks 
 #'
@@ -435,10 +390,6 @@ getSpecies <- get_taxa
 rank_names <- function(physeq, errorIfNULL=TRUE){
 	colnames(tax_table(physeq, errorIfNULL))	
 }
-## Backward compatibility alias (deprecated)
-#' @aliases rank_names
-#' @export
-rank.names <- rank_names
 ################################################################################
 #' Get a unique vector of the observed taxa at a particular taxonomic rank
 #'
@@ -475,10 +426,6 @@ rank.names <- rank_names
 get_taxa_unique <- function(physeq, taxonomic.rank=rank_names(physeq)[1], errorIfNULL=TRUE){
 	unique(as(tax_table(physeq, errorIfNULL)[, taxonomic.rank], "character"))
 }
-## Backward compatibility alias (deprecated)
-#' @aliases get_taxa_unique
-#' @export
-getTaxa <- get_taxa_unique
 ################################################################################
 #' Get the sample variables present in sample_data
 #'
@@ -509,10 +456,6 @@ getTaxa <- get_taxa_unique
 sample_variables <- function(physeq, errorIfNULL=TRUE){
 	colnames(sample_data(physeq, errorIfNULL))
 }
-## Backward compatibility alias (deprecated)
-#' @aliases sample_variables
-#' @export
-sample.variables <- sample_variables
 ################################################################################
 #' Get the values for a particular variable in sample_data
 #'
@@ -550,7 +493,3 @@ get_variable <- function(physeq, varName){
 	return( as(sample_data(physeq), "data.frame")[, varName] )
 }
 ################################################################################
-## Backward compatibility alias (deprecated)
-#' @aliases get_variable
-#' @export
-getVariable <- get_variable

@@ -53,6 +53,6 @@
 # identical(t1, sample_data(t4))
 }
 \seealso{
-  \code{\link{merge_species}}, code{\link{merge_phyloseq}}
+  \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
 }
 

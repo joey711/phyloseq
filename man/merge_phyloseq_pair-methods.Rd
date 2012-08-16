@@ -69,6 +69,6 @@
 ## data.frame(merge_phyloseq_pair(y, x))
 }
 \seealso{
-  \code{\link{merge_phyloseq}} \code{\link{merge_species}}
+  \code{\link{merge_phyloseq}} \code{\link{merge_taxa}}
 }
 

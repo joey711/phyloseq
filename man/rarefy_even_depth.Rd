@@ -47,7 +47,7 @@ plot(as(otu_table(eso), "vector"), as(otu_table(esophagus), "vector"))
 UniFrac(eso); UniFrac(esophagus)
 # Test with GlobalPatterns dataset
 data("GlobalPatterns")
-GP.chl <- subset_species(GlobalPatterns, Phylum=="Chlamydiae")
+GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
 # remove the samples that have less than 20 total reads from Chlamydiae
 GP.chl <- prune_samples(names(which(sample_sums(GP.chl)>=20)), GP.chl)
 # # (p <- plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance"))

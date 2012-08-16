@@ -136,10 +136,10 @@
 #' # data(GlobalPatterns)
 #' # # Keep top 200 species
 #' # topsp <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:200])
-#' # GP    <- prune_species(topsp, GlobalPatterns)
+#' # GP    <- prune_taxa(topsp, GlobalPatterns)
 #' # # Subset further to top 5 phyla
 #' # top5ph <- sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
-#' # GP     <- subset_species(GP, Phylum %in% names(top5ph)) 
+#' # GP     <- subset_taxa(GP, Phylum %in% names(top5ph)) 
 #' # # 
 #' # # Examples performing ordination with NMDS. Default distance is unweighted UniFrac
 #' # GP.NMDS.UF.ord   <- ordinate(GP, "NMDS")
@@ -321,7 +321,7 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' # data(GlobalPatterns)
 #' # # subset GP to top-150 taxa (to save computation time in example)
 #' # keepTaxa <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:150])
-#' # GP       <- prune_species(keepTaxa, GlobalPatterns)
+#' # GP       <- prune_taxa(keepTaxa, GlobalPatterns)
 #' # # Perform DPCoA
 #' # GP.dpcoa <- DPCoA(GP)
 #' # plot_ordination(GP, GP.dpcoa, color="SampleType")
@@ -330,7 +330,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	if(!class(physeq)=="phyloseq"){stop("physeq must be phyloseq-class")}
 	
 	# Remove any OTUs that are absent from all the samples.
-	physeq <- prune_species((taxa_sums(physeq) > 0), physeq)
+	physeq <- prune_taxa((taxa_sums(physeq) > 0), physeq)
 	
 	# Access components for handing-off
 	OTU  <- otu_table(physeq)
@@ -402,7 +402,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @examples #
 #' # data(GlobalPatterns)
 #' # # For RDA, use thresholded-rank
-#' # ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
+#' # ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 #' # # RDA
 #' # modr <- rda.phyloseq(ex4 ~ SampleType)
 #' # # CCA

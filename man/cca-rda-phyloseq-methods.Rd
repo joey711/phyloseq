@@ -44,7 +44,7 @@
 #
 # data(GlobalPatterns)
 # # For RDA, use thresholded-rank
-# ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
+# ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 # # RDA
 # modr <- rda.phyloseq(ex4 ~ SampleType)
 # # CCA

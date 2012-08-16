@@ -67,33 +67,6 @@ setMethod("sample_data", "data.frame", function(object){
 	}	
 	return(SM)
 })
-## Backward compatibility alias (deprecated)
-#' @rdname sample_data-methods
-#' @aliases sample_data
-#' @export
-sample_data <- sample_data
-## Backward compatibility alias (deprecated)
-#' @rdname sample_data-methods
-#' @aliases sample_data
-#' @export
-samData <- sample_data
-# short wrapper for sample_data constructor/accessor
-#' @aliases sample_data sample_data sam_data
-#' @rdname sample_data-methods
-#' @docType methods
-#' @export
-#' @usage sam_data(object, errorIfNULL=TRUE)
-sam_data <- sample_data
-# sam_data <- function(object, errorIfNULL=TRUE){sample_data(object, errorIfNULL)}
-# backward-compatibility wrapper for sample_data constructor/accessor
-# previously was called "sampleMap".
-#' @aliases sample_data sample_data sam_data sampleMap
-#' @rdname sample_data-methods
-#' @docType methods
-#' @export
-#' @usage sampleMap(object, errorIfNULL=TRUE)
-sampleMap <- sample_data
-# sampleMap <- function(object, errorIfNULL=TRUE){sample_data(object, errorIfNULL)}
 ################################################################################
 #' Cleans absent levels in sample_data/data.frame.
 #'

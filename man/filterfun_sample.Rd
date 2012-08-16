@@ -1,8 +1,8 @@
-\name{filterfunSample}
-\alias{filterfunSample}
+\name{filterfun_sample}
+\alias{filterfun_sample}
 \title{A sample-wise filter function builder, analogous to \code{\link[genefilter]{filterfun}}.}
 \usage{
-  filterfunSample(...)
+  filterfun_sample(...)
 }
 \arguments{
   \item{...}{A comma-separated list of functions.}
@@ -11,8 +11,8 @@
   An enclosure (function) that itself will return a logical
   vector, according to the functions provided in the
   argument list, evaluated in order. The output of
-  filterfunSample is appropriate for the `flist' argument
-  to the genefilterSample method.
+  filterfun_sample is appropriate for the `flist' argument
+  to the genefilter_sample method.
 }
 \description{
   See the \code{\link[genefilter]{filterfun}}, from the
@@ -23,14 +23,14 @@
 ## Use simulated abundance matrix
 # set.seed(711)
 # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-# f1  <- filterfunSample(topk(2))
-# wh1 <- genefilterSample(testOTU, f1, A=2)
+# f1  <- filterfun_sample(topk(2))
+# wh1 <- genefilter_sample(testOTU, f1, A=2)
 # wh2 <- c(T, T, T, F, F)
-# prune_species(wh1, testOTU)
-# prune_species(wh2, testOTU)
+# prune_taxa(wh1, testOTU)
+# prune_taxa(wh2, testOTU)
 }
 \seealso{
   \code{\link[genefilter]{filterfun}},
-  \code{\link{genefilterSample}}
+  \code{\link{genefilter_sample}}
 }
 

@@ -1,12 +1,15 @@
 \docType{methods}
-\name{tipglom}
+\name{tip_glom}
+\alias{tip_glom}
+\alias{tip_glom,phylo,ANY-method}
+\alias{tip_glom,phylo,otu_table-method}
+\alias{tip_glom,phyloseq,ANY-method}
 \alias{tipglom}
-\alias{tipglom,phylo,ANY-method}
-\alias{tipglom,phylo,otu_table-method}
-\alias{tipglom,phyloseq,ANY-method}
 \title{Agglomerate closely-related taxa using single-linkage clustering.}
 \usage{
-  tipglom(tree, OTU, speciationMinLength=0.02)
+  tip_glom(tree, OTU, speciationMinLength=0.02)
+
+  tipglom(tree, OTU, speciationMinLength = 0.02)
 }
 \arguments{
   \item{tree}{\code{\link{phyloseq-class}}, containing an
@@ -28,13 +31,13 @@
 \value{
   An object of class \code{phyloseq}. Output class matches
   the class of \code{tree}, unless it is a \code{phylo}
-  object, in which case \code{tipglom} returns an
+  object, in which case \code{tip_glom} returns an
   \code{phyloseq} object.
 }
 \description{
   All tips of the tree separated by a cophenetic distance
   smaller than \code{speciationMinLength} will be
-  agglomerated into one taxa using \code{merge_species}.
+  agglomerated into one taxa using \code{merge_taxa}.
 }
 \details{
   Can be used to create a non-trivial OTU Table, if a
@@ -53,15 +56,15 @@
 # # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 # # # x1   <- phyloseq(otu, phylocom$phylo)
 # # # print(x1); par(mfrow=c(2, 1)); plot(phy_tree(x1))
-# # # x2 <- tipglom(x1, speciationMinLength = 2.5)
+# # # x2 <- tip_glom(x1, speciationMinLength = 2.5)
 # # # plot(phy_tree(x2))
 # # # ## Try on example datset 1
 # # # data(GlobalPatterns); ntaxa(GlobalPatterns)
-# # # ex7 <- tipglom(GlobalPatterns, speciationMinLength = 0.05)
+# # # ex7 <- tip_glom(GlobalPatterns, speciationMinLength = 0.05)
 # # # ntaxa(ex7)
 # data(esophagus); ntaxa(esophagus); par(mfrow=c(2, 1)); plot(phy_tree(esophagus))
 # phy_tree(esophagus)$edge.length
-# x3 <- tipglom(esophagus, speciationMinLength = 0.20)
+# x3 <- tip_glom(esophagus, speciationMinLength = 0.20)
 # ntaxa(x3); plot(phy_tree(x3))
 }
 

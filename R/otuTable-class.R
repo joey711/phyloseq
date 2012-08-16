@@ -77,11 +77,6 @@ setMethod("otu_table", "matrix", function(object, taxa_are_rows){
 setMethod("otu_table", "data.frame", function(object, taxa_are_rows){
 	otu_table(as(object, "matrix"), taxa_are_rows)
 })
-## Backward compatibility alias (deprecated)
-#' @rdname otu_table-methods
-#' @aliases otu_table
-#' @export
-otuTable <- otu_table
 ################################################################################
 #' Returns the total number of individuals observed from each species/taxa/OTU.
 #' 
@@ -111,14 +106,6 @@ taxa_sums <- function(x){
 		colSums(x)
 	}
 }
-## Backward compatibility alias (deprecated)
-#' @aliases taxa_sums
-#' @export
-speciessums <- taxa_sums
-## Backward compatibility alias (deprecated)
-#' @aliases taxa_sums
-#' @export
-speciesSums <- taxa_sums
 ################################################################################
 #' Returns the total number of individuals observed from each sample.
 #' 
@@ -149,12 +136,4 @@ sample_sums <- function(x){
 		rowSums(x)
 	}
 }
-## Backward compatibility alias (deprecated)
-#' @aliases sample_sums
-#' @export
-samplesums <- sample_sums
-## Backward compatibility alias (deprecated)
-#' @aliases sample_sums
-#' @export
-sampleSums <- sample_sums
 ################################################################################

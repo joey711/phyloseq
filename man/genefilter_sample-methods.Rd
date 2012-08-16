@@ -1,12 +1,12 @@
 \docType{methods}
-\name{genefilterSample}
-\alias{genefilterSample}
-\alias{genefilterSample,matrix-method}
-\alias{genefilterSample,otu_table-method}
-\alias{genefilterSample,phyloseq-method}
+\name{genefilter_sample}
+\alias{genefilter_sample}
+\alias{genefilter_sample,matrix-method}
+\alias{genefilter_sample,otu_table-method}
+\alias{genefilter_sample,phyloseq-method}
 \title{Filter OTUs with arbitrary function, sample-wise.}
 \usage{
-  genefilterSample(X, flist, A=1)
+  genefilter_sample(X, flist, A=1)
 }
 \arguments{
   \item{X}{The object that needs trimming. Can be matrix,
@@ -14,7 +14,7 @@
   an otu_table.}
 
   \item{flist}{An enclosure object, typically created with
-  \code{\link{filterfunSample}}}
+  \code{\link{filterfun_sample}}}
 
   \item{A}{An integer. The number of samples in which a
   taxa / species passed the filter for it to be labeled
@@ -37,7 +37,7 @@
   logical having length equal to nrow()/\code{\link{ntaxa}}
   is returned, indicating which should be kept. This output
   can be provided directly to OTU trimming function,
-  \code{\link{prune_species}}. By contrast,
+  \code{\link{prune_taxa}}. By contrast,
   \code{\link[genefilter]{genefilter}}, of the genefilter
   package in Bioconductor, works only on the rows of a
   matrix. Note that, because \code{\link{otu_table-class}}
@@ -50,23 +50,23 @@
 \examples{
 #
 ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-## f1  <- filterfunSample(topk(2))
-## wh1 <- genefilterSample(testOTU, f1, A=2)
+## f1  <- filterfun_sample(topk(2))
+## wh1 <- genefilter_sample(testOTU, f1, A=2)
 ## wh2 <- c(T, T, T, F, F)
-## prune_species(wh1, testOTU)
-## prune_species(wh2, testOTU)
+## prune_taxa(wh1, testOTU)
+## prune_taxa(wh2, testOTU)
 ##
 ## tax_table1 <- tax_table(matrix("abc", 5, 5))
-## prune_species(wh1, tax_table1)
-## prune_species(wh2, tax_table1)
+## prune_taxa(wh1, tax_table1)
+## prune_taxa(wh2, tax_table1)
 }
 \seealso{
   \code{\link[genefilter]{genefilter}},
-  \code{\link{filterfunSample}}, \code{\link[phyloseq]{t}},
-  \code{\link{prune_species}}
+  \code{\link{filterfun_sample}},
+  \code{\link[phyloseq]{t}}, \code{\link{prune_taxa}}
 }
-\keyword{OTU}
 \keyword{agglomerate}
 \keyword{cluster}
+\keyword{OTU}
 \keyword{tree}
 

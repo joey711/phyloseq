@@ -58,3 +58,4 @@ Collate:
     'extend_vegan.R'
     'network-methods.R'
     'distance-methods.R'
+    'deprecated_functions.R'

@@ -1,13 +1,17 @@
-\name{prune_species}
+\name{prune_taxa}
 \alias{prune_species}
-\alias{prune_species,NULL,ANY-method}
-\alias{prune_species,character,otu_table-method}
-\alias{prune_species,character,phylo-method}
-\alias{prune_species,character,phyloseq-method}
-\alias{prune_species,character,sample_data-method}
-\alias{prune_species,character,taxonomyTable-method}
-\alias{prune_species,logical,ANY-method}
+\alias{prune_taxa}
+\alias{prune_taxa,character,otu_table-method}
+\alias{prune_taxa,character,phylo-method}
+\alias{prune_taxa,character,phyloseq-method}
+\alias{prune_taxa,character,sample_data-method}
+\alias{prune_taxa,character,taxonomyTable-method}
+\alias{prune_taxa,logical,ANY-method}
+\alias{prune_taxa,NULL,ANY-method}
 \title{Prune unwanted species / taxa from a phylogenetic object.}
+\usage{
+  prune_species(species, x)
+}
 \arguments{
   \item{species}{(Required). A character vector of the
   species in object x that you want to keep -- OR
@@ -25,7 +29,7 @@
   then your object can be pruned by this function.}
 }
 \value{
-  The class of the object returned by \code{prune_species}
+  The class of the object returned by \code{prune_taxa}
   matches the class of the argument, \code{x}.
 }
 \description{
@@ -40,14 +44,14 @@
 \examples{
 #
 ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-## f1  <- filterfunSample(topk(2))
-## wh1 <- genefilterSample(testOTU, f1, A=2)
+## f1  <- filterfun_sample(topk(2))
+## wh1 <- genefilter_sample(testOTU, f1, A=2)
 ## wh2 <- c(T, T, T, F, F)
-## prune_species(wh1, testOTU)
-## prune_species(wh2, testOTU)
+## prune_taxa(wh1, testOTU)
+## prune_taxa(wh2, testOTU)
 ##
 ## tax_table1 <- tax_table(matrix("abc", 5, 5))
-## prune_species(wh1, tax_table1)
-## prune_species(wh2, tax_table1)
+## prune_taxa(wh1, tax_table1)
+## prune_taxa(wh2, tax_table1)
 }
 

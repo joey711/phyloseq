@@ -22,7 +22,7 @@
   trivial OTU table, where every sequence is treated as a
   separate species. If a phylogenetic tree is available, it
   can be submitted with this table as arguments to
-  \code{\link{tipglom}} to create an object with a
+  \code{\link{tip_glom}} to create an object with a
   non-trivial \code{otu_table}.
 }
 \examples{
@@ -39,7 +39,7 @@
   \url{http://bmf2.colorado.edu/unifrac/}
 }
 \seealso{
-  \code{\link{import_env_file}}, \code{\link{tipglom}},
+  \code{\link{import_env_file}}, \code{\link{tip_glom}},
   \code{\link{otu_table}}
 }
 \keyword{internal}

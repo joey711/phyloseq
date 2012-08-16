@@ -1,9 +1,9 @@
-\name{taxglom}
-\alias{taxglom}
+\name{tax_glom}
+\alias{tax_glom}
 \title{Agglomerate taxa of the same type.}
 \usage{
-  taxglom(physeq, taxrank=rank_names(physeq)[1], NArm=TRUE,
-  bad_empty=c(NA, "", " ", "\t"))
+  tax_glom(physeq, taxrank=rank_names(physeq)[1],
+  NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} or
@@ -29,8 +29,8 @@
   short phylogenetic sequences and a patchy system of
   nomenclature. If this seems to be an issue for your
   analysis, think about also trying the
-  nomenclature-agnostic \code{\link{tipglom}} method if you
-  have a phylogenetic tree available.}
+  nomenclature-agnostic \code{\link{tip_glom}} method if
+  you have a phylogenetic tree available.}
 
   \item{bad_empty}{(Optional). Character vector. Default:
   \code{c(NA, "", " ", "\t")}. Defines the bad/empty values
@@ -49,7 +49,7 @@
 \description{
   This method merges species that have the same taxonomy at
   a certain taxaonomic rank. Its approach is analogous to
-  \code{tipglom}, but uses categorical data instead of a
+  \code{tip_glom}, but uses categorical data instead of a
   tree. In principal, other categorical data known for all
   taxa could also be used in place of taxonomy, but for the
   moment, this must be stored in the \code{taxonomyTable}
@@ -63,19 +63,19 @@
 # ## print the available taxonomic ranks
 # colnames(tax_table(GlobalPatterns))
 # ## agglomerate at the Family taxonomic rank
-# (x1 <- taxglom(GlobalPatterns, taxrank="Family") )
+# (x1 <- tax_glom(GlobalPatterns, taxrank="Family") )
 # ## How many taxa before/after agglomeration?
 # ntaxa(GlobalPatterns); ntaxa(x1)
 # ## Look at enterotype dataset...
 # data(enterotype)
-# ## print the available taxonomic ranks. Shows only 1 rank available, not useful for taxglom
+# ## print the available taxonomic ranks. Shows only 1 rank available, not useful for tax_glom
 # colnames(tax_table(enterotype))
 }
 \seealso{
-  \code{\link{tipglom}}
+  \code{\link{tip_glom}}
 
-  \code{\link{prune_species}}
+  \code{\link{prune_taxa}}
 
-  \code{\link{merge_species}}
+  \code{\link{merge_taxa}}
 }
 

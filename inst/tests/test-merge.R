@@ -8,7 +8,7 @@ library("testthat")
 ################################################################################
 # merge_samples
 data(GlobalPatterns)
-# GP <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+# GP <- prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 GP  <- GlobalPatterns
 mGP <- merge_samples(GlobalPatterns, "SampleType")
 
@@ -36,7 +36,7 @@ test_that("Same otu_table result for separate and combined merge in merge_sample
 # merge_phyloseq
 test_that("merge_phyloseq: Break apart GP based on human-association, then merge back together.", {
 	data(GlobalPatterns)
-	GP  <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
+	GP  <- prune_taxa(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
 	sample_data(GP)$human <- factor(get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue"))
 	h1 <- subset_samples(GP, human=="TRUE")
 	h0 <- subset_samples(GP, human=="FALSE")
@@ -62,44 +62,44 @@ test_that("merge_phyloseq: Break apart GP based on human-association, then merge
 })
 
 ################################################################################
-# taxglom
+# tax_glom
 # Load data
 data("GlobalPatterns")
-GP.chl <- subset_species(GlobalPatterns, Phylum == "Chlamydiae")
-test_that("the tax_table slot is identical whether taxglom()ed by itself or as component", {
-	expect_that(taxglom(tax_table(GP.chl), "Family"), is_a("taxonomyTable"))
-	expect_that(n1<-taxglom(GP.chl, "Family"), is_a("phyloseq"))
+GP.chl <- subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
+test_that("the tax_table slot is identical whether tax_glom()ed by itself or as component", {
+	expect_that(tax_glom(tax_table(GP.chl), "Family"), is_a("taxonomyTable"))
+	expect_that(n1<-tax_glom(GP.chl, "Family"), is_a("phyloseq"))
 	expect_that(ntaxa(n1), equals(4L))
 	expect_that(
-		taxglom(tax_table(GP.chl), "Family"),
-		is_identical_to(tax_table(taxglom(GP.chl, "Family")))
+		tax_glom(tax_table(GP.chl), "Family"),
+		is_identical_to(tax_table(tax_glom(GP.chl, "Family")))
 	)
 	expect_that(
-		taxglom(tax_table(GP.chl), "Family", FALSE),
-		is_identical_to(tax_table(n2<-taxglom(GP.chl, "Family", FALSE)))
+		tax_glom(tax_table(GP.chl), "Family", FALSE),
+		is_identical_to(tax_table(n2<-tax_glom(GP.chl, "Family", FALSE)))
 	)
 	expect_that(ntaxa(n2), equals(5L))	
 })
-test_that("taxglom() handles clearly agglomeration to one taxa", {
-	expect_that(n1 <- taxglom(GP.chl, "Phylum"), gives_warning())
+test_that("tax_glom() handles clearly agglomeration to one taxa", {
+	expect_that(n1 <- tax_glom(GP.chl, "Phylum"), gives_warning())
 	expect_that(n1, is_a("phyloseq"))
 	expect_that(ntaxa(n1), equals(1L))
 	expect_that(access(n1, "phy_tree"), is_a("NULL"))
 })
 ################################################################################
-# prune_species
+# prune_taxa
 # Use the GP.chl dataset from previous testing block
-test_that("prune_species() handles clearly pruning to one taxa", {
+test_that("prune_taxa() handles clearly pruning to one taxa", {
 	# throws warning, and NULL-tre
-	expect_that(n1 <- prune_species(taxa_names(GP.chl)[1:1], GP.chl), gives_warning())
+	expect_that(n1 <- prune_taxa(taxa_names(GP.chl)[1:1], GP.chl), gives_warning())
 	expect_that(ntaxa(n1), equals(1L))
 	expect_that(n1, is_a("phyloseq"))
 	expect_that(access(n1, "phy_tree"), is_a("NULL"))
 	expect_that(access(n1, "otu_table"), is_a("otu_table"))
 })
-test_that("prune_species() properly handles standard-cases", {
+test_that("prune_taxa() properly handles standard-cases", {
 	# throws warning, and NULL-tre
-	expect_that(n1 <- prune_species(taxa_names(GP.chl)[1:5], GP.chl), is_a("phyloseq"))
+	expect_that(n1 <- prune_taxa(taxa_names(GP.chl)[1:5], GP.chl), is_a("phyloseq"))
 	expect_that(ntaxa(n1), equals(5L))
 	expect_that(access(n1, "phy_tree"), is_a("phylo"))
 	expect_that(access(n1, "otu_table"), is_a("otu_table"))
@@ -108,27 +108,27 @@ test_that("prune_species() properly handles standard-cases", {
 	# Use logical vector, and get same answer
 	L2 <- vector(length=ntaxa(GP.chl))
 	L2[1:5] <- TRUE
-	expect_that(n2 <- prune_species(L2, GP.chl), is_a("phyloseq"))
+	expect_that(n2 <- prune_taxa(L2, GP.chl), is_a("phyloseq"))
 	expect_that(n2, is_identical_to(n1))	
 })
 ################################################################################
-# merge_species
+# merge_taxa
 # Use the GP.chl dataset from previous testing block
-test_that("merge_species() properly handles standard-cases", {
-	expect_that(n1 <- merge_species(GP.chl, c("24341", "579085")), is_a("phyloseq"))
+test_that("merge_taxa() properly handles standard-cases", {
+	expect_that(n1 <- merge_taxa(GP.chl, c("24341", "579085")), is_a("phyloseq"))
 	expect_that(ntaxa(n1), equals(20L))
 	# The first name is kept, others removed
 	expect_that("579085" %in% taxa_names(n1), equals(FALSE))
 	expect_that("24341" %in% taxa_names(n1),  equals(TRUE))
 	# Try a 3-element merge
-	expect_that(n2 <- merge_species(GP.chl, c("579085", "24341", "547579")), is_a("phyloseq"))
+	expect_that(n2 <- merge_taxa(GP.chl, c("579085", "24341", "547579")), is_a("phyloseq"))
 	expect_that(ntaxa(n2), equals(19L))
 	# The first name is kept, others removed
 	expect_that("579085" %in% taxa_names(n2), equals(TRUE))
 	expect_that("24341"  %in% taxa_names(n2), equals(FALSE))
 	expect_that("547579" %in% taxa_names(n2), equals(FALSE))	
 	# Try again, but specify the retained OTU name as the 3rd one
-	expect_that(n3 <- merge_species(GP.chl, c("579085", "24341", "547579"), "547579"), is_a("phyloseq"))
+	expect_that(n3 <- merge_taxa(GP.chl, c("579085", "24341", "547579"), "547579"), is_a("phyloseq"))
 	# "547579" is kept, others removed
 	expect_that("579085" %in% taxa_names(n3), equals(FALSE))
 	expect_that("24341"  %in% taxa_names(n3), equals(FALSE))
@@ -139,13 +139,13 @@ test_that("merge_species() properly handles standard-cases", {
 		)
 	)
 })
-test_that("merge_species() replaces disagreements in taxonomy with NA", {
+test_that("merge_taxa() replaces disagreements in taxonomy with NA", {
 	# Try a more difficult merge from a different subset
-	GP20 <- prune_species(taxa_names(GlobalPatterns)[1:20], GlobalPatterns)
+	GP20 <- prune_taxa(taxa_names(GlobalPatterns)[1:20], GlobalPatterns)
 	
 	# Arbitrary merge into taxa "951", NA in ranks after Phylum
 	merge_these <- c("951", "586076", "141782", "30678", "30405")
-	n5 <- merge_species(GP20, merge_these)
+	n5 <- merge_taxa(GP20, merge_these)
 	# Test that none of the non-archetype taxa are left after the merge
 	expect_that(all( !c("586076", "141782", "30678", "30405") %in% taxa_names(n5)), equals(TRUE))
 	# Test that the archetype taxa remains
@@ -157,7 +157,7 @@ test_that("merge_species() replaces disagreements in taxonomy with NA", {
 	
 	# Test how well it works at a different level (say first or last ranks)
 	merge_these <- c("1126", "31759")
-	n6 <- merge_species(GP20, merge_these)
+	n6 <- merge_taxa(GP20, merge_these)
 	# Test that the non-archetype taxa is gone
 	expect_that( !"31759" %in% taxa_names(n6), equals(TRUE))
 	# Test that the archetype taxa remains
@@ -170,7 +170,7 @@ test_that("merge_species() replaces disagreements in taxonomy with NA", {
 	# Test that it works for differences at the first rank
 	GP20f <- GP20
 	tax_table(GP20f)[1, 1] <- "Bacteria"
-	n7 <- merge_species(GP20f, taxa_names(GP20f)[1:2])
+	n7 <- merge_taxa(GP20f, taxa_names(GP20f)[1:2])
 	# Should be all NA taxonomy
 	expect_that( all(is.na(as(tax_table(n7), "matrix")[1, ])), equals(TRUE))
 
@@ -179,7 +179,7 @@ test_that("merge_species() replaces disagreements in taxonomy with NA", {
 	tax_table(GP20f)[1, ] <- tax_table(GP20f)["951", ]
 	# Now change the last rank of this entry to something else
 	tax_table(GP20f)[1, length(rank_names(GP20f))] <- "species_phyloseq_test"
-	n8 <- merge_species(GP20f, c("951", taxa_names(GP20f)[1]))
+	n8 <- merge_taxa(GP20f, c("951", taxa_names(GP20f)[1]))
 	t951 <- as(tax_table(n8), "matrix")["951", ]	
 	expect_that( sum(is.na(t951)), equals(1L))
 	expect_that( is.na(t951[length(rank_names(n8))]), is_equivalent_to(TRUE))
@@ -191,7 +191,7 @@ test_that("merge_species() replaces disagreements in taxonomy with NA", {
 	tax_table(GP20f)[1, ] <- tax_table(GP20f)["951", ]
 		
 	merge_these <- c("549322", "951")
-	n9   <- merge_species(GP20f, merge_these)
+	n9   <- merge_taxa(GP20f, merge_these)
 	n9t1 <- as(tax_table(n9), "matrix")["549322", ]
 	# None should be NA
 	expect_that(any(is.na(n9t1)), equals(FALSE))
