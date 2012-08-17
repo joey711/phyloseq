@@ -45,15 +45,15 @@
   \item{color}{(Optional). Default \code{NULL}. Character
   string. The name of the variable to map to colors in the
   plot. This can be a sample variable (among the set
-  returned by \code{sample.variables(physeq)} ) or
+  returned by \code{sample_variables(physeq)} ) or
   taxonomic rank (among the set returned by
-  \code{rank.names(physeq)}).
+  \code{rank_names(physeq)}).
 
   Alternatively, if \code{type} indicates a single-plot
   (\code{"samples"} or \code{"species"}), then it is also
   possible to supply a custom vector with length equal to
   the relevant number of samples or species
-  (\code{nsamples(physeq)} or \code{nspecies(physeq)}).
+  (\code{nsamples(physeq)} or \code{ntaxa(physeq)}).
 
   Finally, The color scheme is chosen automatically by
   \code{link{ggplot}}, but it can be modified afterward
@@ -102,17 +102,17 @@
 \examples{
 data(GlobalPatterns)
 # Need to clean the zeros from GlobalPatterns:
-GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+GP <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 # Define a human-associated versus non-human binary variable:
-sampleData(GP)$human <- getVariable(GP, "SampleType") \%in\% c("Feces", "Mock", "Skin", "Tongue")
+sample_data(GP)$human <- get_variable(GP, "SampleType") \%in\% c("Feces", "Mock", "Skin", "Tongue")
 # Get the names of the most-abundant
 top.TaxaGroup <- sort(
-tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
 decreasing = TRUE)
 top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 # Now prune further, to just the most-abundant phyla
 GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
-topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
+topsp <- names(sort(taxa_sums(GP), TRUE)[1:200])
 GP1   <- prune_species(topsp, GP)
 GP.dpcoa <- ordinate(GP1, "DPCoA")
 plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")

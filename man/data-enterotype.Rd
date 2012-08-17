@@ -65,7 +65,7 @@ plot_ordination(x, ent.cca, "biplot")
 plot_ordination(x, ent.cca, "split", color="Enterotype")
 #
 # # multiple testing of genera correlating with enterotype 2
-# mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
+# mt(x, data.frame(sample_data(x))[, "Enterotype"]==2)
 # # Should return a data.frame, with the following head()
 # # # # # index     teststat   rawp   adjp plower
 # # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001

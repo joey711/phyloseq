@@ -12,7 +12,7 @@
 # by the constructor. 
 #
 # This is a special case where the accessors are not-used, in favor of the
-# S4 @tags. E.g. object@otuTable instead of otuTable(object). This is to avoid
+# S4 @tags. E.g. object@otu_table instead of otu_table(object). This is to avoid
 # any complications with the accessors interacting with objects early on. 
 # Perhaps this is a mistake, but its a very limited case and won't be difficult
 # to change.
@@ -23,11 +23,11 @@
 # of comments throughout this code will need to compensate.
 ################################################################################
 ########################################
-# otuTable:
-# # # * all values must be numeric (otuTable()-constructor should probably round values by default))
+# otu_table:
+# # # * all values must be numeric (otu_table()-constructor should probably round values by default))
 # # # * all values must be >= 0 (no negative abundances)
 ########################################
-validOTUtable <- function(object){
+validotu_table <- function(object){
 	# Both dimensions must have non-zero length.
 	if( any(dim(object)==0) ){
 		return("\n OTU abundance data must have non-zero dimensions.")
@@ -38,24 +38,24 @@ validOTUtable <- function(object){
 	}
 	# Further verify all values are positive
 	if( any(object@.Data < 0) ){
-		return("\n At least one abundance value in otuTable less than zero.\n Abundance must be greater than zero.")
+		return("\n At least one abundance value in otu_table less than zero.\n Abundance must be greater than zero.")
 	}
 	return(TRUE)
 }
-## assign the function as the validity method for the otuTable class
-setValidity("otuTable", validOTUtable)
+## assign the function as the validity method for the otu_table class
+setValidity("otu_table", validotu_table)
 ########################################
 ########################################
-# sampleData:
+# sample_data:
 ########################################
-validSampleData <- function(object){
+validsample_data <- function(object){
 	if( any(dim(object)==0) ){
 		return("Sample Data must have non-zero dimensions.")
 	}
 	return(TRUE)
 }
-## assign the function as the validity method for the sampleData class
-setValidity("sampleData", validSampleData)
+## assign the function as the validity method for the sample_data class
+setValidity("sample_data", validsample_data)
 ########################################
 ########################################
 # taxonomyTable:
@@ -79,7 +79,7 @@ validTaxonomyTable <- function(object){
 	}	
 	return(TRUE)
 }
-## assign the function as the validity method for the sampleData class
+## assign the function as the validity method for the sample_data class
 setValidity("taxonomyTable", validTaxonomyTable)
 ########################################
 ########################################
@@ -99,23 +99,23 @@ setValidity("taxonomyTable", validTaxonomyTable)
 # in a mysterious index error, anyway
 ########################################
 validphyloseq <- function(object){
-	# There must be an otuTable
-	if( is.null(object@otuTable) ){
-		return("\n An otuTable is required for most analysis / graphics in the phyloseq-package")
+	# There must be an otu_table
+	if( is.null(object@otu_table) ){
+		return("\n An otu_table is required for most analysis / graphics in the phyloseq-package")
 	}
 	# intersection of species-names must have non-zero length
 	if( length(intersect_species(object)) <= 0 ){
-		return(paste("\n Component species/taxa names do not match.\n",
-			" Taxa indices are critical to analysis.\n Try species.names()", sep=""))
+		return(paste("\n Component taxa/OTU names do not match.\n",
+			" Taxa indices are critical to analysis.\n Try taxa_names()", sep=""))
 	}
 	# If there is sample data, check that sample-names overlap
-	if( !is.null(object@samData) ){
-		if( length(intersect(sample.names(object@samData), sample.names(object@otuTable))) <= 0 ){
-			return("\n Component sample names do not match.\n Try sample.names()")
+	if( !is.null(object@sam_data) ){
+		if( length(intersect(sample.names(object@sam_data), sample.names(object@otu_table))) <= 0 ){
+			return("\n Component sample names do not match.\n Try sample_names()")
 		}
 	}
 	return(TRUE)
 }
-## assign the function as the validity method for the otuTable class
+## assign the function as the validity method for the otu_table class
 setValidity("phyloseq", validphyloseq)
 ########################################

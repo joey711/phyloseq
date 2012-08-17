@@ -30,7 +30,7 @@
   by \code{\link{is.null}} as verification of the presence
   of a particular data component. Unlike the
   component-specific accessors (e.g.
-  \code{\link{otuTable}}, or \code{\link{tre}}), the
+  \code{\link{otu_table}}, or \code{\link{phy_tree}}), the
   default behavior is not to stop with an error if the
   desired slot is empty. In all cases this is controlled by
   the \code{errorIfNULL} argument, which can be set to
@@ -39,13 +39,13 @@
 \examples{
 #
 ## data(GlobalPatterns)
-## access(GlobalPatterns, "taxTab")
-## access(GlobalPatterns, "tre")
-## access(otuTable(GlobalPatterns), "otuTable")
+## access(GlobalPatterns, "tax_table")
+## access(GlobalPatterns, "phy_tree")
+## access(otu_table(GlobalPatterns), "otu_table")
 ## # Should return NULL:
-## access(otuTable(GlobalPatterns), "sampleData")
-## access(otuTree(GlobalPatterns), "sampleData")
-## access(otuSam(GlobalPatterns), "tre")
+## access(otu_table(GlobalPatterns), "sample_data")
+## access(otuTree(GlobalPatterns), "sample_data")
+## access(otuSam(GlobalPatterns), "phy_tree")
 }
 \seealso{
   \code{\link{getslots.phyloseq}},

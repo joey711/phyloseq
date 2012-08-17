@@ -1,24 +1,24 @@
 \docType{methods}
 \name{mt}
 \alias{mt}
-\alias{mt,otuTable,character-method}
-\alias{mt,otuTable,factor-method}
-\alias{mt,otuTable,integer-method}
-\alias{mt,otuTable,logical-method}
-\alias{mt,otuTable,numeric-method}
+\alias{mt,otu_table,character-method}
+\alias{mt,otu_table,factor-method}
+\alias{mt,otu_table,integer-method}
+\alias{mt,otu_table,logical-method}
+\alias{mt,otu_table,numeric-method}
 \alias{mt,phyloseq,ANY-method}
 \title{Multiple testing of taxa abundance acccording to sample categories/classes}
 \usage{
   mt(physeq, classlabel, minPmaxT="minP", ...)
 }
 \arguments{
-  \item{physeq}{(Required). \code{\link{otuTable-class}} or
-  \code{\link{phyloseq-class}}. In this multiple testing
+  \item{physeq}{(Required). \code{\link{otu_table-class}}
+  or \code{\link{phyloseq-class}}. In this multiple testing
   framework, different taxa correspond to variables
   (hypotheses), and samples to observations.}
 
   \item{classlabel}{(Required). A single character index of
-  the sample-variable in the \code{\link{sampleData}} of
+  the sample-variable in the \code{\link{sample_data}} of
   \code{physeq} that will be used for multiple testing.
   Alternatively, \code{classlabel} can be a custom integer
   (or numeric coercable to an integer), character, or
@@ -62,7 +62,7 @@
 ## mt(x, "Enterotype", test="f")
 ## # Not surprisingly, Prevotella and Bacteroides top the list.
 ## # Different test, multiple-adjusted t-test, whether samples are ent-2 or not.
-## mt(x, getVariable(x, "Enterotype")==2)
+## mt(x, get_variable(x, "Enterotype")==2)
 }
 \seealso{
   \code{\link[multtest]{mt.maxT}},

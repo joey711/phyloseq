@@ -99,7 +99,7 @@ NA
 #' plot_ordination(x, ent.cca, "split", color="Enterotype")
 #' # 
 #' # # multiple testing of genera correlating with enterotype 2
-#' # mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
+#' # mt(x, data.frame(sample_data(x))[, "Enterotype"]==2)
 #' # # Should return a data.frame, with the following head()
 #'                              # # # # # index     teststat   rawp   adjp plower
 #' # # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001
@@ -125,13 +125,13 @@ NA
 #'
 #' This dataset contains an experiment-level (\code{\link{phyloseq-class}}) object,
 #' which in turn contains the taxa-contingency table and soil-treatment table
-#' as \code{\link{otuTable-class}} and \code{\link{sampleData-class}} components, respectively.
+#' as \code{\link{otu_table-class}} and \code{\link{sample_data-class}} components, respectively.
 #'
 #' This data was
 #' imported from raw files supplied directly by the authors via personal communication
 #' for the purposes of including as an example in the \code{\link{phyloseq-package}}. 
 #' As this data is sensitive to choices in OTU-clustering parameters, attempts to recreate
-#' the \code{otuTable} from the raw sequencing data may give slightly different results
+#' the \code{otu_table} from the raw sequencing data may give slightly different results
 #' than the table provided here. 
 #' 
 #' abstract from research article (quoted):
@@ -168,7 +168,7 @@ NA
 #' # The treatments do not appear to have affected the
 #' # estimated total richness between warmed/unwarmed soil samples
 #' # Test this formally:
-#' DF <- data.frame(sampleData(soilrep), estimate_richness(soilrep) )
+#' DF <- data.frame(sample_data(soilrep), estimate_richness(soilrep) )
 #' t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
 #' ################################################################################
 #' # A beta diversity comparison.
@@ -226,7 +226,7 @@ NA
 #' @examples
 #' data(GlobalPatterns)
 #' # Remove unobserved taxa
-#' GP0   <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' GP0   <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 #' # Perform ordination (in this case, detrended correspondence analysis)
 #' gpdca <- ordinate(GP0, "DCA")
 #' # Create plot of samples

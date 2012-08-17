@@ -11,7 +11,7 @@
   \item{samples}{Character vector of length 2, giving the
   pair of samples under comparison.}
 
-  \item{OTU}{\code{otuTable} object in samples-by-species
+  \item{OTU}{\code{otu_table} object in samples-by-species
   orientation}
 
   \item{tree}{object of class \code{phylo}}

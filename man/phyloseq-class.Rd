@@ -3,18 +3,18 @@
 \title{The main experiment-level class for phyloseq data}
 \description{
   Contains all component classes:
-  \code{\link{otuTable-class}},
-  \code{\link{sampleData-class}},
-  \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot),
-  and \code{\link[ape]{phylo}}-class (\code{"tre"} slot).
-  There are several advantages to storing your phylogenetic
-  sequencing experiment as an instance of the phyloseq
-  class, not the least of which is that it is easy to
-  return to the data later and feel confident that the
-  different data types ``belong'' to one another.
-  Furthermore, the \code{\link{phyloseq}} constructor
-  ensures that the different data components have
-  compatible indices (e.g. species and samples), and
+  \code{\link{otu_table-class}},
+  \code{\link{sample_data-class}},
+  \code{\link{taxonomyTable-class}} (\code{"tax_table"}
+  slot), and \code{\link[ape]{phylo}}-class
+  (\code{"phy_tree"} slot). There are several advantages to
+  storing your phylogenetic sequencing experiment as an
+  instance of the phyloseq class, not the least of which is
+  that it is easy to return to the data later and feel
+  confident that the different data types ``belong'' to one
+  another. Furthermore, the \code{\link{phyloseq}}
+  constructor ensures that the different data components
+  have compatible indices (e.g. species and samples), and
   performs the necessary trimming automatically when you
   create your ``experiment-level'' object. Downstream
   analyses are aware of which data classes they require --
@@ -34,17 +34,18 @@
   trimming/validity checks do not need to be repeated in
   downstream analyses.
 
-  slots: \describe{ \item{otuTable}{a single object of
-  class otuTable.} \item{samData}{ a single object of class
-  sampleData.} \item{taxTab}{ a single object of class
-  taxonomyTable.} \item{tre}{ a single object of class
-  phylo, from the package ape} }
+  slots: \describe{ \item{otu_table}{a single object of
+  class otu_table.} \item{sam_data}{ a single object of
+  class sample_data.} \item{tax_table}{ a single object of
+  class taxonomyTable.} \item{phy_tree}{ a single object of
+  the \code{\link[ape]{phylo}}-class, from the ape package}
+  }
 }
 \seealso{
   The constructor, \code{\link{phyloseq}}, the merger
   \code{\link{merge_phyloseq}}, and also the component
-  constructor/accessors \code{\link{otuTable}},
-  \code{\link{sampleData}}, \code{\link{taxTab}}, and
-  \code{\link{tre}}.
+  constructor/accessors \code{\link{otu_table}},
+  \code{\link{sample_data}}, \code{\link{tax_table}}, and
+  \code{\link{phy_tree}}.
 }
 

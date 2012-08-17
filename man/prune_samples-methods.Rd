@@ -1,9 +1,9 @@
 \docType{methods}
 \name{prune_samples}
 \alias{prune_samples}
-\alias{prune_samples,character,otuTable-method}
+\alias{prune_samples,character,otu_table-method}
 \alias{prune_samples,character,phyloseq-method}
-\alias{prune_samples,character,sampleData-method}
+\alias{prune_samples,character,sample_data-method}
 \title{Prune unwanted samples from a phyloseq object.}
 \usage{
   prune_samples(samples, x)
@@ -26,13 +26,13 @@
 #
 # data(GlobalPatterns)
 # GP <- GlobalPatterns
-# B_only_sample_names <- sample.names(sampleData(GP)[(sampleData(GP)[, "Gender"]=="B"),])
+# B_only_sample_names <- sample_names(sample_data(GP)[(sample_data(GP)[, "Gender"]=="B"),])
 # ex2 <- prune_samples(B_only_sample_names, GP)
 # ex3 <- subset_samples(GP, Gender=="B")
 # ## This should be TRUE.
 # identical(ex2, ex3)
 # ## Here is a simpler example: Make new object with only the first 5 samples
-# ex4 <- prune_samples(sample.names(GP)[1:5], GP)
+# ex4 <- prune_samples(sample_names(GP)[1:5], GP)
 }
 \seealso{
   \code{\link{subset_samples}}

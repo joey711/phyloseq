@@ -20,7 +20,7 @@
   combined.
 }
 \seealso{
-  tipglom
+  tip_glom
 }
 \keyword{internal}
 

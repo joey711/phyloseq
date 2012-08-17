@@ -8,8 +8,8 @@
 \arguments{
   \item{physeq}{(Required). Default \code{NULL}. A
   \code{\link{phyloseq-class}} object, or
-  \code{\link{otuTable-class}} object, on which \code{g} is
-  based. \code{phyloseq-class} recommended.}
+  \code{\link{otu_table-class}} object, on which \code{g}
+  is based. \code{phyloseq-class} recommended.}
 
   \item{type}{(Optional). Default \code{"samples"}. Whether
   the network should be samples or taxa/species. Supported

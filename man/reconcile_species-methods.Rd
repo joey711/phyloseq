@@ -9,8 +9,8 @@
   \item{x}{(Required). A phyloseq object. Only meaningful
   if \code{x} has at least two non-empty slots of the
   following slots that describe species:
-  \code{\link{otuTable}}, \code{\link{taxTab}},
-  \code{\link{tre}}.}
+  \code{\link{otu_table}}, \code{\link{tax_table}},
+  \code{\link{phy_tree}}.}
 }
 \value{
   A trimmed version of the argument, \code{x}, in which
@@ -35,7 +35,7 @@
 ## reconcile_species(GlobalPatterns)
 # # data(phylocom)
 # # tree <- phylocom$phylo
-# # OTU  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+# # OTU  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 # # ex3  <- phyloseq(OTU, tree)
 # # reconcile_species(ex3)
 # # intersect_species(ex3)
