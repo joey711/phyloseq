@@ -1,12 +1,14 @@
 # Deprecated function definitions and roxygen headers (source).
 
 ## Backward compatibility alias (deprecated)
+#' @rdname filterfun_sample
 #' @aliases filterfun_sample
 #' @export
 filterfunSample <- filterfun_sample
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname genefilter_sample-methods
 #' @aliases genefilter_sample
 #' @export
 genefilterSample <- genefilter_sample
@@ -34,6 +36,7 @@ tipglom <- tip_glom
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname tax_glom
 #' @aliases tax_glom
 #' @export
 taxglom <- tax_glom
@@ -99,24 +102,28 @@ getSpecies <- get_taxa
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname rank_names
 #' @aliases rank_names
 #' @export
 rank.names <- rank_names
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname get_taxa_unique
 #' @aliases get_taxa_unique
 #' @export
 getTaxa <- get_taxa_unique
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname sample_variables
 #' @aliases sample_variables
 #' @export
 sample.variables <- sample_variables
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname get_variable
 #' @aliases get_variable
 #' @export
 getVariable <- get_variable
@@ -137,20 +144,24 @@ otuTable <- otu_table
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname taxa_sums
 #' @aliases taxa_sums
 #' @export
 speciessums <- taxa_sums
 ## Backward compatibility alias (deprecated)
+#' @rdname taxa_sums
 #' @aliases taxa_sums
 #' @export
 speciesSums <- taxa_sums
 
 
 ## Backward compatibility alias (deprecated)
+#' @rdname sample_sums
 #' @aliases sample_sums
 #' @export
 samplesums <- sample_sums
 ## Backward compatibility alias (deprecated)
+#' @rdname sample_sums
 #' @aliases sample_sums
 #' @export
 sampleSums <- sample_sums
@@ -167,8 +178,8 @@ sample_data <- sample_data
 #' @export
 samData <- sample_data
 # short wrapper for sample_data constructor/accessor
-#' @aliases sample_data sample_data sam_data
 #' @rdname sample_data-methods
+#' @aliases sample_data sample_data sam_data
 #' @docType methods
 #' @export
 #' @usage sam_data(object, errorIfNULL=TRUE)

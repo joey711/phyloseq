@@ -1,8 +1,14 @@
 \name{sample_sums}
 \alias{sample_sums}
+\alias{samplesums}
+\alias{sampleSums}
 \title{Returns the total number of individuals observed from each sample.}
 \usage{
   sample_sums(x)
+
+  samplesums(x)
+
+  sampleSums(x)
 }
 \arguments{
   \item{x}{\code{\link{otu_table-class}}, or

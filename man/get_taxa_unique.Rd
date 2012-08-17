@@ -1,9 +1,13 @@
 \name{get_taxa_unique}
 \alias{get_taxa_unique}
+\alias{getTaxa}
 \title{Get a unique vector of the observed taxa at a particular taxonomic rank}
 \usage{
   get_taxa_unique(physeq,
   taxonomic.rank=rank_names(physeq)[1], errorIfNULL=TRUE)
+
+  getTaxa(physeq, taxonomic.rank = rank_names(physeq)[1],
+  errorIfNULL = TRUE)
 }
 \arguments{
   \item{physeq}{(Required).

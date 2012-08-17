@@ -1,8 +1,11 @@
 \name{rank_names}
 \alias{rank_names}
+\alias{rank.names}
 \title{Retrieve the names of the taxonomic ranks}
 \usage{
   rank_names(physeq, errorIfNULL=TRUE)
+
+  rank.names(physeq, errorIfNULL = TRUE)
 }
 \arguments{
   \item{physeq}{(Required).
