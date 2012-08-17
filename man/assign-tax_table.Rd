@@ -1,5 +1,6 @@
 \name{tax_table<-}
 \alias{assign-tax_table}
+\alias{taxTab<-}
 \alias{tax_table<-}
 \alias{tax_table<-,phyloseq,ANY-method}
 \alias{tax_table<-,phyloseq,taxonomyTable-method}

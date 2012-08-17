@@ -4,6 +4,7 @@
 \alias{phy_tree<-}
 \alias{phy_tree<-,phyloseq,phylo-method}
 \alias{phy_tree<-,phyloseq,phyloseq-method}
+\alias{tre<-}
 \title{Assign a (new) phylogenetic tree to \code{x}}
 \usage{
   phy_tree(x) <- value

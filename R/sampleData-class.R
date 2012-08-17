@@ -34,7 +34,7 @@
 #' @seealso \code{\link{phy_tree}}, \code{\link{tax_table}}, \code{\link{otu_table}}
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #'
-#' @aliases sample_data sample_data sam_data sampleMap
+#' @aliases sample_data sampleData sam_data samData
 #'
 #' @rdname sample_data-methods
 #' @docType methods
@@ -67,6 +67,10 @@ setMethod("sample_data", "data.frame", function(object){
 	}	
 	return(SM)
 })
+#' @rdname sample_data-methods
+#' @aliases sample_data
+#' @export
+sam_data <- sample_data
 ################################################################################
 #' Cleans absent levels in sample_data/data.frame.
 #'

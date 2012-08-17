@@ -1,6 +1,7 @@
 \docType{methods}
 \name{taxa_are_rows<-}
 \alias{assign-taxa_are_rows}
+\alias{speciesAreRows<-}
 \alias{taxa_are_rows<-}
 \alias{taxa_are_rows<-,otu_table,logical-method}
 \alias{taxa_are_rows<-,phyloseq,logical-method}

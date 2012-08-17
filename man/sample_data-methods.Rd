@@ -1,22 +1,20 @@
 \docType{methods}
 \name{sample_data}
-\alias{sam_data}
 \alias{samData}
+\alias{sam_data}
+\alias{sampleData}
 \alias{sample_data}
 \alias{sample_data,ANY-method}
 \alias{sample_data,data.frame-method}
-\alias{sampleMap}
 \title{Build or access sample_data.}
 \usage{
   sample_data(object, errorIfNULL=TRUE)
 
-  sample_data(object, errorIfNULL = TRUE)
+  sam_data(object, errorIfNULL = TRUE)
+
+  sampleData(object, errorIfNULL = TRUE)
 
   samData(object, errorIfNULL = TRUE)
-
-  sam_data(object, errorIfNULL=TRUE)
-
-  sampleMap(object, errorIfNULL=TRUE)
 }
 \arguments{
   \item{object}{(Required). A

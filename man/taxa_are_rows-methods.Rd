@@ -1,5 +1,7 @@
 \docType{methods}
 \name{taxa_are_rows}
+\alias{speciesAreRows}
+\alias{speciesarerows}
 \alias{taxa_are_rows}
 \alias{taxa_are_rows,ANY-method}
 \alias{taxa_are_rows,otu_table-method}
@@ -8,9 +10,9 @@
 \usage{
   taxa_are_rows(physeq)
 
-  taxa_are_rows(physeq)
+  speciesarerows(physeq)
 
-  taxa_are_rows(physeq)
+  speciesAreRows(physeq)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},

@@ -1,12 +1,9 @@
 \name{taxa_sums}
-\alias{speciessums}
 \alias{speciesSums}
 \alias{taxa_sums}
 \title{Returns the total number of individuals observed from each species/taxa/OTU.}
 \usage{
   taxa_sums(x)
-
-  speciessums(x)
 
   speciesSums(x)
 }

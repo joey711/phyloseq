@@ -9,7 +9,7 @@
 #' @export
 #' @docType methods
 #' @rdname assign-otu_table
-#' @aliases assign-otu_table otu_table<-
+#' @aliases assign-otu_table otu_table<- otuTable<-
 #'
 #' @examples
 #' # data(GlobalPatterns)
@@ -56,7 +56,7 @@ setMethod("otu_table<-", c("phyloseq", "phyloseq"), function(x, value){
 #' @export
 #' @docType methods
 #' @rdname assign-taxa_are_rows
-#' @aliases assign-taxa_are_rows taxa_are_rows<-
+#' @aliases assign-taxa_are_rows taxa_are_rows<- speciesAreRows<-
 #'
 #' @examples #
 #' # data(GlobalPatterns)
@@ -111,7 +111,7 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 #'
 #' @export
 #' @rdname assign-sample_data
-#' @aliases assign-sample_data sample_data<- sam_data<-
+#' @aliases assign-sample_data sample_data<- sam_data<- sampleData<-
 #' @examples #
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 10 samples in GlobalPatterns
@@ -155,7 +155,7 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 #'
 #' @export
 #' @rdname assign-tax_table
-#' @aliases assign-tax_table tax_table<-
+#' @aliases assign-tax_table tax_table<- taxTab<-
 #' @examples #
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
@@ -204,7 +204,7 @@ setMethod("tax_table<-", c("taxonomyTable", "ANY"), function(x, value){
 #' @export
 #' @docType methods
 #' @rdname assign-phy_tree
-#' @aliases assign-phy_tree phy_tree<-
+#' @aliases assign-phy_tree phy_tree<- tre<-
 #' @examples #
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
