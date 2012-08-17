@@ -14,7 +14,7 @@
   \item{biotaxonomy}{(Optional). A character vector of the
   taxonomic ranks. Default is \code{NULL}, meaning no
   rank-names will be added as colnames to the
-  \code{$taxtab} matrix.}
+  \code{$tax_table} matrix.}
 
   \item{parallel}{(Optional). Logical. Should the parsing
   be performed in parallel?. Default is \code{FALSE}. Only
@@ -39,8 +39,8 @@
 }
 \value{
   A list of two matrices. \code{$otutab} contains the OTU
-  Table as a numeric matrix, while \code{$taxtab} contains
-  a character matrix of the taxonomy assignments.
+  Table as a numeric matrix, while \code{$tax_table}
+  contains a character matrix of the taxonomy assignments.
 }
 \description{
   QIIME produces several files that can be analyzed in the

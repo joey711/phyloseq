@@ -1,23 +1,23 @@
 ############################################################################
-#' @aliases show,otuTable-method
+#' @aliases show,otu_table-method
 #' @rdname show-methods
-setMethod("show", "otuTable", function(object){
-	# print otuTable (always there).
-	cat(paste("OTU Table:          [", nspecies(object), " species and ", 
+setMethod("show", "otu_table", function(object){
+	# print otu_table (always there).
+	cat(paste("OTU Table:          [", ntaxa(object), " taxa and ", 
         nsamples(object), " samples]", sep = ""), fill = TRUE)	
-    if( speciesAreRows(object) ){
-    	cat("                     species are rows", fill=TRUE)
+    if( taxa_are_rows(object) ){
+    	cat("                     taxa are rows", fill=TRUE)
     } else { 
-    	cat("                     species are columns", fill=TRUE)
+    	cat("                     taxa are columns", fill=TRUE)
     }
 	show(as(object, "matrix"))
 })
 ############################################################################
-#' @aliases show,sampleData-method
+#' @aliases show,sample_data-method
 #' @rdname show-methods
-setMethod("show", "sampleData", function(object){
-	cat(paste("Sample Data:         [", dim(sampleData(object))[1], " samples by ", 
-		dim(sampleData(object))[2], 
+setMethod("show", "sample_data", function(object){
+	cat(paste("Sample Data:         [", dim(sample_data(object))[1], " samples by ", 
+		dim(sample_data(object))[2], 
 		" sample variables]:", sep = ""),
 	fill = TRUE)
 	show(as(object, "data.frame"))
@@ -26,7 +26,7 @@ setMethod("show", "sampleData", function(object){
 #' @aliases show,taxonomyTable-method
 #' @rdname show-methods
 setMethod("show", "taxonomyTable", function(object){
-    cat(paste("Taxonomy Table:     [", dim(object)[1], " species by ", 
+    cat(paste("Taxonomy Table:     [", dim(object)[1], " taxa by ", 
 		dim(object)[2], 
 		" taxonomic ranks]:", sep = ""),
 	fill = TRUE)	
@@ -50,37 +50,37 @@ setMethod("show", "taxonomyTable", function(object){
 #' # GlobalPatterns
 setMethod("show", "phyloseq", function(object){
 	cat("phyloseq-class experiment-level object", fill=TRUE)
-	# print otuTable (always there).
-	cat(paste("OTU Table:          [", nspecies(otuTable(object)), " species and ", 
-        nsamples(otuTable(object)), " samples]", sep = ""), fill = TRUE)	
-    if( speciesAreRows(otuTable(object)) ){
-    	cat("                     species are rows", fill=TRUE)
+	# print otu_table (always there).
+	cat(paste("OTU Table:          [", ntaxa(otu_table(object)), " taxa and ", 
+        nsamples(otu_table(object)), " samples]", sep = ""), fill = TRUE)	
+    if( taxa_are_rows(otu_table(object)) ){
+    	cat("                     taxa are rows", fill=TRUE)
     } else { 
-    	cat("                     species are columns", fill=TRUE)
+    	cat("                     taxa are columns", fill=TRUE)
     } 
 
 	# print Sample Data if there
-	if(!is.null(sampleData(object, FALSE))){
-        cat(paste("Sample Data:         [", dim(sampleData(object))[1], " samples by ", 
-	        dim(sampleData(object))[2], 
+	if(!is.null(sample_data(object, FALSE))){
+        cat(paste("Sample Data:         [", dim(sample_data(object))[1], " samples by ", 
+	        dim(sample_data(object))[2], 
             " sample variables]:", sep = ""), fill = TRUE)
 	}
 
 	# print tax Tab if there	
-	if(!is.null(taxTab(object, FALSE))){
-        cat(paste("Taxonomy Table:     [", dim(taxTab(object))[1], " species by ", 
-	        dim(taxTab(object))[2], 
+	if(!is.null(tax_table(object, FALSE))){
+        cat(paste("Taxonomy Table:     [", dim(tax_table(object))[1], " taxa by ", 
+	        dim(tax_table(object))[2], 
             " taxonomic ranks]:", sep = ""), fill = TRUE)
 	}
 	
 	# print tree if there
-	if(!is.null(tre(object, FALSE))){
-        cat(paste("Phylogenetic Tree:  [", nspecies(tre(object)), " tips and ", 
-	        tre(object)$Nnode,
+	if(!is.null(phy_tree(object, FALSE))){
+        cat(paste("Phylogenetic Tree:  [", ntaxa(phy_tree(object)), " tips and ", 
+	        phy_tree(object)$Nnode,
             " internal nodes]", sep = ""),
         	fill = TRUE
         )
-		if( is.rooted(tre(object)) ){
+		if( is.rooted(phy_tree(object)) ){
 			cat("                     rooted", fill=TRUE)
 		} else {
 			cat("                     unrooted", fill=TRUE)

@@ -5,12 +5,12 @@
 #'
 #' @usage mt(physeq, classlabel, minPmaxT="minP", ...)
 #'
-#' @param physeq (Required). \code{\link{otuTable-class}} or \code{\link{phyloseq-class}}.
+#' @param physeq (Required). \code{\link{otu_table-class}} or \code{\link{phyloseq-class}}.
 #'  In this multiple testing framework, different taxa correspond to variables
 #'  (hypotheses), and samples to observations.
 #'
 #' @param classlabel (Required). A single character index of the sample-variable
-#'  in the \code{\link{sampleData}} of \code{physeq} that will be used for multiple testing. 
+#'  in the \code{\link{sample_data}} of \code{physeq} that will be used for multiple testing. 
 #'  Alternatively, \code{classlabel} can be a custom integer (or numeric coercable
 #'  to an integer), character, or factor with
 #'  length equal to \code{nsamples(physeq)}. 
@@ -50,54 +50,54 @@
 #' ## mt(x, "Enterotype", test="f")
 #' ## # Not surprisingly, Prevotella and Bacteroides top the list.
 #' ## # Different test, multiple-adjusted t-test, whether samples are ent-2 or not.
-#' ## mt(x, getVariable(x, "Enterotype")==2)
+#' ## mt(x, get_variable(x, "Enterotype")==2)
 setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", ...) standardGeneric("mt") )
 ################################################################################
-# First, access the otuTable, and if appropriate, define classlabel from 
-# the sampleData.
+# First, access the otu_table, and if appropriate, define classlabel from 
+# the sample_data.
 #' @aliases mt,phyloseq,ANY-method
 #' @rdname mt-methods
 setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", ...){
-	# If sampleData slot is non-empty, and the classlabel is a character-class
+	# If sample_data slot is non-empty, and the classlabel is a character-class
 	# length(classlabel) == 1
-	if( !is.null(sampleData(physeq, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
-		rawFactor  <- as(sampleData(physeq), "data.frame")[, classlabel[1]]
+	if( !is.null(sample_data(physeq, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
+		rawFactor  <- as(sample_data(physeq), "data.frame")[, classlabel[1]]
 		if( class(rawFactor) != "factor" ){
 			rawFactor <- factor(rawFactor)
 		}
 		classlabel <- rawFactor
-	} # Either way, dispatch on otuTable(physeq)
-	mt(otuTable(physeq), classlabel, minPmaxT, ...)
+	} # Either way, dispatch on otu_table(physeq)
+	mt(otu_table(physeq), classlabel, minPmaxT, ...)
 })
 ################################################################################
 # All valid mt() calls eventually funnel dispatch to this method.
-# The otuTable orientation is checked/handled here (and only here).
-#' @aliases mt,otuTable,integer-method
+# The otu_table orientation is checked/handled here (and only here).
+#' @aliases mt,otu_table,integer-method
 #' @rdname mt-methods
-setMethod("mt", c("otuTable", "integer"), function(physeq, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("otu_table", "integer"), function(physeq, classlabel, minPmaxT="minP", ...){
 	# Guarantee proper orientation of abundance table, and coerce to matrix.
-	if( !speciesAreRows(physeq) ){ physeq <- t(physeq)	}
+	if( !taxa_are_rows(physeq) ){ physeq <- t(physeq)	}
 	mt.phyloseq.internal(as(physeq, "matrix"), classlabel, minPmaxT, ...)
 })
 ################################################################################
 # Coerce numeric classlabel to be integer, pass-on
-#' @aliases mt,otuTable,numeric-method
+#' @aliases mt,otu_table,numeric-method
 #' @rdname mt-methods
-setMethod("mt", c("otuTable", "numeric"), function(physeq, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("otu_table", "numeric"), function(physeq, classlabel, minPmaxT="minP", ...){
 	mt(physeq, as(classlabel, "integer"), minPmaxT="minP", ...)
 })
 ################################################################################
 # Coerce logical to integer, pass-on
-#' @aliases mt,otuTable,logical-method
+#' @aliases mt,otu_table,logical-method
 #' @rdname mt-methods
-setMethod("mt", c("otuTable", "logical"), function(physeq, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("otu_table", "logical"), function(physeq, classlabel, minPmaxT="minP", ...){
 	mt(physeq, as(classlabel, "integer"), minPmaxT="minP", ...)
 })
 ################################################################################
 # Test for length, then dispatch...
-#' @aliases mt,otuTable,character-method
+#' @aliases mt,otu_table,character-method
 #' @rdname mt-methods
-setMethod("mt", c("otuTable", "character"), function(physeq, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("otu_table", "character"), function(physeq, classlabel, minPmaxT="minP", ...){
 	if( length(classlabel) != nsamples(physeq) ){
 		stop("classlabel not the same length as nsamples(physeq)")
 	} else {
@@ -109,9 +109,9 @@ setMethod("mt", c("otuTable", "character"), function(physeq, classlabel, minPmax
 ################################################################################
 # Coerce factor to an integer vector of group labels,
 # starting at 0 for the first group
-#' @aliases mt,otuTable,factor-method
+#' @aliases mt,otu_table,factor-method
 #' @rdname mt-methods
-setMethod("mt", c("otuTable", "factor"), function(physeq, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("otu_table", "factor"), function(physeq, classlabel, minPmaxT="minP", ...){
 	# integerize classlabel, starting at 0
 	classlabel <- (0:(length(classlabel)-1))[classlabel]
 	# Use mt dispatch with classlabel now a suitable classlabel

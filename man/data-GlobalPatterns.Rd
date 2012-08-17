@@ -50,7 +50,7 @@
 \examples{
 data(GlobalPatterns)
 # Remove unobserved taxa
-GP0   <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+GP0   <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 # Perform ordination (in this case, detrended correspondence analysis)
 gpdca <- ordinate(GP0, "DCA")
 # Create plot of samples

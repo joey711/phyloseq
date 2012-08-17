@@ -2,11 +2,11 @@
 \name{cca.phyloseq}
 \alias{cca.phyloseq}
 \alias{cca.phyloseq,formula-method}
-\alias{cca.phyloseq,otuTable-method}
+\alias{cca.phyloseq,otu_table-method}
 \alias{cca.phyloseq,phyloseq-method}
 \alias{rda.phyloseq}
 \alias{rda.phyloseq,formula-method}
-\alias{rda.phyloseq,otuTable-method}
+\alias{rda.phyloseq,otu_table-method}
 \alias{rda.phyloseq,phyloseq-method}
 \title{Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.}
 \usage{
@@ -19,16 +19,16 @@
   the input. No need to directly access components.
   \code{cca.phyloseq} understands where to find the
   abundance table and sample data. Alternatively, \code{X}
-  can be an \code{\link{otuTable-class}} or
+  can be an \code{\link{otu_table-class}} or
   \code{\link{phyloseq-class}} (without the \code{~}
   signifying a formula), in which case an unconstrained
   ordination is performed.}
 
   \item{...}{(Optional). E.g. \code{data=DF}, where
   \code{DF} is a \code{data.frame} containing information
-  equivalent to a \code{sampleData} object / component.
+  equivalent to a \code{sample_data} object / component.
   Only necessary if complex object does not already contain
-  \code{sampleData} or you are keeping the data separate
+  \code{sample_data} or you are keeping the data separate
   for some reason.}
 }
 \value{
@@ -44,7 +44,7 @@
 #
 # data(GlobalPatterns)
 # # For RDA, use thresholded-rank
-# ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
+# ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 # # RDA
 # modr <- rda.phyloseq(ex4 ~ SampleType)
 # # CCA

@@ -53,12 +53,12 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 #' @keywords internal
 setGeneric("vegdist")
 ################################################################################
-# @aliases vegdist,otuTable-method
+# @aliases vegdist,otu_table-method
 # @rdname vegdist-methods
-setMethod("vegdist", "otuTable", function(x, method = "bray", binary = FALSE,
+setMethod("vegdist", "otu_table", function(x, method = "bray", binary = FALSE,
 	diag = FALSE, upper = FALSE, na.rm = FALSE, ...){
 	# Make sure in sample-by-species orientation
-	if( speciesAreRows(x) ){x <- t(x)}
+	if( taxa_are_rows(x) ){x <- t(x)}
 	# Convert to simple matrix
 	x <- as(x, "matrix")
 	# pass to standard method (compiled C)
@@ -69,8 +69,8 @@ setMethod("vegdist", "otuTable", function(x, method = "bray", binary = FALSE,
 # @rdname vegdist-methods
 setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 	diag = FALSE, upper = FALSE, na.rm = FALSE, ...){
-	# Simply access the otuTable
-	x <- otuTable(x)
+	# Simply access the otu_table
+	x <- otu_table(x)
 	vegdist(x, method, binary, diag, upper, na.rm, ...)	
 })
 ################################################################################
@@ -91,7 +91,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @usage estimate_richness(physeq, split=TRUE)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
-#'  an \code{\link{otuTable-class}}. The data about which you want to estimate
+#'  an \code{\link{otu_table-class}}. The data about which you want to estimate
 #'  the richness.
 #'
 #' @param split (Optional). Logical. Should a separate set of richness estimates
@@ -120,7 +120,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 estimate_richness <- function(physeq, split=TRUE){
 	# Check for singletons, and then warning if they are missing.
 	# These metrics only really meaningful if singletons are included.
-	if( !any(otuTable(physeq)==1) ){
+	if( !any(otu_table(physeq)==1) ){
 		warning(
 			"The experiment object you have provided does not have\n",
 			"any singletons. This is highly suspicious. Results of richness\n",
@@ -133,10 +133,10 @@ estimate_richness <- function(physeq, split=TRUE){
 	
 	# If we are not splitting sample-wise, sum the species. Else, enforce orientation.
 	if( !split ){
-		OTU <- speciesSums(physeq)		
+		OTU <- taxa_sums(physeq)		
 	} else if( split ){
-		OTU <- as(otuTable(physeq), "matrix")
-		if( speciesAreRows(physeq) ){ OTU <- t(OTU) }
+		OTU <- as(otu_table(physeq), "matrix")
+		if( taxa_are_rows(physeq) ){ OTU <- t(OTU) }
 	}
 	
 	# Some standard richness parameters

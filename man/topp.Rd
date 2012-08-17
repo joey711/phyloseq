@@ -13,7 +13,7 @@
 }
 \value{
   A function (enclosure), suitable for
-  \code{\link{filterfunSample}}, that will return
+  \code{\link{filterfun_sample}}, that will return
   \code{TRUE} for each element in the most abundant p
   fraction of taxa.
 }
@@ -24,13 +24,13 @@
 \examples{
 ## Use simulated abundance matrix
 # set.seed(711)
-# testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
-# sampleSums(testOTU)
-# f1  <- filterfunSample(topp(0.2))
-# (wh1 <- genefilterSample(testOTU, f1, A=1))
+# testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+# sample_sums(testOTU)
+# f1  <- filterfun_sample(topp(0.2))
+# (wh1 <- genefilter_sample(testOTU, f1, A=1))
 # wh2 <- c(T, T, T, F, F)
-# prune_species(wh1, testOTU)
-# prune_species(wh2, testOTU)
+# prune_taxa(wh1, testOTU)
+# prune_taxa(wh2, testOTU)
 }
 \seealso{
   \code{\link{topk}}, \code{\link{topf}},

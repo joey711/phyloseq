@@ -1,6 +1,6 @@
 \name{import_RDP_cluster}
 \alias{import_RDP_cluster}
-\title{Import RDP cluster file and return otuTable (abundance table).}
+\title{Import RDP cluster file and return otu_table (abundance table).}
 \usage{
   import_RDP_cluster(RDP_cluster_file)
 }
@@ -10,7 +10,7 @@
   linkage clustering step of the RDP pipeline.}
 }
 \value{
-  An \code{\link{otuTable}} object parsed from the
+  An \code{\link{otu_table}} object parsed from the
   \code{".clust"} file.
 }
 \description{
@@ -46,7 +46,7 @@
   row of the cluster file) and sums the number of sequences
   (reads) from each sample. The resulting abundance table
   of OTU-by-sample is trivially coerced to an
-  \code{\link{otuTable}} object, and returned.
+  \code{\link{otu_table}} object, and returned.
 }
 \references{
   \url{http://pyro.cme.msu.edu/index.jsp}

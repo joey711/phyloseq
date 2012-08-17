@@ -98,7 +98,7 @@ import <- function(pipelineName, ...){
 #' including especially an OTU file that typically contains both OTU-abundance
 #' and taxonomic identity information. The map-file is also an important input
 #' to QIIME that stores sample covariates, converted naturally to the 
-#' \code{\link{sampleData-class}} component data type in the phyloseq-package. 
+#' \code{\link{sample_data-class}} component data type in the phyloseq-package. 
 #' QIIME may also produce a
 #' phylogenetic tree with a tip for each OTU, which can also be imported by this
 #' function.
@@ -125,19 +125,20 @@ import <- function(pipelineName, ...){
 #' followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
-#' @param treefilename (Optional). A file representing a phylogenetic tree.
-#'  Expectation is first NEXUS format (via \code{\link[ape]{read.nexus}}), 
-#'  and if that fails, the file will be read as a Newick file (via \code{\link[ape]{read.tree}}). 
-#'  If provided, the tree should have the same OTUs/labels as the OTUs in the other
-#'  files. 
-#'  Anything missing in one of the files is removed from all. 
+#' @param treefilename (Optional).
+#'  A file representing a phylogenetic tree
+#'  or a \code{\link{phylo}} object.
+#'  Files can be NEXUS or Newick format.
+#'  See \code{\link{read_tree}} for more details. 
+#'  If provided, the tree should have the same OTUs/tip-labels
+#'  as the OTUs in the other files. 
+#'  Any taxa or samples missing in one of the files is removed from all. 
 #'  For the QIIME pipeline
 #'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
 #'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
 #'  Default value is \code{NULL}. 
-#'  ALTERNATIVELY, this argument can be a tree object
-#'  (\code{\link[ape]{phylo}}-class). in case the tree has already been
-#'  imported, or the data source file is in a format other than NEXUS or Newick.
+#'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
+#'  for cases where the tree has been --- or needs to be --- imported separately.
 #'
 #' @param biotaxonomy (Optional). A character vector indicating the name of each taxonomic level
 #'  in the taxonomy-portion of the otu-file, which may not specify these levels 
@@ -153,13 +154,17 @@ import <- function(pipelineName, ...){
 #'  passed directly to the \code{\link{import_qiime_otu_tax}} function.
 #'  A lower value helps control memory-fault, but slows down the import.
 #'
-#' @param ... Additional arguments passed to \code{\link[ape]{read.nexus}}, 
-#'  or \code{\link[ape]{read.tree}}.
+#' @param ... Additional arguments passed to \code{\link{read_tree}}
 #'
 #' @return A \code{\link{phyloseq-class}} object.
 #'
-#' @seealso \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
-#'	 \code{\link[ape]{read.tree}}, \code{\link[ape]{read.nexus}}
+#' @seealso
+#'
+#' \code{\link{phyloseq}}
+#'
+#' \code{\link{merge_phyloseq}}
+#' 
+#' \code{\link{read_tree}}
 #'
 #' @references \url{http://qiime.org/}
 #'
@@ -189,7 +194,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 		if( showProgress==TRUE ){
 			cat("Processing map file...", fill=TRUE)
 		}
-		QiimeMap     <- import_qiime_sampleData(mapfilename)
+		QiimeMap     <- import_qiime_sample_data(mapfilename)
 		argumentlist <- c(argumentlist, list(QiimeMap))
 	}
 
@@ -198,9 +203,9 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 			cat("Processing otu/tax file...", fill=TRUE)
 		}		
 		otutax <- import_qiime_otu_tax(otufilename, biotaxonomy, FALSE, chunk.size, showProgress)
-		otutab <- otuTable(otutax$otutab, TRUE)
-		taxtab <- taxTab(otutax$taxtab)
-		argumentlist <- c(argumentlist, list(otutab), list(taxtab) )
+		otutab <- otu_table(otutax$otutab, TRUE)
+		tax_table <- tax_table(otutax$tax_table)
+		argumentlist <- c(argumentlist, list(otutab), list(tax_table) )
 	}
 
 	if( !is.null(treefilename) ){
@@ -208,7 +213,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 			cat("Processing phylogenetic tree file...", fill=TRUE)
 		}		
 		
-		tree <- readTree(treefilename)
+		tree <- read_tree(treefilename, ...)
 		
 		# Add to argument list or warn
 		if( is.null(tree) ){
@@ -230,7 +235,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' tree if possible using either format importer. If it fails, it silently 
 #' returns \code{NULL} by default, rather than throwing a show-stopping error.
 #'
-#' readTree(treefile, errorIfNULL=FALSE, ...)
+#' read_tree(treefile, errorIfNULL=FALSE, ...)
 #'
 #' @param treefile (Required). A character string implying a file \code{\link{connection}}
 #'  (like a path or URL), or an actual \code{\link{connection}}.
@@ -251,12 +256,15 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' @return If successful, returns a \code{\link{phylo}}-class object as defined
 #'  in the \code{\link[ape]{ape-package}}. Returns NULL if neither tree-reading function worked.
 #'
+#' @seealso
+#'	\code{\link{phylo}}, \code{\link[ape]{read.tree}}, \code{\link[ape]{read.nexus}}
+#'
 #' @import ape
 #' @export
 #' @examples
-#' readTree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
-#' readTree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
-readTree <- function(treefile, errorIfNULL=FALSE, ...){
+#' read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
+#' read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 	# "phylo" object provided directly
 	if( class(treefile)[1] %in% c("phylo") ){ 
 		tree <- treefile
@@ -306,7 +314,7 @@ readTree <- function(treefile, errorIfNULL=FALSE, ...){
 #'
 #' @param biotaxonomy (Optional). A character vector of the taxonomic ranks.
 #'  Default is \code{NULL}, meaning no rank-names will be added as colnames
-#'  to the \code{$taxtab} matrix.
+#'  to the \code{$tax_table} matrix.
 #'
 #' @param parallel (Optional). Logical. Should the parsing be performed in 
 #'  parallel?. Default is \code{FALSE}. Only a few steps are actually 
@@ -327,7 +335,7 @@ readTree <- function(treefile, errorIfNULL=FALSE, ...){
 #'  Should status updates of the parsing process be printed to screen?
 #'
 #' @return A list of two matrices. \code{$otutab} contains the OTU Table
-#'  as a numeric matrix, while \code{$taxtab} contains a character matrix
+#'  as a numeric matrix, while \code{$tax_table} contains a character matrix
 #'  of the taxonomy assignments.
 #'
 #' @import foreach
@@ -390,7 +398,7 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 		taxa.scan <- taxa.scan[-length(header)][-1]
 		names(taxa.scan) <- sampleNames	
 		
-		# Parse otutable. 
+		# Parse otu_table. 
 		otutab.chunk <- foreach( i=sampleNames, .combine=cbind) %dopar%  {as.numeric(taxa.scan[[i]])}
 		colnames(otutab.chunk) <- sampleNames 
 		rownames(otutab.chunk) <- taxaNames	
@@ -413,12 +421,12 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 	
 	if(verbose) cat("Building Taxonomy Table...", fill=TRUE)
 
-	taxtab <- parse_qiime_tax_string(taxstring, biotaxonomy)
-	rownames(taxtab) <- rownames(otutab)
+	tax_table <- parse_qiime_tax_string(taxstring, biotaxonomy)
+	rownames(tax_table) <- rownames(otutab)
 
 	# Call garbage collection one more time. Lots of unneeded stuff.
 	garbage.collection <- gc(FALSE)
-	return(list(otutab=otutab, taxtab=taxtab))
+	return(list(otutab=otutab, tax_table=tax_table))
 
 }
 ################################################################################
@@ -436,39 +444,39 @@ parse_qiime_tax_string <- function(taxlist, biotaxonomy=NULL, parallel=FALSE, de
 	cols <- max(sapply(taxlist, function(i) length( gregexpr(delimit, i, fixed=TRUE)[[1]] ) + 1 ))
 	
 	# Initialize.
-	taxtab <- matrix(NA_character_, nrow=length(taxlist), ncol=cols)
+	tax_table <- matrix(NA_character_, nrow=length(taxlist), ncol=cols)
 	
 	# # # # # Explicit foreach loops lost the competition (by a lot) to llply
 	# Split into "jagged" list (vectors of different lengths)
 	jaglist <- llply(taxlist, function(i){ strsplit(i, delimit, TRUE)[[1]] }, .parallel=parallel) 
 	
-	# Write the jagged tax data to taxtab-matrix
+	# Write the jagged tax data to tax_table-matrix
 	for( i in 1:length(jaglist) ){
-		taxtab[i, 1:length(jaglist[[i]])] <- jaglist[[i]]
+		tax_table[i, 1:length(jaglist[[i]])] <- jaglist[[i]]
 	}
 
 	# If biotaxonomy provided, assign it to colnames starting from left. 
 	# Take care to avoid length mismatches by using the min of both lengths for assignment.	
 	if( !is.null(biotaxonomy) ){
-		replen <- min(length(biotaxonomy), ncol(taxtab))
-		colnames(taxtab)[1:replen] <- biotaxonomy[1:replen]
+		replen <- min(length(biotaxonomy), ncol(tax_table))
+		colnames(tax_table)[1:replen] <- biotaxonomy[1:replen]
 	}
 	
-	return(taxtab)
+	return(tax_table)
 }
 ################################################################################
 ################################################################################
-#' Import just \code{sampleData} file from QIIME pipeline.
+#' Import just \code{sample_data} file from QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
 #' This includes the map-file, which is an important \emph{input}
 #' to QIIME that can also indicate sample covariates. It is converted naturally to the 
-#' sampleData component data type in phyloseq-package, based on the R data.frame.
+#' sample_data component data type in phyloseq-package, based on the R data.frame.
 #' 
 #' See \code{\link{import_qiime}} for more information about QIIME. It is also the
 #' suggested function for importing QIIME-produced data files. 
 #'
-#' @usage import_qiime_sampleData(mapfilename)
+#' @usage import_qiime_sample_data(mapfilename)
 #'
 #' @param mapfilename (Required). A character string or connection.
 #'  That is, any suitable \code{file} argument to the \code{\link{read.table}} function. 
@@ -479,7 +487,7 @@ parse_qiime_tax_string <- function(taxlist, biotaxonomy=NULL, parallel=FALSE, de
 #'  this function, do not attempt to modify it manually once it has worked properly
 #'  in QIIME. 
 #'
-#' @return A \code{sampleData} object.
+#' @return A \code{sample_data} object.
 #'
 #' @seealso \code{\link{import}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
 #'  \code{\link{import_qiime}}
@@ -487,13 +495,13 @@ parse_qiime_tax_string <- function(taxlist, biotaxonomy=NULL, parallel=FALSE, de
 #'  \code{\link{import_env_file}}
 #' @export
 #' @examples 
-#' # import_qiime_sampleData(mapfilename)
-import_qiime_sampleData <- function(mapfilename){
+#' # import_qiime_sample_data(mapfilename)
+import_qiime_sample_data <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,
 		sep="\t", comment.char="")
 	rownames(QiimeMap) <- as.character(QiimeMap[,1])
-	return( sampleData(QiimeMap) )
+	return( sample_data(QiimeMap) )
 }
 ######################################################################################
 ################################################################################
@@ -510,26 +518,26 @@ import_qiime_sampleData <- function(mapfilename){
 #' @param envfilename (Required). A charater string of the ENV filename (relative or absolute)
 #'
 #' @param tree (Optional). \code{\link{phylo-class}} object to be paired with
-#'  the output otuTable. 
+#'  the output otu_table. 
 #'
 #' @param sep A character string indicating the delimiter used in the file.
 #'  The default is \code{"\t"}.
 #'
 #' @param ... Additional parameters passed on to \code{\link{read.table}}.
 #'
-#' @return An \code{\link{otuTable-class}}, or \code{\link{phyloseq-class}} if 
+#' @return An \code{\link{otu_table-class}}, or \code{\link{phyloseq-class}} if 
 #'  a \code{\link{phylo-class}} argument is provided to \code{tree}.
 #'
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{import}}, \code{\link{tipglom}}
+#' @seealso \code{\link{import}}, \code{\link{tip_glom}}
 #' @export
 #' @examples 
 #' # import_env_file(myEnvFile, myTree)
 import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 	tipSampleTable <- read.table(envfilename, sep=sep, ...)
-	# Convert to otuTable-class table (trivial table)
-	physeq <- envHash2otuTable(tipSampleTable)
+	# Convert to otu_table-class table (trivial table)
+	physeq <- envHash2otu_table(tipSampleTable)
 	# If tree is provided, combine it with the OTU Table
 	if( class(tree) == "phylo" ){
 		# Create phyloseq-class with a tree and OTU Table (will perform any needed pruning)
@@ -544,21 +552,21 @@ import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 #' each species-row has only one non-zero value. We call this sparse abundance
 #' table the trivial OTU table, where every sequence is treated as a separate 
 #' species. If a phylogenetic tree is available, it can be submitted with this
-#' table as arguments to \code{\link{tipglom}} to create an object with a
-#' non-trivial \code{otuTable}.  
+#' table as arguments to \code{\link{tip_glom}} to create an object with a
+#' non-trivial \code{otu_table}.  
 #'
-#' @usage envHash2otuTable(tipSampleTable)
+#' @usage envHash2otu_table(tipSampleTable)
 #'
 #' @param tipSampleTable (Required). A two-column character table (matrix or data.frame), 
 #' where each row specifies the sequence name and source sample, consistent with the 
 #' env-file for the UniFrac server (\url{http://bmf2.colorado.edu/unifrac/}). 
 #'
-#' @return \code{\link{otuTable}}. A trivial OTU table where each sequence 
+#' @return \code{\link{otu_table}}. A trivial OTU table where each sequence 
 #'  is treated as a separate OTU. 
 #' 
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{import_env_file}}, \code{\link{tipglom}}, \code{\link{otuTable}}
+#' @seealso \code{\link{import_env_file}}, \code{\link{tip_glom}}, \code{\link{otu_table}}
 #'
 #' @keywords internal
 #' @examples #
@@ -566,10 +574,10 @@ import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 #' ## fakeSamNameVec <- c(rep("A", 4), rep("B", 4))
 #' ## fakeSeqAbunVec <- sample(1:50, 8, TRUE)
 #' ## test    <- cbind(fakeSeqNameVec, fakeSamNameVec, fakeSeqAbunVec)
-#' ## testotu <- envHash2otuTable( test )
+#' ## testotu <- envHash2otu_table( test )
 #' ## test    <- cbind(fakeSeqNameVec, fakeSamNameVec)
-#' ## testotu <- envHash2otuTable( test )
-envHash2otuTable <- function(tipSampleTable){
+#' ## testotu <- envHash2otu_table( test )
+envHash2otu_table <- function(tipSampleTable){
 	if( ncol(tipSampleTable) > 2 ){
 		tst <- tipSampleTable
 		trivialOTU <- matrix(0, nrow=nrow(tst), ncol=length(unique(tst[,2])))
@@ -582,14 +590,14 @@ envHash2otuTable <- function(tipSampleTable){
 		trivialOTU <- table(as.data.frame(tipSampleTable))
 		trivialOTU <- as(trivialOTU, "matrix")	
 	}
-	return( otuTable(trivialOTU, speciesAreRows=TRUE) )
+	return( otu_table(trivialOTU, taxa_are_rows=TRUE) )
 }
 ################################################################################
 ################################################################################
 ################################################################################
 ################################################################################
 ################################################################################
-#' Import RDP cluster file and return otuTable (abundance table).
+#' Import RDP cluster file and return otu_table (abundance table).
 #'
 #' The RDP cluster pipeline (specifically, the output of the complete linkage clustering step)
 #' has no formal documentation for the \code{".clust"} 
@@ -616,7 +624,7 @@ envHash2otuTable <- function(tipSampleTable){
 #' of the sample names that appear. It secondly loops through each OTU (\code{"cluster"};
 #' each row of the cluster file) and sums the number of sequences (reads) from
 #' each sample. The resulting abundance table of OTU-by-sample is trivially
-#' coerced to an \code{\link{otuTable}} object, and returned.
+#' coerced to an \code{\link{otu_table}} object, and returned.
 #'
 #' @usage import_RDP_cluster(RDP_cluster_file)
 #'
@@ -624,7 +632,7 @@ envHash2otuTable <- function(tipSampleTable){
 #'  file produced by the 
 #'  the complete linkage clustering step of the RDP pipeline.
 #'
-#' @return An \code{\link{otuTable}} object parsed from the \code{".clust"} file. 
+#' @return An \code{\link{otu_table}} object parsed from the \code{".clust"} file. 
 #' 
 #' @references \url{http://pyro.cme.msu.edu/index.jsp}
 #'
@@ -701,7 +709,7 @@ import_RDP_cluster <- function(RDP_cluster_file){
 	}
 	
 	# Return the abundance table.
-	return( otuTable(otumat, speciesAreRows=TRUE) )
+	return( otu_table(otumat, taxa_are_rows=TRUE) )
 }
 ################################################################################
 #' Import new RDP OTU-table format
@@ -721,7 +729,7 @@ import_RDP_cluster <- function(RDP_cluster_file){
 #'  A character string indicating the file location of the OTU file, 
 #'  produced/exported according to the instructions above.
 #'
-#' @return A \code{\link{otuTable-class}} object.
+#' @return A \code{\link{otu_table-class}} object.
 #'
 #' @seealso
 #' An alternative ``cluster'' file importer for RDP results:
@@ -736,13 +744,13 @@ import_RDP_cluster <- function(RDP_cluster_file){
 #' ### the gzipped file is automatically recognized, and read using R-connections
 #' ex_otu  <- import_RDP_otu(otufile)
 #' class(ex_otu)
-#' nspecies(ex_otu)
+#' ntaxa(ex_otu)
 #' nsamples(ex_otu)
-#' sampleSums(ex_otu)
+#' sample_sums(ex_otu)
 #' head(t(ex_otu))
 import_RDP_otu <- function(otufile){
 	otumat <- read.table(otufile, TRUE, sep="\t", row.names=1)	
-	return(otuTable(otumat, FALSE))
+	return(otu_table(otumat, FALSE))
 }
 ################################################################################
 ################################################################################
@@ -798,7 +806,7 @@ import_RDP_otu <- function(otufile){
 #'  chimeras. These putative chimeric OTUs can be retained if set to \code{TRUE}.
 #'  The putative chimeras are excluded by default.
 #' 
-#' @return An \code{otuTax} object containing both the otuTable and TaxonomyTable data
+#' @return An \code{otuTax} object containing both the otu_table and TaxonomyTable data
 #'  components, parsed from the pyrotagger output.
 #'
 #' @export
@@ -841,7 +849,7 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 	
 	########################################
 	# Initialize the two matrices
-	# (otuTable and taxonomyTable)
+	# (otu_table and taxonomyTable)
 	########################################
 	### Initialize abundance matrix, a
 	a <- matrix(0, nrow=length(x), ncol=(taxonomy_table_column_index-2))
@@ -849,12 +857,12 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 	rownames(a) <- names(z)
 	
 	###### Initialize the raw pyrotagger taxonomy matrix, w
-	ntaxtabcols <- (max(sapply(z, length)) - taxonomy_table_column_index + 1)
-	w <- matrix("", nrow=length(x), ncol=ntaxtabcols)
+	ntax_tablecols <- (max(sapply(z, length)) - taxonomy_table_column_index + 1)
+	w <- matrix("", nrow=length(x), ncol=ntax_tablecols)
 	rownames(w) <- names(z)
 	colnamesw <- pyro_header[-(1:(taxonomy_table_column_index-1))]
 	colnamesw <- colnamesw[1:which(colnamesw=="Taxonomy")]
-	colnamesw <- c(colnamesw, paste("col", (which(colnamesw=="Taxonomy")+1):ntaxtabcols, sep="") )
+	colnamesw <- c(colnamesw, paste("col", (which(colnamesw=="Taxonomy")+1):ntax_tablecols, sep="") )
 	colnames(w) <- colnamesw
 	
 	# Rename the taxonomy columns
@@ -876,11 +884,11 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 	}
 	
 	# Create the component objects
-	OTU <- otuTable(a, speciesAreRows=TRUE)
+	OTU <- otu_table(a, taxa_are_rows=TRUE)
 	if( strict_taxonomy ){
-		TAX <- taxTab[, biotaxonomy]
+		TAX <- tax_table[, biotaxonomy]
 	} else {
-		TAX <- taxTab(w)
+		TAX <- tax_table(w)
 	}
 	
 	return( phyloseq(OTU, TAX) )
@@ -1018,16 +1026,16 @@ import_mothur_groups <- function(mothur_group_file){
 	return(group_table)
 }
 ################################################################################
-#' Import mothur list and group files and return an otuTable
+#' Import mothur list and group files and return an otu_table
 #'
-#' @usage import_mothur_otutable(mothur_list_file, mothur_group_file, cutoff=NULL)
+#' @usage import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff=NULL)
 #'
 #' @param mothur_list_file The list file name and/or location as produced by \emph{mothur}.
 #'
 #' @param mothur_group_file The name/location of the group file produced 
 #'  by \emph{mothur}'s \code{make.group()} function. It contains information
 #'  about the sample source of individual sequences, necessary for creating a
-#'  species/taxa abundance table (\code{otuTable}). See
+#'  species/taxa abundance table (\code{otu_table}). See
 #'  \code{http://www.mothur.org/wiki/Make.group}
 #'
 #' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
@@ -1042,12 +1050,12 @@ import_mothur_groups <- function(mothur_group_file){
 #'  suggested that you check which cutoff values are available in a given list
 #'  file using the \code{\link{show_mothur_list_cutoffs}} function.
 #'
-#' @return An \code{\link{otuTable}} object.
+#' @return An \code{\link{otu_table}} object.
 #'
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
 #'  
-import_mothur_otutable <- function(mothur_list_file, mothur_group_file, cutoff=NULL){
+import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=NULL){
 	
 	otulist       <- import_mothur_otulist(mothur_list_file, cutoff)
 	mothur_groups <- import_mothur_groups(mothur_group_file)
@@ -1066,8 +1074,8 @@ import_mothur_otutable <- function(mothur_list_file, mothur_group_file, cutoff=N
 	# Rather than fix the tapply-induced NAs, just replace NAs with 0.
 	mothur_otu_table[is.na(mothur_otu_table)] <- 0
 	
-	# Finally, return the otuTable as a phyloseq otuTable object.
-	return(otuTable(mothur_otu_table, speciesAreRows=TRUE))
+	# Finally, return the otu_table as a phyloseq otu_table object.
+	return(otu_table(mothur_otu_table, taxa_are_rows=TRUE))
 }
 ################################################################################
 #' Import and prune mothur-produced tree.
@@ -1118,14 +1126,14 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	otulist <- import_mothur_otulist(mothur_list_file, cutoff)
 
 	# Read the original all-sequences tree from mothur
-	tree <- readTree(mothur_tree_file)
+	tree <- read_tree(mothur_tree_file)
 	
 	# Loop to merge the sequences in the tree by OTU
 	# cycle through each otu, and sum the number of seqs observed for each sample
 	for( i in names(otulist) ){
 		# i <- names(otulist)[1]
 		# First merge the reads that are in the same OTU ("eqspecies" argument)
-		tree <- merge_species(tree, otulist[[i]])
+		tree <- merge_taxa(tree, otulist[[i]])
 		# Rename the tip that was kept to the otuID.
 		# By default, the first element of eqspecies is used as archetype.
 		# This also ensures reliable behavior in the instances of singleton OTUs
@@ -1143,7 +1151,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #' @param mothur_group_file Optional. The name/location of the group file produced 
 #'  by \emph{mothur}'s \code{make.group()} function. It contains information
 #'  about the sample source of individual sequences, necessary for creating a
-#'  species/taxa abundance table (\code{otuTable}). See
+#'  species/taxa abundance table (\code{otu_table}). See
 #'  \code{http://www.mothur.org/wiki/Make.group} 
 #'
 #' @param mothur_tree_file Optional. The tree file name produced by \emph{mothur}.
@@ -1164,8 +1172,8 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #' @return The object class depends on the provided arguments.
 #'  If the first three arguments are provided, then an \code{otuTree} object should
 #'  be returned, containing both an OTU-only tree and its associated 
-#'  \code{otuTable}-class abundance table. If only a list and group file are 
-#'  provided, then an \code{otuTable} object is returned. Similarly, if only a list
+#'  \code{otu_table}-class abundance table. If only a list and group file are 
+#'  provided, then an \code{otu_table} object is returned. Similarly, if only a list
 #'  and tree file are provided, then only a tree is returned (\code{"phylo"} class).
 #'
 #' @references \url{http://www.mothur.org/wiki/Main_Page}
@@ -1191,7 +1199,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #' # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
 #' # # Returns just a tree
 #' # import_mothur(mothur_list_file, mothur_tree_file=mothur_tree_file)
-#' # # Returns just an otuTable
+#' # # Returns just an otu_table
 #' # import_mothur(mothur_list_file, mothur_group_file=mothur_group_file)
 #' # # Returns an error
 #' # import_mothur(mothur_list_file)
@@ -1202,9 +1210,9 @@ import_mothur <- function(mothur_list_file,  mothur_group_file=NULL,
 
 	if( missing(mothur_list_file) ){cat("you must provide the mothur_list_file argument\n")}
 
-	# Create otuTable object, OTU, only if group file provided. 
+	# Create otu_table object, OTU, only if group file provided. 
 	if( !is.null(mothur_group_file) ){
-		OTU  <- import_mothur_otutable(mothur_list_file, mothur_group_file, cutoff)		
+		OTU  <- import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff)		
 	} 
 	
 	# Similarly, only get modified tree object if tree file provided.
@@ -1380,13 +1388,13 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 	# data(esophagus)
 	# physeq <- esophagus
 
-	# Create otuTable matrix and force orientation
-	OTU     <- as(otuTable(physeq), "matrix")
-	if( !speciesAreRows(physeq) ){ OTU <- t(OTU) }
+	# Create otu_table matrix and force orientation
+	OTU     <- as(otu_table(physeq), "matrix")
+	if( !taxa_are_rows(physeq) ){ OTU <- t(OTU) }
 	
 	# initialize sequence/sample names
-	seqs    <- species.names(physeq)
-	samples <- sample.names(physeq)	
+	seqs    <- taxa_names(physeq)
+	samples <- sample_names(physeq)	
 	
 	# initialize output table as matrix
 	ENV <- matrix("", nrow=sum(OTU >= 1), ncol=3)
@@ -1411,7 +1419,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 	# If needed, also write the associated tree-file. 
 	if( writeTree ){
 		fileTree <- paste(file, ".nex", sep="")
-		write.nexus(tre(physeq), file=fileTree, original.data=FALSE)
+		write.nexus(phy_tree(physeq), file=fileTree, original.data=FALSE)
 	}
 
 	# If return argument is TRUE, return the environment table
@@ -1527,57 +1535,71 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	rownames(otumat) <- sapply(x$rows, function(i){i$id})
 	colnames(otumat) <- sapply(x$columns, function(i){i$id})
 	
-	otutab <- otuTable(otumat, TRUE)
+	otutab <- otu_table(otumat, TRUE)
 	
 	########################################
 	# Taxonomy Table
 	########################################
 	# Need to check if taxonomy information is empty (minimal BIOM file)
 	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
-		taxtab <- NULL
+		tax_table <- NULL
 	} else {
-		# taxdf <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
-		# Figure out the max number of columns (could be jagged in BIOM format)
-		ncols <- max(sapply(head(x$rows), function(i){length(i$metadata$taxonomy)}))
-		# Initialize character matrix
-		taxdf <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
-		# Fill in the matrix by row.
-		for( i in 1:length(x$rows) ){
-			if( sum(taxaPrefix %in% "greengenes") > 0 ){
-				# taxdf <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
-				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
+		# Test if it is jagged
+		nranks <- sapply(x$rows, function(i){length(i$metadata$taxonomy)})
+		jagged <- any( nranks != max(nranks))
+		
+		# Use the much faster/easier laply if not-jagged
+		if( !jagged ){
+			if( taxaPrefix == "greengenes" ){
+				taxmat <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
 			} else {
-				taxdf[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
+				taxmat <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
 			}
+		# Else it is jagged. Act accordingly.	
+		} else {
+			# Figure out the max number of columns 
+			ncols <- max(nranks)
+			# Initialize character matrix
+			taxmat <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
+			# Fill in the matrix by row.
+			for( i in 1:length(x$rows) ){
+				if( taxaPrefix == "greengenes" ){
+					taxmat[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
+				} else {
+					taxmat[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
+				}
+			}			
 		}
+		# Convert functionally empty elements to NA
+		taxmat[taxmat==""] <- NA_character_
 		# Now convert to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
-		taxtab           <- as(taxdf, "matrix")
-		rownames(taxtab) <- sapply(x$rows, function(i){i$id})
-		taxtab <- taxTab(taxtab)	
+		taxmat			 <- as(taxmat, "matrix")
+		rownames(taxmat) <- sapply(x$rows, function(i){i$id})
+		tax_table <- tax_table(taxmat)	
 	}
 	
 	########################################
 	# Sample Data ("columns" in QIIME/BIOM)
 	########################################
-	# If there is no metadata (all NULL), then set samdata <- NULL
+	# If there is no metadata (all NULL), then set sam_data <- NULL
 	if(  all( sapply(sapply(x$columns, function(i){i$metadata}), is.null) )  ){
-		samdata <- NULL
+		sam_data <- NULL
 	} else {
-		samdata <- ldply(x$columns, function(i){
+		sam_data <- ldply(x$columns, function(i){
 			if( class(i$metadata) == "list"){
 				return(i$metadata[[1]])
 			} else {
 				return(i$metadata)				
 			}
 		}, .parallel=parallel)
-		rownames(samdata) <- sapply(x$columns, function(i){i$id})
-		samdata <- sampleData(samdata)
+		rownames(sam_data) <- sapply(x$columns, function(i){i$id})
+		sam_data <- sample_data(sam_data)
 	}
 	
 	########################################
 	# Put together into a phyloseq object
 	########################################
-	return( phyloseq(otutab, taxtab, samdata) )
+	return( phyloseq(otutab, tax_table, sam_data) )
 
 }
 ################################################################################

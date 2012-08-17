@@ -11,7 +11,7 @@
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
   containing at minimum a phylogenetic tree
   (\code{\link{phylo-class}}) and contingency table
-  (\code{\link{otuTable-class}}). See examples below for
+  (\code{\link{otu_table-class}}). See examples below for
   coercions that might be necessary.}
 
   \item{weighted}{(Optional). Logical. Should use
@@ -46,12 +46,12 @@
   output between the two algorithms. Moreover, the original
   UniFrac algorithm only outperforms this implementation of
   fast-UniFrac if the datasets are so small (approximated
-  by the value of \code{nspecies(physeq) *
-  nsamples(physeq)}) that the difference in time is
-  inconsequential (less than 1 second). In practice it does
-  not appear that this parameter should ever be set to
-  \code{FALSE}, but the option is nevertheless included in
-  the package for comparisons and instructional purposes.}
+  by the value of \code{ntaxa(physeq) * nsamples(physeq)})
+  that the difference in time is inconsequential (less than
+  1 second). In practice it does not appear that this
+  parameter should ever be set to \code{FALSE}, but the
+  option is nevertheless included in the package for
+  comparisons and instructional purposes.}
 }
 \value{
   a sample-by-sample distance matrix, suitable for NMDS,
@@ -64,7 +64,7 @@
 }
 \details{
   \code{UniFrac()} accesses the abundance
-  (\code{\link{otuTable-class}}) and a phylogenetic tree
+  (\code{\link{otu_table-class}}) and a phylogenetic tree
   (\code{\link{phylo-class}}) data within an
   experiment-level (\code{\link{phyloseq-class}}) object.
   If the tree and contingency table are separate objects,
@@ -72,7 +72,7 @@
   experiment-level class using the \code{\link{phyloseq}}
   function. For example, the following code
 
-  \code{phyloseq(myOTUtable, myTree)}
+  \code{phyloseq(myotu_table, myTree)}
 
   returns a \code{phyloseq}-class object that has been
   pruned and comprises the minimum arguments necessary for
@@ -126,13 +126,13 @@
 # (y <- UniFrac(esophagus, TRUE))
 # UniFrac(esophagus, TRUE, FALSE)
 # UniFrac(esophagus, FALSE)
-# picante::unifrac(as(t(otuTable(esophagus)), "matrix"), tre(esophagus))
+# picante::unifrac(as(t(otu_table(esophagus)), "matrix"), tre(esophagus))
 # ################################################################################
 # # Try phylocom example data from picante package
 # # It comes as a list, so you must construct the phyloseq object first.
 # ################################################################################
 # data("phylocom")
-# (x1 <- phyloseq(otuTable(phylocom$sample, FALSE), phylocom$phylo))
+# (x1 <- phyloseq(otu_table(phylocom$sample, FALSE), phylocom$phylo))
 # UniFrac(x1, TRUE)
 # UniFrac(x1, TRUE, FALSE)
 # UniFrac(x1, FALSE)

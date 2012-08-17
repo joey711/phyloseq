@@ -1,0 +1,55 @@
+\docType{methods}
+\name{otu_table}
+\alias{otuTable}
+\alias{otu_table}
+\alias{otu_table,data.frame-method}
+\alias{otu_table,matrix-method}
+\alias{otu_table,otu_table-method}
+\alias{otu_table,phyloseq-method}
+\title{Build or access the otu_table.}
+\usage{
+  otu_table(object, taxa_are_rows, errorIfNULL=TRUE)
+
+  otuTable(object, taxa_are_rows, errorIfNULL = TRUE)
+}
+\arguments{
+  \item{object}{(Required). An integer matrix,
+  \code{\link{otu_table-class}}, or
+  \code{\link{phyloseq-class}}.}
+
+  \item{taxa_are_rows}{(Conditionally optional). Logical;
+  of length 1. Ignored unless \code{object} is a matrix, in
+  which case it is is required.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}. Ignored if
+  \code{object} argument is a matrix (constructor invoked
+  instead).}
+}
+\value{
+  An \code{\link{otu_table-class}} object.
+}
+\description{
+  This is the suggested method for both constructing and
+  accessing Operational Taxonomic Unit (OTU) abundance
+  (\code{\link{otu_table-class}}) objects. When the first
+  argument is a matrix, otu_table() will attempt to create
+  and return an otu_table-class object, which further
+  depends on whether or not \code{taxa_are_rows} is
+  provided as an additional argument. Alternatively, if the
+  first argument is an experiment-level
+  (\code{\link{phyloseq-class}}) object, then the
+  corresponding \code{otu_table} is returned.
+}
+\examples{
+#
+# data(GlobalPatterns)
+# otu_table(GlobalPatterns)
+}
+\seealso{
+  \code{\link{phy_tree}}, \code{\link{sample_data}},
+  \code{\link{tax_table}} \code{\link{phyloseq}},
+  \code{\link{merge_phyloseq}}
+}
+

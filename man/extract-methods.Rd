@@ -1,14 +1,14 @@
 \name{[}
 \alias{[}
-\alias{[,otuTable-method}
+\alias{[,otu_table-method}
 \alias{[,phyloseq-method}
-\alias{[,sampleData-method}
+\alias{[,sample_data-method}
 \alias{[,taxonomyTable-method}
-\title{Extract parts of otuTable}
+\title{Extract parts of otu_table}
 \description{
-  Extract parts of otuTable
+  Extract parts of otu_table
 
-  extract parts of sampleData
+  extract parts of sample_data
 
   extract parts of taxonomyTable
 

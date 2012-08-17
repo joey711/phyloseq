@@ -1,0 +1,46 @@
+\name{get_taxa_unique}
+\alias{getTaxa}
+\alias{get_taxa_unique}
+\title{Get a unique vector of the observed taxa at a particular taxonomic rank}
+\usage{
+  get_taxa_unique(physeq,
+  taxonomic.rank=rank_names(physeq)[1], errorIfNULL=TRUE)
+
+  getTaxa(physeq, taxonomic.rank = rank_names(physeq)[1],
+  errorIfNULL = TRUE)
+}
+\arguments{
+  \item{physeq}{(Required).
+  \code{\link{taxonomyTable-class}}, or
+  \code{\link{phyloseq-class}}.}
+
+  \item{taxonomic.rank}{(Optional). Character. The
+  taxonomic rank to use. Must select from the set indicated
+  by \code{get_taxa_unique}. Default is to take the first
+  column of the \code{taxonomyTable} component.}
+
+  \item{errorIfNULL}{(Optional). Logical. Should the
+  accessor stop with an error if the slot is empty
+  (\code{NULL})? Default \code{TRUE}.}
+}
+\value{
+  Character vector. Unique vector of the observed taxa at a
+  particular taxonomic rank
+}
+\description{
+  This is a simple accessor function to make it more
+  convenient to determine the different taxa present for a
+  particular taxonomic rank in a given
+  \code{\link{phyloseq-class}} object.
+}
+\examples{
+data(enterotype)
+get_taxa_unique(enterotype)
+data(GlobalPatterns)
+get_taxa_unique(GlobalPatterns, "Family")
+}
+\seealso{
+  \code{\link{get_taxa}} \code{\link{taxa_names}}
+  \code{\link{sample_names}}
+}
+

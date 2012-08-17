@@ -6,7 +6,7 @@
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
-  or alternatively, an \code{\link{otuTable-class}}. The
+  or alternatively, an \code{\link{otu_table-class}}. The
   data about which you want to estimate the richness.}
 
   \item{split}{(Optional). Logical. Should a separate set

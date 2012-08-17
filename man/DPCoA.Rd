@@ -8,10 +8,11 @@ using phylogenetic distance}
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}}
   object containing, at a minimum, abundance
-  (\code{\link{otuTable-class}}) and phylogenetic
+  (\code{\link{otu_table-class}}) and phylogenetic
   (\code{\link[ape]{phylo}}) components. As a test, the
-  accessors \code{\link{otuTable}} and \code{\link{tre}}
-  should return an object without error.}
+  accessors \code{\link{otu_table}} and
+  \code{\link{phy_tree}} should return an object without
+  error.}
 
   \item{correction}{(Optional). A function. The function
   must be able to take a non-Euclidean
@@ -47,7 +48,7 @@ using phylogenetic distance}
   \code{\link[ade4]{dpcoa}}).
 }
 \description{
-  Function uses abundance (\code{\link{otuTable-class}})
+  Function uses abundance (\code{\link{otu_table-class}})
   and phylogenetic (\code{\link[ape]{phylo}}) components of
   a \code{\link{phyloseq-class}} experiment-level object to
   perform a Double Principle Coordinate Analysis (DPCoA),
@@ -75,8 +76,8 @@ using phylogenetic distance}
 # # # # # # # GlobalPatterns
 # data(GlobalPatterns)
 # # subset GP to top-150 taxa (to save computation time in example)
-# keepTaxa <- names(sort(speciesSums(GlobalPatterns), TRUE)[1:150])
-# GP       <- prune_species(keepTaxa, GlobalPatterns)
+# keepTaxa <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:150])
+# GP       <- prune_taxa(keepTaxa, GlobalPatterns)
 # # Perform DPCoA
 # GP.dpcoa <- DPCoA(GP)
 # plot_ordination(GP, GP.dpcoa, color="SampleType")
