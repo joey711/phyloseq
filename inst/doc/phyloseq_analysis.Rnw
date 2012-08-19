@@ -138,7 +138,7 @@ sample_data(GP)$human <- factor(human)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness{\_}estimates} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
 
-\setkeys{Gin}{width=0.6\textwidth}
+\setkeys{Gin}{width=0.4\textwidth}
 <<richness_estimates0, echo=TRUE, fig=TRUE, width=11,height=7>>=
 (p <- plot_richness_estimates(GP, "human", "SampleType"))
 @
@@ -155,7 +155,7 @@ p + geom_boxplot(data=p$data, aes(x=human, y=value, color=NULL), alpha=0.1)
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
+%\clearpage
 \subsection{Exploratory tree plots}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \emph{phyloseq} also contains a method for easily plotting an annotated phylogenetic tree with information regarding the sample in which a particular taxa was observed, and optionally the number of individuals that were observed. 
@@ -170,17 +170,12 @@ And now we will create the tree graphic form this subset of \code{GlobalPatterns
 % % from this point forward (can use more than once to change back):
 % \setkeys{Gin}{width=0.75\textwidth}
 
-<<fig=FALSE>>=
-(p <- plot_tree(GP.chl, color="SampleType", shape="Family",
-					label.tips="Genus", size="abundance"))
-@
-<<echo=FALSE>>=
-ggsave("phyloseq_analysis-plot_tree_example.pdf", p, width=15, height=7)
-@
-
+\setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.99\textwidth]{phyloseq_analysis-plot_tree_example.pdf}
+<<GP:chl:tree, fig=TRUE, width=15, height=7>>=
+plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
+@
 \caption{Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
 \label{fig:treeplot}
 \end{figure}
@@ -196,17 +191,18 @@ data(enterotype)
 @
 We start with a simple rank-abundance barplot, using the cumulative fractional abundance of each OTU in the dataset. In the enterotype dataset, the available published data are simplified as sample-wise fractional occurrences, rather than counts of individuals\footnote{Unfortunate, as this means we lose information about the total number of reads and associated confidences, ability to do more sophisticated richness estimates, etc. For example, knowing that we observed 1 sequence read of a species out of 100 total reads means something very different from observing 10,000 reads out of 1,000,000 total.}, and OTUs are clustered/labeled at the genus level, but no other taxonomic assignment is available. For the barplot in Figure~\ref{fig:abundbarplot}, we further normalize by the total number of samples (\Sexpr{nsamples(enterotype)}).
 
-<<EntAbundPlot, include=FALSE, fig=TRUE, height=6, width=8>>=
+\setkeys{Gin}{width=0.6\textwidth}
+\begin{figure}[htbp]
+\centering
+<<EntAbundPlot, fig=TRUE, height=6, width=8>>=
 par(mar = c(10, 4, 4, 2) + 0.1) # make more room on bottom margin
 N <- 30
 barplot(sort(taxa_sums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
 @
-\begin{figure}[htbp]
-\centering
-\includegraphics[trim = 10mm 10mm 10mm 15mm, clip, width=0.6\textwidth]{phyloseq_analysis-EntAbundPlot}
 \caption{An example exploratory barplot using base \code{R} graphics and the \code{taxa{\_}sums} and \code{nsamples} functions.}
 \label{fig:abundbarplot}
 \end{figure}
+\setkeys{Gin}{width=0.8\textwidth}
 
 Note that this first barplot is clipped at the \Sexpr{N}th OTU. This was chosen because \code{ntaxa(enterotype) =} \Sexpr{ntaxa(enterotype)} OTUs would not be legible on the plot. As you can see, the relative abundances have decreased dramatically by the 10th-ranked OTU.  
 
@@ -233,20 +229,17 @@ sample_variables(ent10)
 The parameters to \code{plot{\_}taxa{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sample{\_}data}, the \code{plot{\_}taxa{\_}bar()} function recognizes a special parameter name \code{"TaxaGroup"}, which is not (should not be) a sample variable name in
 \mbox{\code{sample{\_}data(enterotype)}}, but instead indicates that the particular graphic parameter should group values by the taxanomic rank specified in the \code{taxavec} argument. In this example we have also elected to separate the samples by ``facets'' (separate, adjacent sub-plots) according to the enterotype to which they have been assigned. Within each enterotype facet, the samples are further separated by sequencing technology, and the genera is indicated by fill color. Multiple samples having the same enterotype designation and sequencing technology are plotted side-by-side as separate bars. 
 
-<<entbarplot0, include=FALSE, fig=FALSE, height=6, width=8>>=
-(p <- plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") +
-			facet_wrap(~Enterotype) )
-@
-<<echo=FALSE, include=FALSE, eval=TRUE>>=
-ggsave("phyloseq_analysis-entbarplot.pdf", p, width=8, height=6)
-@
+\setkeys{Gin}{width=1.1\textwidth}
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=1.1\textwidth]{phyloseq_analysis-entbarplot}
+<<entbarplot0, fig=TRUE, height=6, width=8>>=
+plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype)
+@
 \captionsetup{width=1.0\textwidth}
 \caption{An example exploratory barplot using the \code{plot{\_}taxa{\_}bar()} function. In this case we have faceted the samples according to their assigned Enterotype. The small subset of samples in the dataset that do not have an assigned Enterotype are shown in the \code{NA} panel. Within each Enterotype facet, the samples are further separated by sequencing technology, and each genera is shaded a different color. Multiple samples from the same Enterotype and sequencing technology are plotted side-by-side as separate bars (dodged).}
 \label{fig:barplot}
 \end{figure}
+\setkeys{Gin}{width=0.8\textwidth}
 
 Figure~\ref{fig:barplot} summarizes quantitatively the increased abundances of \emph{Bacteroides} and \emph{Prevotella} in the Enterotypes 1 and 2, respectively. Interestingly, a large relative abundance of \emph{Blautia} was observed for Enterotype 3, but only from 454-pyrosequencing data sets, not the Illumina or Sanger datasets. This suggests the increased \emph{Blautia} might actually be an artifact. Similarly, \emph{Prevotella} appears to be one of the most abundant genera in the Illumina-sequenced samples among Enterotype 3, but this is not reproduced in the 454-pyrosequencing or Sanger sequencing data.
 
@@ -659,27 +652,15 @@ GP.hclust     <- hclust(GPUF, method="average")
 
 Plot the hierarchical clustering results as a dendrogram, after first converting the \code{hclust-class} object to \code{phylo-class} tree using the \code{as.phylo()} function.
 
-Create an alternative plot, using the Jaccard distance and complete-linkage clustering (the default) instead of UPGMA.
-
+\setkeys{Gin}{width=0.7\textwidth}
 \begin{figure}[htbp]
 \centering
-\subfloat[UniFrac / UPGMA]{\label{fig:sub:GPfig4}
-\setkeys{Gin}{width=0.45\textwidth}
-<<GPfig4, fig=TRUE, include=FALSE, width=5, height=6>>=
+<<GPfig4, fig=TRUE, width=7, height=4>>=
 plot(as.phylo(GP.hclust), show.tip.label=TRUE, tip.color="white")
 tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
 @
-%\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPfig4}}
-\subfloat[Jaccard / CLC]{\label{fig:sub:GPjaccCLC}
-\setkeys{Gin}{width=0.45\textwidth}
-<<GPfig4jaccCLC, fig=TRUE, include=FALSE, width=5, height=6>>=
-jaccCLC <- hclust(distance(GlobalPatterns, "jaccard"))
-plot( as.phylo(jaccCLC), show.tip.label=TRUE, tip.color="white" )
-tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
-@
-%\includegraphics[width=0.5\textwidth]{phyloseq_analysis-GPfig4jaccCLC}}
-\captionsetup{width=1.0\textwidth}
-\caption{An alternative means of summarizing a distance matrix via hierarchical clustering and plotting as an annotated dendrogram. Compare with Figure 4 from the ``Global Patterns'' article~\cite{Caporaso15032011}. Panel~\ref{fig:sub:GPfig4} represents a faithful reproduction of the original approach from the article using \code{R} utilities, while Panel~\ref{fig:sub:GPjaccCLC} is an illustration of slightly different results with different choices of distance measure and clustering algorithm. Some differences in Panel~\ref{fig:sub:GPfig4} from the original article might be explained by the \code{GlobalPatterns} dataset in \emph{phyloseq} includes the summed observations from both directions (5' and 3'), while in the article they show the results separately. Furthermore, in the article the ``mock'' community is not included in the dataset, but an extra fecal sample is included.
+\captionsetup{width=0.7\textwidth}
+\caption{An alternative means of summarizing a distance matrix via hierarchical clustering and plotting as an annotated dendrogram. Compare with Figure 4 from the ``Global Patterns'' article~\cite{Caporaso15032011}. Some differences in Figure~\ref{fig:GPfig4} from the original article might be explained by \code{GlobalPatterns} in \emph{phyloseq} being the summed observations from both primer directions (5' and 3'), while in the article they show the results separately. Furthermore, in the article the ``mock'' community is not included in the dataset, but an extra fecal sample is included.
 }
 \label{fig:GPfig4}
 \end{figure}
