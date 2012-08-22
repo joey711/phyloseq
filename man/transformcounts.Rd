@@ -26,7 +26,7 @@
   \code{\link{prune_taxa}} functions are suggested.
 }
 \description{
-  This function transforms the sample counts of a species
+  This function transforms the sample counts of a taxa
   abundance matrix according to a user-provided function.
   The counts of each sample will be transformed
   individually. No sample-sample interaction/comparison is

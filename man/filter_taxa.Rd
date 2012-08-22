@@ -19,7 +19,7 @@
   logical vector of taxa that passed the filter.}
 }
 \value{
-  A logical vector equal to the number of species (taxa) in
+  A logical vector equal to the number of taxa in
   \code{physeq}. This can be provided directly to
   \code{\link{prune_taxa}} as first argument.
   Alternatively, if \code{prune==TRUE}, the pruned

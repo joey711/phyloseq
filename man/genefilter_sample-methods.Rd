@@ -20,8 +20,8 @@
   \code{\link{filterfun_sample}}}
 
   \item{A}{An integer. The number of samples in which a
-  taxa / species passed the filter for it to be labeled
-  TRUE in the output logical vector.}
+  taxa / OTUs passed the filter for it to be labeled TRUE
+  in the output logical vector.}
 }
 \value{
   A logical vector with names equal to taxa_names (or

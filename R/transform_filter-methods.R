@@ -454,27 +454,33 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 }
 ################################################################################
 ################################################################################
-#' Prune unwanted species / taxa from a phylogenetic object.
+#' Prune unwanted OTUs / taxa from a phylogenetic object.
 #' 
-#' An S4 Generic method for removing (pruning) unwanted taxa from phylogenetic
+#' An S4 Generic method for removing (pruning) unwanted OTUs/taxa from phylogenetic
 #' objects, including phylo-class trees, as well as native phyloseq package
 #' objects. This is particularly useful for pruning a phyloseq object that has
-#' more than one component that describes species.
-#' The \code{phylo}-class version is adapted from \code{picante::prune.samples}.
+#' more than one component that describes OTUs.
+#' Credit: the \code{phylo}-class version is adapted from
+#' \code{\link[picante]{prune.sample}}.
 #'
-#' @param species (Required). A character vector of the species in object x that you want to
-#' keep -- OR alternatively -- a logical vector where the kept species are TRUE, and length
-#' is equal to the number of species in object x. If \code{species} is a named
-#' logical, the species retained is based on those names. Make sure they are
+#' @param taxa (Required). A character vector of the taxa in object x that you want to
+#' keep -- OR alternatively -- a logical vector where the kept taxa are TRUE, and length
+#' is equal to the number of taxa in object x. If \code{taxa} is a named
+#' logical, the taxa retained are based on those names. Make sure they are
 #' compatible with the \code{taxa_names} of the object you are modifying (\code{x}). 
 #'
 #' @param x (Required). A phylogenetic object, including \code{phylo} trees,
-#' as well as all phyloseq classes that represent taxa / species. If the function
+#' as well as all phyloseq classes that represent taxa. If the function
 #' \code{\link{taxa_names}} returns a non-\code{NULL} value, then your object
 #' can be pruned by this function.
 #'
 #' @return The class of the object returned by \code{prune_taxa} matches
 #' the class of the argument, \code{x}.
+#'
+#' @seealso
+#'  \code{\link{prune_taxa}}
+#'
+#'  \code{\link[picante]{prune.sample}}
 #'
 #' @rdname prune_taxa-methods
 #' @export
@@ -489,23 +495,23 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' ## tax_table1 <- tax_table(matrix("abc", 5, 5))
 #' ## prune_taxa(wh1, tax_table1)
 #' ## prune_taxa(wh2, tax_table1)
-setGeneric("prune_taxa", function(species, x) standardGeneric("prune_taxa"))
+setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
 ################################################################################
 #' @aliases prune_taxa,NULL,ANY-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("NULL"), function(species, x){
+setMethod("prune_taxa", signature("NULL"), function(taxa, x){
 	return(x)
 })
 ################################################################################
 #' @aliases prune_taxa,character,phylo-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "phylo"), function(species, x){
-	if( length(species) <= 1 ){
+setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
+	if( length(taxa) <= 1 ){
 		# Can't have a tree with 1 or fewer tips
 		warning("prune_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
 		return(NULL)
 	}
-	trimTaxa <- setdiff(x$tip.label, species)
+	trimTaxa <- setdiff(x$tip.label, taxa)
 	if( length(trimTaxa) > 0 ){
 		return( drop.tip(x, trimTaxa) )
 	} else {
@@ -515,40 +521,40 @@ setMethod("prune_taxa", signature("character", "phylo"), function(species, x){
 ################################################################################
 #' @aliases prune_taxa,character,otu_table-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "otu_table"), function(species, x){
-	species <- intersect( species, taxa_names(x) )
+setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
+	taxa <- intersect( taxa, taxa_names(x) )
 	if( taxa_are_rows(x) ){
-		x[species, , drop=FALSE]
+		x[taxa, , drop=FALSE]
 	} else {
-		x[, species, drop=FALSE]
+		x[, taxa, drop=FALSE]
 	}	
 })
 ################################################################################
 #' @aliases prune_taxa,character,sample_data-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "sample_data"), function(species, x){
+setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
 	return(x)
 })
 ################################################################################
 #' @aliases prune_taxa,character,phyloseq-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "phyloseq"), 
-		function(species, x){
+		function(taxa, x){
 			
-	# Save time and return if the union of all component species names
-	# captured by taxa_names(x) is same as species. 
-	if( setequal(taxa_names(x), species) ){
+	# Save time and return if the union of all component taxa names
+	# captured by taxa_names(x) is same as taxa. 
+	if( setequal(taxa_names(x), taxa) ){
 		return(x)
 	} else {	
 		# All phyloseq objects have an otu_table slot, no need to test.
-		x@otu_table   <- prune_taxa(species, otu_table(x))
+		x@otu_table   <- prune_taxa(taxa, otu_table(x))
 		
 		# Test if slot is present. If so, perform the component prune.
 		if( !is.null(access(x, "tax_table")) ){
-			x@tax_table <- prune_taxa(species, tax_table(x))
+			x@tax_table <- prune_taxa(taxa, tax_table(x))
 		}
 		if( !is.null(access(x, "phy_tree")) ){
-			x@phy_tree    <- prune_taxa(species, phy_tree(x))
+			x@phy_tree    <- prune_taxa(taxa, phy_tree(x))
 		}
 		return(x)
 	}
@@ -557,21 +563,21 @@ setMethod("prune_taxa", signature("character", "phyloseq"),
 #' @aliases prune_taxa,character,taxonomyTable-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "taxonomyTable"), 
-		function(species, x){
-	species <- intersect( species, taxa_names(x) )
-	return( x[species, , drop=FALSE] )
+		function(taxa, x){
+	taxa <- intersect( taxa, taxa_names(x) )
+	return( x[taxa, , drop=FALSE] )
 })
 ################################################################################
 #' @aliases prune_taxa,logical,ANY-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("logical", "ANY"), function(species, x){
-	# convert the logical argument to character and dispatch
-	if( is.null(names(species)) ){
-		species <- taxa_names(x)[species]
+setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
+	# Check that logical has same length as ntaxa, stop if not.
+	if( !identical(length(taxa), ntaxa(x)) ){
+		stop("logical argument to taxa is wrong length. Should equal ntaxa(x)")
 	} else {
-		species <- names(species)[species]
+		# Pass on to names-based prune_taxa method
+		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
-	prune_taxa(species, x)
 })
 ################################################################################
 ################################################################################
@@ -581,8 +587,11 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(species, x){
 #'
 #' @usage prune_samples(samples, x)
 #'
-#' @param samples A character vector of the samples in object x that you want to
-#' keep. 
+#' @param samples (Required). A character vector of the samples in object x that you want to
+#' keep -- OR alternatively -- a logical vector where the kept samples are TRUE, and length
+#' is equal to the number of samples in object x. If \code{samples} is a named
+#' logical, the samples retained is based on those names. Make sure they are
+#' compatible with the \code{taxa_names} of the object you are modifying (\code{x}). 
 #'
 #' @param x A phyloseq object.
 #'
@@ -595,17 +604,13 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(species, x){
 #' @docType methods
 #' @export
 #' @examples #
-#'  # data(GlobalPatterns)
-#'  # GP <- GlobalPatterns
-#'  # B_only_sample_names <- sample_names(sample_data(GP)[(sample_data(GP)[, "Gender"]=="B"),])
-#'  # ex2 <- prune_samples(B_only_sample_names, GP)
-#'  # ex3 <- subset_samples(GP, Gender=="B")
-#'  # ## This should be TRUE.
-#'  # identical(ex2, ex3)
-#'  # ## Here is a simpler example: Make new object with only the first 5 samples
-#'  # ex4 <- prune_samples(sample_names(GP)[1:5], GP)
+#'  data(GlobalPatterns)
+#'  # Subset to just the Chlamydiae phylum.
+#'  GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
+#'  # Remove the samples that have less than 20 total reads from Chlamydiae
+#'  GP.chl <- prune_samples(sampleSums(GP.chl)>=20, GP.chl)
+#'  # (p <- plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance"))
 setGeneric("prune_samples", function(samples, x) standardGeneric("prune_samples"))
-################################################################################
 #' @aliases prune_samples,character,otu_table-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "otu_table"), function(samples, x){
@@ -615,13 +620,11 @@ setMethod("prune_samples", signature("character", "otu_table"), function(samples
 		x[samples, ]
 	}
 })
-################################################################################
 #' @aliases prune_samples,character,sample_data-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "sample_data"), function(samples, x){
 	x[samples, ]
 })
-################################################################################
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
@@ -632,6 +635,18 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 	# Don't need to protect otu_table, it is mandatory for phyloseq-class
 	x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )
 	return(x)
+})
+# A logical should specify the samples to keep, or not. Have same length as nsamples(x) 
+#' @aliases prune_samples,logical,ANY-method
+#' @rdname prune_samples-methods
+setMethod("prune_samples", signature("logical", "ANY"), function(samples, x){
+	# Check that logical has same length as nsamples, stop if not.
+	if( !identical(length(samples), nsamples(x)) ){
+		stop("logical argument to samples is wrong length. Should equal nsamples(x)")
+	} else {
+		# Pass on to names-based prune_samples method
+		return( prune_samples(sample_names(x)[samples], x) )		
+	}
 })
 ################################################################################
 #' Thresholded rank transformation.
@@ -744,7 +759,7 @@ setMethod("t", signature("phyloseq"), function(x){
 ################################################################################
 #' Transform the abundance count data in an \code{otu_table}, sample-by-sample.
 #' 
-#' This function transforms the sample counts of a species
+#' This function transforms the sample counts of a taxa
 #' abundance matrix according to a user-provided function.
 #' The counts of each sample will be transformed individually. No sample-sample 
 #' interaction/comparison is possible by this method. 
@@ -823,7 +838,7 @@ transformSampleCounts <- transform_sample_counts
 #'
 #' @param flist An enclosure object, typically created with \code{\link{filterfun_sample}}
 #'
-#' @param A An integer. The number of samples in which a taxa / species passed the filter
+#' @param A An integer. The number of samples in which a taxa / OTUs passed the filter
 #' for it to be labeled TRUE in the output logical vector.
 #'
 #' @return A logical vector with names equal to taxa_names (or rownames, if matrix).
@@ -940,7 +955,7 @@ filterfun_sample = function(...){
 #'  the function returns the pruned \code{\link{phyloseq-class}} object, rather
 #'  than the logical vector of taxa that passed the filter.
 #' 
-#' @return A logical vector equal to the number of species (taxa) in \code{physeq}.
+#' @return A logical vector equal to the number of taxa in \code{physeq}.
 #'  This can be provided directly to \code{\link{prune_taxa}} as first argument.
 #'  Alternatively, if \code{prune==TRUE}, the pruned \code{\link{phyloseq-class}} 
 #'  object is returned instead.

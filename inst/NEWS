@@ -16,6 +16,23 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.41
+===========
+- Fixed documentation for `prune_taxa` and `prune_samples`
+- Updated `prune_samples` method to allow for logical vectors.
+- Fixed `prune_taxa` so that it properly fails with a message if the taxa argument is a logical of wrong length.
+   There was some potential (and no warning) for unpredictable vector-recycling
+   with short vectors in the old implementation.
+
+phyloseq 1.1.40
+===========
+## Huge Update and Renaming Event.
+- Made all functions use an *underscore* for English word delimiter, if they were using an abbreviation. 
+- Replaced "species" in all function names with "taxa". 
+- These changes are all backward compatible, for now, so your old code should work. Let me know if it doesn't and I will quickly make the adjustment. This will remain true through the next official release,
+but functional references to "species" will not be supported afterward,
+except in the occasions where you actually mean taxonomic species, like `tax_glom(x, "species")`.
+
 phyloseq 1.1.33
 ===========
 Revise taxglom() such that it handles phyloseq and taxonomyTable classes,
