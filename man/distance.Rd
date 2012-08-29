@@ -46,7 +46,7 @@
 
   \item{type}{(Optional). A character string. The type of
   pairwise comparisons being calculated: sample-wise or
-  species-wise. The default is \code{c("samples")}.}
+  taxa-wise. The default is \code{c("samples")}.}
 
   \item{...}{Additional arguments passed on to the
   appropriate distance function, determined by the

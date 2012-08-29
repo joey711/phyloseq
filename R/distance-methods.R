@@ -62,7 +62,7 @@
 #'  described in \code{\link{designdist}}. 
 #'
 #' @param type (Optional). A character string. The type of pairwise comparisons
-#'  being calculated: sample-wise or species-wise. The default is 
+#'  being calculated: sample-wise or taxa-wise. The default is 
 #'  \code{c("samples")}.
 #'
 #' @param ... Additional arguments passed on to the appropriate distance 
@@ -160,6 +160,11 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	# # non-phyloseq methods are assumed to be based on otu_table-only (for now)
 	# # If necessary (non phyloseq funs), enforce orientation, build function.
 	OTU <- otu_table(physeq)
+
+	# disambiguate type argument... Must be "species" for vegan integration...
+	if( type %in% c("taxa", "species", "OTUs", "otus", "otu") ){
+		type <- "species"
+	}
 
 	# Test type, and enforce orientation accordingly	
 	if( type == "species"){
