@@ -19,11 +19,10 @@
 
   \item{type}{(Optional). Default \code{"samples"}. Whether
   the network represented in the primary argument,
-  \code{g}, is samples or taxa/species. Supported arguments
-  are \code{"samples"}, \code{"species"}, where
-  \code{"species"} indicates using the taxa indices,
-  whether they actually represent species or some other
-  taxonomic rank.}
+  \code{g}, is samples or taxa/OTUs. Supported arguments
+  are \code{"samples"}, \code{"taxa"}, where \code{"taxa"}
+  indicates using the taxa indices, whether they actually
+  represent species or some other taxonomic rank.}
 
   \item{color}{(Optional). Default \code{NULL}. The name of
   the sample variable in \code{physeq} to use for color
@@ -82,13 +81,13 @@
   \code{\link{phyloseq-package}} it is suggested that the
   network object (argument \code{g}) be created using the
   \code{\link{make_network}} function, and based upon
-  sample-wise or species-wise microbiome ecological
-  distances calculated from a phylogenetic sequencing
-  experiment (\code{\link{phyloseq-class}}). In this case,
-  edges in the network are created if the distance between
-  nodes is below a potentially arbitrary threshold, and
-  special care should be given to considering the choice of
-  this threshold.
+  sample-wise or taxa-wise microbiome ecological distances
+  calculated from a phylogenetic sequencing experiment
+  (\code{\link{phyloseq-class}}). In this case, edges in
+  the network are created if the distance between nodes is
+  below a potentially arbitrary threshold, and special care
+  should be given to considering the choice of this
+  threshold.
 }
 \examples{
 data(enterotype)

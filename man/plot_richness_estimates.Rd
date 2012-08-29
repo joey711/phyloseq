@@ -12,7 +12,7 @@
 
   \item{x}{(Optional). A variable to map to the horizontal
   axis. The vertical axis will be mapped to richness
-  estimates and have units of total species. This parameter
+  estimates and have units of total taxa. This parameter
   (\code{x}) can be either a character string indicating a
   variable in \code{sample_data} (among the set returned by
   \code{sample_variables(physeq)} ); or a custom supplied

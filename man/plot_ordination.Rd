@@ -102,7 +102,7 @@
 \examples{
 data(GlobalPatterns)
 # Need to clean the zeros from GlobalPatterns:
-GP <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+GP <- prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 # Define a human-associated versus non-human binary variable:
 sample_data(GP)$human <- get_variable(GP, "SampleType") \%in\% c("Feces", "Mock", "Skin", "Tongue")
 # Get the names of the most-abundant
@@ -111,9 +111,9 @@ tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
 decreasing = TRUE)
 top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 # Now prune further, to just the most-abundant phyla
-GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
+GP <- subset_taxa(GP, Phylum \%in\% names(top.TaxaGroup))
 topsp <- names(sort(taxa_sums(GP), TRUE)[1:200])
-GP1   <- prune_species(topsp, GP)
+GP1   <- prune_taxa(topsp, GP)
 GP.dpcoa <- ordinate(GP1, "DPCoA")
 plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
 # Customize with ggplot2 layers added directly to output
@@ -123,7 +123,7 @@ p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape="h
 print(p)
 # library("ggplot2")
 # p + geom_line() + geom_point(size=5)
-# plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
+# plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum") + geom_line() + geom_point(size=5)
 plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
 plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
 plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")

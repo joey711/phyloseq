@@ -16,6 +16,10 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.42
+===========
+- fixed make_network/plot_network issue from species/taxa replacement.
+
 phyloseq 1.1.41
 ===========
 - Fixed documentation for `prune_taxa` and `prune_samples`

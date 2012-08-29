@@ -68,7 +68,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' (argument \code{g})
 #' be created using the
 #'  \code{\link{make_network}} function, 
-#' and based upon sample-wise or species-wise microbiome ecological distances 
+#' and based upon sample-wise or taxa-wise microbiome ecological distances 
 #' calculated from a phylogenetic sequencing experiment 
 #' (\code{\link{phyloseq-class}}).
 #' In this case, edges in the network are created if the distance between
@@ -90,9 +90,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'
 #' @param type (Optional). Default \code{"samples"}.
 #'  Whether the network represented in the primary argument, \code{g},
-#'  is samples or taxa/species.
-#'  Supported arguments are \code{"samples"}, \code{"species"},
-#'  where \code{"species"} indicates using the taxa indices,
+#'  is samples or taxa/OTUs.
+#'  Supported arguments are \code{"samples"}, \code{"taxa"},
+#'  where \code{"taxa"} indicates using the taxa indices,
 #'  whether they actually represent species or some other taxonomic rank.
 #'
 #' @param color (Optional). Default \code{NULL}.
@@ -167,6 +167,11 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	line_weight=0.5, line_color=color, line_alpha=0.4,
 	layout.method=layout.fruchterman.reingold){
 
+	# disambiguate species/OTU/taxa as argument type...
+	if( type %in% c("taxa", "species", "OTUs", "otus", "otu") ){
+		type <- "taxa"
+	}
+
 	# Make the edge-coordinates data.frame
 	edgeDF    <- data.frame(get.edgelist(g))
 	edgeDF$id <- 1:length(edgeDF[, 1])
@@ -183,7 +188,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 		extraData <- NULL
 		if( type == "samples" & !is.null(sample_data(physeq, FALSE)) ){
 			extraData <- sample_data(physeq)[as.character(vertDF$value), ]
-		} else if( type == "species" & !is.null(tax_table(physeq, FALSE)) ){
+		} else if( type == "taxa" & !is.null(tax_table(physeq, FALSE)) ){
 			extraData <- tax_table(physeq)[as.character(vertDF$value), ]
 		}
 		# Only mod vertDF if extraData exists
@@ -254,7 +259,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  the richness.
 #'
 #' @param x (Optional). A variable to map to the horizontal axis. The vertical
-#'  axis will be mapped to richness estimates and have units of total species.
+#'  axis will be mapped to richness estimates and have units of total taxa.
 #'  This parameter (\code{x}) can be either a character string indicating a
 #'  variable in \code{sample_data} 
 #'  (among the set returned by \code{sample_variables(physeq)} );
@@ -364,7 +369,7 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 		geom_point(size=2) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
 		opts(axis.text.x = theme_text(angle = -90, hjust = 0)) +
-		scale_y_continuous('richness [number of species]') +
+		scale_y_continuous('richness [number of taxa]') +
 		facet_grid(~variable) 
 	return(p)
 }
@@ -478,7 +483,7 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 #' @examples 
 #' data(GlobalPatterns)
 #' # Need to clean the zeros from GlobalPatterns:
-#' GP <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+#' GP <- prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
 #' # Define a human-associated versus non-human binary variable:
 #' sample_data(GP)$human <- get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
 #' # Get the names of the most-abundant
@@ -487,9 +492,9 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 #'    decreasing = TRUE)
 #' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 #' # Now prune further, to just the most-abundant phyla
-#' GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
+#' GP <- subset_taxa(GP, Phylum %in% names(top.TaxaGroup))
 #' topsp <- names(sort(taxa_sums(GP), TRUE)[1:200])
-#' GP1   <- prune_species(topsp, GP)
+#' GP1   <- prune_taxa(topsp, GP)
 #' GP.dpcoa <- ordinate(GP1, "DPCoA")
 #' plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
 #' # Customize with ggplot2 layers added directly to output
@@ -499,7 +504,7 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 #' print(p)
 #' # library("ggplot2")
 #' # p + geom_line() + geom_point(size=5)
-#' # plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum") + geom_line() + geom_point(size=5)
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
@@ -512,8 +517,8 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	if(class(physeq)!="phyloseq"){
 		warning("Full functionality requires physeq be phyloseq-class with multiple components.")
 	}
-	if(type == "samples"){type <- "sites"} # Compatibility with phyloseq
-	if(type == "taxa"){type <- "species"} # Compatibility with phyloseq
+	if(type == "samples"){type <- "sites"} # vegan compatibility with phyloseq
+	if(type == "taxa"){type <- "species"} # vegan compatibility with phyloseq
 	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
 
 	# Build data.frame:

@@ -16,12 +16,12 @@
 #'  on which \code{g} is based. \code{phyloseq-class} recommended.
 #'
 #' @param type (Optional). Default \code{"samples"}.
-#'  Whether the network should be samples or taxa/species.
-#'  Supported arguments are \code{"samples"}, \code{"species"},
-#'  where \code{"species"} indicates using the taxa indices,
+#'  Whether the network should be samples or taxa/OTUs.
+#'  Supported arguments are \code{"samples"}, \code{"taxa"},
+#'  where \code{"taxa"} indicates using the OTUs/taxaindices,
 #'  whether they actually represent species or some other taxonomic rank.
 #'
-#'  NOTE: not all distance methods are supported if \code{"species"}
+#'  NOTE: not all distance methods are supported if \code{"taxa"}
 #'  selected for type. For example, the UniFrac distance and DPCoA
 #'  cannot be calculated for taxa-wise distances, because they use
 #'  a taxa-wise tree as part of their calculation between samples, and
@@ -41,7 +41,7 @@
 #'  can be provided as \code{distance} instead (see examples).
 #' 
 #'  A third alternative is to provide a function that takes 
-#'  a sample-by-species matrix (typical vegan orientation)
+#'  a sample-by-taxa matrix (typical vegan orientation)
 #'  and returns a sample-wise distance
 #'  matrix. 
 #' 
@@ -97,8 +97,8 @@
 make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
 	keep.isolates=FALSE, ...){
 
-	if( type %in% c("taxa", "species", "OTUs")){
-	    # Calculate or asign species-wise distance matrix
+	if( type %in% c("taxa", "species", "OTUs", "otus", "otu")){
+	    # Calculate or asign taxa-wise distance matrix
 	    if( class(distance) == "dist" ){ # If argument is already a distance matrix.
 	    	# If distance a distance object, use it rather than re-calculate
 	    	obj.dist <- distance
@@ -115,7 +115,7 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 	
 		# Else, assume a custom function and attempt to calculate.
 	    } else { 	
-	    	# Enforce orientation for species-wise distances
+	    	# Enforce orientation for taxa-wise distances
 		    if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
 		    
 		    # Calculate distances
@@ -165,7 +165,7 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 		CoMa <- SaDiMa < max.dist  
 		  
 	} else {
-		stop("type argument must be one of \n (1) samples \n or \n (2) species")
+		stop("type argument must be one of \n (1) samples \n or \n (2) taxa")
 	}
     
     # Calculate the igraph0-formatted network
