@@ -16,6 +16,11 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.44
+===========
+- Fixed minor bug in tax_glom function.
+Thanks to Katie Shelef for the bug report. Bug only affected tax_glom behavior when the right-most rank was specified as the position for merging.
+
 phyloseq 1.1.43
 ===========
 - fixed distance() issue from species/taxa replacement for type argument.

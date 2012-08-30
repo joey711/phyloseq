@@ -446,8 +446,12 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	for( i in names(spCliques)){
 		physeq <- merge_taxa(physeq, eqspecies=spCliques[[i]])
 	}
-	# Empty the values to the right of the rank.
-	tax_table(physeq)[, (CN+1):length(rank_names(physeq))] <- NA
+	
+	# "Empty" the values to the right of the rank, using NA_character_.
+	if( CN < length(rank_names(physeq)) ){
+		badcolumns <- (CN+1):length(rank_names(physeq))
+		tax_table(physeq)[, badcolumns] <- NA_character_
+	}
 	
 	# Return.
 	return(physeq)
