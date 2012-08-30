@@ -1,13 +1,13 @@
 \name{prune_taxa}
 \alias{prune_species}
 \alias{prune_taxa}
-\alias{prune_taxa,NULL,ANY-method}
 \alias{prune_taxa,character,otu_table-method}
 \alias{prune_taxa,character,phylo-method}
 \alias{prune_taxa,character,phyloseq-method}
 \alias{prune_taxa,character,sample_data-method}
 \alias{prune_taxa,character,taxonomyTable-method}
 \alias{prune_taxa,logical,ANY-method}
+\alias{prune_taxa,NULL,ANY-method}
 \title{Prune unwanted OTUs / taxa from a phylogenetic object.}
 \usage{
   prune_species(taxa, x)

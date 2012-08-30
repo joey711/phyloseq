@@ -495,7 +495,8 @@ parse_qiime_tax_string <- function(taxlist, biotaxonomy=NULL, parallel=FALSE, de
 #'  \code{\link{import_env_file}}
 #' @export
 #' @examples 
-#' # import_qiime_sample_data(mapfilename)
+#'  mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
+#'  import_qiime_sample_data(mapfile)
 import_qiime_sample_data <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,

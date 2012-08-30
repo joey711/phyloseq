@@ -1,8 +1,11 @@
 \name{import_qiime_sample_data}
 \alias{import_qiime_sample_data}
+\alias{import_qiime_sampleData}
 \title{Import just \code{sample_data} file from QIIME pipeline.}
 \usage{
   import_qiime_sample_data(mapfilename)
+
+  import_qiime_sampleData(mapfilename)
 }
 \arguments{
   \item{mapfilename}{(Required). A character string or
@@ -32,7 +35,8 @@
   QIIME-produced data files.
 }
 \examples{
-# import_qiime_sample_data(mapfilename)
+mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
+import_qiime_sample_data(mapfile)
 }
 \seealso{
   \code{\link{import}}, \code{\link{merge_phyloseq}},

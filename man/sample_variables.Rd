@@ -1,6 +1,6 @@
 \name{sample_variables}
-\alias{sample.variables}
 \alias{sample_variables}
+\alias{sample.variables}
 \title{Get the sample variables present in sample_data}
 \usage{
   sample_variables(physeq, errorIfNULL=TRUE)

@@ -2,6 +2,11 @@
 # Backward compatibility aliases
 
 
+#' @rdname import_qiime_sample_data
+#' @aliases import_qiime_sample_data
+#' @export
+import_qiime_sampleData <- import_qiime_sample_data
+
 #' @rdname filterfun_sample
 #' @aliases filterfun_sample
 #' @export
