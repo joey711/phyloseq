@@ -205,15 +205,15 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
 	# Strip all the typical annotations from the plot, leave the legend
 	p <- p + theme_bw() + 
-			opts(
-				panel.grid.major = theme_blank(), 
-				panel.grid.minor = theme_blank(), 
-				axis.text.x      = theme_blank(),
-				axis.text.y      = theme_blank(),
-				axis.title.x     = theme_blank(),
-				axis.title.y     = theme_blank(),
-				axis.ticks       = theme_blank(),
-				panel.border     = theme_blank()
+			theme(
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank(), 
+				axis.text.x      = element_blank(),
+				axis.text.y      = element_blank(),
+				axis.title.x     = element_blank(),
+				axis.title.y     = element_blank(),
+				axis.ticks       = element_blank(),
+				panel.border     = element_blank()
 			)
 
 	# Add the graph vertices as points
@@ -368,7 +368,7 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 	p <- ggplot(mdf, richness_map) + 
 		geom_point(size=2) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		opts(axis.text.x = theme_text(angle = -90, hjust = 0)) +
+		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
 		scale_y_continuous('richness [number of taxa]') +
 		facet_grid(~variable) 
 	return(p)
@@ -631,7 +631,7 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	}
 
 	if( !is.null(title) ){
-		p <- p + opts(title = title)
+		p <- p + theme(title = title)
 	}
 	return(p)
 }
@@ -1048,7 +1048,7 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 	########################################
 	# Build the ggplot
 	p  <- ggplot(df) + 
-		opts(axis.text.x=theme_text(angle=-90, hjust=0))
+		theme(axis.text.x=element_text(angle=-90, hjust=0))
 
 	p <- p + 
 		# The full stack
@@ -1062,9 +1062,9 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 			position="dodge", stat="identity"
 		) + 
 		# Some reasonable default options
-		opts(panel.grid.minor = theme_blank()) + 
-		opts(panel.grid.major = theme_blank()) +
-		opts(panel.border = theme_blank()) +
+		theme(panel.grid.minor = element_blank()) + 
+		theme(panel.grid.major = element_blank()) +
+		theme(panel.border = element_blank()) +
 		labs(y="Relative Abundance", x=x, fill=fill)
 		
 	# Should the individual OTU points be added. Default FALSE
@@ -1918,12 +1918,12 @@ plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size
 	}
 	
 	# Theme-ing:
-	p <- p + opts(axis.ticks = theme_blank(),
-			axis.title.x=theme_blank(), axis.text.x=theme_blank(),
-			axis.title.y=theme_blank(), axis.text.y=theme_blank(),
-			panel.background = theme_blank(),
-			panel.grid.minor = theme_blank(),			
-			panel.grid.major = theme_blank()
+	p <- p + theme(axis.ticks = element_blank(),
+			axis.title.x=element_blank(), axis.text.x=element_blank(),
+			axis.title.y=element_blank(), axis.text.y=element_blank(),
+			panel.background = element_blank(),
+			panel.grid.minor = element_blank(),			
+			panel.grid.major = element_blank()
 			)
 	
 	return(p)
@@ -2143,14 +2143,14 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	# # Don't render labels if more than max.label
 	# Samples
 	if( nsamples(physeq) <= max.label ){
-		p <- p + opts(axis.text.x = theme_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
+		p <- p + theme(axis.text.x = element_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
 	} else {
 		# p <- p + scale_x_discrete("Samples", labels=NULL)
 		p <- p + scale_x_discrete("Samples", labels="")
 	}
 	# species
 	if( ntaxa(physeq) <= max.label ){
-		p <- p + opts(axis.text.y = theme_text(size=treetextsize(0.10*ntaxa(physeq))))	
+		p <- p + theme(axis.text.y = element_text(size=treetextsize(0.10*ntaxa(physeq))))	
 	} else {
 		# p <- p + scale_y_discrete("OTU", labels=NULL)
 		p <- p + scale_y_discrete("OTU", labels="")

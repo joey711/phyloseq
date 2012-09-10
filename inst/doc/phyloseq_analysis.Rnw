@@ -523,7 +523,7 @@ LF <- subset(mdf, variable=="CA2" & value < -1.0)
 # build plot: boxplot summaries of each CA-axis, with labels
 p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
   facet_wrap(~variable, 2) + scale_colour_hue(legend = FALSE) +
-  theme_bw() + opts( axis.text.x = theme_text(angle = -90, hjust = 0) )
+  theme_bw() + theme( axis.text.x = element_text(angle = -90, hjust = 0) )
 # Add the text label layer, and render ggplot graphic
 (p <- p + geom_text(aes(Phylum, value+0.1, color=Phylum, label=Family), 
                     data=LF, vjust=0, size=2) )
