@@ -30,7 +30,7 @@ More concretely, [phyloseq](http://joey711.github.com/phyloseq/) provides:
 	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
 	- [plot_ordination](https://github.com/joey711/phyloseq/wiki/plot_ordination)
 	- [plot_network](https://github.com/joey711/phyloseq/wiki/plot_network)
-	- [plot_richness_estimates](https://github.com/joey711/phyloseq/wiki/Graphics-Examples)
+	- [plot_richness](https://github.com/joey711/phyloseq/wiki/plot_richness)
 	- [plot_taxa_bar](https://github.com/joey711/phyloseq/wiki/plot_taxa_bar)
 
  * Multiple testing methods specific to high-throughput phylogenetic sequencing data.
