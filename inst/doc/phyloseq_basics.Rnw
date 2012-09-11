@@ -103,7 +103,7 @@ Let's get started by loading phyloseq, and describing some methods for importing
 \section{Load \emph{phyloseq} and import data}\label{sec:load}
 \subsection{Load \emph{phyloseq}}
 To use \emph{phyloseq} in a new R session, it will have to be loaded. This can be done in your package manager, or at the command line using the \code{library()} command:
-<<>>=
+<<load-packages, message=FALSE, warning=FALSE>>=
   library("phyloseq")
 @
 

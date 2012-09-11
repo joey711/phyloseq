@@ -82,7 +82,7 @@ By contrast, this vignette is intended to provide functional examples of the ana
 
 Let's start by loading the \code{phyloseq-package}:
 
-<<>>=
+<<load-packages, message=FALSE, warning=FALSE>>=
 library("phyloseq")
 library("ggplot2")
 @
@@ -136,11 +136,11 @@ sample_data(GP)$human <- factor(human)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Easy Richness Estimates}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness{\_}estimates} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
+We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
 
 \setkeys{Gin}{width=0.4\textwidth}
 <<richness_estimates0, echo=TRUE, fig=TRUE, width=11,height=7>>=
-(p <- plot_richness_estimates(GP, "human", "SampleType"))
+(p <- plot_richness(GP, "human", "SampleType"))
 @
 
 \setkeys{Gin}{width=0.75\textwidth}
@@ -173,7 +173,7 @@ And now we will create the tree graphic form this subset of \code{GlobalPatterns
 \setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[htbp]
 \centering
-<<GP:chl:tree, fig=TRUE, width=15, height=7>>=
+<<GP:chl:tree, fig=TRUE, width=15, height=7, message=FALSE, warning=FALSE>>=
 plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
 @
 \caption{Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
@@ -286,21 +286,17 @@ determined using an algorithm that optimizes the clarity of the display of netwo
 but the spatial position of points does not imply any continuous similarity information like would be the case in an ordination. 
 In this example, the default dissimilarity index was used (Jaccard, co-occurrence), with a maximum distance of \code{0.3} required to create an edge. Any function that can operate on phyloseq-objects and return a sample-wise distance can be provided as the \code{dist.fun} argument, or a character string of the name of the distance function already supported in phyloseq. Other distances may result in very different clustering, and this is a choice that should be understood and not taken too lightly, although there is little harm in trying many different distances.
 
-<<ent-network, fig=FALSE, eval=TRUE>>=
-data(enterotype)
-ig <- make_network(enterotype, max.dist=0.3)
-(p  <- plot_network(ig, enterotype, color="SeqTech",
-    shape="Enterotype", line_weight=0.4, label=NULL))
-@
-<<echo=FALSE>>=
-ggsave("phyloseq_analysis-plot_sample_network.pdf", p, width=11, height=7)
-@
-
 Interestingly, at this level of analysis and parameter-settings the two major sub-graphs appear to be best explained by the sequencing technology and not the subject enterotype (Figure~\ref{fig:makenetwork}), suggesting that the choice of sequencing technology has a major effect on the microbial community one can observe. This seems to differ somewhat with the inferences described in the ``enterotype'' article~\cite{Arumugam:2011fk}. However, there could be some confounding or hidden variables that might also explain this phenomenon, and the well-known differences in the sequence totals between the technologies may also be an important factor. Furthermore, since this is clearly an experimental artifact (and they were including data from multiple studies that were not orginally planned for this purpose), it may be that the enterotype observation can also be shown in a network analysis of this data after removing the effect of sequencing technology and related sequencing effort. Such an effort would be interesting to show here, but is not yet included.
 
+\setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.99\textwidth]{phyloseq_analysis-plot_sample_network.pdf}
+<<plot_sample_network, fig=TRUE, width=11, height=7, message=FALSE, warning=FALSE>>=
+data(enterotype)
+ig <- make_network(enterotype, max.dist=0.3)
+plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.4, label=NULL)
+@
+%\includegraphics[width=0.99\textwidth]{phyloseq_analysis-plot_sample_network.pdf}
 \caption{Network representation of the relationship between microbiome samples in the ``Enterotype'' dataset~\cite{Arumugam:2011fk}.}
 \label{fig:makenetwork}
 \end{figure}
@@ -320,11 +316,11 @@ plot_ordination(my.physeq, my.ord, color="myFavoriteVarible")
 @
 
 It is probably a good idea to read the documentation for these two functions, as they also provide links to related functions and additional examples you can try immediately on your own machine.
-<<eval=FALSE>>=
-?import
-?ordinate
-?distance
-?plot_ordination
+<<help-import, eval=FALSE>>=
+help(import)
+help(ordinate)
+help(distance)
+help(plot_ordination)
 @
 
 \subsubsection{Principal Coordinates Analysis (PCoA)}\label{sec:PCoA}
@@ -523,7 +519,7 @@ LF <- subset(mdf, variable=="CA2" & value < -1.0)
 # build plot: boxplot summaries of each CA-axis, with labels
 p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
   facet_wrap(~variable, 2) + scale_colour_hue(legend = FALSE) +
-  theme_bw() + opts( axis.text.x = theme_text(angle = -90, hjust = 0) )
+  theme_bw() + theme( axis.text.x = element_text(angle = -90, hjust = 0) )
 # Add the text label layer, and render ggplot graphic
 (p <- p + geom_text(aes(Phylum, value+0.1, color=Phylum, label=Family), 
                     data=LF, vjust=0, size=2) )
