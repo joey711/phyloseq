@@ -931,7 +931,7 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
 #' @usage plot_taxa_bar(physeq, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x,  
-#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
+#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL)
 #'
 #' @param physeq (Required). An \code{\link{otu_table-class}} or 
 #'  \code{\link{phyloseq-class}}.

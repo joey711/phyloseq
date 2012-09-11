@@ -6,7 +6,7 @@
   plot_taxa_bar(physeq, taxavec="Domain",
   showOnlyTheseTaxa=NULL, threshold=NULL, x="sample",
   fill=x, facet_formula = . ~ TaxaGroup, OTUpoints=FALSE,
-  labelOTUs=FALSE)
+  labelOTUs=FALSE, title=NULL)
 
   taxaplot(physeq, taxavec = "Domain", showOnlyTheseTaxa =
   NULL, threshold = NULL, x = "sample", fill = x,
