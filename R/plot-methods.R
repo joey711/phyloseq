@@ -33,7 +33,7 @@
 #'  \code{\link{plot_tree}}
 #'  \code{\link{plot_network}}
 #'  \code{\link{plot_taxa_bar}}
-#'  \code{\link{plot_richness_estimates}}
+#'  \code{\link{plot_richness}}
 #'
 #' @export
 #' @docType methods
@@ -53,7 +53,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	} else if( all(c("otu_table", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else {
-		plot_richness_estimates(physeq)
+		plot_richness(physeq)
 	}
 })
 ################################################################################
@@ -79,7 +79,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 	color=NULL, shape=NULL, point_size=4, alpha=1,
 #' 	label="value", hjust = 1.35, 
 #' 	line_weight=0.5, line_color=color, line_alpha=0.4,
-#' 	layout.method=layout.fruchterman.reingold)
+#' 	layout.method=layout.fruchterman.reingold, title=NULL)
 #'
 #' @param g (Required). An \code{igraph0}-class object created
 #'  either by the convenience wrapper \code{\link{make_network}}, 
@@ -133,6 +133,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  equal to the number of vertices. For possible options already included in 
 #'  \code{igraph0}-package, see the others also described in the help file:
 #' 
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' \code{\link[igraph0]{layout.fruchterman.reingold}}
 #'
 #' @return A \code{\link{ggplot}}2 plot representing the network,
@@ -165,7 +168,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	color=NULL, shape=NULL, point_size=4, alpha=1,
 	label="value", hjust = 1.35, 
 	line_weight=0.5, line_color=color, line_alpha=0.4,
-	layout.method=layout.fruchterman.reingold){
+	layout.method=layout.fruchterman.reingold, title=NULL){
 
 	# disambiguate species/OTU/taxa as argument type...
 	if( type %in% c("taxa", "species", "OTUs", "otus", "otu") ){
@@ -205,15 +208,15 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
 	# Strip all the typical annotations from the plot, leave the legend
 	p <- p + theme_bw() + 
-			opts(
-				panel.grid.major = theme_blank(), 
-				panel.grid.minor = theme_blank(), 
-				axis.text.x      = theme_blank(),
-				axis.text.y      = theme_blank(),
-				axis.title.x     = theme_blank(),
-				axis.title.y     = theme_blank(),
-				axis.ticks       = theme_blank(),
-				panel.border     = theme_blank()
+			theme(
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank(), 
+				axis.text.x      = element_blank(),
+				axis.text.y      = element_blank(),
+				axis.title.x     = element_blank(),
+				axis.title.y     = element_blank(),
+				axis.ticks       = element_blank(),
+				panel.border     = element_blank()
 			)
 
 	# Add the graph vertices as points
@@ -252,7 +255,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
 #'
-#' @usage plot_richness_estimates(physeq, x, color=NULL, shape=NULL)
+#' @usage plot_richness(physeq, x, color=NULL, shape=NULL, title=NULL)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate
@@ -292,6 +295,9 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  but it can be modified afterward with an additional layer using
 #'  \code{\link[ggplot2]{scale_shape_manual}}.
 #'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
 #' 
@@ -305,8 +311,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @export
 #' @examples 
 #' data(GlobalPatterns)
-#' plot_richness_estimates(GlobalPatterns, "SampleType")
-#' plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
+#' plot_richness(GlobalPatterns, "SampleType")
+#' plot_richness(GlobalPatterns, "SampleType", "SampleType")
 #' # # Define a human-associated versus non-human categorical variable:
 #' GP <- GlobalPatterns
 #' human <- get_variable(GP, "SampleType") %in% 
@@ -315,15 +321,15 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' # # Replace current SD with new one that includes human variable:
 #' sample_data(GP)$human <- human 
 #' # # Can use new "human" variable within GP as a discrete variable in the plot
-#' plot_richness_estimates(GP, "human", "SampleType")
-#' plot_richness_estimates(GP, "SampleType", "human")
+#' plot_richness(GP, "human", "SampleType")
+#' plot_richness(GP, "SampleType", "human")
 #' # # Can also provide custom factor directly:
-#' plot_richness_estimates(GP, "SampleType", human)
-#' plot_richness_estimates(GP, human, "SampleType")
+#' plot_richness(GP, "SampleType", human)
+#' plot_richness(GP, human, "SampleType")
 #' # # Not run: Should cause an error:
-#' # plot_richness_estimates(GP, "value", "value")
+#' # plot_richness(GP, "value", "value")
 #' # #
-plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=NULL){	
+plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, title=NULL){	
 	# Make the plotting data.frame 
 	DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
 	
@@ -368,7 +374,7 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 	p <- ggplot(mdf, richness_map) + 
 		geom_point(size=2) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		opts(axis.text.x = theme_text(angle = -90, hjust = 0)) +
+		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
 		scale_y_continuous('richness [number of taxa]') +
 		facet_grid(~variable) 
 	return(p)
@@ -452,8 +458,8 @@ plot_richness_estimates <- function(physeq, x="sample_names", color=NULL, shape=
 #'  The name of the variable to map to text labels on the plot.
 #'  Similar to \code{color} option, but for plotting text.
 #'
-#' @param title (Optional). Default \code{NULL}. Character string. The
-#'  title to include over the plot. 
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
 #'
 #' @param justDF (Optional). Default \code{FALSE}. Logical.
 #'  Instead of returning a ggplot2-object, do you just want the relevant
@@ -630,9 +636,12 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 					size=2, vjust=1.5, na.rm=TRUE)
 	}
 
+	# Optionally add a title to the plot
 	if( !is.null(title) ){
-		p <- p + opts(title = title)
+		p <- p + ggtitle(title)
 	}
+	
+	# Return the ggplot object
 	return(p)
 }
 ################################################################################
@@ -922,7 +931,7 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
 #' @usage plot_taxa_bar(physeq, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x,  
-#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
+#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL)
 #'
 #' @param physeq (Required). An \code{\link{otu_table-class}} or 
 #'  \code{\link{phyloseq-class}}.
@@ -979,6 +988,9 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'  this can be informative, and help display multiple layers of information 
 #'  on the same graphic.
 #'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' @return A ggplot2 graphic object.
 #'
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
@@ -997,7 +1009,7 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype) 
 plot_taxa_bar <- function(physeq, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x, 
-	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
+	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL){
 
 	# Some preliminary assignments. Assumes physeq has non-empty sample_data slot.
 	map <- sample_data(physeq)
@@ -1048,7 +1060,7 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 	########################################
 	# Build the ggplot
 	p  <- ggplot(df) + 
-		opts(axis.text.x=theme_text(angle=-90, hjust=0))
+		theme(axis.text.x=element_text(angle=-90, hjust=0))
 
 	p <- p + 
 		# The full stack
@@ -1062,9 +1074,9 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 			position="dodge", stat="identity"
 		) + 
 		# Some reasonable default options
-		opts(panel.grid.minor = theme_blank()) + 
-		opts(panel.grid.major = theme_blank()) +
-		opts(panel.border = theme_blank()) +
+		theme(panel.grid.minor = element_blank()) + 
+		theme(panel.grid.major = element_blank()) +
+		theme(panel.border = element_blank()) +
 		labs(y="Relative Abundance", x=x, fill=fill)
 		
 	# Should the individual OTU points be added. Default FALSE
@@ -1096,6 +1108,12 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 	if( !is.null(facet_formula) ){	
 		p <- p + facet_grid(facet_formula)
 	}
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}	
+	
 	########################################
 	# Return the ggplot object so the user can 
 	# additionally manipulate it.
@@ -1602,7 +1620,8 @@ plot_tree_only <- function(physeq){
 	tdf <- tree.layout(phy_tree(physeq))
 	# build tree lines
 	p <- ggplot(subset(tdf, type == "line")) + 
-			geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) 
+			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
+	# Return ggplot object
 	return(p)
 }
 ################################################################################
@@ -1780,7 +1799,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' want to have soon.
 #'
 #' @usage plot_tree(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
-#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing = 0.02)
+#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02, title=NULL)
 #'
 #' @param physeq (Required). The data about which you want to 
 #'  plot and annotate a phylogenetic tree, in the form of a
@@ -1851,6 +1870,9 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  don't have this problem and want tighter point-spacing, you can 
 #'  shrink this value.
 #'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
 #' @seealso
@@ -1906,7 +1928,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
 plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
-	sizebase=5, base.spacing = 0.02){
+	sizebase=5, base.spacing = 0.02, title=NULL){
 
 	if( method %in% c("treeonly") ){
 		p <- plot_tree_only(physeq)
@@ -1918,13 +1940,18 @@ plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size
 	}
 	
 	# Theme-ing:
-	p <- p + opts(axis.ticks = theme_blank(),
-			axis.title.x=theme_blank(), axis.text.x=theme_blank(),
-			axis.title.y=theme_blank(), axis.text.y=theme_blank(),
-			panel.background = theme_blank(),
-			panel.grid.minor = theme_blank(),			
-			panel.grid.major = theme_blank()
+	p <- p + theme(axis.ticks = element_blank(),
+			axis.title.x=element_blank(), axis.text.x=element_blank(),
+			axis.title.y=element_blank(), axis.text.y=element_blank(),
+			panel.background = element_blank(),
+			panel.grid.minor = element_blank(),			
+			panel.grid.major = element_blank()
 			)
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
 	
 	return(p)
 }
@@ -1993,7 +2020,7 @@ RadialCoords <- function(pos)
 #' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
 #'  sample.label=NULL, species.label=NULL,
 #'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4),
-#'  max.label=250, ...)
+#'  max.label=250, title=NULL, ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
@@ -2055,6 +2082,9 @@ RadialCoords <- function(pos)
 #'  Make sure to increase this value if, for example, you want a special label
 #'  for an axis that has 300 indices.
 #'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
 #' 
 #' @return
@@ -2099,7 +2129,7 @@ RadialCoords <- function(pos)
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
 	sample.label=NULL, species.label=NULL, 
 	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 
-	max.label=250, ...){
+	max.label=250, title=NULL, ...){
 	
 	# Enforce orientation
 	if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
@@ -2143,14 +2173,14 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	# # Don't render labels if more than max.label
 	# Samples
 	if( nsamples(physeq) <= max.label ){
-		p <- p + opts(axis.text.x = theme_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
+		p <- p + theme(axis.text.x = element_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
 	} else {
 		# p <- p + scale_x_discrete("Samples", labels=NULL)
 		p <- p + scale_x_discrete("Samples", labels="")
 	}
 	# species
 	if( ntaxa(physeq) <= max.label ){
-		p <- p + opts(axis.text.y = theme_text(size=treetextsize(0.10*ntaxa(physeq))))	
+		p <- p + theme(axis.text.y = element_text(size=treetextsize(0.10*ntaxa(physeq))))	
 	} else {
 		# p <- p + scale_y_discrete("OTU", labels=NULL)
 		p <- p + scale_y_discrete("OTU", labels="")
@@ -2186,8 +2216,13 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		p <- p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
 	} else {
 		p <- p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
-	}	
-		
+	}
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
+			
 	return(p)
 }
 ################################################################################

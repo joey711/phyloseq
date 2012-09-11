@@ -4,8 +4,8 @@
 \usage{
   plot_tree(physeq, method="sampledodge", color=NULL,
   shape=NULL, size=NULL, min.abundance=Inf,
-  label.tips=NULL, text.size=NULL, sizebase=5, base.spacing
-  = 0.02)
+  label.tips=NULL, text.size=NULL, sizebase=5,
+  base.spacing=0.02, title=NULL)
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
@@ -83,6 +83,9 @@
   abundance, for example. Similarly, if you don't have this
   problem and want tighter point-spacing, you can shrink
   this value.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A \code{\link{ggplot}}2 plot.

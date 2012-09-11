@@ -76,7 +76,7 @@
   plotting text.}
 
   \item{title}{(Optional). Default \code{NULL}. Character
-  string. The title to include over the plot.}
+  string. The main title for the graphic.}
 
   \item{justDF}{(Optional). Default \code{FALSE}. Logical.
   Instead of returning a ggplot2-object, do you just want

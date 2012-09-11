@@ -5,7 +5,7 @@
   plot_network(g, physeq=NULL, type="samples", color=NULL,
   shape=NULL, point_size=4, alpha=1, label="value", hjust =
   1.35, line_weight=0.5, line_color=color, line_alpha=0.4,
-  layout.method=layout.fruchterman.reingold)
+  layout.method=layout.fruchterman.reingold, title=NULL)
 }
 \arguments{
   \item{g}{(Required). An \code{igraph0}-class object
@@ -64,7 +64,10 @@
   matrix with \code{nrow} equal to the number of vertices.
   For possible options already included in
   \code{igraph0}-package, see the others also described in
-  the help file:
+  the help file:}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.
 
   \code{\link[igraph0]{layout.fruchterman.reingold}}}
 }
