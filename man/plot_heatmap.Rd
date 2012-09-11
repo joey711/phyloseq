@@ -5,7 +5,7 @@
   plot_heatmap(physeq, method="NMDS", distance="bray",
   sample.label=NULL, species.label=NULL, low="#000033",
   high="#66CCFF", na.value="black", trans=log_trans(4),
-  max.label=250, ...)
+  max.label=250, title=NULL, ...)
 }
 \arguments{
   \item{physeq}{(Required). The data, in the form of an
@@ -77,6 +77,9 @@
   \code{sample.label} or \code{species.label}. Make sure to
   increase this value if, for example, you want a special
   label for an axis that has 300 indices.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 
   \item{...}{(Optional). Additional parameters passed to
   \code{\link{ordinate}}.}

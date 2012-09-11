@@ -2,6 +2,13 @@
 # Backward compatibility aliases
 
 
+
+#' @rdname plot_richness
+#' @aliases plot_richness
+#' @export
+plot_richness_estimates <- plot_richness
+
+
 #' @rdname import_qiime_sample_data
 #' @aliases import_qiime_sample_data
 #' @export

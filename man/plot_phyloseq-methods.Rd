@@ -38,7 +38,6 @@ plot_phyloseq(esophagus)
 
   \code{\link{plot_ordination}} \code{\link{plot_heatmap}}
   \code{\link{plot_tree}} \code{\link{plot_network}}
-  \code{\link{plot_taxa_bar}}
-  \code{\link{plot_richness_estimates}}
+  \code{\link{plot_taxa_bar}} \code{\link{plot_richness}}
 }
 

@@ -82,7 +82,7 @@ By contrast, this vignette is intended to provide functional examples of the ana
 
 Let's start by loading the \code{phyloseq-package}:
 
-<<>>=
+<<load-packages, message=FALSE, warning=FALSE>>=
 library("phyloseq")
 library("ggplot2")
 @
@@ -136,11 +136,11 @@ sample_data(GP)$human <- factor(human)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Easy Richness Estimates}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness{\_}estimates} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
+We can easily create a complex graphic that compares the richness estimates of samples from different environment types in the \code{GlobalPatterns} dataset, using the \code{plot{\_}richness} function. Note that it is important to use raw (untrimmed) OTU-clustered data when performing richness estimates, as they are highly dependent on the number of singletons in a sample.
 
 \setkeys{Gin}{width=0.4\textwidth}
 <<richness_estimates0, echo=TRUE, fig=TRUE, width=11,height=7>>=
-(p <- plot_richness_estimates(GP, "human", "SampleType"))
+(p <- plot_richness(GP, "human", "SampleType"))
 @
 
 \setkeys{Gin}{width=0.75\textwidth}

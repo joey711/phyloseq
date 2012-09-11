@@ -11,7 +11,7 @@
   taxaplot(physeq, taxavec = "Domain", showOnlyTheseTaxa =
   NULL, threshold = NULL, x = "sample", fill = x,
   facet_formula = . ~ TaxaGroup, OTUpoints = FALSE,
-  labelOTUs = FALSE)
+  labelOTUs = FALSE, title = NULL)
 }
 \arguments{
   \item{physeq}{(Required). An
@@ -80,6 +80,9 @@
   For low numbers of total OTUs this can be informative,
   and help display multiple layers of information on the
   same graphic.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A ggplot2 graphic object.

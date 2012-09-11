@@ -1,9 +1,13 @@
-\name{plot_richness_estimates}
+\name{plot_richness}
+\alias{plot_richness}
 \alias{plot_richness_estimates}
 \title{Plot richness estimates, flexibly with ggplot2}
 \usage{
-  plot_richness_estimates(physeq, x, color=NULL,
-  shape=NULL)
+  plot_richness(physeq, x, color=NULL, shape=NULL,
+  title=NULL)
+
+  plot_richness_estimates(physeq, x = "sample_names", color
+  = NULL, shape = NULL, title = NULL)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
@@ -44,6 +48,9 @@
   scale is chosen automatically by \code{link{ggplot}}, but
   it can be modified afterward with an additional layer
   using \code{\link[ggplot2]{scale_shape_manual}}.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A \code{\link{ggplot}} plot object summarizing the
@@ -74,8 +81,8 @@
 }
 \examples{
 data(GlobalPatterns)
-plot_richness_estimates(GlobalPatterns, "SampleType")
-plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
+plot_richness(GlobalPatterns, "SampleType")
+plot_richness(GlobalPatterns, "SampleType", "SampleType")
 # # Define a human-associated versus non-human categorical variable:
 GP <- GlobalPatterns
 human <- get_variable(GP, "SampleType") \%in\%
@@ -84,13 +91,13 @@ names(human) <- sample_names(GP)
 # # Replace current SD with new one that includes human variable:
 sample_data(GP)$human <- human
 # # Can use new "human" variable within GP as a discrete variable in the plot
-plot_richness_estimates(GP, "human", "SampleType")
-plot_richness_estimates(GP, "SampleType", "human")
+plot_richness(GP, "human", "SampleType")
+plot_richness(GP, "SampleType", "human")
 # # Can also provide custom factor directly:
-plot_richness_estimates(GP, "SampleType", human)
-plot_richness_estimates(GP, human, "SampleType")
+plot_richness(GP, "SampleType", human)
+plot_richness(GP, human, "SampleType")
 # # Not run: Should cause an error:
-# plot_richness_estimates(GP, "value", "value")
+# plot_richness(GP, "value", "value")
 # #
 }
 \seealso{
