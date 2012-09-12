@@ -10,9 +10,9 @@
   want to perform the the ordination. In general, these
   methods will be based in some fashion on the abundance
   table ultimately stored as a contingency matrix
-  (\code{\link{otuTable-class}}). If you're able to import
+  (\code{\link{otu_table-class}}). If you're able to import
   data into \code{\link{phyloseq-class}} format, than you
-  don't need to worry, as an \code{otuTable} is a required
+  don't need to worry, as an \code{otu_table} is a required
   component of this class. In addition, some ordination
   methods require additional data, like a constraining
   variable or phylogenetic tree. If that is the case, the
@@ -111,11 +111,11 @@
 # # Take a subset of the GP dataset for quicker computation of examples
 # data(GlobalPatterns)
 # # Keep top 200 species
-# topsp <- names(sort(speciesSums(GlobalPatterns), TRUE)[1:200])
-# GP    <- prune_species(topsp, GlobalPatterns)
+# topsp <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:200])
+# GP    <- prune_taxa(topsp, GlobalPatterns)
 # # Subset further to top 5 phyla
-# top5ph <- sort(tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
-# GP     <- subset_species(GP, Phylum \%in\% names(top5ph))
+# top5ph <- sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
+# GP     <- subset_taxa(GP, Phylum \%in\% names(top5ph))
 # #
 # # Examples performing ordination with NMDS. Default distance is unweighted UniFrac
 # GP.NMDS.UF.ord   <- ordinate(GP, "NMDS")
@@ -126,7 +126,7 @@
 # (p <- plot_ordination(GP, GP.NMDS.Bray.ord, "biplot", color="SampleType", shape="Phylum"))
 # # define manual shape scale:
 # man.shapes <- 21:25
-# names(man.shapes) <- c(getTaxa(GP, "Phylum"))
+# names(man.shapes) <- c(get_taxa_unique(GP, "Phylum"))
 # man.shapes <- c(samples=19, man.shapes)
 # p + scale_shape_manual(value=man.shapes)
 # #

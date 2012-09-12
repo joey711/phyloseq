@@ -4,7 +4,7 @@ phyloseq
 * plot_heatmap() easy, flexible heat maps built with ggplot2
 * plot_tree() easy, flexible annotated tree plots built with ggplot2
 * make_sample_network(), plot_sample_network() - microbiome network visualization
-* plot_richness_estimates() for easy, flexible summary of species richness
+* plot_richness() for easy, flexible summary of species richness
 * Parallel Fast UniFrac
 * distance() wrapper for ecological distance calculations
 * ordinate() wrapper, calculates many different ordination methods.
@@ -16,6 +16,83 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.50
+===========
+- Fixed several compatibility issues to support latest version of ggplot2 (0.9.2).
+- Also changes plot_richness_estimates() to plot_richness().
+
+phyloseq 1.1.45
+===========
+- Backward compatibility for import_qiime_sampleData,
+  now superseded by import_qiime_sample_data
+- Added a functioning example based on the GlobalPatterns
+  example sample-map file included in the package extdata.
+
+phyloseq 1.1.44
+===========
+- Fixed minor bug in tax_glom function.
+Thanks to Katie Shelef for the bug report. Bug only affected tax_glom behavior when the right-most rank was specified as the position for merging.
+
+phyloseq 1.1.43
+===========
+- fixed distance() issue from species/taxa replacement for type argument.
+
+phyloseq 1.1.42
+===========
+- fixed make_network/plot_network issue from species/taxa replacement for type argument.
+
+phyloseq 1.1.41
+===========
+- Fixed documentation for `prune_taxa` and `prune_samples`
+- Updated `prune_samples` method to allow for logical vectors.
+- Fixed `prune_taxa` so that it properly fails with a message if the taxa argument is a logical of wrong length.
+   There was some potential (and no warning) for unpredictable vector-recycling
+   with short vectors in the old implementation.
+
+phyloseq 1.1.40
+===========
+## Huge Update and Renaming Event.
+- Made all functions use an *underscore* for English word delimiter, if they were using an abbreviation. 
+- Replaced "species" in all function names with "taxa". 
+- These changes are all backward compatible, for now, so your old code should work. Let me know if it doesn't and I will quickly make the adjustment. This will remain true through the next official release,
+but functional references to "species" will not be supported afterward,
+except in the occasions where you actually mean taxonomic species, like `tax_glom(x, "species")`.
+
+phyloseq 1.1.33
+===========
+Revise taxglom() such that it handles phyloseq and taxonomyTable classes,
+throws warning otherwise. It should not take a manually-produced character
+vector, as this is roughly equivalent to functionality supported in other method,
+especially prune_species()/merge_species().
+Also added unit-tests and executable examples for taxglom().
+Got rid of taxglom.internal, incorporated directly into taxglom().
+taxglom() is no longer an S4-method, and 
+doesn't need to be now that the character-vector argument option is omitted,
+with S4-class handling delegated to merge_species().
+Updated "taxTab<-" to be S4 assignment, clearer handling of taxonomy Table assignments,
+especially useful for taxglom.
+
+phyloseq 1.1.29
+===========
+Add unit tests and example files for import_biom (as well as import("biom",...) ).
+
+phyloseq 1.1.28
+===========
+Added rarefy_even_depth() function for random subsampling of microbiome samples to the same number of reads. Default uses the minimum total reads among the samples in the dataset. This is based on the core "sample" function, which can have its random number generator fixed by set.seed for reproducibility.
+
+phyloseq 1.1.27
+===========
+Fix bug in plot_ordination that caused an error rather than produce unannotated plots when sampleData absent in the input.
+
+phyloseq 1.1.23-26
+===========
+Added unit tests and bugfixes
+
+phyloseq 1.1.19-22
+===========
+Improving import_qiime() importer to handle large datasets,
+like the HMPv35 dataset, for example, while also providing useful status messages
+during non-trivial imports that might take 10 minutes or more to complete.
 
 phyloseq 1.1.18
 ===========

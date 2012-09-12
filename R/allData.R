@@ -31,19 +31,19 @@
 #' @author Pei et al. \email{zhiheng.pei@@med.nyu.edu}
 #' @keywords data
 #' @examples
-#' ## # Example using esophagus-data in a UniFrac calculation. 
-#' ## data(esophagus)
-#' ## UniFrac(esophagus, weighted=TRUE)
-#' ## UniFrac(esophagus, weighted=FALSE)
-#' ## unifrac(t(as(otuTable(esophagus), "matrix")), tre(esophagus) )
-#' # # Example importing the mothur example files to create esophagus.
-#' # show_mothur_list_cutoffs("~/Dropbox/R/esophagus_example/esophagus.fn.list")
-#' # mothlist  <- "~/esophagus_example/esophagus.fn.list"
-#' ### mothgroup <- "~/esophagus_example/esophagus.groups"
-#' # mothgroup <- "~/esophagus_example/esophagus.good.groups"
-#' # mothtree  <- "~/esophagus_example/esophagus.tree"
-#' # cutoff    <- "0.10"
-#' # esophagus <- import_mothur(mothlist, mothgroup, mothtree, cutoff)
+#' # Example using esophagus-data in a UniFrac calculation. 
+#' data(esophagus)
+#' UniFrac(esophagus, weighted=TRUE)
+#' UniFrac(esophagus, weighted=FALSE)
+#' #
+#' # How to re-create the esophagus dataset using import_mothur function
+#' mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
+#' mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
+#' mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
+#' show_mothur_list_cutoffs(mothlist)
+#' cutoff    <- "0.10"
+#' esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)	
+#' identical(esophagus, esophman)
 ################################################################################
 NA
 ################################################################################
@@ -84,21 +84,22 @@ NA
 #' @author Arumugam, M., Raes, J., et al.
 #' @keywords data
 #' @examples
-#' # # Try simple network-analysis plot
-#' # data(enterotype)
-#' # ig <- make_sample_network(enterotype, FALSE, max.dist=0.3)
-#' # plot_sample_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-#' #
-#' # # Filter samples that don't have Enterotype
-#' # x <- subset_samples(enterotype, !is.na(Enterotype))
+#' # Try simple network-analysis plot
+#' data(enterotype)
+#' ig <- make_network(enterotype, "samples", max.dist=0.3)
+#' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 #' # 
-#' # # Alternatively. . .
-#' # ent.cca <- ordinate(x ~ Enterotype, "CCA")
-#' # plot_ordination(x, ent.cca, color="Enterotype")
-#' # plot_ordination(x, ent.cca, "biplot")
-#' # plot_ordination(x, ent.cca, "split", color="Enterotype)
+#' # Filter samples that don't have Enterotype
+#' x <- subset_samples(enterotype, !is.na(Enterotype))
+#' # 
+#' # Alternatively. . .
+#' ent.cca <- ordinate(x ~ Enterotype, "CCA")
+#' plot_ordination(x, ent.cca, color="Enterotype")
+#' plot_ordination(x, ent.cca, "biplot")
+#' plot_ordination(x, ent.cca, "split", color="Enterotype")
+#' # 
 #' # # multiple testing of genera correlating with enterotype 2
-#' # mt(x, data.frame(sampleData(x))[, "Enterotype"]==2)
+#' # mt(x, data.frame(sample_data(x))[, "Enterotype"]==2)
 #' # # Should return a data.frame, with the following head()
 #'                              # # # # # index     teststat   rawp   adjp plower
 #' # # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001
@@ -124,13 +125,13 @@ NA
 #'
 #' This dataset contains an experiment-level (\code{\link{phyloseq-class}}) object,
 #' which in turn contains the taxa-contingency table and soil-treatment table
-#' as \code{\link{otuTable-class}} and \code{\link{sampleData-class}} components, respectively.
+#' as \code{\link{otu_table-class}} and \code{\link{sample_data-class}} components, respectively.
 #'
 #' This data was
 #' imported from raw files supplied directly by the authors via personal communication
 #' for the purposes of including as an example in the \code{\link{phyloseq-package}}. 
 #' As this data is sensitive to choices in OTU-clustering parameters, attempts to recreate
-#' the \code{otuTable} from the raw sequencing data may give slightly different results
+#' the \code{otu_table} from the raw sequencing data may give slightly different results
 #' than the table provided here. 
 #' 
 #' abstract from research article (quoted):
@@ -167,7 +168,7 @@ NA
 #' # The treatments do not appear to have affected the
 #' # estimated total richness between warmed/unwarmed soil samples
 #' # Test this formally:
-#' DF <- data.frame(sampleData(soilrep), estimate_richness(soilrep) )
+#' DF <- data.frame(sample_data(soilrep), estimate_richness(soilrep) )
 #' t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
 #' ################################################################################
 #' # A beta diversity comparison.
@@ -215,78 +216,25 @@ NA
 #' @docType data
 #' @author Caporaso, J. G., et al.
 #' @keywords data
+#'
+#' @seealso 
+#'  The examples on the phyloseq wiki page for \code{\link{plot_ordination}} show 
+#'  many more examples:
+#'
+#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'
 #' @examples
-#' # data(GlobalPatterns)
-#' # # Load the GlobalPatterns dataset into the workspace environment
-#' # data(GlobalPatterns)
-#' # # Look at the different values for SampleType 
-#' # getVariable(GlobalPatterns, "SampleType")
-#' # ################################################################################
-#' # # Reproduce Figure 4 from the article, but using Jaccard distance,
-#' # # and different clustering methods (UPGMA=="average" used in article)
-#' # # The default method for hclust() uses complete-linkage clustering (method="complete")
-#' # ################################################################################
-#' # # Calculate the jaccard distance between each sample
-#' # jaccdist <- distance(GlobalPatterns, "jaccard")
-#' # plot(hclust(jaccdist, "average"), labels=getVariable(GlobalPatterns, "SampleType"))
-#' # # A different method ("complete-linkage")
-#' # plot(hclust(jaccdist), labels=getVariable(GlobalPatterns, "SampleType"), col=cols)
-#' # # In case you decide to color the tip labels
-#' # colorScale <- rainbow(length(levels(getVariable(GlobalPatterns, "SampleType"))))
-#' # cols       <- colorScale[getVariable(GlobalPatterns, "SampleType")] 
-#'
-#' # ################################################################################
-#' # # Reproduce Figure 5, but in 2-D
-#' # ################################################################################
-#' # coords <- pcoa(UniFrac(GlobalPatterns))$vectors
-#' # DF     <- data.frame(sampleData(GlobalPatterns), coords)
-#' # ggplot(DF, aes(x=Axis.1, y=Axis.2, color=SampleType)) + 
-#' # geom_point(size=4) + 
-#' # geom_line() +
-#' # opts(title = "PCoA on unweighted UniFrac distance")
-#' 
-#' # ################################################################################
-#' # # Reproduce Figure 5 (but in 2-D and using jaccard distance / nmMDS)
-#' # ################################################################################
-#' # # Choose number of axes for non-metric MDS
-#' # N <- 2
-#' # # Perform non-metric multi-dimensional scaling, 3 axes (k=3)
-#' # coords <- scores(metaMDS(jaccdist, k=N))
-#' # # Add the NMDS coordinates to the sample data.frame, DF
-#' # DF    <- data.frame(sampleData(GlobalPatterns), coords)
-#' # # plot the MDS of jaccard-distances, and shade points by soil treatments
-#' # # (two axes only, 3-axes used in Fig 5)
-#' # ggplot(DF, aes(x=NMDS1, y=NMDS2, color=SampleType)) + 
-#' # geom_point(size=4) + 
-#' # geom_line() +
-#' # opts(title = paste("nmMDS on Jaccard distance, ", N, " axes", sep=""))
-#'
-#' # ################################################################################
-#' # # Reproduce Figure 5 (but use Jaccard distance / PCoA)
-#' # ################################################################################
-#' # # use principle coordinates analysis (as in article)
-#' # coords <- pcoa(jaccdist)$vectors
-#'
-#' # # Add the PCoA coordinates to the sample data.frame, DF
-#' # DF    <- data.frame(sampleData(GlobalPatterns), coords)
-#'
-#' # # plot the PCoA on jaccard-distances, and shade points by soil treatments
-#' # # (First-two axes only, could show 3 as in Fig 5, if desired)
-#' # ggplot(DF, aes(x=Axis.1, y=Axis.2, color=SampleType)) + 
-#' # geom_point(size=4) + 
-#' # geom_line() +
-#' # opts(title = paste("PCoA on Jaccard distance, two axes", sep=""))
-#'
-#' # ################################################################################	
-#' # # Reproduce Figure 5, but using correspondence analysis
-#' # ################################################################################
-#' # gpdca  <- ordinate(GlobalPatterns, "DCA")
-#' # coords <- scores(gpdca)$sites
-#' # DF     <- data.frame(sampleData(GlobalPatterns), coords)
-#' # ggplot(DF, aes(x=CA1, y=CA2, color=SampleType)) + 
-#' # geom_point(size=4) + 
-#' # geom_line() +
-#' # opts(title = paste("DCA on abundances, first two axes", sep=""))
+#' data(GlobalPatterns)
+#' # Remove unobserved taxa
+#' GP0   <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+#' # Perform ordination (in this case, detrended correspondence analysis)
+#' gpdca <- ordinate(GP0, "DCA")
+#' # Create plot of samples
+#' plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes")
+#' # # More complicated plot facetting by phylum.
+#' # library("ggplot2")
+#' # plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes") + geom_line()
+#' # plot_ordination(GP0, gpdca, "taxa", color="Kingdom") + facet_wrap(~Phylum, 8)
 ################################################################################
 NA
 ################################################################################

@@ -1,9 +1,9 @@
 \docType{methods}
 \name{merge_samples}
 \alias{merge_samples}
-\alias{merge_samples,otuTable-method}
+\alias{merge_samples,otu_table-method}
 \alias{merge_samples,phyloseq-method}
-\alias{merge_samples,sampleData-method}
+\alias{merge_samples,sample_data-method}
 \title{Merge samples based on a sample variable or factor.}
 \usage{
   merge_samples(x, group, fun=mean)
@@ -11,13 +11,13 @@
 \arguments{
   \item{x}{(Required). An instance of a phyloseq class that
   has sample indices. This includes
-  \code{\link{sampleData-class}},
-  \code{\link{otuTable-class}}, and
+  \code{\link{sample_data-class}},
+  \code{\link{otu_table-class}}, and
   \code{\link{phyloseq-class}}.}
 
   \item{group}{(Required). Either the a single character
   string matching a variable name in the corresponding
-  sampleData of \code{x}, or a factor with the same length
+  sample_data of \code{x}, or a factor with the same length
   as the number of samples in \code{x}.}
 
   \item{fun}{(Optional). The function that will be used to
@@ -25,7 +25,7 @@
   each variable. It must take a numeric vector as first
   argument and return a single value. Default is
   \code{\link[base]{mean}}. Note that this is (currently)
-  ignored for the otuTable, where the equivalent function
+  ignored for the otu_table, where the equivalent function
   is \code{\link[base]{sum}}, but evaluated via
   \code{\link[base]{rowsum}} for efficiency.}
 }
@@ -37,7 +37,7 @@
 \description{
   The purpose of this method is to merge/agglomerate the
   sample indices of a phyloseq object according to a
-  categorical variable contained in a sampleData or a
+  categorical variable contained in a sample_data or a
   provided factor.
 }
 \details{
@@ -48,11 +48,11 @@
 \examples{
 #
 # data(GlobalPatterns)
-# t1 <- merge_samples(sampleData(GlobalPatterns), "SampleType")
+# t1 <- merge_samples(sample_data(GlobalPatterns), "SampleType")
 # t4 <- merge_samples(GlobalPatterns, "SampleType")
-# identical(t1, sampleData(t4))
+# identical(t1, sample_data(t4))
 }
 \seealso{
-  \code{\link{merge_species}}, code{\link{merge_phyloseq}}
+  \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
 }
 

@@ -1,9 +1,9 @@
 \docType{methods}
 \name{show}
 \alias{show}
-\alias{show,otuTable-method}
+\alias{show,otu_table-method}
 \alias{show,phyloseq-method}
-\alias{show,sampleData-method}
+\alias{show,sample_data-method}
 \alias{show,taxonomyTable-method}
 \title{method extensions to show for phyloseq objects.}
 \description{

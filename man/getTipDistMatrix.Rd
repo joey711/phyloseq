@@ -1,6 +1,6 @@
 \name{getTipDistMatrix}
-\alias{gettipdistmatrix}
 \alias{getTipDistMatrix}
+\alias{gettipdistmatrix}
 \title{An internal wrapper function on \code{\link[ape]{cophenetic.phylo}}}
 \arguments{
   \item{tree}{\code{phylo}}
@@ -20,7 +20,7 @@
   combined.
 }
 \seealso{
-  tipglom
+  tip_glom
 }
 \keyword{internal}
 

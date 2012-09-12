@@ -10,7 +10,7 @@
   according to the instructions above.}
 }
 \value{
-  A \code{\link{otuTable-class}} object.
+  A \code{\link{otu_table-class}} object.
 }
 \description{
   Recently updated tools on RDP Pyro site make it easier to
@@ -27,8 +27,13 @@
   order.
 }
 \examples{
-otufile <- "http://cloud.github.com/downloads/joey711/phyloseq/rformat_dist_0.03.txt"
+otufile <- system.file("extdata", "rformat_dist_0.03.txt.gz", package="phyloseq")
+### the gzipped file is automatically recognized, and read using R-connections
 ex_otu  <- import_RDP_otu(otufile)
+class(ex_otu)
+ntaxa(ex_otu)
+nsamples(ex_otu)
+sample_sums(ex_otu)
 head(t(ex_otu))
 }
 \seealso{

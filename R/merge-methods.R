@@ -12,14 +12,14 @@
 #' 
 #' By contrast, this method is intended for situations in which one wants to combine
 #' multiple higher-order objects, or multiple core component data objects (e.g. more than one
-#' \code{otuTable}) that should be combined into one object.
+#' \code{otu_table}) that should be combined into one object.
 #'
 #' Merges are performed by first separating higher-order objects into
 #' a list of their component objects; then, merging any component objects of the same class
 #' into one object according to the behavior desribed in \code{\link{merge_phyloseq_pair}};
 #' and finally, building back up a merged-object according to the constructor
 #' behavior of the \code{\link{phyloseq}} method. If the arguments contain only a single
-#' component type -- several otuTable objects, for example -- then a single merged object
+#' component type -- several otu_table objects, for example -- then a single merged object
 #' of that component type is returned.
 #' 
 #' @usage merge_phyloseq(...)
@@ -31,7 +31,7 @@
 #' into one object according to the behavior desribed in \code{\link{merge_phyloseq_pair}};
 #' and finally, re-building a merged-object according to the constructor
 #' behavior of the \code{\link{phyloseq}} method. If the arguments contain only a single
-#' component type -- several otuTable objects, for example -- then a single merged object
+#' component type -- several otu_table objects, for example -- then a single merged object
 #' of the relevant component type is returned.
 #'
 #' Merges between 2 or more tree objects are ultimately done using 
@@ -46,15 +46,15 @@
 #'
 #' @examples #
 #' ## # Make a random complex object
-#' ## OTU1 <- otuTable(matrix(sample(0:5,250,TRUE),25,10), speciesAreRows=TRUE)
-#' ## tax1 <- taxTab(matrix("abc", 30, 8))
+#' ## OTU1 <- otu_table(matrix(sample(0:5,250,TRUE),25,10), taxa_are_rows=TRUE)
+#' ## tax1 <- tax_table(matrix("abc", 30, 8))
 #' ## map1 <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
 #' ##   matrix(sample(c("a","b","c"),150,TRUE), 25, 6) ) 
-#' ## map1 <- sampleData(map1)
+#' ## map1 <- sample_data(map1)
 #' ## exam1 <- phyloseq(OTU1, map1, tax1)
 #' ## x <- exam1
 #' ## x <- phyloseq(exam1)
-#' ## y <- taxTab(exam1)
+#' ## y <- tax_table(exam1)
 #' ## merge_phyloseq(x, y)
 #' ## merge_phyloseq(y, y, y, y)
 merge_phyloseq <- function(...){
@@ -66,7 +66,7 @@ merge_phyloseq <- function(...){
 	}
 	# loop through each component type. Note, list names redundant. will use this
 	merged.list <- list()
-	for( i in unique(names(comp.list)) ){ #i="taxTab"
+	for( i in unique(names(comp.list)) ){ #i="tax_table"
 		# check if length 1, if so, cat to merged.list.
 		i.list <- comp.list[names(comp.list)==i]
 		if( length(i.list) == 1 ){
@@ -98,7 +98,7 @@ merge_phyloseq <- function(...){
 #'
 #' The \code{\link{merge_phyloseq}} function is recommended in general.
 #' 
-#' Special note: trees are merged using \code{\link[ape]{consensus}}.
+#' Special note: non-identical trees are merged using \code{\link[ape]{consensus}}.
 #'
 #' @usage merge_phyloseq_pair(x, y) 
 #'
@@ -106,7 +106,7 @@ merge_phyloseq <- function(...){
 #' keep -- OR alternatively -- a logical vector where the kept species are TRUE, and length
 #' is equal to the number of species in object x. If \code{species} is a named
 #' logical, the species retained is based on those names. Make sure they are
-#' compatible with the \code{species.names} of the object you are modifying (\code{x}). 
+#' compatible with the \code{taxa_names} of the object you are modifying (\code{x}). 
 #'
 #' @param y Any \code{phyloseq} object.
 #'
@@ -114,11 +114,11 @@ merge_phyloseq <- function(...){
 #' arguments. The returned object will 
 #' contain the union of the species and/or samples of each. If there is redundant
 #' information between a pair of arguments of the same class, the values in \code{x} are
-#' used by default. Abundance values are summed for \code{otuTable} objects 
+#' used by default. Abundance values are summed for \code{otu_table} objects 
 #' for those elements that describe the same species and sample in \code{x}
 #' and \code{y}. 
 #'
-#' @seealso \code{\link{merge_phyloseq}} \code{\link{merge_species}}
+#' @seealso \code{\link{merge_phyloseq}} \code{\link{merge_taxa}}
 #'
 #' @rdname merge_phyloseq_pair-methods
 #' @docType methods
@@ -126,48 +126,48 @@ merge_phyloseq <- function(...){
 #' @export
 #'
 #' @examples #
-#' ## # merge two simulated otuTable objects.
-#' ## x  <- otuTable(matrix(sample(0:5,200,TRUE),20,10), speciesAreRows=TRUE)
-#' ## y  <- otuTable(matrix(sample(0:5,300,TRUE),30,10), speciesAreRows=FALSE)
+#' ## # merge two simulated otu_table objects.
+#' ## x  <- otu_table(matrix(sample(0:5,200,TRUE),20,10), taxa_are_rows=TRUE)
+#' ## y  <- otu_table(matrix(sample(0:5,300,TRUE),30,10), taxa_are_rows=FALSE)
 #' ## xy <- merge_phyloseq_pair(x, y)
 #' ## yx <- merge_phyloseq_pair(y, x)
-#' ## # merge two simulated taxTab objects
-#' ## x <- taxTab(matrix("abc", 20, 6))
-#' ## y <- taxTab(matrix("def", 30, 8))
+#' ## # merge two simulated tax_table objects
+#' ## x <- tax_table(matrix("abc", 20, 6))
+#' ## y <- tax_table(matrix("def", 30, 8))
 #' ## xy <- merge_phyloseq_pair(x, y)
-#' ## # merge two simulated sampleData objects
+#' ## # merge two simulated sample_data objects
 #' ## x <- data.frame( matrix(sample(0:3,250,TRUE),25,10), 
 #' ##   matrix(sample(c("a","b","c"),150,TRUE),25,6) )
-#' ## x <- sampleData(x)
+#' ## x <- sample_data(x)
 #' ## y <- data.frame( matrix(sample(4:6,200,TRUE),20,10), 
 #' ##   matrix(sample(c("d","e","f"),120,TRUE),20,8) )
-#' ## y <- sampleData(y)
+#' ## y <- sample_data(y)
 #' ## merge_phyloseq_pair(x, y)
 #' ## data.frame(merge_phyloseq_pair(x, y))
 #' ## data.frame(merge_phyloseq_pair(y, x))
 setGeneric("merge_phyloseq_pair", function(x, y) standardGeneric("merge_phyloseq_pair"))
 ################################################################################
-#' @aliases merge_phyloseq_pair,otuTable,otuTable-method
+#' @aliases merge_phyloseq_pair,otu_table,otu_table-method
 #' @rdname merge_phyloseq_pair-methods
-setMethod("merge_phyloseq_pair", signature("otuTable", "otuTable"), function(x, y){
-	specRrowsx   <- speciesAreRows(x)
-	new.sp.names <- union(species.names(x), species.names(y))
-	new.sa.names <- union(sample.names(x), sample.names(y))
+setMethod("merge_phyloseq_pair", signature("otu_table", "otu_table"), function(x, y){
+	specRrowsx   <- taxa_are_rows(x)
+	new.sp.names <- union(taxa_names(x), taxa_names(y))
+	new.sa.names <- union(sample_names(x), sample_names(y))
 	
 	# Create the empty new matrix structure
 	newx <- matrix(0, nrow=length(new.sp.names), ncol=length(new.sa.names),
 		dimnames=list(new.sp.names, new.sa.names))
 
-	# assign a standard speciesAreRows orientation to TRUE for x and y
-	if( !speciesAreRows(x) ){ x <- t(x) }
-	if( !speciesAreRows(y) ){ y <- t(y) }
+	# assign a standard taxa_are_rows orientation to TRUE for x and y
+	if( !taxa_are_rows(x) ){ x <- t(x) }
+	if( !taxa_are_rows(y) ){ y <- t(y) }
 
 	# "merge" by addition.
 	newx[rownames(x), colnames(x)] <- x
 	newx[rownames(y), colnames(y)] <- newx[rownames(y), colnames(y)] + y
 
-	# Create the new otuTable object
-	newx <- otuTable(newx, speciesAreRows=TRUE)
+	# Create the new otu_table object
+	newx <- otu_table(newx, taxa_are_rows=TRUE)
 
 	# Return the orientation that was in x
 	if( !specRrowsx ){ newx <- t(newx) }
@@ -188,15 +188,15 @@ setMethod("merge_phyloseq_pair", signature("taxonomyTable", "taxonomyTable"), fu
 	newx[rownames(y), colnames(y)] <- y
 	newx[rownames(x), colnames(x)] <- x
 
-	# Create the new otuTable object
-	newx <- taxTab(newx)
+	# Create the new otu_table object
+	newx <- tax_table(newx)
 
 	return(newx)
 })
 ################################################################################
-#' @aliases merge_phyloseq_pair,sampleData,sampleData-method
+#' @aliases merge_phyloseq_pair,sample_data,sample_data-method
 #' @rdname merge_phyloseq_pair-methods
-setMethod("merge_phyloseq_pair", signature("sampleData", "sampleData"), function(x, y){
+setMethod("merge_phyloseq_pair", signature("sample_data", "sample_data"), function(x, y){
 	new.sa.names <- union(rownames(x), rownames(y))
 	new.va.names <- union(colnames(x), colnames(y))
 	
@@ -217,33 +217,37 @@ setMethod("merge_phyloseq_pair", signature("sampleData", "sampleData"), function
 	# trim the sample name column
 	newx <- newx[,names(newx)!="X0"]
 	
-	# Create the new otuTable object
-	newx <- sampleData(newx)
+	# Create the new otu_table object
+	newx <- sample_data(newx)
 	return(newx)	
 })
 ################################################################################
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
-	consensus(x, y)
+	if(identical(x, y)){
+		return(x)
+	} else {
+		return( consensus(x, y)	)
+	}
 })
 ################################################################################
 ################################################################################
 #' Merge a subset of the species in \code{x} into one species/taxa/OTU.
 #'
 #' Takes as input an object that describes species/taxa
-#' (e.g. \code{\link{phyloseq-class}}, \code{\link{otuTable-class}}, 
+#' (e.g. \code{\link{phyloseq-class}}, \code{\link{otu_table-class}}, 
 #'  \code{\link{phylo-class}}, \code{\link{taxonomyTable-class}}),
 #' as well as 
 #' a vector of species that should be merged.
 #' It is intended to be able to operate at a low-level such that 
-#' related methods, such as \code{\link{tipglom}} and \code{\link{taxglom}}
-#' can both reliably call \code{merge_species} for their respective purposes.
+#' related methods, such as \code{\link{tip_glom}} and \code{\link{tax_glom}}
+#' can both reliably call \code{merge_taxa} for their respective purposes.
 #'
-#' @usage merge_species(x, eqspecies, archetype=1)
+#' @usage merge_taxa(x, eqspecies, archetype=1)
 #'
 #' @param x (Required). An object that describes species (taxa). This includes
-#'  \code{\link{phyloseq-class}}, \code{\link{otuTable-class}}, \code{\link{taxonomyTable-class}}, 
+#'  \code{\link{phyloseq-class}}, \code{\link{otu_table-class}}, \code{\link{taxonomyTable-class}}, 
 #'  \code{\link[ape]{phylo}}.
 #' 
 #' @param eqspecies (Required). The species names, or indices, that should be merged together.
@@ -260,33 +264,33 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' @return The object, \code{x}, in its original class, but with the specified
 #'   species merged into one entry in all relevant components.
 #'
-#' @seealso \code{\link{tipglom}}, \code{\link{taxglom}}, \code{\link{merge_phyloseq}},
+#' @seealso \code{\link{tip_glom}}, \code{\link{tax_glom}}, \code{\link{merge_phyloseq}},
 #'  \code{\link{merge_samples}}
 #'
 #' @import ape
 #' @export
 #' @docType methods
-#' @rdname merge_species-methods
+#' @rdname merge_taxa-methods
 #' @examples #
 #' # # data(phylocom)
 #' # # tree <- phylocom$phylo
-#' # # otu  <- otuTable(phylocom$sample, speciesAreRows=FALSE)
+#' # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
 #' # # otutree0 <- phyloseq(otu, tree)
 #' # # plot(otutree0)
-#' # # otutree1 <- merge_species(otutree0, tree$tip.label[1:8], 2)
+#' # # otutree1 <- merge_taxa(otutree0, tree$tip.label[1:8], 2)
 #' # # plot(otutree1)
-setGeneric("merge_species", function(x, eqspecies, archetype=1) standardGeneric("merge_species"))
+setGeneric("merge_taxa", function(x, eqspecies, archetype=1) standardGeneric("merge_taxa"))
 ###############################################################################
-#' @aliases merge_species,otuTable-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "otuTable", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,otu_table-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "otu_table", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
-		eqspecies <- species.names(x)[eqspecies]
+		eqspecies <- taxa_names(x)[eqspecies]
 	}
 	# Shrink newx table to just those species in eqspecies
-	newx <- prune_species(eqspecies, x)
+	newx <- prune_taxa(eqspecies, x)
 	
 	if( class(archetype) != "character" ){
 		keepIndex = archetype
@@ -294,22 +298,25 @@ setMethod("merge_species", "otuTable", function(x, eqspecies, archetype=1){
 		keepIndex = which(eqspecies==archetype)
 	}
 	
-	if( speciesAreRows(x) ){
-		x[eqspecies[keepIndex], ] <- sampleSums(newx)
+	if( taxa_are_rows(x) ){
+		x[eqspecies[keepIndex], ] <- sample_sums(newx)
 	} else {
-		x[, eqspecies[keepIndex]] <- sampleSums(newx)	
+		x[, eqspecies[keepIndex]] <- sample_sums(newx)	
 	}
 	
-	removeIndex <- which( species.names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_species(species.names(x)[-removeIndex], x)	
+	removeIndex <- which( taxa_names(x) %in% eqspecies[-keepIndex] )
+	x <- prune_taxa(taxa_names(x)[-removeIndex], x)	
 	return(x)
 })
 ###############################################################################
 # require(ape)
-#' @aliases merge_species,phylo-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
-	if( length(eqspecies) < 2 ){ return(x) }
+#' @aliases merge_taxa,phylo-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "phylo", function(x, eqspecies, archetype=1){
+	# If there is nothing to merge, return x as-is
+	if( length(eqspecies) < 2 ){
+		return(x)
+	}
 
 	if( class(eqspecies) != "character" ){
 		eqspecies <- x$tip.label[eqspecies]
@@ -320,34 +327,42 @@ setMethod("merge_species", "phylo", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-	x           <- drop.tip(x, removeIndex)
-	return(x)
+
+	# If there is too much to merge (tree would have one or 0 branches), return NULL/warning
+	if( length(removeIndex) >= (ntaxa(x)-1) ){
+		# Can't have a tree with 1 or fewer tips
+		warning("merge_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		return(NULL)
+	# Else, drop the removeIndex tips and returns the pruned tree.	
+	} else {
+		return( drop.tip(x, removeIndex) )		
+	}
 })
 ################################################################################
-#' @aliases merge_species,phyloseq-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "phyloseq", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,phyloseq-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "phyloseq", function(x, eqspecies, archetype=1){
 	comp_list   <- splat.phyloseq.objects(x)
-	merged_list <- lapply(comp_list, merge_species, eqspecies, archetype)
+	merged_list <- lapply(comp_list, merge_taxa, eqspecies, archetype)
 	# the element names can wreak havoc on do.call
 	names(merged_list) <- NULL
 	# Re-instantiate the combined object using the species-merged object.
 	do.call("phyloseq", merged_list)
 })
 ###############################################################################
-#' @aliases merge_species,sampleData-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "sampleData", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,sample_data-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "sample_data", function(x, eqspecies, archetype=1){
 	return(x)
 })
 ###############################################################################
-#' @aliases merge_species,taxonomyTable-method
-#' @rdname merge_species-methods
-setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
+#' @aliases merge_taxa,taxonomyTable-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "taxonomyTable", function(x, eqspecies, archetype=1){
 	if( length(eqspecies) < 2 ){ return(x) }
 
 	if( class(eqspecies) != "character" ){
-		eqspecies <- species.names(x)[eqspecies]
+		eqspecies <- taxa_names(x)[eqspecies]
 	}
 	
 	if( class(archetype) != "character" ){
@@ -356,51 +371,30 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 		keepIndex <- which(eqspecies==archetype)
 	}
 	
-	removeIndex <- which( species.names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_species(species.names(x)[-removeIndex], x)	
+	removeIndex <- which( taxa_names(x) %in% eqspecies[-keepIndex] )	
+		
+	# # # Taxonomy is trivial in ranks after disagreement among merged taxa
+	# # # Make those values NA_character_
+	taxmerge  <- as(tax_table(x), "matrix")[eqspecies, ]
+	bad_ranks <- apply(taxmerge, 2, function(i){ length(unique(i)) != 1 })
+	# Test if all taxonomies agree. If so, do nothing. Just continue to pruning.
+	if( any(bad_ranks) ){
+		# The col indices of the bad ranks
+		bad_ranks <- min(which(bad_ranks)):length(bad_ranks)
+		# Replace bad taxonomy elements in the archetype only (others are pruned)
+		tax_table(x)[eqspecies[keepIndex], bad_ranks] <- NA_character_		
+	}
+	
+	# Finally, prune all the merging taxa, except the archetype
+	x <- prune_taxa(taxa_names(x)[-removeIndex], x)
+		
 	return(x)
 })
-################################################################################
-# # Example of higher-order phyloseq object species merge
-# merge_species(ex4, species.names(ex4)[1:5])
-# merge_species(phyloseqTree(ex4), species.names(ex4)[1:5])
-# merge_species(phyloseq(ex4), 1:5)
-# ################################################################################
-# # Example of otuTree species merge
-# otutree  = otuTree(ex4)
-# otutree1 = merge_species(otutree, tre(otutree)$tip.label[1:9300])
-# plot(tre(otutree1))
-# # Not run, species indices not equivalent between phylo and otuTable.
-# # Must use names (character):
-# otutree2 = merge_species(otutree, 1:9300)
-################################################################################
-# # Examples of tree species merge:
-# tree = tre(ex4)
-# tree1 = merge_species(tree, tree$tip.label[1:500], 2)
-# tree2 = merge_species(tree, 12:15, 1)
-# tree3 = merge_species(tree, 12:15, 2)
-# # Not run, won't know what merged:
-# #tree3 = merge_species(tree, sample(1:32,15), 2)
-# par(mfcol=c(2,2))
-# plot(tree,  main="Tree 0")
-# plot(tree1, main="Tree 1")
-# plot(tree2, main="Tree 2")
-# plot(tree3, main="Tree 3")
-################################################################################
-# # Example of otuTable species merge
-# x4 = otuTable(matrix(sample(0:15,100,TRUE),40,10), speciesAreRows=TRUE)
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28"), "sp10")
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35") )@.Data
-# merge_species(x4, 5:25)@.Data
-# Not run:
-# merge_species(x4, c("sp1", "sp3", "sp10", "sp28", "sp35", "") )
-################################################################################
 ################################################################################
 #' Merge samples based on a sample variable or factor.
 #'
 #' The purpose of this method is to merge/agglomerate the sample indices of a 
-#' phyloseq object according to a categorical variable contained in a sampleData
+#' phyloseq object according to a categorical variable contained in a sample_data
 #' or a provided factor.
 #' 
 #' NOTE: (\code{\link[ape]{phylo}}) trees and \code{\link{taxonomyTable-class}}
@@ -409,16 +403,16 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #' @usage merge_samples(x, group, fun=mean) 
 #'
 #' @param x (Required). An instance of a phyloseq class that has sample indices. This includes 
-#'  \code{\link{sampleData-class}}, \code{\link{otuTable-class}}, and \code{\link{phyloseq-class}}. 
+#'  \code{\link{sample_data-class}}, \code{\link{otu_table-class}}, and \code{\link{phyloseq-class}}. 
 #'
 #' @param group (Required). Either the a single character string matching a variable name in
-#'  the corresponding sampleData of \code{x}, or a factor with the same length as
+#'  the corresponding sample_data of \code{x}, or a factor with the same length as
 #'  the number of samples in \code{x}.
 #'
 #' @param fun (Optional). The function that will be used to merge the values that
 #'  correspond to the same group for each variable. It must take a numeric vector
 #'  as first argument and return a single value. Default is \code{\link[base]{mean}}.
-#'  Note that this is (currently) ignored for the otuTable, where the equivalent
+#'  Note that this is (currently) ignored for the otu_table, where the equivalent
 #'  function is \code{\link[base]{sum}}, but evaluated via \code{\link[base]{rowsum}}
 #'  for efficiency.
 #'
@@ -426,7 +420,7 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #'  the factor indicated by the \code{group} argument. The output class
 #'  matches \code{x}.  
 #'
-#' @seealso \code{\link{merge_species}}, code{\link{merge_phyloseq}}
+#' @seealso \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
 #'
 #' @rdname merge_samples-methods
 #' @docType methods
@@ -434,14 +428,14 @@ setMethod("merge_species", "taxonomyTable", function(x, eqspecies, archetype=1){
 #'
 #' @examples #
 #' # data(GlobalPatterns)
-#' # t1 <- merge_samples(sampleData(GlobalPatterns), "SampleType")
+#' # t1 <- merge_samples(sample_data(GlobalPatterns), "SampleType")
 #' # t4 <- merge_samples(GlobalPatterns, "SampleType")
-#' # identical(t1, sampleData(t4))
+#' # identical(t1, sample_data(t4))
 setGeneric("merge_samples", function(x, group, fun=mean) standardGeneric("merge_samples"))
 ################################################################################
-#' @aliases merge_samples,sampleData-method
+#' @aliases merge_samples,sample_data-method
 #' @rdname merge_samples-methods
-setMethod("merge_samples", signature("sampleData"), function(x, group, fun=mean){
+setMethod("merge_samples", signature("sample_data"), function(x, group, fun=mean){
 	x1    <- data.frame(x)
 
 	# Check class of group and modify if "character"
@@ -469,56 +463,54 @@ setMethod("merge_samples", signature("sampleData"), function(x, group, fun=mean)
 	# "pop" the first column
 	outdf <- outdf[, -1, drop=FALSE]
 
-	return( sampleData(outdf) )
+	return( sample_data(outdf) )
 })
 ################################################################################
-#' @aliases merge_samples,otuTable-method
+#' @aliases merge_samples,otu_table-method
 #' @rdname merge_samples-methods
-setMethod("merge_samples", signature("otuTable"), function(x, group){
+setMethod("merge_samples", signature("otu_table"), function(x, group){
 	# needs to be in sample-by-species orientation
-	if( speciesAreRows(x) ){ x <- t(x) }
+	if( taxa_are_rows(x) ){ x <- t(x) }
 	# coerce to matrix, x2
 	x2 <- as(x, "matrix")
 	
 	# # # #aggregate(x2, list(group), fun)
 	out <- rowsum(x2, group)
 	
-	# convert back to otuTable, and return
-	return( otuTable(out, speciesAreRows=FALSE) )
+	# convert back to otu_table, and return
+	return( otu_table(out, taxa_are_rows=FALSE) )
 })
 ################################################################################
 #' @aliases merge_samples,phyloseq-method
 #' @rdname merge_samples-methods
 setMethod("merge_samples", signature("phyloseq"), function(x, group, fun=mean){
 
-	# Check if phyloseq object has a sampleData
-	if( !is.null(access(x, "sampleData")) ){
+	# Check if phyloseq object has a sample_data
+	if( !is.null(sam_data(x, FALSE)) ){
 		# Check class of group and modify if single "character" (column name)
 		if( class(group)=="character" & length(group)==1 ){
-			x1 <- data.frame(sampleData(x))		
+			x1 <- data.frame(sam_data(x))		
 			if( !group %in% colnames(x1) ){stop("group not found among sample variable names.")}
 			group <- x1[, group]
 		}
-		if( class(group)!="factor" ){
-			# attempt to coerce to factor
-			group <- factor(group)
-		}
-		newSM <- merge_samples(sampleData(x), group, fun)
-		newOT <- merge_samples(otuTable(x), group)
+		# coerce to factor
+		if( class(group)!="factor" ){ group <- factor(group) }
+		# Perform merges.
+		newSM <- merge_samples(sam_data(x), group, fun)
+		newOT <- merge_samples(otu_table(x), group)
 		phyloseqList <- list(newOT, newSM)
-		
-	# Else, the only relevant object to "merge_samples" is the otuTable
+	# Else, the only relevant object to "merge_samples" is the otu_table
 	} else {
 		if( class(group)!="factor" ){ group <- factor(group) }
-		phyloseqList <- list( newOT=merge_samples(otuTable(x), group) )
+		phyloseqList <- list( newOT=merge_samples(otu_table(x), group) )
 	}
 	
 	### Add to build-call-list the remaining components, if present in x.
 	### NULL is returned by accessor if object lacks requested component/slot.
 	### Order of objects in list doesn't matter for phyloseq.
 	### The list should not be named.
-	if( !is.null(access(x, "taxTab")) ){ phyloseqList <- c(phyloseqList, list(taxTab(x))) }
-	if( !is.null(access(x, "tre"))    ){ phyloseqList <- c(phyloseqList, list(tre(x))) }
+	if( !is.null(access(x, "tax_table")) ){ phyloseqList <- c(phyloseqList, list(tax_table(x))) }
+	if( !is.null(access(x, "phy_tree"))    ){ phyloseqList <- c(phyloseqList, list(phy_tree(x))) }
 	
 	return( do.call("phyloseq", phyloseqList) )
 })

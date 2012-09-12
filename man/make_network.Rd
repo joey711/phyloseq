@@ -8,22 +8,22 @@
 \arguments{
   \item{physeq}{(Required). Default \code{NULL}. A
   \code{\link{phyloseq-class}} object, or
-  \code{\link{otuTable-class}} object, on which \code{g} is
-  based. \code{phyloseq-class} recommended.}
+  \code{\link{otu_table-class}} object, on which \code{g}
+  is based. \code{phyloseq-class} recommended.}
 
   \item{type}{(Optional). Default \code{"samples"}. Whether
-  the network should be samples or taxa/species. Supported
-  arguments are \code{"samples"}, \code{"species"}, where
-  \code{"species"} indicates using the taxa indices,
+  the network should be samples or taxa/OTUs. Supported
+  arguments are \code{"samples"}, \code{"taxa"}, where
+  \code{"taxa"} indicates using the OTUs/taxaindices,
   whether they actually represent species or some other
   taxonomic rank.
 
   NOTE: not all distance methods are supported if
-  \code{"species"} selected for type. For example, the
-  UniFrac distance and DPCoA cannot be calculated for
-  taxa-wise distances, because they use a taxa-wise tree as
-  part of their calculation between samples, and there is
-  no transpose-equivalent for this tree.}
+  \code{"taxa"} selected for type. For example, the UniFrac
+  distance and DPCoA cannot be calculated for taxa-wise
+  distances, because they use a taxa-wise tree as part of
+  their calculation between samples, and there is no
+  transpose-equivalent for this tree.}
 
   \item{distance}{(Optional). Default \code{"jaccard"}. Any
   supported argument to the \code{method} parameter of the
@@ -40,7 +40,7 @@
   \code{distance} instead (see examples).
 
   A third alternative is to provide a function that takes a
-  sample-by-species matrix (typical vegan orientation) and
+  sample-by-taxa matrix (typical vegan orientation) and
   returns a sample-wise distance matrix.}
 
   \item{max.dist}{(Optional). Default \code{0.4}. The

@@ -2,23 +2,23 @@
 # subsetting functions
 # Without these, the default coerces to the base object (e.g. matrix or data.frame)
 ################################################################################
-#' Extract parts of otuTable
+#' Extract parts of otu_table
 #'
 #' @export
-#' @aliases [,otuTable-method
+#' @aliases [,otu_table-method
 #' @rdname extract-methods
-setMethod("[", "otuTable", function(x, i, j, ...){
+setMethod("[", "otu_table", function(x, i, j, ...){
 	newx <- as(x, "matrix")[i, j, drop=FALSE]
-	otuTable(newx, speciesAreRows(x) )
+	otu_table(newx, taxa_are_rows(x) )
 })
 ################################################################################
-#' extract parts of sampleData
+#' extract parts of sample_data
 #'
 #' @export
-#' @aliases [,sampleData-method
+#' @aliases [,sample_data-method
 #' @rdname extract-methods
-setMethod("[", "sampleData", function(x, i, j, ...){
-	sampleData( data.frame(x)[i, j, drop=FALSE] )
+setMethod("[", "sample_data", function(x, i, j, ...){
+	sample_data( data.frame(x)[i, j, drop=FALSE] )
 })
 ################################################################################
 #' extract parts of taxonomyTable
@@ -27,7 +27,7 @@ setMethod("[", "sampleData", function(x, i, j, ...){
 #' @aliases [,taxonomyTable-method
 #' @rdname extract-methods
 setMethod("[", "taxonomyTable", function(x, i, j, ...){
-	taxTab( as(x, "matrix")[i, j, drop=FALSE] )
+	tax_table( as(x, "matrix")[i, j, drop=FALSE] )
 })
 ################################################################################
 ################################################################################
@@ -41,7 +41,7 @@ setMethod("[", "phyloseq", function(x, i, j, ...){
 	# # # return(argslist)
 	goodComponents <- c(get.component.classes(), names(get.component.classes()))
 	goodComponents <- unique(goodComponents)
-	goodComponents <- goodComponents[!goodComponents %in% c("tre", "phylo")]
+	goodComponents <- goodComponents[!goodComponents %in% c("phy_tree", "phylo")]
 
 	# If there is an argument labeled "component", use that. Else, search among unlabled
 	if(any( names(argslist)=="component" )){
@@ -63,9 +63,9 @@ setMethod("[", "phyloseq", function(x, i, j, ...){
 		"Try get.component.classes() to see possible values to provide.")
 	}
 	
-	# idiosyncracy, component class and slot name do not match for taxonomyTable/taxTab
+	# idiosyncracy, component class and slot name do not match for taxonomyTable/tax_table
 	if( component == "taxonomyTable" ){
-		component <- "taxTab"
+		component <- "tax_table"
 	}
 	newx    <- access(x, component)
 	

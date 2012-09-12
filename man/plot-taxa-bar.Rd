@@ -6,17 +6,18 @@
   plot_taxa_bar(physeq, taxavec="Domain",
   showOnlyTheseTaxa=NULL, threshold=NULL, x="sample",
   fill=x, facet_formula = . ~ TaxaGroup, OTUpoints=FALSE,
-  labelOTUs=FALSE)
+  labelOTUs=FALSE, title=NULL)
 
   taxaplot(physeq, taxavec = "Domain", showOnlyTheseTaxa =
   NULL, threshold = NULL, x = "sample", fill = x,
   facet_formula = . ~ TaxaGroup, OTUpoints = FALSE,
-  labelOTUs = FALSE)
+  labelOTUs = FALSE, title = NULL)
 }
 \arguments{
-  \item{physeq}{(Required). An \code{\link{otuTable-class}}
-  or \code{\link{phyloseq-class}}. If \code{physeq} does
-  not contain a taxonomyTable component, then the second
+  \item{physeq}{(Required). An
+  \code{\link{otu_table-class}} or
+  \code{\link{phyloseq-class}}. If \code{physeq} does not
+  contain a taxonomyTable component, then the second
   argument, \code{taxavec}, is required and should have
   length equal to the number of species/taxa in
   \code{physeq}.}
@@ -79,6 +80,9 @@
   For low numbers of total OTUs this can be informative,
   and help display multiple layers of information on the
   same graphic.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A ggplot2 graphic object.
@@ -96,11 +100,11 @@
   The vertical axis is always relative abundance, but the
   data can be further organized at the horizontal axis and
   faceting grid by any combination of variates present in
-  the \code{\link{sampleData}} component of \code{physeq}.
+  the \code{\link{sample_data}} component of \code{physeq}.
 }
 \examples{
 data(enterotype)
-TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10])
+TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10])
 ent10   <- prune_species(TopNOTUs, enterotype)
 plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup")
 library("ggplot2")

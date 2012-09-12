@@ -4,21 +4,21 @@
 \usage{
   plot_tree(physeq, method="sampledodge", color=NULL,
   shape=NULL, size=NULL, min.abundance=Inf,
-  label.tips=NULL, text.size=NULL, sizebase=5, base.spacing
-  = 0.02)
+  label.tips=NULL, text.size=NULL, sizebase=5,
+  base.spacing=0.02, title=NULL)
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
   to plot and annotate a phylogenetic tree, in the form of
   a single instance of the \code{\link{phyloseq-class}},
   containing at minimum a phylogenetic tree component (try
-  \code{\link{tre}}). One of the major advantages of this
-  function over basic tree-plotting utilities in the
+  \code{\link{phy_tree}}). One of the major advantages of
+  this function over basic tree-plotting utilities in the
   \code{\link{ape}}-package is the ability to easily
   annotate the tree with sample variables and taxonomic
   information. For these uses, the \code{physeq} argument
-  should also have a \code{\link{sampleData}} and/or
-  \code{\link{taxTab}} component(s).}
+  should also have a \code{\link{sample_data}} and/or
+  \code{\link{tax_table}} component(s).}
 
   \item{method}{(Optional). Character string. Default
   \code{"sampledodge"}. The name of the annotation method
@@ -51,11 +51,11 @@
 
   \item{label.tips}{(Optional). Character string. Default
   is \code{NULL}, indicating that no tip labels will be
-  printed. If \code{"species.names"}, then the name of the
+  printed. If \code{"taxa_names"}, then the name of the
   taxa will be added to the tree; either next to the
   leaves, or next to the set of points that label the
   leaves. Alternatively, if this is one of the rank names
-  (from \code{rank.names(physeq)}), then the identity (if
+  (from \code{rank_names(physeq)}), then the identity (if
   any) for that particular taxonomic rank is printed
   instead.}
 
@@ -83,6 +83,9 @@
   abundance, for example. Similarly, if you don't have this
   problem and want tighter point-spacing, you can shrink
   this value.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A \code{\link{ggplot}}2 plot.
@@ -134,10 +137,10 @@ data("GlobalPatterns")
 # Subset Global Patterns dataset to just the observed Archaea
 gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
 # The number of different Archaeal species from this dataset is small enough ...
-nspecies(gpa)
+ntaxa(gpa)
 # ... that it is reasonable to consider displaying the phylogenetic tree directly.
 # (probably not true of the total dataset)
-nspecies(GlobalPatterns)
+ntaxa(GlobalPatterns)
 # Some patterns are immediately discernable with minimal parameter choices:
 # plot_tree(gpa, color="SampleType")
 # plot_tree(gpa, color="Phylum")

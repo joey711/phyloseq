@@ -60,15 +60,15 @@
 data(GlobalPatterns)
 # Need to clean the zeros from GlobalPatterns:
 GP <- GlobalPatterns
-GP <- prune_species(speciesSums(GP)>0, GP)
+GP <- prune_species(taxa_sums(GP)>0, GP)
 # # Add "human" variable to GP
-human <- getVariable(GP, "SampleType") \%in\%
+human <- get_variable(GP, "SampleType") \%in\%
 c("Feces", "Mock", "Skin", "Tongue")
-names(human) <- sample.names(GP)
-sampleData(GP)$human <- human
+names(human) <- sample_names(GP)
+sample_data(GP)$human <- human
 # Get the names of the most-abundant phyla
 top.TaxaGroup <- sort(
-tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
 decreasing = TRUE)
 top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 # Prune to just the most-abundant phyla

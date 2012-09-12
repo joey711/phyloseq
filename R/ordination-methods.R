@@ -12,9 +12,9 @@
 #'  (\code{\link{phyloseq-class}}). The data on which you want to perform the
 #'  the ordination. In general, these methods will be based in some fashion on
 #'  the abundance table ultimately stored as a contingency matrix 
-#'  (\code{\link{otuTable-class}}). If you're able to import data into 
+#'  (\code{\link{otu_table-class}}). If you're able to import data into 
 #'  \code{\link{phyloseq-class}} format, than you don't need to worry, as an
-#'  \code{otuTable} is a required component of this class. In addition, some 
+#'  \code{otu_table} is a required component of this class. In addition, some 
 #'  ordination methods require additional data, like a constraining variable
 #'  or phylogenetic tree. If that is the case, the relevant data should be
 #'  included in \code{physeq} prior to running. Integrating the data in this way
@@ -135,11 +135,11 @@
 #' # # Take a subset of the GP dataset for quicker computation of examples
 #' # data(GlobalPatterns)
 #' # # Keep top 200 species
-#' # topsp <- names(sort(speciesSums(GlobalPatterns), TRUE)[1:200])
-#' # GP    <- prune_species(topsp, GlobalPatterns)
+#' # topsp <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:200])
+#' # GP    <- prune_taxa(topsp, GlobalPatterns)
 #' # # Subset further to top 5 phyla
-#' # top5ph <- sort(tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
-#' # GP     <- subset_species(GP, Phylum %in% names(top5ph)) 
+#' # top5ph <- sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
+#' # GP     <- subset_taxa(GP, Phylum %in% names(top5ph)) 
 #' # # 
 #' # # Examples performing ordination with NMDS. Default distance is unweighted UniFrac
 #' # GP.NMDS.UF.ord   <- ordinate(GP, "NMDS")
@@ -150,7 +150,7 @@
 #' # (p <- plot_ordination(GP, GP.NMDS.Bray.ord, "biplot", color="SampleType", shape="Phylum"))
 #' # # define manual shape scale:
 #' # man.shapes <- 21:25
-#' # names(man.shapes) <- c(getTaxa(GP, "Phylum"))
+#' # names(man.shapes) <- c(get_taxa_unique(GP, "Phylum"))
 #' # man.shapes <- c(samples=19, man.shapes)
 #' # p + scale_shape_manual(value=man.shapes)
 #' # # 
@@ -192,8 +192,8 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 	# Define an internal function for accessing and orienting the OTU table
 	# in a fashion suitable for vegan/picante functions
 	veganify <- function(physeq){
-		OTU <- otuTable(physeq)
-		if( speciesAreRows(OTU) ){ OTU <- t(OTU) }
+		OTU <- otu_table(physeq)
+		if( taxa_are_rows(OTU) ){ OTU <- t(OTU) }
 		return( as(OTU, "matrix") )
 	}
 
@@ -248,7 +248,7 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' Calculate Double Principle Coordinate Analysis (DPCoA) 
 #' using phylogenetic distance
 #'
-#' Function uses abundance (\code{\link{otuTable-class}}) and 
+#' Function uses abundance (\code{\link{otu_table-class}}) and 
 #' phylogenetic (\code{\link[ape]{phylo}}) components of a 
 #' \code{\link{phyloseq-class}} experiment-level object
 #' to perform a
@@ -264,9 +264,9 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' @usage DPCoA(physeq, correction=cailliez, scannf=FALSE, ...)
 #'
 #' @param physeq (Required). A \code{\link{phyloseq-class}} object
-#'  containing, at a minimum, abundance (\code{\link{otuTable-class}}) and 
+#'  containing, at a minimum, abundance (\code{\link{otu_table-class}}) and 
 #'  phylogenetic (\code{\link[ape]{phylo}}) components.
-#'  As a test, the accessors \code{\link{otuTable}} and \code{\link{tre}}
+#'  As a test, the accessors \code{\link{otu_table}} and \code{\link{phy_tree}}
 #'  should return an object without error.
 #' 
 #' @param correction (Optional). A function. The function must be
@@ -320,8 +320,8 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' # # # # # # # GlobalPatterns
 #' # data(GlobalPatterns)
 #' # # subset GP to top-150 taxa (to save computation time in example)
-#' # keepTaxa <- names(sort(speciesSums(GlobalPatterns), TRUE)[1:150])
-#' # GP       <- prune_species(keepTaxa, GlobalPatterns)
+#' # keepTaxa <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:150])
+#' # GP       <- prune_taxa(keepTaxa, GlobalPatterns)
 #' # # Perform DPCoA
 #' # GP.dpcoa <- DPCoA(GP)
 #' # plot_ordination(GP, GP.dpcoa, color="SampleType")
@@ -330,14 +330,14 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	if(!class(physeq)=="phyloseq"){stop("physeq must be phyloseq-class")}
 	
 	# Remove any OTUs that are absent from all the samples.
-	physeq <- prune_species((speciesSums(physeq) > 0), physeq)
+	physeq <- prune_taxa((taxa_sums(physeq) > 0), physeq)
 	
 	# Access components for handing-off
-	OTU  <- otuTable(physeq)
-	tree <- tre(physeq)
+	OTU  <- otu_table(physeq)
+	tree <- phy_tree(physeq)
 	
 	# Enforce that OTU is in species-by-samples orientation
-	if( !speciesAreRows(OTU) ){ OTU <- t(OTU) }
+	if( !taxa_are_rows(OTU) ){ OTU <- t(OTU) }
   
 	# get the patristic distances between the species from the tree 
 	patristicDist <- as.dist(cophenetic.phylo(tree))
@@ -363,9 +363,9 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 # formula is main input to this function. This complicates signature handling.
 # A new method with a separate name is defined instead.
 #
-# Must transpose the phyloseq otuTable to fit the vegan::cca convention
+# Must transpose the phyloseq otu_table to fit the vegan::cca convention
 # Whether-or-not to transpose needs to be a check, based on the 
-#   "SpeciesAreRows" slot value
+#   "taxa_are_rows" slot value
 ################################################################################
 #' Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.
 #'
@@ -378,14 +378,14 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #'  No need to directly access components.
 #'  \code{cca.phyloseq} understands where to find the abundance table
 #'  and sample data. Alternatively, \code{X} can be an 
-#'  \code{\link{otuTable-class}} or \code{\link{phyloseq-class}} (without
+#'  \code{\link{otu_table-class}} or \code{\link{phyloseq-class}} (without
 #'  the \code{~} signifying a formula), in which case an unconstrained ordination
 #'  is performed. 
 #'
 #' @param ... (Optional). E.g. \code{data=DF}, where \code{DF} is a \code{data.frame}
 #'  containing information equivalent to
-#'  a \code{sampleData} object / component. Only necessary if complex object
-#'  does not already contain \code{sampleData} or you are keeping the data 
+#'  a \code{sample_data} object / component. Only necessary if complex object
+#'  does not already contain \code{sample_data} or you are keeping the data 
 #'  separate for some reason.
 #'
 #' @return same output as \code{\link[vegan]{cca}} or \code{\link[vegan]{rda}}, respectively.
@@ -402,7 +402,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @examples #
 #' # data(GlobalPatterns)
 #' # # For RDA, use thresholded-rank
-#' # ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
+#' # ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 #' # # RDA
 #' # modr <- rda.phyloseq(ex4 ~ SampleType)
 #' # # CCA
@@ -417,27 +417,27 @@ setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
 #' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "formula", function(X, data=NULL){
 	physeq <- get( as.character(X)[2] )
-	OTU    <- otuTable( physeq )
-	if( speciesAreRows(OTU) ){
+	OTU    <- otu_table( physeq )
+	if( taxa_are_rows(OTU) ){
 		OTU <- t(as(OTU, "matrix"))
 	} else {
 		OTU <- as(OTU, "matrix")
 	}
 	# Create the new formula
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
-	# If an alternative table is not provided, assume it is from the sampleData slot
+	# If an alternative table is not provided, assume it is from the sample_data slot
 	if( is.null(data) ){
-		data <- data.frame(sampleData(physeq))
+		data <- data.frame(sample_data(physeq))
 	}
 	# Good idea to qualify, as ade4 also has a conflicting "cca"
 	# and might be a dependency in the future.	
 	vegan::cca(newFormula, data=data)	
 })
 ################################################################################
-#' @aliases cca.phyloseq,otuTable-method
+#' @aliases cca.phyloseq,otu_table-method
 #' @rdname cca-rda-phyloseq-methods
-setMethod("cca.phyloseq", "otuTable", function(X){
-	if( speciesAreRows(X) ){
+setMethod("cca.phyloseq", "otu_table", function(X){
+	if( taxa_are_rows(X) ){
 		X <- t(as(X, "matrix"))
 	} else {
 		X <- as(X, "matrix")
@@ -450,7 +450,7 @@ setMethod("cca.phyloseq", "otuTable", function(X){
 #' @aliases cca.phyloseq,phyloseq-method
 #' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "phyloseq", function(X){
-	cca.phyloseq(otuTable(X))
+	cca.phyloseq(otu_table(X))
 })
 ################################################################################
 #' @keywords internal
@@ -464,25 +464,25 @@ setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
 setMethod("rda.phyloseq", "formula", function(X, data=NULL){
 	#require(vegan)
 	physeq <- get( as.character(X)[2] )
-	OTU    <- otuTable( physeq )
-	if( speciesAreRows(OTU) ){
+	OTU    <- otu_table( physeq )
+	if( taxa_are_rows(OTU) ){
 		OTU <- as(t(OTU), "matrix")
 	} else {
 		OTU <- as(OTU, "matrix")
 	}
 	# Create the new formula
 	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
-	# If an alternative table is not provided, assume it is from the sampleData slot
+	# If an alternative table is not provided, assume it is from the sample_data slot
 	if( is.null(data) ){
-		data <- data.frame(sampleData(physeq))
+		data <- data.frame(sample_data(physeq))
 	}
 	rda(newFormula, data=data)	
 })
 ################################################################################
-#' @aliases rda.phyloseq,otuTable-method
+#' @aliases rda.phyloseq,otu_table-method
 #' @rdname cca-rda-phyloseq-methods
-setMethod("rda.phyloseq", "otuTable", function(X){
-	if( speciesAreRows(X) ){
+setMethod("rda.phyloseq", "otu_table", function(X){
+	if( taxa_are_rows(X) ){
 		X <- t(as(X, "matrix"))
 	} else {
 		X <- as(X, "matrix")
@@ -493,6 +493,6 @@ setMethod("rda.phyloseq", "otuTable", function(X){
 #' @aliases rda.phyloseq,phyloseq-method
 #' @rdname cca-rda-phyloseq-methods
 setMethod("rda.phyloseq", "phyloseq", function(X){
-	rda.phyloseq(otuTable(X))
+	rda.phyloseq(otu_table(X))
 })
 ################################################################################

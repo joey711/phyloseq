@@ -4,31 +4,31 @@
 setAs("phyloseq", "matrix", function(from){
 	from@.Data
 })
-setAs("phyloseq", "otuTable", function(from){
-	otuTable(from)	
+setAs("phyloseq", "otu_table", function(from){
+	otu_table(from)	
 })
-setAs("phyloseq", "otuTable", function(from){
-	otuTable(from)	
+setAs("phyloseq", "otu_table", function(from){
+	otu_table(from)	
 })
 ################################################################################
-setAs("data.frame", "sampleData", function(from){
-	new("sampleData", from)
+setAs("data.frame", "sample_data", function(from){
+	new("sample_data", from)
 })
-setAs("sampleData", "data.frame", function(from){
+setAs("sample_data", "data.frame", function(from){
 	data.frame(from)
 })
-setAs("phyloseq", "sampleData", function(from){
-	sampleData(from)	
+setAs("phyloseq", "sample_data", function(from){
+	sample_data(from)	
 })
 ################################################################################
 setAs("taxonomyTable", "matrix", function(from){
 	from@.Data
 })
 setAs("phyloseq", "taxonomyTable", function(from){
-	taxTab(from)	
+	tax_table(from)	
 })
 ################################################################################
 setAs("phyloseq", "phylo", function(from){
-	tre(from)
+	phy_tree(from)
 })
 ################################################################################

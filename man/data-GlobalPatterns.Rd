@@ -1,7 +1,7 @@
 \docType{data}
 \name{data-GlobalPatterns}
-\alias{data-GlobalPatterns}
 \alias{GlobalPatterns}
+\alias{data-GlobalPatterns}
 \title{(Data) Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample (2011)}
 \description{
   Published in PNAS in early 2011. This work compared the
@@ -48,77 +48,17 @@
   package.
 }
 \examples{
-# data(GlobalPatterns)
-# # Load the GlobalPatterns dataset into the workspace environment
-# data(GlobalPatterns)
-# # Look at the different values for SampleType
-# getVariable(GlobalPatterns, "SampleType")
-# ################################################################################
-# # Reproduce Figure 4 from the article, but using Jaccard distance,
-# # and different clustering methods (UPGMA=="average" used in article)
-# # The default method for hclust() uses complete-linkage clustering (method="complete")
-# ################################################################################
-# # Calculate the jaccard distance between each sample
-# jaccdist <- distance(GlobalPatterns, "jaccard")
-# plot(hclust(jaccdist, "average"), labels=getVariable(GlobalPatterns, "SampleType"))
-# # A different method ("complete-linkage")
-# plot(hclust(jaccdist), labels=getVariable(GlobalPatterns, "SampleType"), col=cols)
-# # In case you decide to color the tip labels
-# colorScale <- rainbow(length(levels(getVariable(GlobalPatterns, "SampleType"))))
-# cols       <- colorScale[getVariable(GlobalPatterns, "SampleType")]
-
-# ################################################################################
-# # Reproduce Figure 5, but in 2-D
-# ################################################################################
-# coords <- pcoa(UniFrac(GlobalPatterns))$vectors
-# DF     <- data.frame(sampleData(GlobalPatterns), coords)
-# ggplot(DF, aes(x=Axis.1, y=Axis.2, color=SampleType)) +
-# geom_point(size=4) +
-# geom_line() +
-# opts(title = "PCoA on unweighted UniFrac distance")
-
-# ################################################################################
-# # Reproduce Figure 5 (but in 2-D and using jaccard distance / nmMDS)
-# ################################################################################
-# # Choose number of axes for non-metric MDS
-# N <- 2
-# # Perform non-metric multi-dimensional scaling, 3 axes (k=3)
-# coords <- scores(metaMDS(jaccdist, k=N))
-# # Add the NMDS coordinates to the sample data.frame, DF
-# DF    <- data.frame(sampleData(GlobalPatterns), coords)
-# # plot the MDS of jaccard-distances, and shade points by soil treatments
-# # (two axes only, 3-axes used in Fig 5)
-# ggplot(DF, aes(x=NMDS1, y=NMDS2, color=SampleType)) +
-# geom_point(size=4) +
-# geom_line() +
-# opts(title = paste("nmMDS on Jaccard distance, ", N, " axes", sep=""))
-
-# ################################################################################
-# # Reproduce Figure 5 (but use Jaccard distance / PCoA)
-# ################################################################################
-# # use principle coordinates analysis (as in article)
-# coords <- pcoa(jaccdist)$vectors
-
-# # Add the PCoA coordinates to the sample data.frame, DF
-# DF    <- data.frame(sampleData(GlobalPatterns), coords)
-
-# # plot the PCoA on jaccard-distances, and shade points by soil treatments
-# # (First-two axes only, could show 3 as in Fig 5, if desired)
-# ggplot(DF, aes(x=Axis.1, y=Axis.2, color=SampleType)) +
-# geom_point(size=4) +
-# geom_line() +
-# opts(title = paste("PCoA on Jaccard distance, two axes", sep=""))
-
-# ################################################################################
-# # Reproduce Figure 5, but using correspondence analysis
-# ################################################################################
-# gpdca  <- ordinate(GlobalPatterns, "DCA")
-# coords <- scores(gpdca)$sites
-# DF     <- data.frame(sampleData(GlobalPatterns), coords)
-# ggplot(DF, aes(x=CA1, y=CA2, color=SampleType)) +
-# geom_point(size=4) +
-# geom_line() +
-# opts(title = paste("DCA on abundances, first two axes", sep=""))
+data(GlobalPatterns)
+# Remove unobserved taxa
+GP0   <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+# Perform ordination (in this case, detrended correspondence analysis)
+gpdca <- ordinate(GP0, "DCA")
+# Create plot of samples
+plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes")
+# # More complicated plot facetting by phylum.
+# library("ggplot2")
+# plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes") + geom_line()
+# plot_ordination(GP0, gpdca, "taxa", color="Kingdom") + facet_wrap(~Phylum, 8)
 }
 \author{
   Caporaso, J. G., et al.
@@ -130,6 +70,12 @@
 
   The primary article can be viewed/downloaded at:
   \url{http://www.pnas.org/content/108/suppl.1/4516.short}
+}
+\seealso{
+  The examples on the phyloseq wiki page for
+  \code{\link{plot_ordination}} show many more examples:
+
+  \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
 }
 \keyword{data}
 

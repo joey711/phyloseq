@@ -42,6 +42,7 @@
 %\bibliographystyle{naturemag} % works if bst provided
  
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 %\setkeys{Gin}{width=0.55\textwidth}
 
 \title{Basic storage, access, and manipulation of phylogenetic sequencing data with \emph{phyloseq}}
@@ -67,13 +68,32 @@ The analysis of microbiological communities brings many challenges: the integrat
 %\clearpage
 \section{About this vignette}
 
-A separate vignette is included within the phyloseq-package that describes analysis tools included in phyloseq along with various examples using included example data. A quick way to load it is:
+A separate vignette describes analysis tools included in phyloseq
+along with various examples using included example data.
+A quick way to load it is:
 
 <<eval=FALSE>>=
 vignette("phyloseq_analysis")
 @
 
-By contrast, this vignette is intended to provide functional examples of the basic data import and manipulation infrastructure included in phyloseq. This includes example code for importing OTU-clustered data from different clustering pipelines, as well as performing clear and reproducible filtering tasks that can be altered later and checked for robustness. The motivation for including tools like this in phyloseq is to save time, and also to build-in a structure that requires consistency across related data tables from the same experiment. This not only reduces code repetition, but also decreases the likelihood of mistakes during data filtering and analysis. For example, it is intentionally difficult in phyloseq to create an experiment-level object \footnote{``phyloseq-class'', required for many analysis tools} in which a component tree and OTU table have different species. The import functions, trimming tools, as well as the main tool for creating an experiment-level object, \code{phyloseq()}, all automatically trim the species and samples indices to their intersection, such that these component data types are exactly coherent. 
+By contrast, this vignette is intended to provide functional examples
+of the basic data import and manipulation infrastructure included in phyloseq.
+This includes example code for importing OTU-clustered data
+from different clustering pipelines, as well as
+performing clear and reproducible filtering tasks that can be altered later
+and checked for robustness. 
+The motivation for including tools like this in phyloseq is to save time,
+and also to build-in a structure that requires consistency across 
+related data tables from the same experiment. 
+This not only reduces code repetition, but also decreases the likelihood of 
+mistakes during data filtering and analysis. 
+For example, it is intentionally difficult in phyloseq to create an experiment-level object
+\footnote{``phyloseq-class'', required for many analysis tools}
+in which a component tree and OTU table have different species names. 
+The import functions, trimming tools, as well as the main tool for creating
+an experiment-level object, \code{phyloseq}, 
+all automatically trim the species and samples indices to their intersection,
+such that these component data types are exactly coherent.
 
 Let's get started by loading phyloseq, and describing some methods for importing data.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,7 +103,7 @@ Let's get started by loading phyloseq, and describing some methods for importing
 \section{Load \emph{phyloseq} and import data}\label{sec:load}
 \subsection{Load \emph{phyloseq}}
 To use \emph{phyloseq} in a new R session, it will have to be loaded. This can be done in your package manager, or at the command line using the \code{library()} command:
-<<>>=
+<<load-packages, message=FALSE, warning=FALSE>>=
   library("phyloseq")
 @
 
@@ -96,32 +116,32 @@ QIIME is a free, open-source OTU clustering and analysis pipeline written for Un
 \url{http://qiime.org/}
 
 \subsubsection{Input}
-One QIIME input file (sample map), and two QIIME output files (\code{"otutable.txt"}, \code{".tre"}) are recognized by the \code{import{\textunderscore}qiime()} function. Only one of the three input files is required to run, although an \code{"otutable.txt"} file is required if \code{import{\textunderscore}qiime()} is to return a complete experiment object.
+One QIIME input file (sample map), and two QIIME output files (``\code{otu{\_}table.txt}'', ``\code{.tre}'') are recognized by the \code{import{\_}qiime()} function. Only one of the three input files is required to run, although an ``\code{otu{\_}table.txt}'' file is required if \code{import{\_}qiime()} is to return a complete experiment object.
 
 In practice, you will have to find the relevant QIIME files among a number of other files created by the QIIME pipeline. A screenshot of the directory structure created during a typical QIIME run is shown in Figure~\ref{fig:qiimedirectory}.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.55\textwidth]{import_qiime_directory_structure.jpg}
-\caption[]{ {\textbf A typical QIIME output directory}. The two output files suitable for import by \emph{phyloseq} are highlighted. A third file describing the samples, their barcodes and covariates, is created by the user and required as \emph{input} to QIIME. It is a good idea to import this file, as it can be converted directly to a \code{sampleData} object and can be extremely useful for certain analyses.}
+\caption[]{ {\textbf A typical QIIME output directory}. The two output files suitable for import by \emph{phyloseq} are highlighted. A third file describing the samples, their barcodes and covariates, is created by the user and required as \emph{input} to QIIME. It is a good idea to import this file, as it can be converted directly to a \code{sample{\_}data} object and can be extremely useful for certain analyses.}
 \label{fig:qiimedirectory}
 \end{center}
 \end{figure}
 
 \subsubsection{Output}
-The class of the object returned by \code{import{\textunderscore}qiime()} depends upon which filenames are provided. The most comprehensive class is chosen automatically, based on the input files listed as arguments. At least one argument needs to be provided.
+The class of the object returned by \code{import{\_}qiime()} depends upon which filenames are provided. The most comprehensive class is chosen automatically, based on the input files listed as arguments. At least one argument needs to be provided.
 
 \subsubsection{Example}
 The following lines of code would create a \code{phyloseqTaxTree} object (see Appendix~\ref{sec:app-classes} for class definitions) from files on your computer, had they been created by the QIIME pipeline.
 
 <<eval=FALSE>>=
-  otufilename <- "../data/ex1_otutable.txt"
-  mapfilename <- "../data/ex1_sampleData.txt"
+  otufilename <- "../data/ex1_otu_table.txt"
+  mapfilename <- "../data/ex1_sample_data.txt"
   trefilename <- "../data/ex1_tree.tre"
   MyExpmt1 <- import_qiime(otufilename, mapfilename, trefilename)
 @
 
-A separate object containing taxonomic data is not necessary, because this information is included in the ``otu{\textunderscore}table.txt'' file, and parsed into a proper \code{taxonomyTable} component object by \code{import{\textunderscore}qiime()}.
+A separate object containing taxonomic data is not necessary, because this information is included in the ``otu{\_}table.txt'' file, and parsed into a proper \code{taxonomyTable} component object by \code{import{\_}qiime()}.
 
 
 \clearpage
@@ -131,27 +151,31 @@ The open-source, platform-independent, locally-installed software package, ``mot
 \url{http://www.mothur.org/wiki/}
 
 \subsubsection{Input}
-Currently, there are three different files produced by the \emph{mothur} package (Ver $1.22.0$) that can be imported by \emph{phyloseq}. At minimum, a user must supply a \code{".list"} file, and at least one of the following two files: \code{".groups"} or \code{".tree"}
+Currently, there are three different files produced by the \emph{mothur} package (Ver $1.22.0$) that can be imported by \emph{phyloseq}. At minimum, a user must supply a ``\code{.list}'' file, and at least one of the following two files: ``\code{.groups}'' or ``\code{.tree}''
 
-The group file is produced by \emph{mothur}'s \code{"make.group()"} function. Details on its use can be found at:
+The group file is produced by \emph{mothur}'s \code{make.group()} function.
+Details on its use can be found at:
 
 \url{http://www.mothur.org/wiki/Make.group}
 
 The tree file is a phylogenetic tree calculated by \emph{mothur}.
 
 \subsubsection{Output}
-The output from \code{import{\textunderscore}mothur()} depends on which file types are provided. If all three file types are provided, an \code{"otuTree"} object is returned (which contains both an OTU abundance table and its associated phylogenetic tree).
+The output from \code{import{\_}mothur()} depends on which file types are provided.
+If all three file types are provided, 
+an instance of the phyloseq-class is returned
+that contains both an OTU abundance table and its associated phylogenetic tree.
 
 \subsubsection{Example}
 The path on your machine may (probably will) vary, but here is an example import with all three files:
 
 <<eval=FALSE>>=
-mothur_list_file  <- "~/Downloads/mothur/Esophagus/esophagus.an.list"
-mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
-mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
-# # Actual examples follow:
-show_mothur_list_cutoffs(mothur_list_file)
-MyExpmt1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
+mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
+mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
+mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
+show_mothur_list_cutoffs(mothlist)
+cutoff    <- "0.10"
+import_mothur(mothlist, mothgroup, mothtree, cutoff)	
 @
 
 \clearpage
@@ -165,10 +189,15 @@ PyroTagger takes as input the untrimmed sequence (\code{.fasta}) and sequence-qu
 \subsubsection{Input}
 PyroTagger returns a single excel spreadsheet file (\code{.xls}) containing both abundance and taxonomy data, as well as some associated confidence information related to each taxonomic assignment. This spreadsheet also reports on potential chimeric sequences.
 
-This single output file is sufficient for \code{import{\textunderscore}RDP{\textunderscore}tab()}, provided the file has been converted to a tab-delimited plain-text format. Any spreadsheet application should suffice. No other changes should be made to the \code{.xls} file.
+This single output file is sufficient for \code{import{\_}RDP{\_}tab()}, provided the file has been converted to a tab-delimited plain-text format. Any spreadsheet application should suffice. No other changes should be made to the \code{.xls} file.
 
 \subsubsection{Output}
-\code{import{\textunderscore}RDP{\textunderscore}tab()} returns an object from the \code{"otuTax"} class, containing the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like \code{tipglom()} are not applicable.
+\code{import{\_}RDP{\_}tab()} returns an instance of the phyloseq-class
+that contains the OTU abundance table and taxonomy table.
+To my knowledge, PyroTagger does not calculate a tree
+of the representative sequences from each OTU cluster,
+nor a distance object,
+so analyses like \code{tip{\_}glom()} and \code{UniFrac} are not applicable.
 
 \subsubsection{Example}
 Here is an example, importing a PyroTagger file:
@@ -189,23 +218,23 @@ For completeness, the optional arguments were shown with their default values se
 The Ribosomal Database Project (RDP~\cite{Cole:2009dm}; \url{http://rdp.cme.msu.edu/}) provides a web-based barcoded 16S rRNA amplicon sequence processing pipeline called the ``RDP Pyrosequencing Pipeline'' (\url{http://pyro.cme.msu.edu/}). A user must run all three of the ``Data Processing'' steps sequentially through the web interface in order to acquire the output from Complete Linkage Clustering, the approach to OTU clustering used by the RDP Pipeline. Note that this import function assumes that the sequence names in the resulting cluster file follow a particular naming convention with underscore delimiter. (See Section~\ref{sec:RDPnameconv}, below.)
 
 \subsubsection{Input}
-The output from the Complete Linkage Clustering, \code{".clust"}, is the only input to the RDP pipeline importer:
+The output from the Complete Linkage Clustering, ``\code{.clust}'', is the only input to the RDP pipeline importer:
 
 <<eval=FALSE>>=
   myOTU1 <- import_RDP_cluster("path/to/my/filename.clust")
 @
 
 \subsubsection{Output}
-This importer returns an \code{otuTable} object.
+This importer returns an \code{otu{\_}table} object.
 
 \subsubsection{Expected Naming Convention}\label{sec:RDPnameconv}
 The RDP cluster pipeline (specifically, the output of the complete linkage clustering step) has no formal documentation for the ``.clust'' file structure or its apparent sequence naming convention.
 
-The cluster file itself contains the names of all sequences contained in the input alignment. If the upstream barcode and aligment processing steps are also done with the RDP pipeline, then the sequence names follow a predictable naming convention wherein each sequence is named by its sample and sequence ID, separated by a ``{\textunderscore}'' as delimiter:
+The cluster file itself contains the names of all sequences contained in the input alignment. If the upstream barcode and aligment processing steps are also done with the RDP pipeline, then the sequence names follow a predictable naming convention wherein each sequence is named by its sample and sequence ID, separated by a ``{\_}'' as delimiter:
 
-``sampleName{\textunderscore}sequenceIDnumber''
+``sampleName{\_}sequenceIDnumber''
 
-This import function assumes that the sequence names in the cluster file follow this convention, and that the sample name does not contain any ``{\textunderscore}''. It is unlikely to work if this is not the case. It is likely to work if you used the upstream steps in the RDP pipeline to process your raw (barcoded, untrimmed) fasta/fastq data.
+This import function assumes that the sequence names in the cluster file follow this convention, and that the sample name does not contain any ``{\_}''. It is unlikely to work if this is not the case. It is likely to work if you used the upstream steps in the RDP pipeline to process your raw (barcoded, untrimmed) fasta/fastq data.
 
 
 \clearpage
@@ -227,7 +256,7 @@ See the Example Data page on the phyloseq GitHub wiki at:
 
 \url{https://github.com/joey711/phyloseq/wiki/Example-Data}
 
-\subsection{phyloseq object summaries}
+\subsection{phyloseq Object Summaries}
 In small font, the following is the summary of the \code{GlobalPatterns} dataset that prints to the terminal. These summaries are consistent among all \code{phyloseq-class} objects. Although the components of \code{GlobalPatterns} have many thousands of elements, the command-line returns only a short summary of each component. This encourages you to check that an object is still what you expect, without needing to let thousands of elements scroll across the terminal. In the cases in which you do want to see more of a particular component, use an accessor function (see Table~\ref{table:access}, Section~\ref{sec:accessors}).
 
 \begin{scriptsize}
@@ -250,16 +279,13 @@ Suppose you have already imported raw data from an experiment into \code{R}, and
 \hline
 Function                    & Input Class      & Output Description \\
 \hline
-\Rfunction{otuTable}        & numeric matrix   & \code{otuTable} object storing taxa abundance \\
-\Rfunction{otuTable}        & data.frame       & \code{otuTable} object storing taxa abundance \\
-\Rfunction{sampleData}       & data.frame       & \code{sampleData} object storing sample variables \\
-\Rfunction{taxTab}          & character string & \code{taxonomyTable} object storing taxonomic identities \\
-\Rfunction{tre}             & file path char   & phylo4-class tree, read from file \\
-\Rfunction{tre}             & phylo-class tree & phylo4-class tree, converted from argument \\
-\Rfunction{read.table}      & table file path  & A matrix or data.frame (Std \R core function)  \\
-\Rfunction{read.tree}       & Newick file path & phylo-class tree object (ape) \\
-\Rfunction{read.nexus}      & Nexus file path  & phylo-class tree object (ape) \\
-\Rfunction{readNexus}       & Nexus file path  & phylo4-class tree object (phylobase) \\
+\Rfunction{otu{\_}table}        & numeric matrix   & \code{otu{\_}table} object storing OTU abundance \\
+\Rfunction{otu{\_}table}        & data.frame       & \code{otu{\_}table} object storing OTU abundance \\
+\Rfunction{sample{\_}data}       & data.frame       & \code{sample{\_}data} object storing sample variables \\
+\Rfunction{tax{\_}table}          & character matrix & \code{taxonomyTable} object storing taxonomic identities \\
+\Rfunction{tax{\_}table}          & data.frame & \code{taxonomyTable} object storing taxonomic identities \\
+\Rfunction{read{\_}tree}             & file path char   & phylo-class tree, read from file \\
+\Rfunction{read.table}      & table file path  & A matrix or data.frame (Std \code{R} core function)  \\
 & & \\
 
 \multicolumn{3}{l}{Functions for building complex data objects}\\
@@ -267,7 +293,7 @@ Function                    & Input Class      & Output Description \\
 Function                    & Input Class                 & Output Description \\
 \hline
 \Rfunction{phyloseq}        & 2 or more component objects & phyloseq-class, ``experiment-level'' object \\
-\Rfunction{merge{\textunderscore}phyloseq}  & 2 or more component or phyloseq-class objects & Combined instance of phyloseq-class \\
+\Rfunction{merge{\_}phyloseq}  & 2 or more component or phyloseq-class objects & Combined instance of phyloseq-class \\
 \hline
 \end{tabular}
 \end{center}
@@ -277,29 +303,29 @@ Function                    & Input Class                 & Output Description \
 
 The following example illustrates using the constructor methods for component data tables. 
 <<eval=FALSE>>=
-otu1 <- otuTable(raw_abundance_matrix, speciesAreRows=FALSE)
-sam1 <- sampleData(raw_sample_data.frame) 
-tax1 <- taxTab(raw_taxonomy_matrix)
+otu1 <- otu_table(raw_abundance_matrix, taxa_are_rows=FALSE)
+sam1 <- sample_data(raw_sample_data.frame) 
+tax1 <- tax_table(raw_taxonomy_matrix)
 tre1 <- read.nexus(my_nexus_file)
 @
 
 \subsection{\code{phyloseq()} function: building complex phyloseq objects}
 Once you've converted the data tables to their appropriate class, combining them into one object requires only one additional function call, \Rfunction{phyloseq()}:
 <<eval=FALSE>>=
-ex1b <- phyloseq(my_otuTable, my_sampleData, my_taxonomyTable, my_tree)
+ex1b <- phyloseq(my_otu_table, my_sample_data, my_taxonomyTable, my_tree)
 @
 
 You do not need to have all four data types in the example above in order to combine them into one validity-checked experiment-level phyloseq-class object. The \code{phyloseq()} method will detect which component data classes are present, and build accordingly. Downstream analysis methods will access the required components using emph{phyloseq}'s accessors, and throw an error if something is missing. For most downstream methods you will only need to supply the combined, phyloseq-class object (the output of \code{phyloseq()} ), usually as the first argument. 
 <<eval=FALSE>>=
-ex1c <- phyloseq(my_otuTable, my_sampleData)
+ex1c <- phyloseq(my_otu_table, my_sample_data)
 @
 
-Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\textunderscore}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same species and samples.
+Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\_}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same species and samples.
 
-\subsection{\code{merge{\textunderscore}phyloseq()} function: merge multiple phyloseq objects}
+\subsection{\code{merge{\_}phyloseq()} function: merge multiple phyloseq objects}
 What if you have multiple objects describing parts of the same experimental project (say, because they came from different files)? What if you had already built a combined object for the earlier trials with the \code{phyloseq()} function, but now want to add additional data tables to that new object? 
 
-For all of these merging situations, the suggested function is \code{merge{\textunderscore}phyloseq()}.
+For all of these merging situations, the suggested function is \code{merge{\_}phyloseq()}.
 
 
 \clearpage
@@ -310,27 +336,27 @@ Once you have a phyloseq object available, many accessor functions are available
 \begin{center}
 \begin{tabular}{l|l}
 \hline
-Function                    & Description \\
+Function                    & Returns \\
 \hline
-\Rfunction{[}               & Standard extraction operator. works on otuTable, sampleData, and taxonomyTable \\
+\Rfunction{[}               & Standard extraction operator.
+          works on \code{otu{\_}table}, \code{sample{\_}data}, and \code{taxonomyTable} \\
 \Rfunction{access}          & General slot accessor function for phyloseq-package \\
-\Rfunction{getslots.phyloseq} & Return the slot names of phyloseq objects \\
-\Rfunction{getSpecies}      & Returns the abundance values of sample `i' for all species in `x' \\
-\Rfunction{getSamples}      & Returns the abundance values of species `i' for all samples in `x' \\
-\Rfunction{getTaxa}      & Get a unique vector of the observed taxa at a particular taxonomic rank \\
-\Rfunction{getVariable}     & Returns an individual sample variable vector/factor \\
+\Rfunction{get{\_}taxa}      & Abundance values of all taxa in sample `i' \\
+\Rfunction{get{\_}sample}      & Abundance values of taxa `i' for all samples \\
+\Rfunction{get{\_}taxa{\_}unique}      & A unique vector of the observed taxa at a particular taxonomic rank \\
+\Rfunction{get{\_}variable}     & An individual sample variable vector/factor \\
 \Rfunction{nsamples}        & Get the number of samples described by an object \\
-\Rfunction{nspecies}        & Get the number of species (taxa) described by an object \\
-\Rfunction{otuTable}        & Build or access otuTable objects \\
-\Rfunction{rank.names}      & Get the names of the available taxonomic ranks \\
-\Rfunction{sampleData}      & Build or access sampleData objects \\
-\Rfunction{sample.names}    & Return the names of the samples described by an object \\
-\Rfunction{species.names}   & Return the names of the species described by an object \\
-\Rfunction{sampleSums}      & Returns the total number of individuals observed from each sample \\
-\Rfunction{sample.variables}& Returns the names of sample variables in an object \\
-\Rfunction{speciesSums}     & Returns the total number of individuals observed from each species \\
-\Rfunction{speciesAreRows}  & Returns the orientation of the abundance table \\
-\Rfunction{taxTab}          & Build or access taxTab objects \\
+\Rfunction{ntaxa}        & Get the number of OTUs (taxa) described by an object \\
+\Rfunction{otu{\_}table}        & Build or access otu{\_}table objects \\
+\Rfunction{rank{\_}names}      & Get the names of the available taxonomic ranks \\
+\Rfunction{sample{\_}data}      & Build or access sample{\_}data objects \\
+\Rfunction{sample{\_}names}    & The names of all samples \\
+\Rfunction{taxa{\_}names}   & The names of all taxa \\
+\Rfunction{sample{\_}sums}      & The sum of the abundance values of each sample \\
+\Rfunction{sample{\_}variables} & The names of sample variables \\
+\Rfunction{taxa{\_}sums}     & The sum of the abundance values of each taxa \\
+\Rfunction{taxa{\_}are{\_}rows}  & \code{TRUE} if taxa are row indices in \code{otu{\_}table} \\
+\Rfunction{tax{\_}table}          & A taxonomy table \\
 \Rfunction{tre}             & Access the tree contained in a phyloseq object \\
 \hline
 \end{tabular}
@@ -345,55 +371,57 @@ Function                    & Description \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Trimming, subsetting, filtering phyloseq data}\label{sec:trim}
-\subsection{Trimming: \code{prune{\textunderscore}species()} and \code{prune{\textunderscore}samples()}}
+\subsection{Trimming: \code{prune{\_}taxa()} and \code{prune{\_}samples()}}
 Trimming high-throughput phylogenetic sequencing data can be useful, or even necessary, for certain types of analyses. However, it is important that the original data always be available for reference and reproducibility; and that the methods used for trimming be transparent to others, so they can perform the same trimming or filtering steps on the same or related data.
 
 To facilitate this, \emph{phyloseq} contains many ways to trim/filter the data from a phylogenetic sequencing project. Because matching indices for taxa and samples is strictly enforced, subsetting one of the data components automatically subsets the corresponding indices from the others. Variables holding trimmed versions of your original data can be declared, and further trimmed, without losing track of the original data.
 
-In general, most trimming should be accomplished using the S4 methods \code{prune{\textunderscore}species()} or \code{prune{\textunderscore}samples()}.
+In general, most trimming should be accomplished using the S4 methods \code{prune{\_}taxa()} or \code{prune{\_}samples()}.
 
 \subsection{Simple filtering example}
 <<echo=FALSE>>=
 topN <- 20
 @
-For example, lets make a new object that only holds the most abundant \Sexpr{topN} taxa in the experiment. To accomplish this, we will use the \code{prune{\textunderscore}species()} function.
+For example, lets make a new object that only holds the most abundant \Sexpr{topN} taxa in the experiment. To accomplish this, we will use the \code{prune{\_}taxa()} function.
 <<>>=
 data(GlobalPatterns)
-most_abundant_taxa <- sort(speciesSums(GlobalPatterns), TRUE)[1:topN]
-ex2 <- prune_species(names(most_abundant_taxa), GlobalPatterns)
+most_abundant_taxa <- sort(taxa_sums(GlobalPatterns), TRUE)[1:topN]
+ex2 <- prune_taxa(names(most_abundant_taxa), GlobalPatterns)
 @
 
 Now we can ask the question, ``what taxonomic Family are these OTUs?'' (Subsetting still returns a \code{taxonomyTable} object, which is summarized. We will need to convert to a vector)
 
 \begin{scriptsize}
 <<>>=
-topFamilies <- taxTab(ex2)[, "Family"]
+topFamilies <- tax_table(ex2)[, "Family"]
 as(topFamilies, "vector")
 @
 \end{scriptsize}
 
 \subsection{Arbitrarily complex abundance filtering}
-The previous example was a relatively simple filtering in which we kept only the most abundant \Sexpr{topN} in the whole experiment. But what if we wanted to keep the most abundant \Sexpr{topN} taxa of each sample? And of those, keep only the taxa that are also found in at least one-third of our samples? 
+The previous example was a relatively simple filtering in which we kept only the most abundant \Sexpr{topN} in the whole experiment. But what if we wanted to keep the most abundant \Sexpr{topN} taxa of each sample? And of those, keep only the taxa that are also found in at least one-third of our samples? What if we wanted to keep only those taxa that met some across-sample criteria?
 
-For this more complicated filtering \emph{phyloseq} contains a function, \code{genefilterSample()}, that takes as an argument a \emph{phyloseq} object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (\code{otuTable}), as well as an integer argument, \code{A}, that specifies for how many samples the filtering function must return \code{TRUE} for a particular taxa to avoid removal from the object. A supporting function \code{filterfunSample} is also included in \emph{phyloseq} to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. \code{genefilterSample} returns a logical vector suitable for sending directly to prune{\textunderscore}species() for the actual trimming.
+\subsubsection{\code{genefilter{\_}sample}: Filter by Within-Sample Criteria}
 
-Here is an example on a completely fabricated \code{otuTable} called \code{testOTU}.
+For this more complicated filtering \emph{phyloseq} contains a function, \code{genefilter{\_}sample}, that takes as an argument a \emph{phyloseq} object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (\code{otu{\_}table}), as well as an integer argument, \code{A}, that specifies for how many samples the filtering function must return \code{TRUE} for a particular taxa to avoid removal from the object. A supporting function \code{filterfun{\_}sample} is also included in \emph{phyloseq} to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. \code{genefilter{\_}sample} returns a logical vector suitable for sending directly to prune{\_}taxa() for the actual trimming.
+
+Here is an example on a completely fabricated \code{otu{\_}table} called \code{testOTU}.
 <<eval=FALSE>>=
-testOTU <- otuTable(matrix(sample(1:50, 25, replace=TRUE), 5, 5), speciesAreRows=FALSE)
-f1  <- filterfunSample(topk(2))
-wh1 <- genefilterSample(testOTU, f1, A=2)
+testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+f1  <- filterfun_sample(topk(2))
+wh1 <- genefilter_sample(testOTU, f1, A=2)
 wh2 <- c(T, T, T, F, F)
-prune_species(wh1, testOTU)
-prune_species(wh2, testOTU)
+prune_taxa(wh1, testOTU)
+prune_taxa(wh2, testOTU)
 @
 
-Here is a second example using the included dataset, \code{GlobalPatterns}. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset \code{GlobalPatterns}. Note that it is not necessary to subset \code{GlobalPatterns} in order to do this filtering. The S4 method \code{prune{\_}species()} subsets each of the relavent component objects, and returns the complex object back.
+Here is a second example using the included dataset, \code{GlobalPatterns}. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset \code{GlobalPatterns}. Note that it is not necessary to subset \code{GlobalPatterns} in order to do this filtering. The S4 method \code{prune{\_}taxa()} subsets each of the relavent component objects, and returns the complex object back.
 <<>>=
 data(GlobalPatterns)
-f1  <- filterfunSample(topp(0.1))
-wh1 <- genefilterSample(GlobalPatterns, f1, A=(1/2*nsamples(GlobalPatterns)))
+f1  <- filterfun_sample(topp(0.1))
+wh1 <- genefilter_sample(GlobalPatterns, f1, A=(1/2*nsamples(GlobalPatterns)))
 sum(wh1)
-ex2 <- prune_species(wh1, GlobalPatterns)
+ex2 <- prune_taxa(wh1, GlobalPatterns)
 @
 \begin{scriptsize}
 <<>>=
@@ -406,15 +434,43 @@ If instead of the most abundant fraction of taxa, you are interested in the most
 
 <<eval=FALSE>>=
 data(GlobalPatterns)
-f1  <- filterfunSample(topf(0.9))
-wh1 <- genefilterSample(GlobalPatterns, f1, A=(1/3*nsamples(GlobalPatterns)))
+f1  <- filterfun_sample(topf(0.9))
+wh1 <- genefilter_sample(GlobalPatterns, f1, A=(1/3*nsamples(GlobalPatterns)))
 sum(wh1)
-prune_species(wh1, GlobalPatterns)
+prune_taxa(wh1, GlobalPatterns)
 @
 
+\subsubsection{\code{filter{\_}taxa}: Filter by Across-Sample Criteria}
+The \code{filter{\_}taxa} function is directly analogous to
+the \code{genefilter} function for microarray filtering,
+but is used for filtering OTUs from phyloseq objects.
+It applies an arbitrary set of functions ---
+as a function list, for instance, created by \code{genefilter::filterfun} ---
+as across-sample criteria, one OTU at a time.
+It can be thought of as an extension of the genefilter-package
+(from the Bioconductor repository) for phyloseq objects.
+It takes as input a phyloseq object,
+and returns a logical vector
+indicating whether or not each OTU passed the criteria.
+Alternatively, if the ``\code{prune}'' option is set to \code{FALSE},
+it returns the already-trimmed version of the phyloseq object.
 
-\subsection{\code{subset{\textunderscore}samples()}: subset by sample variables}
-It is possible to subset the samples in a \emph{phyloseq} object based on the sample variables using the \code{subset{\textunderscore}samples()} function. For example to subset \code{GlobalPatterns} such that only \emph{Gender A} is present, the following line is needed (the related tables are subsetted automatically as well):
+Inspect the following example.
+Note that the functions \code{genefilter} and \code{kOverA} are from
+the genefilter package.
+<<>>=
+data("enterotype")
+library("genefilter")
+flist    <- filterfun(kOverA(5, 2e-05))
+ent.logi <- filter_taxa(enterotype, flist)
+ent.trim <- filter_taxa(enterotype, flist, TRUE)
+identical(ent.trim, prune_taxa(ent.logi, enterotype)) 
+identical(sum(ent.logi), ntaxa(ent.trim))
+filter_taxa(enterotype, flist, TRUE)
+@
+
+\subsection{\code{subset{\_}samples}: Subset by Sample Variables}
+It is possible to subset the samples in a \emph{phyloseq} object based on the sample variables using the \code{subset{\_}samples()} function. For example to subset \code{GlobalPatterns} such that only \emph{Gender A} is present, the following line is needed (the related tables are subsetted automatically as well):
 <<>>=
 ex3 <- subset_samples(GlobalPatterns, SampleType%in%c("Freshwater", "Ocean", "Freshwater (creek)"))
 @
@@ -423,18 +479,18 @@ ex3 <- subset_samples(GlobalPatterns, SampleType%in%c("Freshwater", "Ocean", "Fr
 ex3
 @
 \end{scriptsize}
-For this example only a categorical variable is shown, but in principle a continuous variable could be specified and a logical expression provided just as for the \code{subset} function. In fact, because \code{sampleData} component objects are an extension of the data.frame class, they can also be subsetted with the \code{subset} function:
+For this example only a categorical variable is shown, but in principle a continuous variable could be specified and a logical expression provided just as for the \code{subset} function. In fact, because \code{sample{\_}data} component objects are an extension of the data.frame class, they can also be subsetted with the \code{subset} function:
 
 \begin{scriptsize}
 <<>>=
-subset(sampleData(GlobalPatterns), SampleType%in%c("Freshwater", "Ocean", "Freshwater (creek)"))
+subset(sample_data(GlobalPatterns), SampleType%in%c("Freshwater", "Ocean", "Freshwater (creek)"))
 @
 \end{scriptsize}
 
-\subsection{\code{subset{\textunderscore}species()}: subset by taxonomic categories}
-It is possible to subset by specific taxonomic category using the \code{subset{\textunderscore}species()} function. For example, if we wanted to subset \code{GlobalPatterns} so that it only contains data regarding the phylum \emph{Firmicutes}:
+\subsection{\code{subset{\_}taxa()}: subset by taxonomic categories}
+It is possible to subset by specific taxonomic category using the \code{subset{\_}taxa()} function. For example, if we wanted to subset \code{GlobalPatterns} so that it only contains data regarding the phylum \emph{Firmicutes}:
 <<>>=
-ex4 <- subset_species(GlobalPatterns, Phylum=="Firmicutes")
+ex4 <- subset_taxa(GlobalPatterns, Phylum=="Firmicutes")
 @
 \begin{scriptsize}
 <<>>=
@@ -445,8 +501,8 @@ ex4
 \subsection{random subsample abundance data}
 Can also randomly subset, for example a random subset of 100 taxa from the full dataset.
 <<>>=
-randomSpecies100 <- sample(species.names(GlobalPatterns), 100, replace=FALSE)
-ex5 <- prune_species(randomSpecies100, GlobalPatterns)
+randomSpecies100 <- sample(taxa_names(GlobalPatterns), 100, replace=FALSE)
+ex5 <- prune_taxa(randomSpecies100, GlobalPatterns)
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -454,11 +510,11 @@ ex5 <- prune_species(randomSpecies100, GlobalPatterns)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Transform abundance data}\label{sec:transform}
-Sample-wise transformation can be achieved with the \code{transformsamplecounts()} function. It requires two arguments, (1) the \emph{phyloseq} object that you want to transform, and the function that you want to use to perform the transformation. Any arbitrary function can be provided as the second argument, as long as it returns a numeric vector with the same length as its input. In the following trivial example, we create a second object, \code{ex2}, that has been ``transformed'' by the identity function such that it is actually identical to \code{GlobalPatterns}.
+Sample-wise transformation can be achieved with the \code{transform{\_}sample{\_}counts()} function. It requires two arguments, (1) the \emph{phyloseq} object that you want to transform, and the function that you want to use to perform the transformation. Any arbitrary function can be provided as the second argument, as long as it returns a numeric vector with the same length as its input. In the following trivial example, we create a second object, \code{ex2}, that has been ``transformed'' by the identity function such that it is actually identical to \code{GlobalPatterns}.
 
 <<eval=FALSE>>=
 data(GlobalPatterns)
-ex2 <- transformsamplecounts(GlobalPatterns, I)
+ex2 <- transform_sample_counts(GlobalPatterns, I)
 @
 
 For certain kinds of analyis we may want to transform the abundance data. For example, for RDA we want to transform abundance counts to within-sample ranks, and to further include a threshold beyond which all taxa receive the same rank value. The ranking for each sample is performed independently, so that the rank of a particular taxa within a particular sample is not influenced by that sample's total quantity of sequencing relative to the other samples in the project. 
@@ -466,7 +522,7 @@ For certain kinds of analyis we may want to transform the abundance data. For ex
 The following example shows how to perform such a thresholded-rank transformation of the abundance table in the complex \emph{phyloseq} object \code{GlobalPatterns} with an arbitrary threshold of 500.
 
 <<>>=
-ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
+ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -474,18 +530,18 @@ ex4  <- transformsamplecounts(GlobalPatterns, threshrankfun(500))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Phylogenetic smoothing}\label{sec:glom}
-\subsection{\code{taxglom()} method}
-Suppose we are skeptical about the importance of species-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{taxglom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
+\subsection{\code{tax{\_}glom()} Method}
+Suppose we are skeptical about the importance of species-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{tax{\_}glom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
 
 <<eval=FALSE>>=
-ex6 <- taxglom(GlobalPatterns, taxlevel="Genus")
+ex6 <- tax_glom(GlobalPatterns, taxlevel="Genus")
 @
 
-\subsection{\code{tipglom()} method}
-Similarly, our original example object (\code{GlobalPatterns}) also contains a phlyogenetic tree corresponding to each OTU, which we could also use as a means to merge taxa in our dataset that are closely related. In this case, we specify a threshold patristic distance. Taxa more closely related than this threshold are merged. This is especially useful when a dataset has many taxa that lack a taxonomic assignment at the level you want to investigate, a problem when using \code{taxglom()}. Note that for datasets with a large number of taxa, \code{taxglom} will be noticeably faster than \code{tipglom}. Also, keep in mind that \code{tipglom} requires that its first argument be an object that contains a tree, while \code{taxglom} instead requires a \code{taxonomyTable} (See Appendix~\ref{sec:app-classes}).
+\subsection{\code{tip{\_}glom()} method}
+Similarly, our original example object (\code{GlobalPatterns}) also contains a phlyogenetic tree corresponding to each OTU, which we could also use as a means to merge taxa in our dataset that are closely related. In this case, we specify a threshold patristic distance. Taxa more closely related than this threshold are merged. This is especially useful when a dataset has many taxa that lack a taxonomic assignment at the level you want to investigate, a problem when using \code{tax{\_}glom()}. Note that for datasets with a large number of taxa, \code{tax{\_}glom} will be noticeably faster than \code{tip{\_}glom}. Also, keep in mind that \code{tip{\_}glom} requires that its first argument be an object that contains a tree, while \code{tax{\_}glom} instead requires a \code{taxonomyTable} (See Appendix~\ref{sec:app-classes}).
 
 <<eval=FALSE>>=
-ex7 <- tipglom(GlobalPatterns, speciationMinLength = 0.05)
+ex7 <- tip_glom(GlobalPatterns, speciationMinLength = 0.05)
 @
 Command output not provided here to save time during compilation of the vignette. The user is encouraged to try this out on your dataset, or even this example, if interested. It may take a while to run on the full, untrimmed data.
 
@@ -501,11 +557,11 @@ Command output not provided here to save time during compilation of the vignette
 \clearpage
 \section{\emph{phyloseq} classes}\label{sec:app-classes}
 
-The class structure in the \emph{phyloseq} package follows the inheritance diagram shown in Fig.~\ref{fig:phyloseqclasses}. The \emph{phyloseq} package contains multiple inherited classes with incremental complexity so that methods can be extended to handle exactly the data types that are present in a particular object. Currently, \emph{phyloseq} uses 4 core data classes. They are the taxonomic abundance table (\code{otuTable}), a table of sample data (\code{sampleData}), a table of taxonomic descriptors (\code{taxonomyTable}), and a phylogenetic tree (\code{phylo4}, \emph{phylobase} package). The \code{otuTable} class can be considered the central data type, as it directly represents the number and type of sequences observed in each sample. \code{otuTable} extends the numeric matrix class in the \R{} base, and has a few additonal feature slots. The most important of these feature slots is the \code{speciesAreRows} slot, which holds a single logical that indicates whether the table is oriented with taxa as rows (as in the \emph{genefilter} package in Bioconductor~\cite{Bioconductor}) or with taxa as columns (as in \emph{vegan} and \emph{picante} packages). In \emph{phyloseq} methods, as well as its extensions of methods in other packages, the \code{speciesAreRows} value is checked to ensure proper orientation of the otuTable. A \emph{phyloseq} user is only required to specify the \code{otuTable} orientation during initialization, following which all handling is internal. 
+The class structure in the \emph{phyloseq} package follows the inheritance diagram shown in Fig.~\ref{fig:phyloseqclasses}. The \emph{phyloseq} package contains multiple inherited classes with incremental complexity so that methods can be extended to handle exactly the data types that are present in a particular object. Currently, \emph{phyloseq} uses 4 core data classes. They are the OTU abundance table (\code{otu{\_}table}), a table of sample data (\code{sample{\_}data}), a table of taxonomic descriptors (\code{taxonomyTable}), and a phylogenetic tree (\code{phylo4}, \emph{phylobase} package). The \code{otu{\_}table} class can be considered the central data type, as it directly represents the number and type of sequences observed in each sample. \code{otu{\_}table} extends the numeric matrix class in the \R{} base, and has a few additonal feature slots. The most important of these feature slots is the \code{taxa{\_}are{\_}rows} slot, which holds a single logical that indicates whether the table is oriented with taxa as rows (as in the \emph{genefilter} package in Bioconductor~\cite{Bioconductor}) or with taxa as columns (as in \emph{vegan} and \emph{picante} packages). In \emph{phyloseq} methods, as well as its extensions of methods in other packages, the \code{taxa{\_}are{\_}rows} value is checked to ensure proper orientation of the \code{otu{\_}table}. A \emph{phyloseq} user is only required to specify the \code{otu{\_}table} orientation during initialization, following which all handling is internal. 
 
-The \code{sampleData} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa (e.g. \emph{species}) and columns are taxonomic levels (e.g. \emph{Phylum}). 
+The \code{sample{\_}data} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa (e.g. \emph{species}) and columns are taxonomic levels (e.g. \emph{Phylum}). 
 
-The phyloseq-class can be considered an ``experiment-level class'' and should contain two or more of the previously-described core data classes. We assume that \emph{phyloseq} users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so the \code{phyloseq()} constructor will stop with an error if the arguments do not include an \code{otuTable}. There are a number of common methods that require either an \code{otuTable} and \code{sampleData} combination, or an \code{otuTable} and phylogenetic tree combination. These methods can operate on instances of the phyloseq-class, and will stop with an error if the required component data is missing.  
+The phyloseq-class can be considered an ``experiment-level class'' and should contain two or more of the previously-described core data classes. We assume that \emph{phyloseq} users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so the \code{phyloseq()} constructor will stop with an error if the arguments do not include an \code{otu{\_}table}. There are a number of common methods that require either an \code{otu{\_}table} and \code{sample{\_}data} combination, or an \code{otu{\_}table} and phylogenetic tree combination. These methods can operate on instances of the phyloseq-class, and will stop with an error if the required component data is missing.  
 
 \begin{figure}
 \begin{center}
@@ -521,55 +577,28 @@ The phyloseq-class can be considered an ``experiment-level class'' and should co
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Installation}\label{sec:install}
-\subsection{Bioconductor Version}
-The main release version of \emph{phyloseq} is available from Bioconductor (\url{http://bioconductor.org/packages/devel/bioc/html/phyloseq.html}), and can be installed from the \code{R} console with the following two commands:
+\subsection{Installation Wiki}
+Please check the ``Installation'' page on the phyloseq wiki at GitHub:
 
-<<eval=FALSE>>=
-	source("http://bioconductor.org/biocLite.R")
-	biocLite("phyloseq")
-@
+\url{https://github.com/joey711/phyloseq/wiki/Installation} 
 
-If the above fails it is probably because of a mismatch with your current version of R and that required. One option is to update your version of R; not necessarily recommended if this means jumping out of the current stable version. You can always install the development version from GitHub (see below).
+if you have any problems, as this is likely to be the first place news
+about installation will be posted.
+Also check out the rest of the development homepage on GitHub 
 
-\subsection{GitHub Development Version}
-\code{R} has tools to install packages directly from GitHub. The GitHub repository of \emph{phyloseq} is the most frequently updated development version, and also the place to suggest or contribute code. Use the following command(s) from within \code{R} to perform the installation:
+(\url{http://joey711.github.com/phyloseq})
 
-Install the Bioconductor dependencies (genefilter is optional):
+as this is the best place to post issues, bug reports, feature requests, contribute code, etc.
 
-<<eval=FALSE>>=
-	source("http://bioconductor.org/biocLite.R")
-	biocLite("multtest")
-	biocLite("genefilter")
-@
-
-Install the CRAN dependencies (doParallel is optional):
-
-<<eval=FALSE>>=
-  install.packages("ape")
-  install.packages("doParallel")
-  install.packages("foreach")
-  install.packages("ggplot2")
-  install.packages("igraph")
-  install.packages("picante")
-  install.packages("vegan")
-  install.packages("RJSONIO")
-  install.packages("plyr")
-@
-
-Finally, install phyloseq using GitHub as an alternative repository with the \code{install{\textunderscore}github} command in the devtools package.
-
-<<eval=FALSE>>=
-  # Make sure you have devtools installed
-  install.packages("devtools")
-  # Load the devtools package
-  library("devtools")
-  # Build and install phyloseq
-  install_github("phyloseq", "joey711")
-@
-  
-Also, make sure to check the ``Installation'' page on the phyloseq wiki at GitHub: \url{https://github.com/joey711/phyloseq/wiki/Installation} if you have any problems, as this is likely to be the first place news about installation will be posted. Also check out the rest of the development homepage on GitHub (\url{https://github.com/joey711/phyloseq}), as this is the best place to post issues, bug reports, feature requests, contribute code, etc.
-
-For running parallel implementation of functions/methods in \emph{phyloseq} (e.g. \texttt{UniFrac(GlobalPatterns, parallel=TRUE)}), you will need also to install a function for registering a parallel ``backend''. Only one working parallel backend is needed, but there are several options, depending on the details of your particular system any one of the following may be sufficient:
+\subsection{Installing Parallel Backend}\label{sec:install:para}
+For running parallel implementation of functions/methods in \emph{phyloseq}
+(e.g. \code{UniFrac(GlobalPatterns, parallel=TRUE)}), 
+you will need also to install a function for registering a parallel ``backend''.
+Only one working parallel backend is needed,
+but there are several options, 
+and the best one will depend on the details of your particular system.
+The ``doParallel'' package is a good place to start.
+Any one of the following lines from an \code{R} session will install a backend package.
 <<eval=FALSE>>=
   install.packages("doParallel")
   install.packages("doMC")

@@ -47,19 +47,19 @@
   \code{import_mothur()} function.
 }
 \examples{
-## # Example using esophagus-data in a UniFrac calculation.
-## data(esophagus)
-## UniFrac(esophagus, weighted=TRUE)
-## UniFrac(esophagus, weighted=FALSE)
-## unifrac(t(as(otuTable(esophagus), "matrix")), tre(esophagus) )
-# # Example importing the mothur example files to create esophagus.
-# show_mothur_list_cutoffs("~/Dropbox/R/esophagus_example/esophagus.fn.list")
-# mothlist  <- "~/esophagus_example/esophagus.fn.list"
-### mothgroup <- "~/esophagus_example/esophagus.groups"
-# mothgroup <- "~/esophagus_example/esophagus.good.groups"
-# mothtree  <- "~/esophagus_example/esophagus.tree"
-# cutoff    <- "0.10"
-# esophagus <- import_mothur(mothlist, mothgroup, mothtree, cutoff)
+# Example using esophagus-data in a UniFrac calculation.
+data(esophagus)
+UniFrac(esophagus, weighted=TRUE)
+UniFrac(esophagus, weighted=FALSE)
+#
+# How to re-create the esophagus dataset using import_mothur function
+mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
+mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
+mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
+show_mothur_list_cutoffs(mothlist)
+cutoff    <- "0.10"
+esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)
+identical(esophagus, esophman)
 }
 \author{
   Pei et al. \email{zhiheng.pei@med.nyu.edu}

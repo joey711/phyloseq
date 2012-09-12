@@ -5,7 +5,7 @@
   plot_heatmap(physeq, method="NMDS", distance="bray",
   sample.label=NULL, species.label=NULL, low="#000033",
   high="#66CCFF", na.value="black", trans=log_trans(4),
-  max.label=250, ...)
+  max.label=250, title=NULL, ...)
 }
 \arguments{
   \item{physeq}{(Required). The data, in the form of an
@@ -13,7 +13,7 @@
   be what you get as a result from one of the
   \code{\link{import}} functions, or any of the processing
   downstream. No data components beyond the
-  \code{\link{otuTable}} are strictly necessary, though
+  \code{\link{otu_table}} are strictly necessary, though
   they may be useful if you want to re-label the axis ticks
   according to some observable or taxonomic rank, for
   instance, or if you want to use a
@@ -78,6 +78,9 @@
   increase this value if, for example, you want a special
   label for an axis that has 300 indices.}
 
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
+
   \item{...}{(Optional). Additional parameters passed to
   \code{\link{ordinate}}.}
 }
@@ -94,7 +97,7 @@
   h-clustering. An immediately useful example of their
   approach is provided in the NeatMap package for R. The
   NeatMap package can be used directly on the abundance
-  table (\code{\link{otuTable-class}}) of
+  table (\code{\link{otu_table-class}}) of
   phylogenetic-sequencing data, but the NMDS or PCA
   ordination options that it supports are not based on
   ecological distances. To fill this void, phyloseq
@@ -141,7 +144,7 @@ data("GlobalPatterns")
 gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
 # FYI, the base-R function uses a non-ecological ordering scheme,
 # but does add potentially useful hclust dendrogram to the sides...
-heatmap(otuTable(gpac))
+heatmap(otu_table(gpac))
 plot_heatmap(gpac)
 # example relabelling based on a sample variable and taxonomic rank.
 plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")

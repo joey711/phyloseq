@@ -33,7 +33,7 @@
 #'  \code{\link{plot_tree}}
 #'  \code{\link{plot_network}}
 #'  \code{\link{plot_taxa_bar}}
-#'  \code{\link{plot_richness_estimates}}
+#'  \code{\link{plot_richness}}
 #'
 #' @export
 #' @docType methods
@@ -46,14 +46,14 @@ setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phylose
 #' @aliases plot_phyloseq,phyloseq-method
 #' @rdname plot_phyloseq-methods
 setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
-	if( all(c("otuTable", "sampleData", "tre") %in% getslots.phyloseq(physeq)) ){
+	if( all(c("otu_table", "sample_data", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
-	} else if( all(c("otuTable", "sampleData", "taxTab") %in% getslots.phyloseq(physeq) ) ){
+	} else if( all(c("otu_table", "sample_data", "tax_table") %in% getslots.phyloseq(physeq) ) ){
 		plot_taxa_bar(physeq, ...)
-	} else if( all(c("otuTable", "tre") %in% getslots.phyloseq(physeq)) ){
+	} else if( all(c("otu_table", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else {
-		plot_richness_estimates(physeq)
+		plot_richness(physeq)
 	}
 })
 ################################################################################
@@ -68,7 +68,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' (argument \code{g})
 #' be created using the
 #'  \code{\link{make_network}} function, 
-#' and based upon sample-wise or species-wise microbiome ecological distances 
+#' and based upon sample-wise or taxa-wise microbiome ecological distances 
 #' calculated from a phylogenetic sequencing experiment 
 #' (\code{\link{phyloseq-class}}).
 #' In this case, edges in the network are created if the distance between
@@ -79,7 +79,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 	color=NULL, shape=NULL, point_size=4, alpha=1,
 #' 	label="value", hjust = 1.35, 
 #' 	line_weight=0.5, line_color=color, line_alpha=0.4,
-#' 	layout.method=layout.fruchterman.reingold)
+#' 	layout.method=layout.fruchterman.reingold, title=NULL)
 #'
 #' @param g (Required). An \code{igraph0}-class object created
 #'  either by the convenience wrapper \code{\link{make_network}}, 
@@ -90,9 +90,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'
 #' @param type (Optional). Default \code{"samples"}.
 #'  Whether the network represented in the primary argument, \code{g},
-#'  is samples or taxa/species.
-#'  Supported arguments are \code{"samples"}, \code{"species"},
-#'  where \code{"species"} indicates using the taxa indices,
+#'  is samples or taxa/OTUs.
+#'  Supported arguments are \code{"samples"}, \code{"taxa"},
+#'  where \code{"taxa"} indicates using the taxa indices,
 #'  whether they actually represent species or some other taxonomic rank.
 #'
 #' @param color (Optional). Default \code{NULL}.
@@ -133,6 +133,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  equal to the number of vertices. For possible options already included in 
 #'  \code{igraph0}-package, see the others also described in the help file:
 #' 
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' \code{\link[igraph0]{layout.fruchterman.reingold}}
 #'
 #' @return A \code{\link{ggplot}}2 plot representing the network,
@@ -165,7 +168,12 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	color=NULL, shape=NULL, point_size=4, alpha=1,
 	label="value", hjust = 1.35, 
 	line_weight=0.5, line_color=color, line_alpha=0.4,
-	layout.method=layout.fruchterman.reingold){
+	layout.method=layout.fruchterman.reingold, title=NULL){
+
+	# disambiguate species/OTU/taxa as argument type...
+	if( type %in% c("taxa", "species", "OTUs", "otus", "otu") ){
+		type <- "taxa"
+	}
 
 	# Make the edge-coordinates data.frame
 	edgeDF    <- data.frame(get.edgelist(g))
@@ -181,10 +189,10 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	# THEN add it to vertDF
 	if( !is.null(physeq) ){
 		extraData <- NULL
-		if( type == "samples" & !is.null(sampleData(physeq, FALSE)) ){
-			extraData <- sampleData(physeq)[as.character(vertDF$value), ]
-		} else if( type == "species" & !is.null(taxTab(physeq, FALSE)) ){
-			extraData <- taxTab(physeq)[as.character(vertDF$value), ]
+		if( type == "samples" & !is.null(sample_data(physeq, FALSE)) ){
+			extraData <- sample_data(physeq)[as.character(vertDF$value), ]
+		} else if( type == "taxa" & !is.null(tax_table(physeq, FALSE)) ){
+			extraData <- tax_table(physeq)[as.character(vertDF$value), ]
 		}
 		# Only mod vertDF if extraData exists
 		if( !is.null(extraData) ){
@@ -200,15 +208,15 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
 	# Strip all the typical annotations from the plot, leave the legend
 	p <- p + theme_bw() + 
-			opts(
-				panel.grid.major = theme_blank(), 
-				panel.grid.minor = theme_blank(), 
-				axis.text.x      = theme_blank(),
-				axis.text.y      = theme_blank(),
-				axis.title.x     = theme_blank(),
-				axis.title.y     = theme_blank(),
-				axis.ticks       = theme_blank(),
-				panel.border     = theme_blank()
+			theme(
+				panel.grid.major = element_blank(), 
+				panel.grid.minor = element_blank(), 
+				axis.text.x      = element_blank(),
+				axis.text.y      = element_blank(),
+				axis.title.x     = element_blank(),
+				axis.title.y     = element_blank(),
+				axis.ticks       = element_blank(),
+				panel.border     = element_blank()
 			)
 
 	# Add the graph vertices as points
@@ -247,28 +255,28 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
 #'
-#' @usage plot_richness_estimates(physeq, x, color=NULL, shape=NULL)
+#' @usage plot_richness(physeq, x, color=NULL, shape=NULL, title=NULL)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
-#'  an \code{\link{otuTable-class}}. The data about which you want to estimate
+#'  an \code{\link{otu_table-class}}. The data about which you want to estimate
 #'  the richness.
 #'
 #' @param x (Optional). A variable to map to the horizontal axis. The vertical
-#'  axis will be mapped to richness estimates and have units of total species.
+#'  axis will be mapped to richness estimates and have units of total taxa.
 #'  This parameter (\code{x}) can be either a character string indicating a
-#'  variable in \code{sampleData} 
-#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  variable in \code{sample_data} 
+#'  (among the set returned by \code{sample_variables(physeq)} );
 #'  or a custom supplied vector with length equal to the number of samples
 #'  in the dataset (nsamples(physeq)).
 #'
-#'  The default value is \code{"sample.names"}, which will map each sample's name
+#'  The default value is \code{"sample_names"}, which will map each sample's name
 #'  to a separate horizontal position in the plot.
 #'
 #' @param color (Optional). Default \code{NULL}. The sample variable to map
 #'  to different colors. Like \code{x}, this can be a single character string 
 #'  of the variable name in 
-#'  \code{sampleData} 
-#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  \code{sample_data} 
+#'  (among the set returned by \code{sample_variables(physeq)} );
 #'  or a custom supplied vector with length equal to the number of samples
 #'  in the dataset (nsamples(physeq)).
 #'  The color scheme is chosen automatically by \code{link{ggplot}},
@@ -279,13 +287,16 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  to different shapes. Like \code{x} and \code{color},
 #'  this can be a single character string 
 #'  of the variable name in 
-#'  \code{sampleData} 
-#'  (among the set returned by \code{sample.variables(physeq)} );
+#'  \code{sample_data} 
+#'  (among the set returned by \code{sample_variables(physeq)} );
 #'  or a custom supplied vector with length equal to the number of samples
 #'  in the dataset (nsamples(physeq)).
 #'  The shape scale is chosen automatically by \code{link{ggplot}},
 #'  but it can be modified afterward with an additional layer using
 #'  \code{\link[ggplot2]{scale_shape_manual}}.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
 #'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
@@ -300,31 +311,31 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @export
 #' @examples 
 #' data(GlobalPatterns)
-#' plot_richness_estimates(GlobalPatterns, "SampleType")
-#' plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
+#' plot_richness(GlobalPatterns, "SampleType")
+#' plot_richness(GlobalPatterns, "SampleType", "SampleType")
 #' # # Define a human-associated versus non-human categorical variable:
 #' GP <- GlobalPatterns
-#' human <- getVariable(GP, "SampleType") %in% 
+#' human <- get_variable(GP, "SampleType") %in% 
 #'                   c("Feces", "Mock", "Skin", "Tongue")
-#' names(human) <- sample.names(GP)
+#' names(human) <- sample_names(GP)
 #' # # Replace current SD with new one that includes human variable:
-#' sampleData(GP)$human <- human 
+#' sample_data(GP)$human <- human 
 #' # # Can use new "human" variable within GP as a discrete variable in the plot
-#' plot_richness_estimates(GP, "human", "SampleType")
-#' plot_richness_estimates(GP, "SampleType", "human")
+#' plot_richness(GP, "human", "SampleType")
+#' plot_richness(GP, "SampleType", "human")
 #' # # Can also provide custom factor directly:
-#' plot_richness_estimates(GP, "SampleType", human)
-#' plot_richness_estimates(GP, human, "SampleType")
+#' plot_richness(GP, "SampleType", human)
+#' plot_richness(GP, human, "SampleType")
 #' # # Not run: Should cause an error:
-#' # plot_richness_estimates(GP, "value", "value")
+#' # plot_richness(GP, "value", "value")
 #' # #
-plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=NULL){	
+plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, title=NULL){	
 	# Make the plotting data.frame 
-	DF <- data.frame(estimate_richness(physeq), sampleData(physeq))
+	DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
 	
-	# If there is no "sample.names" variable in DF, add it
-	if( !"sample.names" %in% names(DF) ){
-		DF <- data.frame(DF, sample.names=sample.names(physeq))		
+	# If there is no "sample_names" variable in DF, add it
+	if( !"sample_names" %in% names(DF) ){
+		DF <- data.frame(DF, sample_names=sample_names(physeq))		
 	}
 
 	# If manually-supplied x, color, shape, add to DF, dummy var_name
@@ -363,8 +374,8 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 	p <- ggplot(mdf, richness_map) + 
 		geom_point(size=2) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		opts(axis.text.x = theme_text(angle = -90, hjust = 0)) +
-		scale_y_continuous('richness [number of species]') +
+		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
+		scale_y_continuous('richness [number of taxa]') +
 		facet_grid(~variable) 
 	return(p)
 }
@@ -418,16 +429,16 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #'  The name of the variable to map to
 #'  colors in the plot. 
 #'  This can be a sample variable 
-#'  (among the set returned by \code{sample.variables(physeq)} )
+#'  (among the set returned by \code{sample_variables(physeq)} )
 #'  or
 #'  taxonomic rank
-#'  (among the set returned by \code{rank.names(physeq)}).
+#'  (among the set returned by \code{rank_names(physeq)}).
 #'  
 #'  Alternatively, if \code{type} indicates a single-plot 
 #'  (\code{"samples"} or \code{"species"}), then
 #'  it is also possible to supply a custom vector with length equal to
 #'  the relevant number of samples or species
-#'  (\code{nsamples(physeq)} or \code{nspecies(physeq)}).
+#'  (\code{nsamples(physeq)} or \code{ntaxa(physeq)}).
 #' 
 #'  Finally,
 #'  The color scheme is chosen automatically by \code{link{ggplot}},
@@ -447,8 +458,8 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #'  The name of the variable to map to text labels on the plot.
 #'  Similar to \code{color} option, but for plotting text.
 #'
-#' @param title (Optional). Default \code{NULL}. Character string. The
-#'  title to include over the plot. 
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
 #'
 #' @param justDF (Optional). Default \code{FALSE}. Logical.
 #'  Instead of returning a ggplot2-object, do you just want the relevant
@@ -464,38 +475,42 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 #'  the ordination result for the specified axes.
 #' 
 #' @seealso 
-#'  \code{\link{plot_phyloseq}}
+#'  The examples on the phyloseq wiki page for \code{plot_ordination} show 
+#'  many more examples:
+#'
+#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'
+#' Also see the general wrapping function:
+#'
+#' \code{\link{plot_phyloseq}}
 #'
 #' @import ggplot2
 #' @export
 #' @examples 
 #' data(GlobalPatterns)
-#' # Define a human-associated versus non-human binary variable:
-#' human.levels <- levels( getVariable(GlobalPatterns, "SampleType") ) %in%
-#'    c("Feces", "Mock", "Skin", "Tongue")
-#' human <- human.levels[getVariable(GlobalPatterns, "SampleType")]
-#' names(human) <- sample.names(GlobalPatterns)
 #' # Need to clean the zeros from GlobalPatterns:
-#' GP <- prune_species(speciesSums(GlobalPatterns)>0, GlobalPatterns)
+#' GP <- prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+#' # Define a human-associated versus non-human binary variable:
+#' sample_data(GP)$human <- get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
 #' # Get the names of the most-abundant
 #' top.TaxaGroup <- sort(
-#'    tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#'    tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
 #'    decreasing = TRUE)
 #' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 #' # Now prune further, to just the most-abundant phyla
-#' GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
-#' topsp <- names(sort(speciesSums(GP), TRUE)[1:200])
-#' GP1   <- prune_species(topsp, GP)
+#' GP <- subset_taxa(GP, Phylum %in% names(top.TaxaGroup))
+#' topsp <- names(sort(taxa_sums(GP), TRUE)[1:200])
+#' GP1   <- prune_taxa(topsp, GP)
 #' GP.dpcoa <- ordinate(GP1, "DPCoA")
 #' plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
 #' # Customize with ggplot2 layers added directly to output
 #' library("ggplot2")
 #' plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
-#' p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape=human)
+#' p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape="human")
 #' print(p)
 #' # library("ggplot2")
 #' # p + geom_line() + geom_point(size=5)
-#' # plot_ordination(GP1, GP.dpcoa, type="species", color="Phylum") + geom_line() + geom_point(size=5)
+#' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum") + geom_line() + geom_point(size=5)
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
@@ -505,9 +520,11 @@ plot_richness_estimates <- function(physeq, x="sample.names", color=NULL, shape=
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
-	if(class(physeq)!="phyloseq"){stop("physeq must be phyloseq-class.")}
-	if(type == "samples"){type <- "sites"} # Compatibility with phyloseq
-	if(type == "taxa"){type <- "species"} # Compatibility with phyloseq
+	if(class(physeq)!="phyloseq"){
+		warning("Full functionality requires physeq be phyloseq-class with multiple components.")
+	}
+	if(type == "samples"){type <- "sites"} # vegan compatibility with phyloseq
+	if(type == "taxa"){type <- "species"} # vegan compatibility with phyloseq
 	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
 
 	# Build data.frame:
@@ -552,8 +569,16 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "samples") }
 		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "species") }		
 	}
+	
 	# In case user wants the plot-DF for some other purpose, return early
 	if(justDF){return(DF)}
+
+	# If there is nothing to map (data.frame only has two columns), just return simple plot
+	if(ncol(DF)<=2){
+		ord_map <- aes_string(x=x, y=y)
+		p <- ggplot(DF, ord_map) + geom_point()		
+		return(p)
+	}
 	
 	# Mapping section
 	if( type %in% c("sites", "species", "split") ){
@@ -585,8 +610,6 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 			p <- update_labels(p, list(colour = "type")) #p + scale_color_discrete(name="type")
 		} else {
 			# Check if variable is discrete. 
-			# Note that you probalby need to adjust this function to accommodate continuous variables, anyway. Post an issue.
-			# plyr::is.discrete
 			if( is.discrete(DF[, color]) ){
 				# The following function reproduces ggplot2's default color scale.
 				# From: http://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
@@ -613,9 +636,12 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 					size=2, vjust=1.5, na.rm=TRUE)
 	}
 
+	# Optionally add a title to the plot
 	if( !is.null(title) ){
-		p <- p + opts(title = title)
+		p <- p + ggtitle(title)
 	}
+	
+	# Return the ggplot object
 	return(p)
 }
 ################################################################################
@@ -627,18 +653,18 @@ ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2
 	coord <- scores(ordination, choices=axes, display=type)
 	# coord row.names index order should match physeq. Enforce.
 	if( type == "species" ){
-		coord <- coord[species.names(physeq), ]
+		coord <- coord[taxa_names(physeq), ]
 	} else if(type == "sites"){
-		coord <- coord[sample.names(physeq), ]		
+		coord <- coord[sample_names(physeq), ]		
 	}
 	
 	# If there is supplemental data, add it, else, return coord
 	supp <- NULL
-	# Define supplemental data
-	if( !is.null(sampleData(physeq, FALSE)) & type == "sites"){
-		supp  <- sampleData(physeq) # Supplemental data, samples
-	}else if( !is.null(taxTab(physeq, FALSE)) & type == "species"){
-		supp  <- taxTab(physeq) # Supplemental data, taxa
+	# Define supplemental data. Use explicit accessor to avoid constructor options.
+	if( !is.null(access(physeq, "sam_data")) & type == "sites"){
+		supp  <- sample_data(physeq) # Supplemental data, samples
+	} else if( !is.null(access(physeq, "tax_table")) & type == "species"){
+		supp  <- tax_table(physeq) # Supplemental data, taxa
 	}
 	if( is.null(supp) ){
 		DF <- coord
@@ -652,6 +678,10 @@ ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2
 		DF <- data.frame(coord, supp)		
 	}
 
+	# Enforce DF class as data.frame.
+	# Important in cases where no merging happens, scores may return a matrix, and then ggplot() fails.
+	if( class(DF) != "data.frame"){ DF <- data.frame(DF) }
+	
 	return(DF)		
 }
 ################################################################################
@@ -748,15 +778,15 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' data(GlobalPatterns)
 #' # Need to clean the zeros from GlobalPatterns:
 #' GP <- GlobalPatterns
-#' GP <- prune_species(speciesSums(GP)>0, GP)
+#' GP <- prune_species(taxa_sums(GP)>0, GP)
 #' # # Add "human" variable to GP
-#' human <- getVariable(GP, "SampleType") %in% 
+#' human <- get_variable(GP, "SampleType") %in% 
 #'                   c("Feces", "Mock", "Skin", "Tongue")
-#' names(human) <- sample.names(GP)
-#' sampleData(GP)$human <- human 
+#' names(human) <- sample_names(GP)
+#' sample_data(GP)$human <- human 
 #' # Get the names of the most-abundant phyla
 #' top.TaxaGroup <- sort(
-#'   	tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE),
+#'   	tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
 #'   decreasing = TRUE)
 #' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
 #' # Prune to just the most-abundant phyla
@@ -803,17 +833,17 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 ################################################################################
 ################################################################################
 ################################################################################
-#' Convert an otuTable object into a data.frame useful for plotting
+#' Convert an otu_table object into a data.frame useful for plotting
 #' in the ggplot2 framework.
 #'
 #' @usage otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
-#' @param physeq An \code{otuTable} object.
+#' @param physeq An \code{otu_table} object.
 #'
 #' @param taxavec A character vector of the desired taxonomic names to 
 #'  categorize each species in physeq. 
 #' 
-#' @param map The corresponding sampleData object for \code{physeq}.
+#' @param map The corresponding sample_data object for \code{physeq}.
 #' 
 #' @param keepOnlyTheseTaxa A vector of the taxonomic labels that you want
 #'  included. If NULL, the default, then all taxonomic labels are used, except
@@ -829,18 +859,18 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
 	########################################
 	# sample_i - A sample name. A single character string.
-	# physeq      - An otuTable object.
+	# physeq      - An otu_table object.
 	# taxavec  - A character vector of the desired taxonomic names 
 	#             to categorize each species in physeq. 
 	otu2dfi <- function(sample_i, physeq, taxavec, normalized=TRUE){
-		Abundance_i <- getSpecies(physeq, sample_i)
+		Abundance_i <- get_taxa(physeq, sample_i)
 		if(normalized){ 
 			Abundance_i <- Abundance_i / sum(Abundance_i)
 		}
 		dflist <- list(
-			TaxaGroup = taxavec[species.names(physeq)],
+			TaxaGroup = taxavec[taxa_names(physeq)],
 			Abundance = Abundance_i,
-			ID        = species.names(physeq),
+			ID        = taxa_names(physeq),
 			sample    = sample_i
 		)
 		dflist <- c(dflist, map[sample_i, , drop=TRUE])
@@ -875,9 +905,9 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 	}
 	########################################		
 	# Main control loop to create large redundant data.frame for ggplot2	
-	df <- otu2dfi(sample.names(physeq)[1], physeq, taxavec)
+	df <- otu2dfi(sample_names(physeq)[1], physeq, taxavec)
 	df <- trimdf(df, keepOnlyTheseTaxa, threshold)
-	for( j in sample.names(physeq)[-1] ){ 
+	for( j in sample_names(physeq)[-1] ){ 
 		dfj <- otu2dfi( j, physeq, taxavec)
 		dfj <- trimdf(dfj, keepOnlyTheseTaxa, threshold)
 		df  <- rbind(df, dfj)
@@ -897,13 +927,13 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #' The vertical axis is always relative abundance, but the data
 #' can be further organized at the horizontal axis and faceting grid
 #' by any combination of variates present in
-#' the \code{\link{sampleData}} component of \code{physeq}.
+#' the \code{\link{sample_data}} component of \code{physeq}.
 #'
 #' @usage plot_taxa_bar(physeq, taxavec="Domain",
 #'	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x,  
-#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE)
+#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL)
 #'
-#' @param physeq (Required). An \code{\link{otuTable-class}} or 
+#' @param physeq (Required). An \code{\link{otu_table-class}} or 
 #'  \code{\link{phyloseq-class}}.
 #'  If \code{physeq} does not contain a taxonomyTable component,
 #'  then the second argument, \code{taxavec}, is
@@ -958,6 +988,9 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'  this can be informative, and help display multiple layers of information 
 #'  on the same graphic.
 #'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' @return A ggplot2 graphic object.
 #'
 #' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
@@ -969,19 +1002,19 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
 #' @examples
 #' data(enterotype)
-#' TopNOTUs <- names(sort(speciesSums(enterotype), TRUE)[1:10]) 
+#' TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
 #' ent10   <- prune_species(TopNOTUs, enterotype)
 #' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup")
 #' library("ggplot2")
 #' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype) 
 plot_taxa_bar <- function(physeq, taxavec="Domain",
 	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x, 
-	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE){
+	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL){
 
-	# Some preliminary assignments. Assumes physeq has non-empty sampleData slot.
-	map <- sampleData(physeq)
+	# Some preliminary assignments. Assumes physeq has non-empty sample_data slot.
+	map <- sample_data(physeq)
 	if( length(taxavec) == 1 ){ 
-		taxavec <- as(taxTab(physeq), "matrix")[, taxavec, drop=TRUE]
+		taxavec <- as(tax_table(physeq), "matrix")[, taxavec, drop=TRUE]
 	}
 
 	# Build the main species-level data.frame
@@ -1027,7 +1060,7 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 	########################################
 	# Build the ggplot
 	p  <- ggplot(df) + 
-		opts(axis.text.x=theme_text(angle=-90, hjust=0))
+		theme(axis.text.x=element_text(angle=-90, hjust=0))
 
 	p <- p + 
 		# The full stack
@@ -1041,9 +1074,9 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 			position="dodge", stat="identity"
 		) + 
 		# Some reasonable default options
-		opts(panel.grid.minor = theme_blank()) + 
-		opts(panel.grid.major = theme_blank()) +
-		opts(panel.border = theme_blank()) +
+		theme(panel.grid.minor = element_blank()) + 
+		theme(panel.grid.major = element_blank()) +
+		theme(panel.border = element_blank()) +
 		labs(y="Relative Abundance", x=x, fill=fill)
 		
 	# Should the individual OTU points be added. Default FALSE
@@ -1075,6 +1108,12 @@ plot_taxa_bar <- function(physeq, taxavec="Domain",
 	if( !is.null(facet_formula) ){	
 		p <- p + facet_grid(facet_formula)
 	}
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}	
+	
 	########################################
 	# Return the ggplot object so the user can 
 	# additionally manipulate it.
@@ -1559,17 +1598,17 @@ treetextsize <- function(n){
 # Define an internal function for mapping phyloseq data variables to melted.tip
 #' @keywords internal
 treeMapVar2Tips <- function(melted.tip, physeq, variate){
-	# If variate is taxTab-variable: Map taxTab-variable to melted.tip
-	if( variate %in% rank.names(physeq, FALSE) ){
-		# Add relevant taxTab column.
-		x <- as(taxTab(physeq), "matrix")[, variate, drop=TRUE]
-		names(x) <- species.names(physeq)
-		return( x[as(melted.tip$species.names, "character")] )
+	# If variate is tax_table-variable: Map tax_table-variable to melted.tip
+	if( variate %in% rank_names(physeq, FALSE) ){
+		# Add relevant tax_table column.
+		x <- as(tax_table(physeq), "matrix")[, variate, drop=TRUE]
+		names(x) <- taxa_names(physeq)
+		return( x[as(melted.tip$taxa_names, "character")] )
 	}
 	# If variate is sampleMap-variable: Map sample-variable to melted.tip
-	if( variate %in% sample.variables(physeq, FALSE) ){
-		x <- as.vector(data.frame(sampleData(physeq))[, variate])
-		names(x) <- sample.names(physeq)				
+	if( variate %in% sample_variables(physeq, FALSE) ){
+		x <- as.vector(data.frame(sample_data(physeq))[, variate])
+		names(x) <- sample_names(physeq)				
 		return( x[as(melted.tip$variable, "character")] )
 	}	
 }
@@ -1578,10 +1617,11 @@ treeMapVar2Tips <- function(melted.tip, physeq, variate){
 #' @keywords internal
 plot_tree_only <- function(physeq){
 	# Create the tree data.frame
-	tdf <- tree.layout(tre(physeq))
+	tdf <- tree.layout(phy_tree(physeq))
 	# build tree lines
 	p <- ggplot(subset(tdf, type == "line")) + 
-			geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) 
+			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
+	# Return ggplot object
 	return(p)
 }
 ################################################################################
@@ -1595,7 +1635,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 				label.tips, text.size, sizebase, base.spacing){
 
 	# Create the tree data.frame
-	tdf <- tree.layout(tre(physeq))
+	tdf <- tree.layout(phy_tree(physeq))
 	
 	# build tree lines
 	p <- ggplot(subset(tdf, type == "line")) + 
@@ -1605,22 +1645,22 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	speciesDF <- subset(tdf, type=="label")
 	
 	# Add abundance data for each species
-	# # First, re-order speciesDF ensure match with otuTable
+	# # First, re-order speciesDF ensure match with otu_table
 	rownames(speciesDF) <- as(speciesDF$label, "character")
-	speciesDF <- speciesDF[species.names(physeq), ]
+	speciesDF <- speciesDF[taxa_names(physeq), ]
 	# # subset speciesDF to just what you need for tip plotting
-	speciesDF <- data.frame(speciesDF[, c("x", "y")], species.names=rownames(speciesDF))
+	speciesDF <- data.frame(speciesDF[, c("x", "y")], taxa_names=rownames(speciesDF))
 	
 	# # Make the 0-values NA so they're not plotted. 
-	OTU 		<- as(otuTable(physeq), "matrix") # Coerce to matrix.
-	if(!speciesAreRows(physeq)){OTU <- t(OTU)} # Enforce orientation.
+	OTU 		<- as(otu_table(physeq), "matrix") # Coerce to matrix.
+	if(!taxa_are_rows(physeq)){OTU <- t(OTU)} # Enforce orientation.
 	OTU[OTU==0] <- NA
 	
 	# # Now add abundance table
 	speciesDF 	<- data.frame(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt(speciesDF, id=c("x", "y", "species.names"))
+	melted.tip <- melt(speciesDF, id=c("x", "y", "taxa_names"))
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
@@ -1637,8 +1677,8 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 
 	# Build the tip-label portion of the melted.tip data.frame, if needed.
 	if( !is.null(label.tips) ){
-		if( label.tips == "species.names" ){
-			melted.tip$tipLabels <- melted.tip[, "species.names"]
+		if( label.tips == "taxa_names" ){
+			melted.tip$tipLabels <- melted.tip[, "taxa_names"]
 		} else {
 			melted.tip$tipLabels <- treeMapVar2Tips(melted.tip, physeq, label.tips)
 		}
@@ -1646,7 +1686,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 
 	# color-map handling. Names "variable", "value" have specieal meaning.	
 	if( !is.null(color) ){
-		if( color %in% c("sample.names", "samples") ){
+		if( color %in% c("sample_names", "samples") ){
 			color <- "variable"
 		} else {
 			melted.tip$color <- treeMapVar2Tips(melted.tip, physeq, color)
@@ -1656,7 +1696,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 
 	# shape-map handling. Names "variable", "value" have specieal meaning.	
 	if( !is.null(shape) ){
-		if( shape %in% c("sample.names", "samples") ){
+		if( shape %in% c("sample_names", "samples") ){
 			shape <- "variable"
 		} else if( !is.null(shape) ){
 			melted.tip$shape <- treeMapVar2Tips(melted.tip, physeq, shape)
@@ -1697,14 +1737,14 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	# If no text.size given, calculate it from number of tips ("species", aka taxa)
 	# This is very fast. No need to worry about whether text is printed or not. DRY.
 	if( is.null(text.size) ){
-		text.size <- treetextsize(nspecies(physeq))
+		text.size <- treetextsize(ntaxa(physeq))
 	}
 
 	# If indicated, add the species labels to the right of points.
 	if( !is.null(label.tips) ){
 		# melted.tip.far has only one row per tip,
 		# the farthest horiz. adjusted position (one for each taxa)
-		melted.tip.far <- ddply(melted.tip, "species.names", function(df){
+		melted.tip.far <- ddply(melted.tip, "taxa_names", function(df){
 			df[df$h.adj.index == max(df$h.adj.index), , drop=FALSE]
 		})
 		# Create the tip-label aesthetic map.
@@ -1759,17 +1799,17 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' want to have soon.
 #'
 #' @usage plot_tree(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
-#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing = 0.02)
+#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02, title=NULL)
 #'
 #' @param physeq (Required). The data about which you want to 
 #'  plot and annotate a phylogenetic tree, in the form of a
 #'  single instance of the \code{\link{phyloseq-class}}, containing at 
-#'  minimum a phylogenetic tree component (try \code{\link{tre}}).
+#'  minimum a phylogenetic tree component (try \code{\link{phy_tree}}).
 #'  One of the major advantages of this function over basic tree-plotting utilities
 #'  in the \code{\link{ape}}-package is the ability to easily annotate the tree
 #'  with sample variables and taxonomic information. For these uses, 
-#'  the \code{physeq} argument should also have a \code{\link{sampleData}}
-#'  and/or \code{\link{taxTab}} component(s).
+#'  the \code{physeq} argument should also have a \code{\link{sample_data}}
+#'  and/or \code{\link{tax_table}} component(s).
 #' 
 #' @param method (Optional). Character string. Default \code{"sampledodge"}. 
 #'  The name of the annotation method to use. 
@@ -1799,10 +1839,10 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'
 #' @param label.tips (Optional). Character string. Default is \code{NULL},
 #'  indicating that no tip labels will be printed.
-#'  If \code{"species.names"}, then the name of the taxa will be added 
+#'  If \code{"taxa_names"}, then the name of the taxa will be added 
 #'  to the tree; either next to the leaves, or next to
 #'  the set of points that label the leaves. Alternatively,
-#'  if this is one of the rank names (from \code{rank.names(physeq)}),
+#'  if this is one of the rank names (from \code{rank_names(physeq)}),
 #'  then the identity (if any) for that particular taxonomic rank
 #'  is printed instead.
 #'
@@ -1829,6 +1869,9 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  and/or text indicating abundance, for example. Similarly, if you 
 #'  don't have this problem and want tighter point-spacing, you can 
 #'  shrink this value.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
 #'
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
@@ -1860,10 +1903,10 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # Subset Global Patterns dataset to just the observed Archaea
 #' gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
 #' # The number of different Archaeal species from this dataset is small enough ...
-#' nspecies(gpa)
+#' ntaxa(gpa)
 #' # ... that it is reasonable to consider displaying the phylogenetic tree directly.
 #' # (probably not true of the total dataset)
-#' nspecies(GlobalPatterns)
+#' ntaxa(GlobalPatterns)
 #' # Some patterns are immediately discernable with minimal parameter choices:
 #' # plot_tree(gpa, color="SampleType")
 #' # plot_tree(gpa, color="Phylum")
@@ -1885,7 +1928,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
 plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
-	sizebase=5, base.spacing = 0.02){
+	sizebase=5, base.spacing = 0.02, title=NULL){
 
 	if( method %in% c("treeonly") ){
 		p <- plot_tree_only(physeq)
@@ -1897,13 +1940,18 @@ plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size
 	}
 	
 	# Theme-ing:
-	p <- p + opts(axis.ticks = theme_blank(),
-			axis.title.x=theme_blank(), axis.text.x=theme_blank(),
-			axis.title.y=theme_blank(), axis.text.y=theme_blank(),
-			panel.background = theme_blank(),
-			panel.grid.minor = theme_blank(),			
-			panel.grid.major = theme_blank()
+	p <- p + theme(axis.ticks = element_blank(),
+			axis.title.x=element_blank(), axis.text.x=element_blank(),
+			axis.title.y=element_blank(), axis.text.y=element_blank(),
+			panel.background = element_blank(),
+			panel.grid.minor = element_blank(),			
+			panel.grid.major = element_blank()
 			)
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
 	
 	return(p)
 }
@@ -1937,7 +1985,7 @@ RadialCoords <- function(pos)
 #' the ordination-based ordering does a much better job than h-clustering. 
 #' An immediately useful example of their approach is provided in the NeatMap
 #' package for R. The NeatMap package can be used directly on the abundance 
-#' table (\code{\link{otuTable-class}}) of phylogenetic-sequencing data, but 
+#' table (\code{\link{otu_table-class}}) of phylogenetic-sequencing data, but 
 #' the NMDS or PCA ordination options that it supports are not based on ecological
 #' distances. To fill this void, phyloseq provides the \code{plot_heatmap()}
 #' function as an ecology-oriented variant of the NeatMap approach to organizing
@@ -1972,13 +2020,13 @@ RadialCoords <- function(pos)
 #' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
 #'  sample.label=NULL, species.label=NULL,
 #'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4),
-#'  max.label=250, ...)
+#'  max.label=250, title=NULL, ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
 #'  from one of the
 #'  \code{\link{import}} functions, or any of the processing downstream.
-#'  No data components beyond the \code{\link{otuTable}} are strictly 
+#'  No data components beyond the \code{\link{otu_table}} are strictly 
 #'  necessary, though they may be useful if you want to re-label the 
 #'  axis ticks according to some observable or taxonomic rank, for instance,
 #'  or if you want to use a \code{\link{UniFrac}}-based distance
@@ -2034,6 +2082,9 @@ RadialCoords <- function(pos)
 #'  Make sure to increase this value if, for example, you want a special label
 #'  for an axis that has 300 indices.
 #'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
 #' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
 #' 
 #' @return
@@ -2056,7 +2107,7 @@ RadialCoords <- function(pos)
 #' gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
 #' # FYI, the base-R function uses a non-ecological ordering scheme,
 #' # but does add potentially useful hclust dendrogram to the sides...
-#' heatmap(otuTable(gpac))
+#' heatmap(otu_table(gpac))
 #' plot_heatmap(gpac)
 #' # example relabelling based on a sample variable and taxonomic rank.
 #' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
@@ -2078,12 +2129,12 @@ RadialCoords <- function(pos)
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
 	sample.label=NULL, species.label=NULL, 
 	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 
-	max.label=250, ...){
+	max.label=250, title=NULL, ...){
 	
 	# Enforce orientation
-	if( !speciesAreRows(physeq) ){ physeq <- t(physeq) }
+	if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
 	# convert orientation-enforced abundance table into matrix class
-	mot <- as(otuTable(physeq), "matrix")
+	mot <- as(otu_table(physeq), "matrix")
 
 	# Initialize sample and species order vectors as NULL
 	species.order <- sample.order <- NULL
@@ -2096,7 +2147,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# junk <- capture.output( ps.ord <- ordinate(physeq, method, distance), file=NULL)
 		junk <- capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
 		reduction.result <- scores(ps.ord, choices=c(1, 2), display="sites")
-		sample.order <- sample.names(physeq)[order(RadialCoords(reduction.result)[, "theta"])]
+		sample.order <- sample_names(physeq)[order(RadialCoords(reduction.result)[, "theta"])]
 		# re-ordered matrix
 		mot <- mot[, sample.order]
 
@@ -2104,7 +2155,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
 		if( class(test) != "try-error" & !is.null(test) ){			
 			species.reduct <- scores(ps.ord, choices=c(1, 2), display="species")
-			species.order  <- species.names(physeq)[order(RadialCoords(species.reduct)[, "theta"])]
+			species.order  <- taxa_names(physeq)[order(RadialCoords(species.reduct)[, "theta"])]
 			# re-ordered matrix
 			mot <- mot[species.order, ]	
 		}
@@ -2122,14 +2173,14 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	# # Don't render labels if more than max.label
 	# Samples
 	if( nsamples(physeq) <= max.label ){
-		p <- p + opts(axis.text.x = theme_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
+		p <- p + theme(axis.text.x = element_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
 	} else {
 		# p <- p + scale_x_discrete("Samples", labels=NULL)
 		p <- p + scale_x_discrete("Samples", labels="")
 	}
 	# species
-	if( nspecies(physeq) <= max.label ){
-		p <- p + opts(axis.text.y = theme_text(size=treetextsize(0.10*nspecies(physeq))))	
+	if( ntaxa(physeq) <= max.label ){
+		p <- p + theme(axis.text.y = element_text(size=treetextsize(0.10*ntaxa(physeq))))	
 	} else {
 		# p <- p + scale_y_discrete("OTU", labels=NULL)
 		p <- p + scale_y_discrete("OTU", labels="")
@@ -2139,8 +2190,8 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	# Re-write sample-labels to some sample variable...
 	if( !is.null(sample.label) & nsamples(physeq) <= max.label){
 		# Make a sample-named vector of the values for sample.label
-		labvec <- as(getVariable(physeq, sample.label), "vector")
-		names(labvec) <- sample.names(physeq)
+		labvec <- as(get_variable(physeq, sample.label), "vector")
+		names(labvec) <- sample_names(physeq)
 		if( !is.null(sample.order) ){
 			# Re-order according to sample.order
 			labvec <- labvec[sample.order]			
@@ -2148,10 +2199,10 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Add the sample.label re-labeling layer
 		p <- p + scale_x_discrete(sample.label, labels=labvec)
 	}
-	if( !is.null(species.label) & nspecies(physeq) <= max.label){
+	if( !is.null(species.label) & ntaxa(physeq) <= max.label){
 		# Make a species-named vector of the values for species.label
-		labvec <- as(taxTab(physeq)[, species.label], "vector")
-		names(labvec) <- species.names(physeq)
+		labvec <- as(tax_table(physeq)[, species.label], "vector")
+		names(labvec) <- taxa_names(physeq)
 		if( !is.null(species.order) ){		
 			# Re-order according to species.order
 			labvec <- labvec[species.order]
@@ -2165,8 +2216,13 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		p <- p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
 	} else {
 		p <- p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
-	}	
-		
+	}
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
+			
 	return(p)
 }
 ################################################################################

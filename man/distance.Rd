@@ -6,12 +6,12 @@
 }
 \arguments{
   \item{physeq}{(Required).  A \code{\link{phyloseq-class}}
-  or an \code{\link{otuTable-class}} object. The latter is
+  or an \code{\link{otu_table-class}} object. The latter is
   only appropriate for methods that do not require any
   additional data (one-table). For example, the ``unifrac''
   option (\code{\link{UniFrac}}) requires
   \code{\link{phyloseq-class}} that contains both an
-  \code{otuTable} and a phylogenetic tree (\code{phylo}).}
+  \code{otu_table} and a phylogenetic tree (\code{phylo}).}
 
   \item{method}{(Optional). A character string. Default is
   \code{"unifrac"}. Provide one of the 44 currently
@@ -46,7 +46,7 @@
 
   \item{type}{(Optional). A character string. The type of
   pairwise comparisons being calculated: sample-wise or
-  species-wise. The default is \code{c("samples")}.}
+  taxa-wise. The default is \code{c("samples")}.}
 
   \item{...}{Additional arguments passed on to the
   appropriate distance function, determined by the

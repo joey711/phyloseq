@@ -1,9 +1,9 @@
 \docType{methods}
 \name{merge_phyloseq_pair}
 \alias{merge_phyloseq_pair}
-\alias{merge_phyloseq_pair,otuTable,otuTable-method}
+\alias{merge_phyloseq_pair,otu_table,otu_table-method}
 \alias{merge_phyloseq_pair,phylo,phylo-method}
-\alias{merge_phyloseq_pair,sampleData,sampleData-method}
+\alias{merge_phyloseq_pair,sample_data,sample_data-method}
 \alias{merge_phyloseq_pair,taxonomyTable,taxonomyTable-method}
 \title{Merge pair of phyloseq component data objects of the same class.}
 \usage{
@@ -16,7 +16,7 @@
   equal to the number of species in object x. If
   \code{species} is a named logical, the species retained
   is based on those names. Make sure they are compatible
-  with the \code{species.names} of the object you are
+  with the \code{taxa_names} of the object you are
   modifying (\code{x}).}
 
   \item{y}{Any \code{phyloseq} object.}
@@ -27,7 +27,7 @@
   union of the species and/or samples of each. If there is
   redundant information between a pair of arguments of the
   same class, the values in \code{x} are used by default.
-  Abundance values are summed for \code{otuTable} objects
+  Abundance values are summed for \code{otu_table} objects
   for those elements that describe the same species and
   sample in \code{x} and \code{y}.
 }
@@ -43,32 +43,32 @@
   The \code{\link{merge_phyloseq}} function is recommended
   in general.
 
-  Special note: trees are merged using
+  Special note: non-identical trees are merged using
   \code{\link[ape]{consensus}}.
 }
 \examples{
 #
-## # merge two simulated otuTable objects.
-## x  <- otuTable(matrix(sample(0:5,200,TRUE),20,10), speciesAreRows=TRUE)
-## y  <- otuTable(matrix(sample(0:5,300,TRUE),30,10), speciesAreRows=FALSE)
+## # merge two simulated otu_table objects.
+## x  <- otu_table(matrix(sample(0:5,200,TRUE),20,10), taxa_are_rows=TRUE)
+## y  <- otu_table(matrix(sample(0:5,300,TRUE),30,10), taxa_are_rows=FALSE)
 ## xy <- merge_phyloseq_pair(x, y)
 ## yx <- merge_phyloseq_pair(y, x)
-## # merge two simulated taxTab objects
-## x <- taxTab(matrix("abc", 20, 6))
-## y <- taxTab(matrix("def", 30, 8))
+## # merge two simulated tax_table objects
+## x <- tax_table(matrix("abc", 20, 6))
+## y <- tax_table(matrix("def", 30, 8))
 ## xy <- merge_phyloseq_pair(x, y)
-## # merge two simulated sampleData objects
+## # merge two simulated sample_data objects
 ## x <- data.frame( matrix(sample(0:3,250,TRUE),25,10),
 ##   matrix(sample(c("a","b","c"),150,TRUE),25,6) )
-## x <- sampleData(x)
+## x <- sample_data(x)
 ## y <- data.frame( matrix(sample(4:6,200,TRUE),20,10),
 ##   matrix(sample(c("d","e","f"),120,TRUE),20,8) )
-## y <- sampleData(y)
+## y <- sample_data(y)
 ## merge_phyloseq_pair(x, y)
 ## data.frame(merge_phyloseq_pair(x, y))
 ## data.frame(merge_phyloseq_pair(y, x))
 }
 \seealso{
-  \code{\link{merge_phyloseq}} \code{\link{merge_species}}
+  \code{\link{merge_phyloseq}} \code{\link{merge_taxa}}
 }
 

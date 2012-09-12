@@ -3,7 +3,8 @@
 \title{Import function to read files created by the QIIME pipeline.}
 \usage{
   import_qiime(otufilename=NULL, mapfilename=NULL,
-  treefilename=NULL, biotaxonomy=NULL, ...)
+  treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE,
+  chunk.size=1000L, ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
@@ -20,31 +21,39 @@
   parsing by this function. Default value is \code{NULL}.}
 
   \item{treefilename}{(Optional). A file representing a
-  phylogenetic tree. Expectation is first NEXUS format (via
-  \code{\link[ape]{read.nexus}}), and if that fails, the
-  file will be read as a Newick file (via
-  \code{\link[ape]{read.tree}}). If provided, the tree
-  should have the same OTUs/labels as the OTUs in the other
-  files. Anything missing in one of the files is removed
-  from all. For the QIIME pipeline this tree is typically a
-  tree of the representative 16S rRNA sequences from each
-  OTU cluster, with the number of leaves/tips equal to the
-  number of taxa/species/OTUs. Default value is
-  \code{NULL}. ALTERNATIVELY, this argument can be a tree
-  object (\code{\link[ape]{phylo}}-class). in case the tree
-  has already been imported, or the data source file is in
-  a format other than NEXUS or Newick.}
+  phylogenetic tree or a \code{\link{phylo}} object. Files
+  can be NEXUS or Newick format. See
+  \code{\link{read_tree}} for more details. If provided,
+  the tree should have the same OTUs/tip-labels as the OTUs
+  in the other files. Any taxa or samples missing in one of
+  the files is removed from all. For the QIIME pipeline
+  this tree is typically a tree of the representative 16S
+  rRNA sequences from each OTU cluster, with the number of
+  leaves/tips equal to the number of taxa/species/OTUs.
+  Default value is \code{NULL}. Note that this argument can
+  be a tree object (\code{\link[ape]{phylo}}-class) for
+  cases where the tree has been --- or needs to be ---
+  imported separately.}
 
   \item{biotaxonomy}{(Optional). A character vector
   indicating the name of each taxonomic level in the
   taxonomy-portion of the otu-file, which may not specify
   these levels explicitly. Default value is \code{NULL}.}
 
+  \item{showProgress}{(Optional). A logical. Indicates
+  whether import progress/status should be printed to the
+  terminal. Default value is \code{TRUE}, meaning the
+  progress will be shown.}
+
+  \item{chunk.size}{(Optional). Positive integer. Default
+  is \code{1000L}. This is the number of lines to be read
+  and processed at a time, passed directly to the
+  \code{\link{import_qiime_otu_tax}} function. A lower
+  value helps control memory-fault, but slows down the
+  import.}
+
   \item{...}{Additional arguments passed to
-  \code{\link[ape]{read.nexus}}, as necessary. Make sure
-  that your phylogenetic tree file is readable by
-  \code{\link[ape]{read.nexus}} prior to calling this
-  function.}
+  \code{\link{read_tree}}}
 }
 \value{
   A \code{\link{phyloseq-class}} object.
@@ -55,13 +64,13 @@
   typically contains both OTU-abundance and taxonomic
   identity information. The map-file is also an important
   input to QIIME that stores sample covariates, converted
-  naturally to the \code{\link{sampleData-class}} component
-  data type in the phyloseq-package. QIIME may also produce
-  a phylogenetic tree with a tip for each OTU, which can
-  also be imported by this function.
+  naturally to the \code{\link{sample_data-class}}
+  component data type in the phyloseq-package. QIIME may
+  also produce a phylogenetic tree with a tip for each OTU,
+  which can also be imported by this function.
 }
 \details{
-  See \code{"http://www.qiime.org/"} for details on using
+  See \url{"http://www.qiime.org/"} for details on using
   QIIME. While there are many complex dependencies, QIIME
   can be downloaded as a pre-installed linux virtual
   machine that runs ``off the shelf''.
@@ -91,8 +100,10 @@
   Methods, 2010; doi:10.1038/nmeth.f.303
 }
 \seealso{
-  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}},
-  \code{\link[ape]{read.tree}},
-  \code{\link[ape]{read.nexus}}
+  \code{\link{phyloseq}}
+
+  \code{\link{merge_phyloseq}}
+
+  \code{\link{read_tree}}
 }
 

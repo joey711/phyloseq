@@ -2,23 +2,23 @@
 #' The S4 class for storing taxa-abundance information.
 #'
 #' Because orientation of these tables can vary by method, the orientation is
-#' defined explicitly in the \code{speciesAreRows} slot (a logical).
-#' The \code{otuTable} class inherits the \code{\link{matrix}} class to store
+#' defined explicitly in the \code{taxa_are_rows} slot (a logical).
+#' The \code{otu_table} class inherits the \code{\link{matrix}} class to store
 #' abundance values.
 #' Various standard subset and assignment nomenclature has been extended to apply
-#' to the \code{otuTable} class, including square-bracket, \code{\link{t}}, etc.
+#' to the \code{otu_table} class, including square-bracket, \code{\link{t}}, etc.
 #'
 #' \describe{
-#'    \item{speciesAreRows}{
+#'    \item{taxa_are_rows}{
 #'		A single logical specifying the orientation of the abundance table.
 #'    }
 #'
 #'    \item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
 #'  }
-#' @name otuTable-class
-#' @rdname otuTable-class
-#' @exportClass otuTable
-setClass("otuTable", representation(speciesAreRows="logical"), contains = "matrix")
+#' @name otu_table-class
+#' @rdname otu_table-class
+#' @exportClass otu_table
+setClass("otu_table", representation(taxa_are_rows="logical"), contains = "matrix")
 ################################################################################
 #' The S4 for storing sample variables.
 #'
@@ -38,10 +38,10 @@ setClass("otuTable", representation(speciesAreRows="logical"), contains = "matri
 #' 
 #'  }
 #' 
-#' @name sampleData-class
-#' @rdname sampleData-class
-#' @exportClass sampleData
-setClass("sampleData", contains="data.frame")
+#' @name sample_data-class
+#' @rdname sample_data-class
+#' @exportClass sample_data
+setClass("sample_data", contains="data.frame")
 ################################################################################
 #' An S4 class that holds taxonomic classification data as a character
 #' matrix.
@@ -75,26 +75,21 @@ setOldClass("phylo")
 # instead.
 ################################################################################
 #' @keywords internal
-setClassUnion("otuTableOrNULL", c("otuTable", "NULL"))
+setClassUnion("otu_tableOrNULL", c("otu_table", "NULL"))
 #' @keywords internal
-setClassUnion("sampleDataOrNULL", c("sampleData", "NULL"))
+setClassUnion("sample_dataOrNULL", c("sample_data", "NULL"))
 #' @keywords internal
 setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
 #' @keywords internal
 setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 ################################################################################
-# The actual phyloseq master class with all 4 slots. This is akin to 
-# the otuSamTaxTree class of previous versions, but 
-# with the possibility of empty (NULL) slots and an explicit prototype 
-# for slots to be NULL if they are not provided at instantiation.
-################################################################################
 #' The main experiment-level class for phyloseq data
 #'
 #' Contains all component classes: 
-#' \code{\link{otuTable-class}},
-#' \code{\link{sampleData-class}},
-#' \code{\link{taxonomyTable-class}} (\code{"taxTab"} slot), and
-#' \code{\link[ape]{phylo}}-class (\code{"tre"} slot). There are several advantages
+#' \code{\link{otu_table-class}},
+#' \code{\link{sample_data-class}},
+#' \code{\link{taxonomyTable-class}} (\code{"tax_table"} slot), and
+#' \code{\link[ape]{phylo}}-class (\code{"phy_tree"} slot). There are several advantages
 #' to storing your phylogenetic sequencing experiment as an instance of the
 #' phyloseq class, not the least of which is that it is easy to return to the
 #' data later and feel confident that the different data types ``belong'' to
@@ -116,25 +111,25 @@ setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 #' 
 #' slots:
 #' \describe{
-#'    \item{otuTable}{a single object of class otuTable.}
-#'    \item{samData}{ a single object of class sampleData.}
-#'    \item{taxTab}{ a single object of class taxonomyTable.}
-#'    \item{tre}{ a single object of class phylo, from the package ape}
+#'    \item{otu_table}{a single object of class otu_table.}
+#'    \item{sam_data}{ a single object of class sample_data.}
+#'    \item{tax_table}{ a single object of class taxonomyTable.}
+#'    \item{phy_tree}{ a single object of the \code{\link[ape]{phylo}}-class, from the ape package}
 #' }
 #' @seealso The constructor, \code{\link{phyloseq}}, 
 #'  the merger \code{\link{merge_phyloseq}}, and also the component 
-#'  constructor/accessors \code{\link{otuTable}}, \code{\link{sampleData}},
-#'  \code{\link{taxTab}}, and \code{\link{tre}}.
+#'  constructor/accessors \code{\link{otu_table}}, \code{\link{sample_data}},
+#'  \code{\link{tax_table}}, and \code{\link{phy_tree}}.
 #' 
 #' @name phyloseq-class
 #' @rdname phyloseq-class
 #' @exportClass phyloseq
 setClass(Class="phyloseq", 
 	representation=representation(
-		otuTable="otuTableOrNULL",
-		taxTab="taxonomyTableOrNULL",
-		samData="sampleDataOrNULL",
-		tre="phyloOrNULL"),
-	prototype=prototype(otuTable=NULL, taxTab=NULL, samData=NULL, tre=NULL)
+		otu_table="otu_tableOrNULL",
+		tax_table="taxonomyTableOrNULL",
+		sam_data="sample_dataOrNULL",
+		phy_tree="phyloOrNULL"),
+	prototype=prototype(otu_table=NULL, tax_table=NULL, sam_data=NULL, phy_tree=NULL)
 )
 ################################################################################
