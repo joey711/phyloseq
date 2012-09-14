@@ -398,15 +398,14 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 #'  plot and annotate the ordination.
 #'
 #' @param ordination (Required). An ordination object. Many different classes
-#'  of ordination are defined by \code{R} packages. The supported classes 
-#'  should be listed explicitly, but in the meantime, all ordination classes
-#'  currently supported by the \code{\link[vegan]{scores}} function are
+#'  of ordination are defined by \code{R} packages. Ordination classes
+#'  currently supported/created by the \code{\link{ordinate}} function are
 #'  supported here. There is no default, as the expectation is that the 
 #'  ordination will be performed and saved prior to calling this plot function.
 #'
 #' @param type (Optional). The plot type. Default is \code{"samples"}. The
 #'  currently supported options are 
-#'  \code{c("samples", "sites", "species", "taxa", "biplot", "split")}.
+#'  \code{c("samples", "sites", "species", "taxa", "biplot", "split", "scree")}.
 #'  The option
 #'  ``taxa'' is equivalent to ``species'' in this case, and similarly,
 #'  ``samples'' is equivalent to ``sites''. 
@@ -417,6 +416,9 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 #'  plot with both taxa and samples, either combined into one plot (``biplot'')
 #'  or 
 #'  separated in two facet panels (``split''), respectively.
+#'  The \code{"scree"} option results in a call to \code{\link{plot_scree}},
+#'  which produces an ordered bar plot of the normalized eigenvalues
+#'  associated with each ordination axis. 
 #'
 #' @param axes (Optional). A 2-element vector indicating the axes of the 
 #'  ordination that should be used for plotting. 
@@ -517,15 +519,24 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
 #' plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
 #' plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
+#' plot_ordination(GP1, GP.dpcoa, type="scree")
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
 	if(class(physeq)!="phyloseq"){
 		warning("Full functionality requires physeq be phyloseq-class with multiple components.")
 	}
+	official_types = c("sites", "species", "biplot", "split", "scree")
 	if(type == "samples"){type <- "sites"} # vegan compatibility with phyloseq
 	if(type == "taxa"){type <- "species"} # vegan compatibility with phyloseq
-	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
+	if( !type %in% official_types ){
+		warning("type argument not supported. type set to \"samples\".")
+		type = "sites"
+	}
+	# Stop early by passing to plot_scree() if "scree" was chosen as a type
+	if( type %in% c("scree") ){
+		return( plot_scree(ordination) )
+	}
 
 	# Build data.frame:
 	if( type %in% c("sites", "species") ){
@@ -830,6 +841,101 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 
 	return(p$data[show.names, ])
 }
+################################################################################
+################################################################################
+#' General ordination eigenvalue plotter using ggplot2.
+#'
+#' Convenience wrapper for plotting ordination eigenvalues (if available) 
+#' using a \code{ggplot2}-graphic.
+#'
+#' @usage plot_scree(ordination)
+#'
+#' @param ordination (Required). An ordination object. Many different classes
+#'  of ordination are defined by \code{R} packages. Ordination classes
+#'  currently supported/created by the \code{\link{ordinate}} function are
+#'  supported here.
+#'  There is no default, as the expectation is that the 
+#'  ordination will be performed and saved prior to calling this plot function.
+#'
+#' @return A \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result for the specified axes.
+#' 
+#' @seealso 
+#'
+#'  \code{\link{plot_ordination}}
+#'
+#'  \code{\link{ordinate}}
+#'
+#'  \code{\link{distance}}
+#' 
+#'  The examples on the phyloseq wiki page for \code{plot_ordination} show 
+#'  many more examples:
+#'
+#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' # First load and trim a dataset
+#' data(GlobalPatterns)
+#' GP = prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+#' # Define a human-associated versus non-human categorical variable, and add new human variable to sample data:
+#' sample_data(GP)$human = factor( get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue") )
+#' # # filtering
+#' # Remove taxa not seen more than 3 times in at least 20% of the samples
+#' gp  = filter_taxa(GP, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
+#' # Standardize abundances to the median sequencing depth
+#' gpr = transform_sample_counts(gp, function(x, total=median(sample_sums(gp))) round(total * (x / sum(x))) )
+#' # Let's use Coefficient of Variation for filtering, arbitrary cutoff of 3.0
+#' gprf = filter_taxa(gpr, function(x) sd(x)/mean(x) > 3L, TRUE)
+#' # For a somewhat readable number of taxa on display, let's subset to just Bacteroidetes for some plots
+#' gprfb = subset_taxa(gprf, Phylum=="Bacteroidetes")
+#' # Test plots (preforms ordination in-line, then makes scree plot)
+#' plot_scree(ordinate(gprfb, "DPCoA", "bray"))
+#' plot_scree(ordinate(gprfb, "PCoA", "bray"))
+#' plot_scree(ordinate(gprfb, "NMDS", "bray")) # Empty return with message
+#' plot_scree(ordinate(gprfb ~ SampleType, "CCA"))
+#' plot_scree(ordinate(gprfb ~ SampleType, "RDA")) 
+#' plot_scree(ordinate(gprfb, "DCA"))
+#' plot_ordination(gprfb, ordinate(gprfb, "DCA"), type="scree")
+plot_scree = function(ordination){
+	# Use get_eigenvalue method dispatch. It always returns a numeric vector.
+	x = get_eigenvalue(ordination)
+	# Were eigenvalues found? If not, return NULL
+	if( is.null(x) ){
+		cat("No eigenvalues found in ordination\n")
+		return(NULL)
+	} else {
+		# If no names, add them arbitrarily "axis1, axis2, ..., axisN"
+		if( is.null(names(x)) ) names(x) = 1:length(x)
+		# For scree plot, want to show the fraction of total eigenvalues
+		x = x/sum(x)
+		# Create the ggplot2 data.frame, and basic ggplot2 plot
+		gdf = data.frame(axis=names(x), eigenvalue = x)
+		p = ggplot(gdf, aes(x=axis, y=eigenvalue)) + geom_bar()
+		# Force the order to be same as original in x
+		p = p + scale_x_discrete(limits = names(x))
+		# Orient the x-labels for space.
+		p = p + theme(axis.text.x = element_text(angle = 90))
+		return(p)
+	}
+}
+################################################################################
+# Define generic get_eigenvalue function
+#' @keywords internal
+setGeneric("get_eigenvalue", function(ordination) standardGeneric("get_eigenvalue") )
+# Default is to return NULL (e.g. for NMDS, or non-supported ordinations/classes).
+setMethod("get_eigenvalue", "ANY", function(ordination) NULL )
+# for pcoa objects
+setMethod("get_eigenvalue", "pcoa", function(ordination) ordination$values$Relative_eig ) 
+# for CCA objects
+setMethod("get_eigenvalue", "cca", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+# for RDA objects
+setMethod("get_eigenvalue", "rda", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+# for dpcoa objects
+setMethod("get_eigenvalue", "dpcoa", function(ordination) ordination$eig )
+# for decorana (dca) objects
+setMethod("get_eigenvalue", "decorana", function(ordination) ordination$evals )
 ################################################################################
 ################################################################################
 ################################################################################
