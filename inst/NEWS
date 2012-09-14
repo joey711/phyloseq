@@ -3,7 +3,7 @@ phyloseq
 * plot_ordination() powerful, flexible ordination plots built with ggplot2
 * plot_heatmap() easy, flexible heat maps built with ggplot2
 * plot_tree() easy, flexible annotated tree plots built with ggplot2
-* make_sample_network(), plot_sample_network() - microbiome network visualization
+* make_network(), plot_network() - microbiome network visualization
 * plot_richness() for easy, flexible summary of species richness
 * Parallel Fast UniFrac
 * distance() wrapper for ecological distance calculations
@@ -15,6 +15,15 @@ phyloseq
 * Bioconductor development release updates.
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+phyloseq 1.1.52
+===========
+- Added plot_scree() function for making eigenvalue "scree" plots in ggplot2
+- Added corresponding type="scree" option to plot_ordination, for convenience.
+
+phyloseq 1.1.51
+===========
+- Returned to "Imports:" dependency for ggplot2 following a ggplot2 bug fix
 
 phyloseq 1.1.50
 ===========
