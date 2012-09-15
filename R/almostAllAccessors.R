@@ -126,6 +126,9 @@ setMethod("ntaxa", "taxonomyTable", function(physeq){ nrow(physeq) })
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,phylo-method
 setMethod("ntaxa", "phylo", function(physeq) length(physeq$tip.label) )
+#' @rdname ntaxa-methods
+#' @aliases ntaxa,XStringSet-method
+setMethod("ntaxa", "XStringSet", function(physeq) length(physeq) )
 ################################################################################
 #' Get species / taxa names.
 #'
@@ -180,6 +183,9 @@ setMethod("taxa_names", "sample_data", function(physeq) NULL )
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,phylo-method
 setMethod("taxa_names", "phylo", function(physeq) physeq$tip.label )
+#' @rdname taxa_names-methods
+#' @aliases taxa_names,XStringSet-method
+setMethod("taxa_names", "XStringSet", function(physeq) names(physeq) )
 ################################################################################
 #' Get the number of samples.
 #'

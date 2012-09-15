@@ -506,7 +506,6 @@ setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
 setMethod("prune_taxa", signature("NULL"), function(taxa, x){
 	return(x)
 })
-################################################################################
 # import covering ape::drop.tip
 #' @import ape
 #' @aliases prune_taxa,character,phylo-method
@@ -524,7 +523,6 @@ setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
 		return(x)
 	}
 })
-################################################################################
 #' @aliases prune_taxa,character,otu_table-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
@@ -535,13 +533,11 @@ setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
 		x[, taxa, drop=FALSE]
 	}	
 })
-################################################################################
 #' @aliases prune_taxa,character,sample_data-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
 	return(x)
 })
-################################################################################
 #' @aliases prune_taxa,character,phyloseq-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "phyloseq"), 
@@ -565,7 +561,6 @@ setMethod("prune_taxa", signature("character", "phyloseq"),
 		return(x)
 	}
 })
-################################################################################
 #' @aliases prune_taxa,character,taxonomyTable-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "taxonomyTable"), 
@@ -573,7 +568,6 @@ setMethod("prune_taxa", signature("character", "taxonomyTable"),
 	taxa <- intersect( taxa, taxa_names(x) )
 	return( x[taxa, , drop=FALSE] )
 })
-################################################################################
 #' @aliases prune_taxa,logical,ANY-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
@@ -584,6 +578,22 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		# Pass on to names-based prune_taxa method
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
+})
+#' @aliases prune_taxa,character,XStringSet-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
+	# Only use the intersection.
+	keep_taxa = intersect( taxa, taxa_names(x) )
+	# Error if intersection is zero.
+	if( length(keep_taxa) == 0 ) stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")
+	# Warning if some elements of taxa argument are thrown out.
+	if( length(keep_taxa) < length(taxa) ) warning("Some names in taxa not found in taxa_names(x); ignored.")
+	# If they are already the same, just return XStringSet object, unchanged.
+	if( setequal(keep_taxa, taxa_names(x)) ) return(x)
+	# Pop the taxa that you don't want, without re-ordering.
+	remove_index = which( !taxa_names(x) %in% keep_taxa )
+	x = x[-remove_index]
+	return(x)
 })
 ################################################################################
 ################################################################################

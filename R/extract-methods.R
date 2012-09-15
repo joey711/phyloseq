@@ -11,7 +11,6 @@ setMethod("[", "otu_table", function(x, i, j, ...){
 	newx <- as(x, "matrix")[i, j, drop=FALSE]
 	otu_table(newx, taxa_are_rows(x) )
 })
-################################################################################
 #' extract parts of sample_data
 #'
 #' @export
@@ -20,7 +19,6 @@ setMethod("[", "otu_table", function(x, i, j, ...){
 setMethod("[", "sample_data", function(x, i, j, ...){
 	sample_data( data.frame(x)[i, j, drop=FALSE] )
 })
-################################################################################
 #' extract parts of taxonomyTable
 #'
 #' @export
@@ -29,9 +27,27 @@ setMethod("[", "sample_data", function(x, i, j, ...){
 setMethod("[", "taxonomyTable", function(x, i, j, ...){
 	tax_table( as(x, "matrix")[i, j, drop=FALSE] )
 })
-################################################################################
-################################################################################
-#' Generic extraction from higher-order object
+# A numeric extraction method is already defined in Biostrings for XStringSet
+#' Add name-character-based extraction method for XStringSet
+#'
+#' @export
+#' @aliases [,XStringSet-method
+#' @rdname extract-methods
+setMethod("[", c("XStringSet", "character"), function(x, i){
+	index_vector = match(i, names(x), nomatch=NA_integer_)
+	index_vector = index_vector[!is.na(index_vector)]
+	if( length(index_vector) <= 0 ){
+		warning("[,XStringSet: no valid seq-indices provided, NULL returned")
+		return(NULL)
+	}	
+	if( length(index_vector) < length(i) ){
+		warning("[,XStringSet: some seq-name indices invalid, omitted.")
+	}
+	# index_vector is an integer, subsetting now dispatches to standard
+	x = x[index_vector]
+	return(x)
+})
+#' Generic extraction from phyloseq-class instance.
 #'
 #' @export
 #' @aliases [,phyloseq-method
