@@ -507,6 +507,8 @@ setMethod("prune_taxa", signature("NULL"), function(taxa, x){
 	return(x)
 })
 ################################################################################
+# import covering ape::drop.tip
+#' @import ape
 #' @aliases prune_taxa,character,phylo-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
