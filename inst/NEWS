@@ -16,6 +16,10 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.53
+===========
+- Fixed additional title issues in plot_network and plot_richness
+
 phyloseq 1.1.52
 ===========
 - Added plot_scree() function for making eigenvalue "scree" plots in ggplot2
