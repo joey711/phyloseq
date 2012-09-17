@@ -230,6 +230,11 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	# Add the edges:
 	p <- p + geom_line(aes_string(group="id", color=line_color), 
 				graphDF, size=line_weight, alpha=line_alpha)
+				
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
 	
 	return(p)
 }
@@ -377,6 +382,12 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
 		scale_y_continuous('richness [number of taxa]') +
 		facet_grid(~variable) 
+		
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
+	
 	return(p)
 }
 ################################################################################
