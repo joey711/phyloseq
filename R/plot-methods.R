@@ -546,7 +546,7 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	}
 	# Stop early by passing to plot_scree() if "scree" was chosen as a type
 	if( type %in% c("scree") ){
-		return( plot_scree(ordination) )
+		return( plot_scree(ordination, title=title) )
 	}
 
 	# Build data.frame:
@@ -859,14 +859,15 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' Convenience wrapper for plotting ordination eigenvalues (if available) 
 #' using a \code{ggplot2}-graphic.
 #'
-#' @usage plot_scree(ordination)
-#'
 #' @param ordination (Required). An ordination object. Many different classes
 #'  of ordination are defined by \code{R} packages. Ordination classes
 #'  currently supported/created by the \code{\link{ordinate}} function are
 #'  supported here.
 #'  There is no default, as the expectation is that the 
 #'  ordination will be performed and saved prior to calling this plot function.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
 #'
 #' @return A \code{\link{ggplot}} plot object, graphically summarizing
 #'  the ordination result for the specified axes.
@@ -909,7 +910,7 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' plot_scree(ordinate(gprfb ~ SampleType, "RDA")) 
 #' plot_scree(ordinate(gprfb, "DCA"))
 #' plot_ordination(gprfb, ordinate(gprfb, "DCA"), type="scree")
-plot_scree = function(ordination){
+plot_scree = function(ordination, title=NULL){
 	# Use get_eigenvalue method dispatch. It always returns a numeric vector.
 	x = get_eigenvalue(ordination)
 	# Were eigenvalues found? If not, return NULL
@@ -928,6 +929,10 @@ plot_scree = function(ordination){
 		p = p + scale_x_discrete(limits = names(x))
 		# Orient the x-labels for space.
 		p = p + theme(axis.text.x = element_text(angle = 90))
+		# Optionally add a title to the plot
+		if( !is.null(title) ){
+			p <- p + ggtitle(title)
+		}		
 		return(p)
 	}
 }
