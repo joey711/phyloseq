@@ -581,15 +581,15 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		names(specDF)[1] <- x <- names(siteDF)[1] # "x-axis"
 		names(specDF)[2] <- y <- names(siteDF)[2] # "y-axis"
 		# Add id.type label
-		specDF$id.type <- "species"
+		specDF$id.type <- "taxa"
 		siteDF$id.type <- "samples"
 		# Merge the two data.frame together, for joint plotting.
 		DF <- merge(specDF, siteDF, all=TRUE)
-		# Replace NA with "sample" or "species", where appropriate (factor/character)
+		# Replace NA with "samples" or "taxa", where appropriate (factor/character)
 		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "samples") }
-		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "species") }
+		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "taxa") }
 		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "samples") }
-		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "species") }		
+		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "taxa") }		
 	}
 	
 	# In case user wants the plot-DF for some other purpose, return early
@@ -641,13 +641,13 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 				}
 				colvals <- gg_color_hue(length(levels(as(DF[, color], "factor"))))
 				names(colvals) <- levels(as(DF[, color], "factor"))
-				# Now make the species or sample dark grey
-				colvals[names(colvals) %in% c("samples", "species")] <- "grey45"
-				# Now add the manually re-scaled layer with species/samples as grey
+				# Now make the taxa or samples dark grey
+				colvals[names(colvals) %in% c("samples", "taxa")] <- "grey45"
+				# Now add the manually re-scaled layer with taxa/samples as grey
 				p <- p + scale_colour_manual(values=colvals)
 			}
-			# Adjust size so that samples are bigger than species by default.
-			p <- p + scale_size_manual("type", values=c(samples=5, species=2))		
+			# Adjust size so that samples are bigger than taxa by default.
+			p <- p + scale_size_manual("type", values=c(samples=5, taxa=2))		
 		}
 	}
 
@@ -670,7 +670,7 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 # Define the ord.plot.DF.internal
 ################################################################################
 #' @keywords internal
-ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2)){
+ord.plot.DF.internal <- function(physeq, ordination, type="sites", axes=c(1, 2)){
 
 	coord <- scores(ordination, choices=axes, display=type)
 	# coord row.names index order should match physeq. Enforce.

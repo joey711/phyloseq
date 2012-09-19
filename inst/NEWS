@@ -16,6 +16,12 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.54
+===========
+- Changed "species" label in different plot_ordination() graphics to "taxa"
+- Fixed an issue with a default parameter in a related internal function
+	(changed "samples" to "sites" for vegan compatibility).
+
 phyloseq 1.1.53
 ===========
 - Fixed additional title issues in plot_network and plot_richness
