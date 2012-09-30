@@ -48,8 +48,46 @@ phyloseq <- function(...){
 	# Make the name-replaced, splatted list
 	splatlist <- sapply(arglist, phyloseq:::splat.phyloseq.objects)
 
-	## Need to determine which new() type to call.
-	# First some quality-control checks:
+	####################
+	## Fix extra quotes in phylogenetic tree.
+	# A common problem is extra quotes around OTU names, esp from tree formats
+	# Check if the intersection length is actually zero.
+	# If so, attempt to remove any quotes from tree tip names.
+	# Avoid modifying splatlist directly until good reason.
+	splatlist_taxa = splatlist
+	# Don't consider components that don't describe taxa, in this case, "sample_data".
+	not_taxa = which(names(splatlist) %in% c("sam_data"))
+	if( length(not_taxa) > 0 ) splatlist_taxa = splatlist[-not_taxa] 
+	# Use Reduce to find the intersection of all taxa indices among the components.
+	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))
+	# If there are no "shared" taxa/OTU names, try first removing any quotation marks taxa names.
+	if( length(shared_taxa) <= 0 & "phylo" %in% sapply(splatlist, class) ){
+		message(
+			"phyloseq() Note: Quotes removed from tree-tip names in attempt to reconcile with OTU names.\n",
+			"If no error follows this note, than it probably worked. Check taxa_names() of your components."
+		)
+		splatlist$phy_tree$tip.label = gsub("\"", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
+		splatlist$phy_tree$tip.label = gsub("\'", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
+	}
+	# Now re-check. Do any taxa names overlap? If not, stop with error.
+	splatlist_taxa = splatlist
+	not_taxa = which(names(splatlist) %in% c("sam_data"))
+	if( length(not_taxa) > 0 ) splatlist_taxa = splatlist[-not_taxa] 
+	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))	
+	if( length(shared_taxa) <= 0 ){
+		stop(
+			"Error in phyloseq-constructor:\n",
+			"No shared taxa names among the taxa-describing components your provided.\n",
+			"Solution: Check the taxa/OTU names of each component separately, using taxa_names()\n",
+			"Note: This does not apply to a sample_data component, because it does not describe taxa/OTUs."
+		)
+	}
+	
+	####################
+	## Need to determine whether to
+	# (A) instantiate a new phyloseq object, or
+	# (B) return a single component, or
+	# (C) to stop with an error because of incorrect argument types.
 	if( length(splatlist) > 4){
 		stop("Too many components provided\n")
 	} else if( length(names(splatlist)) > length(unique(names(splatlist))) ){
@@ -61,6 +99,9 @@ phyloseq <- function(...){
 	} else {
 		ps <- do.call("new", c(list(Class="phyloseq"), splatlist) )
 	}
+	####################
+	## Reconcile the taxa and sample index names between components
+	## in the newly-minted phyloseq object
 	# Verify there is more than one component that describes species before attempting to reconcile.
 	if( sum(!sapply(lapply(phyloseq:::splat.phyloseq.objects(ps), species.names), is.null)) >= 2 ){	
 		ps <- phyloseq:::reconcile_species(ps)
@@ -69,7 +110,8 @@ phyloseq <- function(...){
 	if( sum(!sapply(lapply(phyloseq:::splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
 		ps <- phyloseq:::reconcile_samples(ps)		
 	}
-	# ENFORCE CONSISTENT ORDER OF TAXA INDICES.
+	####################	
+	## ENFORCE CONSISTENT ORDER OF TAXA INDICES.
 	# If there is a phylogenetic tree included, re-order the otu_table based 
 	# according to the order of taxa-names on the tree, and optionally for
 	# the taxonomyTable, if present.
@@ -90,8 +132,8 @@ phyloseq <- function(...){
 			ps@tax_table <- tax_table(tax)
 		}
 	}
-
-	# ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
+	####################
+	## ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
 	# Other errors have been detected for when sample indices do not match.
 	# check first that ps has sample_data
 	if( !is.null(sample_data(ps, FALSE)) ){
