@@ -16,6 +16,13 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.57
+===========
+- Added automatic removal of single and double quotes from phylogenetic tree tip names provided to the phyloseq-constructor. This should help avoid problems importing data that includes a tree, for the cases where the taxa/OTU names don't match because of these extra quotation marks. Added directly into the phyloseq() constructor, so that it doesn't matter how/where the tree was imported/add.
+- Removal of quotes is only initiated when OTU/taxa names fail to match AT ALL
+(intersection is length zero) between component taxa names. 
+- This feature needs to be added to unit tests as well.
+
 phyloseq 1.1.55
 ===========
 - Added "title" argument to plot_scree() and plot_ordination(…, type="scree"), for consistency.
