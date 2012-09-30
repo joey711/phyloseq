@@ -62,8 +62,10 @@ phyloseq <- function(...){
 	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))
 	# If there are no "shared" taxa/OTU names, try first removing any quotation marks taxa names.
 	if( length(shared_taxa) <= 0 & "phylo" %in% sapply(splatlist, class) ){
-		cat("Note: Quotes removed from tree-tip names in attempt to reconcile with OTU names.", fill=TRUE)
-		cat("If no error follows this note, than it probably worked.", fill=TRUE)		
+		message(
+			"phyloseq() Note: Quotes removed from tree-tip names in attempt to reconcile with OTU names.\n",
+			"If no error follows this note, than it probably worked. Check taxa_names() of your components."
+		)
 		splatlist$phy_tree$tip.label = gsub("\"", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
 		splatlist$phy_tree$tip.label = gsub("\'", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
 	}
