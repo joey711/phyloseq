@@ -393,7 +393,7 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 		# Store the taxa-names and taxonomy-string separately.
 		taxaNames <- taxa.scan[[1]]
 		taxstring <- c(taxstring, taxa.scan[[length(taxa.scan)]])
-		names(taxstring) <- taxaNames
+
 		# Trim taxa.scan to just abundance values, and name by sample
 		taxa.scan <- taxa.scan[-length(header)][-1]
 		names(taxa.scan) <- sampleNames	
@@ -414,6 +414,8 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 			n <- n + chunk.size
 		}
 	}
+    # Add taxa names to taxstring after loop, from otutab to ensure matching j.i.k.
+    names(taxstring) <- rownames(otutab)   	
 
 	# Remove taxa.scan to clear memory usage. Call garbage collection right away.
 	rm(taxa.scan)
@@ -452,7 +454,10 @@ parse_qiime_tax_string <- function(taxlist, biotaxonomy=NULL, parallel=FALSE, de
 	
 	# Write the jagged tax data to tax_table-matrix
 	for( i in 1:length(jaglist) ){
-		tax_table[i, 1:length(jaglist[[i]])] <- jaglist[[i]]
+    	# protect against empty taxonomy lines that cause empty-assignment error
+    	if( length(jaglist[[i]]) > 0 ){
+	        tax_table[i, 1:length(jaglist[[i]])] <- jaglist[[i]]
+    	}
 	}
 
 	# If biotaxonomy provided, assign it to colnames starting from left. 
