@@ -16,6 +16,10 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.1.58
+===========
+- Fixed a bug in import_qiime in which import fails if there are any empty taxonomy string fields in a file that otherwise has some taxonomic assignments. Now the taxonomy entries for that OTU (row in the taxonomy table) are left all NA_character_ by default.
+
 phyloseq 1.1.57
 ===========
 - Added automatic removal of single and double quotes from phylogenetic tree tip names provided to the phyloseq-constructor. This should help avoid problems importing data that includes a tree, for the cases where the taxa/OTU names don't match because of these extra quotation marks. Added directly into the phyloseq() constructor, so that it doesn't matter how/where the tree was imported/add.
