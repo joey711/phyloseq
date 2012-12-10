@@ -89,10 +89,10 @@ This not only reduces code repetition, but also decreases the likelihood of
 mistakes during data filtering and analysis. 
 For example, it is intentionally difficult in phyloseq to create an experiment-level object
 \footnote{``phyloseq-class'', required for many analysis tools}
-in which a component tree and OTU table have different species names. 
+in which a component tree and OTU table have different OTU names. 
 The import functions, trimming tools, as well as the main tool for creating
 an experiment-level object, \code{phyloseq}, 
-all automatically trim the species and samples indices to their intersection,
+all automatically trim the OTUs and samples indices to their intersection,
 such that these component data types are exactly coherent.
 
 Let's get started by loading phyloseq, and describing some methods for importing data.
@@ -320,7 +320,7 @@ You do not need to have all four data types in the example above in order to com
 ex1c <- phyloseq(my_otu_table, my_sample_data)
 @
 
-Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\_}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same species and samples.
+Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\_}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same OTUs and samples.
 
 \subsection{\code{merge{\_}phyloseq()} function: merge multiple phyloseq objects}
 What if you have multiple objects describing parts of the same experimental project (say, because they came from different files)? What if you had already built a combined object for the earlier trials with the \code{phyloseq()} function, but now want to add additional data tables to that new object? 
@@ -531,7 +531,7 @@ ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 \clearpage
 \section{Phylogenetic smoothing}\label{sec:glom}
 \subsection{\code{tax{\_}glom()} Method}
-Suppose we are skeptical about the importance of species-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{tax{\_}glom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
+Suppose we are skeptical about the importance of OTU-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{tax{\_}glom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
 
 <<eval=FALSE>>=
 ex6 <- tax_glom(GlobalPatterns, taxlevel="Genus")
@@ -559,7 +559,7 @@ Command output not provided here to save time during compilation of the vignette
 
 The class structure in the \emph{phyloseq} package follows the inheritance diagram shown in Fig.~\ref{fig:phyloseqclasses}. The \emph{phyloseq} package contains multiple inherited classes with incremental complexity so that methods can be extended to handle exactly the data types that are present in a particular object. Currently, \emph{phyloseq} uses 4 core data classes. They are the OTU abundance table (\code{otu{\_}table}), a table of sample data (\code{sample{\_}data}), a table of taxonomic descriptors (\code{taxonomyTable}), and a phylogenetic tree (\code{phylo4}, \emph{phylobase} package). The \code{otu{\_}table} class can be considered the central data type, as it directly represents the number and type of sequences observed in each sample. \code{otu{\_}table} extends the numeric matrix class in the \R{} base, and has a few additonal feature slots. The most important of these feature slots is the \code{taxa{\_}are{\_}rows} slot, which holds a single logical that indicates whether the table is oriented with taxa as rows (as in the \emph{genefilter} package in Bioconductor~\cite{Bioconductor}) or with taxa as columns (as in \emph{vegan} and \emph{picante} packages). In \emph{phyloseq} methods, as well as its extensions of methods in other packages, the \code{taxa{\_}are{\_}rows} value is checked to ensure proper orientation of the \code{otu{\_}table}. A \emph{phyloseq} user is only required to specify the \code{otu{\_}table} orientation during initialization, following which all handling is internal. 
 
-The \code{sample{\_}data} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa (e.g. \emph{species}) and columns are taxonomic levels (e.g. \emph{Phylum}). 
+The \code{sample{\_}data} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa/OTUs and columns are taxonomic levels (e.g. \emph{Phylum}). 
 
 The phyloseq-class can be considered an ``experiment-level class'' and should contain two or more of the previously-described core data classes. We assume that \emph{phyloseq} users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so the \code{phyloseq()} constructor will stop with an error if the arguments do not include an \code{otu{\_}table}. There are a number of common methods that require either an \code{otu{\_}table} and \code{sample{\_}data} combination, or an \code{otu{\_}table} and phylogenetic tree combination. These methods can operate on instances of the phyloseq-class, and will stop with an error if the required component data is missing.  
 
