@@ -1,9 +1,9 @@
 \docType{methods}
 \name{get_taxa}
-\alias{getSpecies}
 \alias{get_taxa}
 \alias{get_taxa,otu_table-method}
 \alias{get_taxa,phyloseq-method}
+\alias{getSpecies}
 \title{Returns all abundance values of sample \code{i}.}
 \usage{
   get_taxa(physeq, i)

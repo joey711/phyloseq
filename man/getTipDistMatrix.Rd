@@ -1,6 +1,6 @@
 \name{getTipDistMatrix}
-\alias{getTipDistMatrix}
 \alias{gettipdistmatrix}
+\alias{getTipDistMatrix}
 \title{An internal wrapper function on \code{\link[ape]{cophenetic.phylo}}}
 \arguments{
   \item{tree}{\code{phylo}}
