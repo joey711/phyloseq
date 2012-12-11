@@ -76,6 +76,11 @@ data("enterotype")
 TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10])
 ent10   <- prune_species(TopNOTUs, enterotype)
 plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
+# The previous was probably more informative, but here is the same
+# information presented with a different organization.
+plot_bar(ent10, "SeqTech", fill="Genus", facet_grid=~Enterotype)
+# Here is an example with a different faceting variable.
+# Not super useful in this dataset, but always good to explore.
 plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~ClinicalStatus)
 }
 \seealso{

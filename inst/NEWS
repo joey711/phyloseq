@@ -21,6 +21,9 @@ phyloseq
 phyloseq 1.3.1
 ===========
 - New function: plot_bar() that is simpler more reliable than plot_taxa_bar.
+- plot_taxa_bar now deprecated.
+	- labeled deprecated in title doc
+	- replaced examples in vignette with plot_bar examples
 
 phyloseq 1.3.0
 ===========

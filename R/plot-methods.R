@@ -49,7 +49,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	if( all(c("otu_table", "sample_data", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else if( all(c("otu_table", "sample_data", "tax_table") %in% getslots.phyloseq(physeq) ) ){
-		plot_taxa_bar(physeq, ...)
+		plot_bar(physeq, ...)
 	} else if( all(c("otu_table", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else {
@@ -1113,6 +1113,11 @@ psmelt = function(physeq){
 #' TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
 #' ent10   <- prune_species(TopNOTUs, enterotype)
 #' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
+#' # The previous was probably more informative, but here is the same
+#' # information presented with a different organization.
+#' plot_bar(ent10, "SeqTech", fill="Genus", facet_grid=~Enterotype)
+#' # Here is an example with a different faceting variable. 
+#' # Not super useful in this dataset, but always good to explore.
 #' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~ClinicalStatus)
 plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 	title=NULL, facet_grid=NULL){
@@ -1145,8 +1150,9 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 ################################################################################
 ################################################################################
 ################################################################################
-#' Convert an otu_table object into a data.frame useful for plotting
-#' in the ggplot2 framework.
+#' DEPRECATED. SEE \code{\link{psmelt}} converts OTU-table to data.frame
+#'
+#' Was used for plotting with \code{\link{plot_taxa_bar}} in the ggplot2 framework.
 #'
 #' @usage otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
@@ -1227,7 +1233,7 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 	return(df)
 }
 ################################################################################
-#' Create a structured barplot graphic of the taxonomic groups.
+#' DEPRECATED. USE \code{\link{plot_bar}} instead. Creates structured barplot.
 #'
 #' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
 #'  graphic object
