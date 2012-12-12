@@ -1,6 +1,6 @@
 \name{get_variable}
-\alias{getVariable}
 \alias{get_variable}
+\alias{getVariable}
 \title{Get the values for a particular variable in sample_data}
 \usage{
   get_variable(physeq, varName)

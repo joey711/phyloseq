@@ -1,6 +1,6 @@
 \name{import_qiime_sample_data}
-\alias{import_qiime_sampleData}
 \alias{import_qiime_sample_data}
+\alias{import_qiime_sampleData}
 \title{Import just \code{sample_data} file from QIIME pipeline.}
 \usage{
   import_qiime_sample_data(mapfilename)

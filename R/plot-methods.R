@@ -49,7 +49,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	if( all(c("otu_table", "sample_data", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else if( all(c("otu_table", "sample_data", "tax_table") %in% getslots.phyloseq(physeq) ) ){
-		plot_taxa_bar(physeq, ...)
+		plot_bar(physeq, ...)
 	} else if( all(c("otu_table", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else {
@@ -953,10 +953,206 @@ setMethod("get_eigenvalue", "dpcoa", function(ordination) ordination$eig )
 # for decorana (dca) objects
 setMethod("get_eigenvalue", "decorana", function(ordination) ordination$evals )
 ################################################################################
+###############################################################################
+#' Melt phyloseq data object into large data.frame
+#'
+#' The psmelt function is a specialized melt function for melting phyloseq objects
+#' (instances of the phyloseq class), usually for the purpose of graphics production
+#' in ggplot2-based phyloseq-generated graphics. It relies heavily on the 
+#' \code{\link[reshape]{melt}} and \code{\link{merge}} functions. Note that
+#' ``melted'' phyloseq data is stored much less efficiently, and so RAM storage
+#' issues could arise with a smaller dataset
+#' (smaller number of samples/OTUs/variables) than one might otherwise expect.
+#' For average-sized datasets, however, this should not be a problem.
+#' Because the number of OTU entries has a large effect on the RAM requirement,
+#' methods to reduce the number of separate OTU entries, for instance by
+#' agglomerating based on phylogenetic distance using \code{\link{tipglom}},
+#' can help alleviate RAM usage problems.
+#' This function is made user-accessible for flexibility, but is also used 
+#' extensively by plot functions in phyloseq.
+#'
+#' @usage psmelt(physeq)
+#'
+#' @param physeq (Required). An \code{\link{otu_table-class}} or 
+#'  \code{\link{phyloseq-class}}. Function most useful for phyloseq-class.
+#'
+#' @return A \code{\link{data.frame}}-class table.
+#'
+#' @seealso
+#'  \code{\link{plot_bar}}
+#' 
+#'  \code{\link[reshape]{melt}}
+#'
+#'  \code{\link{merge}}
+#' 
+#' @import reshape
+#' @export
+#'
+#' @examples
+#' data("GlobalPatterns")
+#' gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+#' mdf = psmelt(gp.ch)
+#' nrow(mdf)
+#' ncol(mdf)
+#' colnames(mdf)
+#' head(rownames(mdf))
+#' # Create a ggplot similar to
+#' library("ggplot2")
+#' p = ggplot(mdf, aes(x=SampleType, y=Abundance, fill=Genus))
+#' p = p + geom_bar(color="black", stat="identity", position="stack")
+#' print(p)
+psmelt = function(physeq){
+	
+	# enforce orientation
+	otutab = otu_table(physeq)
+	if( !taxa_are_rows(otutab) ){
+		otutab = t(otutab)	
+	}
+	mot <- as(otutab, "matrix")
+	mdf <- melt(mot)
+	colnames(mdf)[1] = "OTU"
+	colnames(mdf)[2] = "Sample"
+		
+	# Merge the sample data.frame if present
+	if( !is.null(sample_data(physeq, FALSE)) ){
+		sdf = data.frame(sample_data(physeq))
+		sdf$Sample = sample_names(physeq)
+		# merge the sample-data and the melted otu table
+		mdf = merge(mdf, sdf, by.x="Sample")
+	}
+
+	# Next merge taxonomy data
+	if( !is.null(tax_table(physeq, FALSE)) ){
+		tdf = data.frame(tax_table(physeq), OTU=taxa_names(physeq))
+		mdf = merge(mdf, tdf, by.x="OTU")	
+	}
+	
+	# Annotate the "value" column as the measured OTU "Abundance"
+	colnames(mdf)[colnames(mdf)=="value"] = "Abundance"
+	
+	# Sort the entries by abundance
+	mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
+		
+	return(mdf)
+}
 ################################################################################
 ################################################################################
-#' Convert an otu_table object into a data.frame useful for plotting
-#' in the ggplot2 framework.
+#' A flexible, informative barplot phyloseq data
+#'
+#' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
+#'  graphic object
+#' that can be saved or further modified with additional layers, options, etc.
+#' The main purpose of this function is to quickly and easily create informative
+#' summary graphics of the differences in taxa abundance between samples in
+#' an experiment. 
+#'
+#' @usage plot_bar(physeq, x="Sample", y="Abundance", fill=NULL,
+#'  title=NULL, facet_grid=NULL)
+#'
+#' @param physeq (Required). An \code{\link{otu_table-class}} or 
+#'  \code{\link{phyloseq-class}}.
+#'
+#' @param x (Optional). Optional, but recommended, especially if your data
+#'  is comprised of many samples. A character string.
+#'  The variable in the melted-data that should be mapped to the x-axis.
+#'  See \code{\link{psmelt}}, \code{\link{melt}},
+#'  and \code{\link{ggplot}} for more details.
+#' 
+#' @param y (Optional). A character string.
+#'  The variable in the melted-data that should be mapped to the y-axis.
+#'  Typically this will be \code{"Abundance"}, in order to
+#'  quantitatively display the abundance values for each OTU/group. 
+#'  However, alternative variables could be used instead,
+#'  producing a very different, though possibly still informative, plot.
+#'  See \code{\link{psmelt}}, \code{\link{melt}},
+#'  and \code{\link{ggplot}} for more details.
+#'
+#' @param fill (Optional). A character string. Indicates which sample variable
+#'  should be used to map to the fill color of the bars. 
+#'  The default is \code{NULL}, resulting in a gray fill for all bar segments.
+#' 
+#' @param facet_grid (Optional). A formula object.
+#'  It should describe the faceting you want in exactly the same way as for 
+#'  \code{\link[ggplot2]{facet_grid}}, 
+#'  and is ulitmately provided to \code{\link{ggplot}}2 graphics.
+#'  The default is: \code{NULL}, resulting in no faceting.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
+#' @return A \code{\link[ggplot2]{ggplot}}2 graphic object -- rendered in the graphical device
+#'  as the default \code{\link[base]{print}}/\code{\link[methods]{show}} method.
+#'
+#' @seealso 
+#'  \code{\link{psmelt}}
+#'
+#'  \code{\link{ggplot}}
+#' 
+#'  \code{\link{qplot}}
+#'
+#' @import ggplot2
+#' @export
+#'
+#' @examples
+#' data("GlobalPatterns")
+#' gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+#' plot_bar(gp.ch)
+#' plot_bar(gp.ch, fill="Genus")
+#' plot_bar(gp.ch, x="SampleType", fill="Genus")
+#' plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Family)
+#' # Need to load ggplot2 for custom faceting, and other custom ggplot2 goodies.
+#' library("ggplot2")
+#' plot_bar(gp.ch, fill="Genus") + facet_wrap(~SampleType) 
+#' plot_bar(gp.ch, fill="Genus") + facet_grid(SampleType ~ Family)
+#' plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=SampleType~Family)
+#' # A more complicated addition. Two lines. Second adds abundance points.
+#' p = plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Genus)
+#' p + geom_point(aes(x=SampleType, y=Abundance), color="black", position="jitter", size=1.5)
+#' # Enterotype Example
+#' data("enterotype")
+#' TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
+#' ent10   <- prune_species(TopNOTUs, enterotype)
+#' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
+#' # The previous was probably more informative, but here is the same
+#' # information presented with a different organization.
+#' plot_bar(ent10, "SeqTech", fill="Genus", facet_grid=~Enterotype)
+#' # Here is an example with a different faceting variable. 
+#' # Not super useful in this dataset, but always good to explore.
+#' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~ClinicalStatus)
+plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
+	title=NULL, facet_grid=NULL){
+		
+	# Start by melting the data in the "standard" way using psmelt.
+	mdf = psmelt(physeq)
+	
+	# Build the plot data structure
+	p = ggplot(mdf, aes_string(x=x, y=y, fill=fill))
+
+	# Add the bar geometric object. Creates a basic graphic. Basis for the rest.
+	# Test weather additional
+	p = p + geom_bar(stat="identity", position="stack", color="black")
+
+	# By default, rotate the x-axis labels (they might be long)
+	p = p + theme(axis.text.x=element_text(angle=-90, hjust=0))
+
+	# Add faceting, if given
+	if( !is.null(facet_grid) ){	
+		p <- p + facet_grid(facet_grid)
+	}
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
+	
+	return(p)
+}
+################################################################################
+################################################################################
+################################################################################
+#' DEPRECATED. SEE \code{\link{psmelt}} converts OTU-table to data.frame
+#'
+#' Was used for plotting with \code{\link{plot_taxa_bar}} in the ggplot2 framework.
 #'
 #' @usage otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
@@ -1037,7 +1233,7 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 	return(df)
 }
 ################################################################################
-#' Create a structured barplot graphic of the taxonomic groups.
+#' DEPRECATED. USE \code{\link{plot_bar}} instead. Creates structured barplot.
 #'
 #' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
 #'  graphic object

@@ -1,11 +1,11 @@
 \docType{methods}
 \name{otu_table<-}
 \alias{assign-otu_table}
-\alias{otuTable<-}
 \alias{otu_table<-}
 \alias{otu_table<-,otu_table,otu_table-method}
 \alias{otu_table<-,phyloseq,otu_table-method}
 \alias{otu_table<-,phyloseq,phyloseq-method}
+\alias{otuTable<-}
 \title{Assign a new OTU Table to \code{x}}
 \usage{
   otu_table(x) <- value
