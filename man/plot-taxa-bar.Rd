@@ -1,7 +1,7 @@
 \name{plot_taxa_bar}
 \alias{plot_taxa_bar}
 \alias{taxaplot}
-\title{Create a structured barplot graphic of the taxonomic groups.}
+\title{DEPRECATED. USE \code{\link{plot_bar}} instead. Creates structured barplot.}
 \usage{
   plot_taxa_bar(physeq, taxavec="Domain",
   showOnlyTheseTaxa=NULL, threshold=NULL, x="sample",

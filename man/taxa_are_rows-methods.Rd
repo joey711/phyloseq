@@ -1,7 +1,7 @@
 \docType{methods}
 \name{taxa_are_rows}
-\alias{speciesAreRows}
 \alias{speciesarerows}
+\alias{speciesAreRows}
 \alias{taxa_are_rows}
 \alias{taxa_are_rows,ANY-method}
 \alias{taxa_are_rows,otu_table-method}

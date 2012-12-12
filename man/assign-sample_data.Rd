@@ -1,8 +1,8 @@
 \name{sample_data<-}
 \alias{assign-sample_data}
 \alias{sam_data<-}
-\alias{sampleData<-}
 \alias{sample_data<-}
+\alias{sampleData<-}
 \title{Assign (new) sample_data to \code{x}}
 \usage{
   sample_data(x) <- value

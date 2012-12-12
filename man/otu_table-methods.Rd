@@ -1,11 +1,11 @@
 \docType{methods}
 \name{otu_table}
-\alias{otuTable}
 \alias{otu_table}
 \alias{otu_table,data.frame-method}
 \alias{otu_table,matrix-method}
 \alias{otu_table,otu_table-method}
 \alias{otu_table,phyloseq-method}
+\alias{otuTable}
 \title{Build or access the otu_table.}
 \usage{
   otu_table(object, taxa_are_rows, errorIfNULL=TRUE)
