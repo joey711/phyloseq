@@ -1,9 +1,15 @@
-library(phyloseq)
-library(ggplot2)
+`r opts_chunk$set(cache=TRUE, fig.width=8, warning=FALSE)`
+<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
 
+# plot_tree function -
+# Powerful tree graphics with ggplot2
+
+This page contains many already-constructed examples of trees created by the `plot_tree` function in the phyloseq package, which in turn is uses the powerful graphics framework package called [ggplot2](http://docs.ggplot2.org/current/).
 
 ## The esophagus dataset.
-The esophagus is a small and relatively simple dataset by moderns standards. It only contains 3 samples, no sample-data, and a modest quantity of total sequencing per sample that is a relic of an earlier time when resources for this sort of investigation were sparse and  sequencing was expensive. Nevertheless, it makes for a nice sized dataset to start displaying trees.
+A simple dataset containing tree and OTU-table components.
+
+The esophagus is a small and relatively simple dataset by moderns standards. It only contains 3 samples, no sample-data, and a modest quantity of total sequencing per sample that is a relic of an earlier time when resources for this sort of investigation were sparse and sequencing was expensive. Nevertheless, it makes for a nice sized dataset to start displaying trees. (For more details about the dataset and its origin, try entering `?esophagus` into the command-line once you have loaded the phyloseq package)
 
 Load the package and dataset
 
@@ -12,9 +18,16 @@ library("phyloseq")
 data("esophagus")
 ```
 
-Here is the basic tree plot without any additional parameters.
+The default tree without any additional parameters is plot with black points that indicate in how many different samples each OTU was found. In this case, the term "OTU" is used quite loosely (it is a loose term, after all) to mean entries in the taxononmic data you are plotting; and in the specific case of trees, it means the tips, even if you have already agglomerated the data such that each tip is equivalent to a rank of class or phylum. 
+
 ```{r}
-plot_tree(esophagus)
+plot_tree(esophagus, title="Default tree.")
+```
+
+If for some reason you just want a completely unadorned tree, the `"treeonly"` method can be selected. This tends to plot much faster than the annotated tree, and is still a ggplot2 object that you *might* be able to add further layers to manually.
+
+```{r}
+plot_tree(esophagus, "treeonly", title="method = \"treeonly\"")
 ```
 
 Now let's shade tips according to the sample in which a particular OTU was observed.
@@ -35,10 +48,16 @@ Both graphical features included at once.
 plot_tree(esophagus, size="abundance", color="samples")
 ```
 
-Adjust the base spacing.
+There is some overlap of the tip points. Let's adjust the base spacing to spread them out a little bit.
 
 ```{r}
 plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+```
+
+Good, now what if we wanted to also display the specific numeric value of OTU abundances that occurred more than 3 times in a given sample? For that, `plot_tree` includes the `min.abundance` parameter, set to `Inf` by default to prevent any point labels from being written.
+
+```{r}
+plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03, min.abundance=3)
 ```
 
 # Examples with the Global Patterns dataset
@@ -90,7 +109,7 @@ plot_tree(gpa, color="Phylum", label.tips="Genus")
 
 However, the text-label size scales with number of species, and with common graphics-divice sizes/resolutions, these ~200 taxa still make for a somewhat crowded graphic. 
 
-Let's instead subset further ot just the Crenarchaeota
+Let's instead subset further to just the Crenarchaeota
 
 ```{r}
 gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
@@ -116,7 +135,7 @@ plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacin
 
 ## Chlamydiae-only tree
 
-```{r}
+```{r, fig.width=10}
 GP.chl <- subset_species(GlobalPatterns, Phylum=="Chlamydiae")
 plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
 ```			
