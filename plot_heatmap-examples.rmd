@@ -1,8 +1,9 @@
 `r opts_chunk$set(cache=TRUE, fig.width=8)`
 <link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
 
-plot_heatmap - Description and Examples
-========================================================
+# plot_heatmap
+# Description and Examples
+
 
 The following demonstrates some uses of the `plot_heatmap` function in [the phyloseq package](http://joey711.github.com/phyloseq/) for R and Bioconductor.
 
@@ -165,12 +166,12 @@ heatmap(otuTable(gpac))
 
 ## Other key graphics functions in the phyloseq package:
 
-[plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
+### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
 
-[plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
 
-[plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
+### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
 
-[plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
 
-[plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
+### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)

@@ -131,3 +131,15 @@ p + geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "st
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 
+
+## Other key graphics functions in the phyloseq package:
+
+### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
+
+### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+
+### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
+
+### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+
+### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
