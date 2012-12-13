@@ -229,10 +229,12 @@ plot_tree(GP.chl, color = "SampleType", shape = "Family", label.tips = "Genus",
 
 ### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
 
-### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+### [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
 
 ### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
 
-### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
 
 ### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
+
+### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)

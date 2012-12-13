@@ -91,16 +91,18 @@ Now you can save the previous plot as a variable, let's call it `p`, and then ad
 p = plot_bar(ent10, "Genus", fill="Genus", facet_grid=SeqTech~Enterotype)
 p + geom_bar(aes(color=Genus, fill=Genus), stat="identity", position="stack")
 ```
-
+			
 
 ## Other key graphics functions in the phyloseq package:
 
 ### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
 
-### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+### [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
 
 ### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
 
-### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
 
 ### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
+
+### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
