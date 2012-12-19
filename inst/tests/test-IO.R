@@ -107,10 +107,10 @@ min_dense_biom   <- system.file("extdata", "min_dense_otu_table.biom",   package
 min_sparse_biom  <- system.file("extdata", "min_sparse_otu_table.biom",  package="phyloseq")
 
 test_that("The different types of biom files yield phyloseq objects", {
-	rich_dense  <- import_biom(rich_dense_biom,  taxaPrefix="greengenes")
-	rich_sparse <- import_biom(rich_sparse_biom, taxaPrefix="greengenes")
-	min_dense   <- import_biom(min_dense_biom,   taxaPrefix="greengenes")
-	min_sparse  <- import_biom(min_sparse_biom,  taxaPrefix="greengenes")
+	rich_dense  <- import_biom(rich_dense_biom,  parseFunction=TaxParseGreenGenes)
+	rich_sparse <- import_biom(rich_sparse_biom, parseFunction=TaxParseGreenGenes)
+	min_dense   <- import_biom(min_dense_biom,   parseFunction=TaxParseGreenGenes)
+	min_sparse  <- import_biom(min_sparse_biom,  parseFunction=TaxParseGreenGenes)
 	
 	expect_that(rich_dense,  is_a("phyloseq"))
 	expect_that(rich_sparse, is_a("phyloseq"))
@@ -165,8 +165,8 @@ test_that("The different types of biom files yield phyloseq objects", {
 })
 
 test_that("the import_biom and import(\"biom\", ) syntax give same result", {
-	x1 <- import_biom(rich_dense_biom, taxaPrefix="greengenes")
-	x2 <- import("biom", BIOMfilename=rich_dense_biom, taxaPrefix="greengenes")	
+	x1 <- import_biom(rich_dense_biom, parseFunction=TaxParseGreenGenes)
+	x2 <- import("biom", BIOMfilename=rich_dense_biom, parseFunction=TaxParseGreenGenes)	
 	expect_that(x1, is_identical_to(x2))
 })
 ################################################################################
