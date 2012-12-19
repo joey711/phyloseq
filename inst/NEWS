@@ -22,7 +22,10 @@ phyloseq 1.3.2
 ===========
 - import_biom() fixes.
 	- More robust data handling for taxonomy table
-	- Flexibility: Can take custom parsing function for taxonomy vectorss
+	- Flexibility: Can take custom parsing function for taxonomy vectors
+	- tests added for new parsing functions
+		- parse_taxonomy_default
+		- parse_taxonomy_greengenes
 
 phyloseq 1.3.1
 ===========

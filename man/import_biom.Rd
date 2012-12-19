@@ -2,8 +2,9 @@
 \alias{import_biom}
 \title{Import phyloseq data from BIOM file}
 \usage{
-  import_biom(BIOMfilename, parseFunction=TaxParseDefault,
-  parallel=FALSE, version=0.9)
+  import_biom(BIOMfilename,
+  parseFunction=parse_taxonomy_default, parallel=FALSE,
+  version=0.9)
 }
 \arguments{
   \item{BIOMfilename}{(Required). A character string
@@ -19,20 +20,20 @@
   parses and names each element (an optionally removes
   unwanted elements). Further details and examples of
   acceptable functions are provided in the documentation
-  for \code{\link{TaxParseDefault}}. There are many
+  for \code{\link{parse_taxonomy_default}}. There are many
   variations on taxonomic nomenclature, and naming
   conventions used to store that information in various
   taxonomic databases and phylogenetic assignment
   algorithms. A popular database,
   \url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
   has its own custom parsing function provided in the
-  phyloseq package, \code{\link{TaxParseGreenGenes}}, and
-  more can be contributed or posted as code snippets as
-  needed. They can be custom-defined by a user immediately
-  prior to the the call to \code{\link{import_biom}}, and
-  this is a suggested first step to take when
-  trouble-shooting taxonomy-related errors during file
-  import.}
+  phyloseq package,
+  \code{\link{parse_taxonomy_greengenes}}, and more can be
+  contributed or posted as code snippets as needed. They
+  can be custom-defined by a user immediately prior to the
+  the call to \code{\link{import_biom}}, and this is a
+  suggested first step to take when trouble-shooting
+  taxonomy-related errors during file import.}
 
   \item{parallel}{(Optional). Logical. Wrapper option for
   \code{.parallel} parameter in \code{plyr-package}
@@ -77,14 +78,14 @@
 \examples{
 # An included example of a rich dense biom file
 rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
-import_biom(rich_dense_biom,  parseFunction=TaxParseGreenGenes)
+import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
 # An included example of a sparse dense biom file
 rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
-import_biom(rich_sparse_biom, parseFunction=TaxParseGreenGenes)
+import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 # # # Example code for importing large file with parallel backend
 # library("doParallel")
 # registerDoParallel(cores=6)
-# import_biom("my/file/path/file.biom", parseFunction=TaxParseGreenGenes, parallel=TRUE)
+# import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
 }
 \references{
   \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}

@@ -1,11 +1,11 @@
-\name{TaxParseDefault}
-\alias{TaxParseDefault}
-\alias{TaxParseGreenGenes}
+\name{parse_taxonomy_default}
+\alias{parse_taxonomy_default}
+\alias{parse_taxonomy_greengenes}
 \title{Parse elements of a taxonomy vector}
 \usage{
-  TaxParseDefault(char.vec)
+  parse_taxonomy_default(char.vec)
 
-  TaxParseGreenGenes(char.vec)
+  parse_taxonomy_greengenes(char.vec)
 }
 \arguments{
   \item{char.vec}{(Required). A single character vector of
@@ -20,15 +20,16 @@
   hopefully modified appropriately to reflect known
   redundancies or embedded information according to known
   naming conventions, desired length limits, etc; or in the
-  case of \code{\link{TaxParseDefault}}, not modified at
-  all and given dummy rank names to each element.
+  case of \code{\link{parse_taxonomy_default}}, not
+  modified at all and given dummy rank names to each
+  element.
 }
 \description{
   These are provided example functions that provide default
   behavior for parsing a character vector of taxonomic rank
   information for a single taxa, for the cases where the
-  data adheres to the naming convention used by
-  \url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes}
+  data adheres to the naming convention used by greengenes
+  (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
   or where the convention is unknown, respectively. To
   work, these functions -- and any similar custom function
   you may want to create and use -- must take as input a
@@ -41,17 +42,17 @@
   useful for the cases where the source data files have
   extra meaningless elements, like the ubiquitous ``Root''
   element often found in greengenes/QIIME taxonomy labels.
-  In the case of \code{TaxParseDefault}, no naming
+  In the case of \code{parse_taxonomy_default}, no naming
   convention is assumed and so dummy rank names are added
   to the vector. However, the content is checked so that
   any elements containing ``Root'' as their content are
   removed. More usefully if your taxonomy data is based on
-  greengenes, the \code{TaxParseGreenGenes} function clips
-  the first 3 characters that identify the rank, and uses
-  these to name the corresponding element according to the
-  appropriate taxonomic rank name used by greengenes (e.g.
-  \code{"p__"} at the beginning of an element means that
-  element is the name of the phylum to which this OTU
+  greengenes, the \code{parse_taxonomy_greengenes} function
+  clips the first 3 characters that identify the rank, and
+  uses these to name the corresponding element according to
+  the appropriate taxonomic rank name used by greengenes
+  (e.g. \code{"p__"} at the beginning of an element means
+  that element is the name of the phylum to which this OTU
   belongs). Most importantly, the expectations for these
   functions described above make them compatible to use
   during data import, specifcally the
@@ -62,8 +63,8 @@
 }
 \examples{
 taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
-TaxParseDefault(taxvec1)
-TaxParseGreenGenes(taxvec1)
+parse_taxonomy_default(taxvec1)
+parse_taxonomy_greengenes(taxvec1)
 }
 \seealso{
   \code{\link{import_biom}} \code{\link{import_qiime}}

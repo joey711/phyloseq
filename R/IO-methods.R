@@ -1448,8 +1448,8 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'
 #' These are provided example functions that provide default behavior for
 #' parsing a character vector of taxonomic rank information for a single taxa,
-#' for the cases where the data adheres to the naming convention used by
-#' \url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes}
+#' for the cases where the data adheres to the naming convention used by greengenes
+#' (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
 #' or where the convention is unknown, respectively.
 #' To work, these functions -- and any similar custom function you may want to
 #' create and use -- must take as input a single character vector of taxonomic
@@ -1460,11 +1460,11 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' need to be equal to the input, which is useful for the cases where the
 #' source data files have extra meaningless elements, like the ubiquitous 
 #' ``Root'' element often found in greengenes/QIIME taxonomy labels.
-#' In the case of \code{TaxParseDefault}, no naming convention is assumed and
+#' In the case of \code{parse_taxonomy_default}, no naming convention is assumed and
 #' so dummy rank names are added to the vector. However, the content is checked
 #' so that any elements containing ``Root'' as their content are removed. 
 #' More usefully if your taxonomy data is based on greengenes, the
-#' \code{TaxParseGreenGenes} function clips the first 3 characters that 
+#' \code{parse_taxonomy_greengenes} function clips the first 3 characters that 
 #' identify the rank, and uses these to name the corresponding element according
 #' to the appropriate taxonomic rank name used by greengenes
 #' (e.g. \code{"p__"} at the beginning of an element means that element is 
@@ -1475,8 +1475,8 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' it is a flexible structure that will be implemented soon for all phyloseq
 #' import functions that deal with taxonomy (e.g. \code{\link{import_qiime}}).
 #'
-#' @usage TaxParseDefault(char.vec)
-#' @usage TaxParseGreenGenes(char.vec)
+#' @usage parse_taxonomy_default(char.vec)
+#' @usage parse_taxonomy_greengenes(char.vec)
 #'
 #' @param char.vec (Required). A single character vector of taxonomic
 #'  ranks for a single OTU, unprocessed (ugly).
@@ -1488,7 +1488,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  These parsed, named versions of the taxonomic vector are hopefully 
 #'  modified appropriately to reflect known redundancies or embedded 
 #'  information according to known naming conventions,
-#'  desired length limits, etc; or in the case of \code{\link{TaxParseDefault}},
+#'  desired length limits, etc; or in the case of \code{\link{parse_taxonomy_default}},
 #'  not modified at all and given dummy rank names to each element.
 #'
 #' @rdname parseTaxonomy-functions
@@ -1500,9 +1500,9 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'
 #' @examples
 #'  taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
-#'  TaxParseDefault(taxvec1)
-#'  TaxParseGreenGenes(taxvec1)
-TaxParseDefault = function(char.vec){
+#'  parse_taxonomy_default(taxvec1)
+#'  parse_taxonomy_greengenes(taxvec1)
+parse_taxonomy_default = function(char.vec){
 	# Remove any element named "Root"
 	char.vec = char.vec[!(char.vec %in% c("Root", "root"))]
 	# Add dummy name
@@ -1510,18 +1510,35 @@ TaxParseDefault = function(char.vec){
 	return(char.vec)	
 }
 #' @rdname parseTaxonomy-functions
-#' @aliases TaxParseDefault
+#' @aliases parse_taxonomy_default
 #' @export
-TaxParseGreenGenes <- function(char.vec){
-	# Remove any element named "Root"
-	char.vec = char.vec[!(char.vec %in% c("Root", "root"))]
-	# Define the meaning of each prefix according to GreenGenes (and RDP?) taxonomy
+parse_taxonomy_greengenes <- function(char.vec){
+
+	# Remove any element named "Root" and give names in case problem with greengenes prefix
+	char.vec = parse_taxonomy_default(char.vec)
+	
+	# Define the meaning of each prefix according to GreenGenes taxonomy
 	Tranks = c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
-	taxvec = substr(char.vec, 4, 1000)
-	names(taxvec) = Tranks[substr(char.vec, 1, 1)]
-	# Make sure order is same as Tranks
-	Tranks = Tranks[Tranks %in% names(taxvec)]
-	taxvec = taxvec[Tranks]
+	
+	# Check for prefix using regexp, warn if there were none. trim indices, ti
+	ti = grep("[[:alpha:]]{1}\\_\\_", char.vec)
+	if( length(ti) == 0L ){
+		warning(
+			"No greengenes prefixes were found. \n",
+			"Consider using parse_taxonomy_default() instead if true for all OTUs. \n",
+			"Dummy ranks may be included among taxonomic ranks now."
+		)
+		# Will want to return without further modifying char.vec
+		taxvec = char.vec
+	# Replace names of taxvec according to prefix, if any present...
+	} else {
+		# Remove prefix using sub-"" regexp, call result taxvec
+		taxvec = gsub("[[:alpha:]]{1}\\_\\_", "", char.vec)
+		# Define the ranks that will be replaced
+		repranks = Tranks[substr(char.vec[ti], 1, 1)]
+		# Replace, being sure to avoid prefixes not present in Tranks
+		names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
+	}
 	return(taxvec)
 }
 ################################################################################
@@ -1536,7 +1553,7 @@ TaxParseGreenGenes <- function(char.vec){
 #'
 #' \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html} 
 #'
-#' @usage import_biom(BIOMfilename, parseFunction=TaxParseDefault, parallel=FALSE, version=0.9)
+#' @usage import_biom(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9)
 #'
 #' @param BIOMfilename (Required). A character string indicating the 
 #'  file location of the BIOM formatted file. This is a JSON formatted file,
@@ -1549,13 +1566,13 @@ TaxParseGreenGenes <- function(char.vec){
 #'  and parses and names each element
 #'  (an optionally removes unwanted elements).
 #'  Further details and examples of acceptable functions are provided
-#'  in the documentation for \code{\link{TaxParseDefault}}. 
+#'  in the documentation for \code{\link{parse_taxonomy_default}}. 
 #'  There are many variations on taxonomic nomenclature, and naming 
 #'  conventions used to store that information in various taxonomic 
 #'  databases and phylogenetic assignment algorithms. A popular database,
 #'  \url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
 #'  has its own custom parsing function provided in the phyloseq package,
-#'  \code{\link{TaxParseGreenGenes}},
+#'  \code{\link{parse_taxonomy_greengenes}},
 #'  and more can be contributed or posted as code snippets as needed.
 #'  They can be custom-defined by a user immediately prior to the the call to
 #'  \code{\link{import_biom}}, and this is a suggested first step to take
@@ -1593,15 +1610,15 @@ TaxParseGreenGenes <- function(char.vec){
 #' @examples
 #' # An included example of a rich dense biom file
 #' rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
-#' import_biom(rich_dense_biom,  parseFunction=TaxParseGreenGenes)
+#' import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
 #' # An included example of a sparse dense biom file
 #' rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
-#' import_biom(rich_sparse_biom, parseFunction=TaxParseGreenGenes)
+#' import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 #' # # # Example code for importing large file with parallel backend
 #' # library("doParallel")
 #' # registerDoParallel(cores=6)
-#' # import_biom("my/file/path/file.biom", parseFunction=TaxParseGreenGenes, parallel=TRUE)
-import_biom <- function(BIOMfilename, parseFunction=TaxParseDefault, parallel=FALSE, version=0.9){
+#' # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
+import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9){
 	
 	# Read the data
 	x <- fromJSON(BIOMfilename)
