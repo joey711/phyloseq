@@ -1458,11 +1458,11 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' desired length limits, etc.
 #' The length (number of elements) of the output named vector does \strong{not}
 #' need to be equal to the input, which is useful for the cases where the
-#' source data files have extra meaningless elements, like the ubiquitous 
+#' source data files have extra meaningless elements that should probably be
+#' removed, like the ubiquitous 
 #' ``Root'' element often found in greengenes/QIIME taxonomy labels.
 #' In the case of \code{parse_taxonomy_default}, no naming convention is assumed and
-#' so dummy rank names are added to the vector. However, the content is checked
-#' so that any elements containing ``Root'' as their content are removed. 
+#' so dummy rank names are added to the vector.  
 #' More usefully if your taxonomy data is based on greengenes, the
 #' \code{parse_taxonomy_greengenes} function clips the first 3 characters that 
 #' identify the rank, and uses these to name the corresponding element according
@@ -1503,18 +1503,20 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  parse_taxonomy_default(taxvec1)
 #'  parse_taxonomy_greengenes(taxvec1)
 parse_taxonomy_default = function(char.vec){
-	# Remove any element named "Root"
-	char.vec = char.vec[!(char.vec %in% c("Root", "root"))]
-	# Add dummy name
-	names(char.vec) = paste("Rank", 1:length(char.vec), sep="")
-	return(char.vec)	
+	if( length(char.vec) > 0 ){
+		# Add dummy element (rank) name
+		names(char.vec) = paste("Rank", 1:length(char.vec), sep="")
+	} else {
+		warning("Empty taxonomy vector encountered.")
+	}
+	return(char.vec)
 }
 #' @rdname parseTaxonomy-functions
 #' @aliases parse_taxonomy_default
 #' @export
 parse_taxonomy_greengenes <- function(char.vec){
 
-	# Remove any element named "Root" and give names in case problem with greengenes prefix
+	# Use default to assign names to elements in case problem with greengenes prefix
 	char.vec = parse_taxonomy_default(char.vec)
 	
 	# Define the meaning of each prefix according to GreenGenes taxonomy
@@ -1542,16 +1544,17 @@ parse_taxonomy_greengenes <- function(char.vec){
 	return(taxvec)
 }
 ################################################################################
-#' Import phyloseq data from BIOM file
+#' Import phyloseq data from biom-format file
 #'
 #' New versions of QIIME produce a more-comprehensive and formally-defined
-#' JSON file format. From the QIIME website:
+#' JSON file format, called biom file format:
 #'
 #' ``The biom file format (canonically pronounced `biome') is designed to be a 
 #' general-use format for representing counts of observations in one or
-#' more biological samples.''
+#' more biological samples. BIOM is a recognized standard for the Earth Microbiome
+#' Project and is a Genomics Standards Consortium candidate project.''
 #'
-#' \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html} 
+#' \url{http://biom-format.org/} 
 #'
 #' @usage import_biom(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9)
 #'
@@ -1628,14 +1631,13 @@ import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, para
 	########################################
 	# Check if sparse. Must parse differently than dense
 	if( x$matrix_type == "sparse" ){
-		otumat <- matrix(0, nrow=x$shape[1], ncol=x$shape[2])
-		dummy <- sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
+		otumat = matrix(0, nrow=x$shape[1], ncol=x$shape[2])
+		dummy  = sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
 	}
 	# parse the dense matrix instead.
 	if( x$matrix_type == "dense" ){
 		# each row will be complete data values, should use laply
-		# laply(x$data, vector, nrow=x$shape[1], ncol=x$shape[2])
-		otumat <- laply(x$data, function(i){i}, .parallel=parallel)
+		otumat = laply(x$data, function(i){i}, .parallel=parallel)
 	}
 	
 	# Get row (OTU) and col (sample) names
@@ -1655,26 +1657,21 @@ import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, para
 		taxlist = lapply(x$rows, function(i){
 			parseFunction(i$metadata$taxonomy)
 		})
-		# Test if it is jagged, determine dimensions.
-		nranks = sapply(taxlist, length)
-		ncols  = max(nranks)
-		jagged = any( nranks != ncols)
-		# Use the much faster/easier laply if not-jagged
-		if( !jagged ){
-			taxmat <- laply(taxlist, function(i){return(i)}, .parallel=parallel)
-		# Else it is jagged. Act accordingly.	
-		} else {
-			# Initialize taxonomic character matrix
-			taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=ncols)
-			# Add column names. Use first element in taxalist that has full length
-			colnames(taxmat) = names(taxlist[[which(nranks == ncols)[1]]])
-			# Fill in the matrix by row.
-			for( i in 1:length(x$rows) ){
+		# Determine column headers (rank names) of taxonomy table
+		columns = unique(unlist(sapply(taxlist, names)))
+		# Initialize taxonomic character matrix
+		taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
+		# Assign column names
+		colnames(taxmat) = columns
+		# Fill in the matrix by row.
+		for( i in 1:length(x$rows) ){
+			# Protect against empty taxonomy
+			if( length(taxlist[[i]]) > 0 ){
 				# The extra column name check solves issues with raggedness, and disorder.
 				taxmat[i, names(taxlist[[i]])] <- taxlist[[i]]
 			}
 		}
-		# Convert functionally empty elements to NA
+		# Convert functionally empty elements, "", to NA
 		taxmat[taxmat==""] <- NA_character_
 		# Now coerce to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
 		taxmat			 <- as(taxmat, "matrix")

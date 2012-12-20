@@ -1,6 +1,6 @@
 \name{import_biom}
 \alias{import_biom}
-\title{Import phyloseq data from BIOM file}
+\title{Import phyloseq data from biom-format file}
 \usage{
   import_biom(BIOMfilename,
   parseFunction=parse_taxonomy_default, parallel=FALSE,
@@ -64,16 +64,18 @@
 }
 \description{
   New versions of QIIME produce a more-comprehensive and
-  formally-defined JSON file format. From the QIIME
-  website:
+  formally-defined JSON file format, called biom file
+  format:
 }
 \details{
   ``The biom file format (canonically pronounced `biome')
   is designed to be a general-use format for representing
-  counts of observations in one or more biological
-  samples.''
+  counts of observations in one or more biological samples.
+  BIOM is a recognized standard for the Earth Microbiome
+  Project and is a Genomics Standards Consortium candidate
+  project.''
 
-  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}
+  \url{http://biom-format.org/}
 }
 \examples{
 # An included example of a rich dense biom file

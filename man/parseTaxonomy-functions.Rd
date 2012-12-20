@@ -40,13 +40,12 @@
   length (number of elements) of the output named vector
   does \strong{not} need to be equal to the input, which is
   useful for the cases where the source data files have
-  extra meaningless elements, like the ubiquitous ``Root''
-  element often found in greengenes/QIIME taxonomy labels.
-  In the case of \code{parse_taxonomy_default}, no naming
-  convention is assumed and so dummy rank names are added
-  to the vector. However, the content is checked so that
-  any elements containing ``Root'' as their content are
-  removed. More usefully if your taxonomy data is based on
+  extra meaningless elements that should probably be
+  removed, like the ubiquitous ``Root'' element often found
+  in greengenes/QIIME taxonomy labels. In the case of
+  \code{parse_taxonomy_default}, no naming convention is
+  assumed and so dummy rank names are added to the vector.
+  More usefully if your taxonomy data is based on
   greengenes, the \code{parse_taxonomy_greengenes} function
   clips the first 3 characters that identify the rank, and
   uses these to name the corresponding element according to

@@ -101,20 +101,20 @@ test_that("Features of the abundance data are consistent, match known values", {
 ################################################################################
 # parse function tests - note, these are also used by import_biom
 
-chvec1 = c("Bacteria", "Proteobacteria", "Gammaproteobacteria",
-	"Enterobacteriales", "Enterobacteriaceae", "Escherichia")
-
-chvec2 = c("k__Bacteria", "p__Proteobacteria", "c__Gammaproteobacteria",
-	"o__Enterobacteriales", "f__Enterobacteriaceae", "g__Escherichia", "s__")
-
-chvec3 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli",
-	"o__Bacillales", "f__Staphylococcaceae")
-
-# Example where only some entries have greengenes prefix.
-chvec4 = c("Root", "k__Bacteria", "Firmicutes", "c__Bacilli",
-	"o__Bacillales", "Staphylococcaceae", "z__mistake")
-
 test_that("Taxonomy vector parsing functions behave as expected", {
+		
+	chvec1 = c("Bacteria", "Proteobacteria", "Gammaproteobacteria",
+		"Enterobacteriales", "Enterobacteriaceae", "Escherichia")
+	
+	chvec2 = c("k__Bacteria", "p__Proteobacteria", "c__Gammaproteobacteria",
+		"o__Enterobacteriales", "f__Enterobacteriaceae", "g__Escherichia", "s__")
+	
+	chvec3 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli",
+		"o__Bacillales", "f__Staphylococcaceae")
+	
+	# Example where only some entries have greengenes prefix.
+	chvec4 = c("Root", "k__Bacteria", "Firmicutes", "c__Bacilli",
+		"o__Bacillales", "Staphylococcaceae", "z__mistake")
 
 	# This should give a warning because there were no greengenes prefixes
 	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
@@ -126,17 +126,17 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	# None of the greengenes entries are trimmed by parse_taxonomy_default
 	expect_that(any(sapply(chvec2, nchar) > sapply(parse_taxonomy_default(chvec2), nchar)), is_false())
 	
-	# Check that the "Root" element is removed by parse_taxonomy_greengenes and parse_taxonomy_default.
+	# Check that the "Root" element is not removed by parse_taxonomy_greengenes and parse_taxonomy_default.
 	expect_that("Root" %in% chvec3, is_true())
-	expect_that("Root" %in% parse_taxonomy_default(chvec3), is_false())
-	expect_that(length(parse_taxonomy_default(chvec3)) < length(chvec3), is_true())
+	expect_that("Root" %in% parse_taxonomy_default(chvec3), is_true())
+	expect_that(length(parse_taxonomy_default(chvec3)) == length(chvec3), is_true())
 	
 	# Check that non-greengenes prefixes, and those w/o prefixes, are given dummy rank(s)
 	chvec4ranks = names(parse_taxonomy_greengenes(chvec4))
-	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(c(2, 5, 6)))
+	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(c(1, 3, 6, 7)))
 	# Check that everything given dummy rank in default parse.
 	chvec4ranks = names(parse_taxonomy_default(chvec4))
-	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(1:6))
+	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(1:7))
 
 })
 
