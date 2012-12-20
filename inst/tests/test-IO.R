@@ -99,6 +99,48 @@ test_that("Features of the abundance data are consistent, match known values", {
 })
 
 ################################################################################
+# parse function tests - note, these are also used by import_biom
+
+test_that("Taxonomy vector parsing functions behave as expected", {
+		
+	chvec1 = c("Bacteria", "Proteobacteria", "Gammaproteobacteria",
+		"Enterobacteriales", "Enterobacteriaceae", "Escherichia")
+	
+	chvec2 = c("k__Bacteria", "p__Proteobacteria", "c__Gammaproteobacteria",
+		"o__Enterobacteriales", "f__Enterobacteriaceae", "g__Escherichia", "s__")
+	
+	chvec3 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli",
+		"o__Bacillales", "f__Staphylococcaceae")
+	
+	# Example where only some entries have greengenes prefix.
+	chvec4 = c("Root", "k__Bacteria", "Firmicutes", "c__Bacilli",
+		"o__Bacillales", "Staphylococcaceae", "z__mistake")
+
+	# This should give a warning because there were no greengenes prefixes
+	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
+	# And output from previous call, t1, should be identical to default
+	expect_that(parse_taxonomy_default(chvec1), is_identical_to(t1))
+	
+	# All the greengenes entries get trimmed by parse_taxonomy_greengenes
+	expect_that(all(sapply(chvec2, nchar) > sapply(parse_taxonomy_greengenes(chvec2), nchar)), is_true())
+	# None of the greengenes entries are trimmed by parse_taxonomy_default
+	expect_that(any(sapply(chvec2, nchar) > sapply(parse_taxonomy_default(chvec2), nchar)), is_false())
+	
+	# Check that the "Root" element is not removed by parse_taxonomy_greengenes and parse_taxonomy_default.
+	expect_that("Root" %in% chvec3, is_true())
+	expect_that("Root" %in% parse_taxonomy_default(chvec3), is_true())
+	expect_that(length(parse_taxonomy_default(chvec3)) == length(chvec3), is_true())
+	
+	# Check that non-greengenes prefixes, and those w/o prefixes, are given dummy rank(s)
+	chvec4ranks = names(parse_taxonomy_greengenes(chvec4))
+	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(c(1, 3, 6, 7)))
+	# Check that everything given dummy rank in default parse.
+	chvec4ranks = names(parse_taxonomy_default(chvec4))
+	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(1:7))
+
+})
+
+################################################################################
 # import_biom tests
 
 rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
@@ -107,10 +149,10 @@ min_dense_biom   <- system.file("extdata", "min_dense_otu_table.biom",   package
 min_sparse_biom  <- system.file("extdata", "min_sparse_otu_table.biom",  package="phyloseq")
 
 test_that("The different types of biom files yield phyloseq objects", {
-	rich_dense  <- import_biom(rich_dense_biom,  taxaPrefix="greengenes")
-	rich_sparse <- import_biom(rich_sparse_biom, taxaPrefix="greengenes")
-	min_dense   <- import_biom(min_dense_biom,   taxaPrefix="greengenes")
-	min_sparse  <- import_biom(min_sparse_biom,  taxaPrefix="greengenes")
+	rich_dense  <- import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
+	rich_sparse <- import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
+	min_dense   <- import_biom(min_dense_biom,   parseFunction=parse_taxonomy_greengenes)
+	min_sparse  <- import_biom(min_sparse_biom,  parseFunction=parse_taxonomy_greengenes)
 	
 	expect_that(rich_dense,  is_a("phyloseq"))
 	expect_that(rich_sparse, is_a("phyloseq"))
@@ -165,8 +207,8 @@ test_that("The different types of biom files yield phyloseq objects", {
 })
 
 test_that("the import_biom and import(\"biom\", ) syntax give same result", {
-	x1 <- import_biom(rich_dense_biom, taxaPrefix="greengenes")
-	x2 <- import("biom", BIOMfilename=rich_dense_biom, taxaPrefix="greengenes")	
+	x1 <- import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
+	x2 <- import("biom", BIOMfilename=rich_dense_biom, parseFunction=parse_taxonomy_greengenes)	
 	expect_that(x1, is_identical_to(x2))
 })
 ################################################################################
