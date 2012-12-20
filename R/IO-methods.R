@@ -1442,44 +1442,144 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 # SEQ5        ENV1        4
 # http://128.138.212.43/unifrac/help.psp#env_file
 ################################################################################
-# clip out the first 3 characters, and
-# name according to the taxonomic rank
-#' @keywords internal
-parseGreenGenesPrefix <- function(char.vec){
-	# Define the meaning of each prefix according to GreenGenes (and RDP?) taxonomy
-	Tranks <- c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
-	taxvec        <- substr(char.vec, 4, 1000)
-	names(taxvec) <- Tranks[substr(char.vec, 1, 1)]
-	# Make sure order is same as Tranks
-	taxvec <- taxvec[Tranks]; names(taxvec) <- Tranks
+# Need to export these parsing functions as examples...
+################################################################################
+#' Parse elements of a taxonomy vector
+#'
+#' These are provided example functions that provide default behavior for
+#' parsing a character vector of taxonomic rank information for a single taxa,
+#' for the cases where the data adheres to the naming convention used by greengenes
+#' (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
+#' or where the convention is unknown, respectively.
+#' To work, these functions -- and any similar custom function you may want to
+#' create and use -- must take as input a single character vector of taxonomic
+#' ranks for a single OTU, and return a \strong{named} character vector that has
+#' been modified appropriately (according to known naming conventions,
+#' desired length limits, etc.
+#' The length (number of elements) of the output named vector does \strong{not}
+#' need to be equal to the input, which is useful for the cases where the
+#' source data files have extra meaningless elements that should probably be
+#' removed, like the ubiquitous 
+#' ``Root'' element often found in greengenes/QIIME taxonomy labels.
+#' In the case of \code{parse_taxonomy_default}, no naming convention is assumed and
+#' so dummy rank names are added to the vector.  
+#' More usefully if your taxonomy data is based on greengenes, the
+#' \code{parse_taxonomy_greengenes} function clips the first 3 characters that 
+#' identify the rank, and uses these to name the corresponding element according
+#' to the appropriate taxonomic rank name used by greengenes
+#' (e.g. \code{"p__"} at the beginning of an element means that element is 
+#' the name of the phylum to which this OTU belongs).
+#' Most importantly, the expectations for these functions described above
+#' make them compatible to use during data import,
+#' specifcally the \code{\link{import_biom}} function, but 
+#' it is a flexible structure that will be implemented soon for all phyloseq
+#' import functions that deal with taxonomy (e.g. \code{\link{import_qiime}}).
+#'
+#' @usage parse_taxonomy_default(char.vec)
+#' @usage parse_taxonomy_greengenes(char.vec)
+#'
+#' @param char.vec (Required). A single character vector of taxonomic
+#'  ranks for a single OTU, unprocessed (ugly).
+#' 
+#' @return A character vector in which each element is a different
+#'  taxonomic rank of the same OTU, and each element name is the name of
+#'  the rank level. For example, an element might be \code{"Firmicutes"}
+#'  and named \code{"phylum"}.
+#'  These parsed, named versions of the taxonomic vector are hopefully 
+#'  modified appropriately to reflect known redundancies or embedded 
+#'  information according to known naming conventions,
+#'  desired length limits, etc; or in the case of \code{\link{parse_taxonomy_default}},
+#'  not modified at all and given dummy rank names to each element.
+#'
+#' @rdname parseTaxonomy-functions
+#' @export
+#'
+#' @seealso
+#'  \code{\link{import_biom}}
+#'  \code{\link{import_qiime}}
+#'
+#' @examples
+#'  taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
+#'  parse_taxonomy_default(taxvec1)
+#'  parse_taxonomy_greengenes(taxvec1)
+parse_taxonomy_default = function(char.vec){
+	if( length(char.vec) > 0 ){
+		# Add dummy element (rank) name
+		names(char.vec) = paste("Rank", 1:length(char.vec), sep="")
+	} else {
+		warning("Empty taxonomy vector encountered.")
+	}
+	return(char.vec)
+}
+#' @rdname parseTaxonomy-functions
+#' @aliases parse_taxonomy_default
+#' @export
+parse_taxonomy_greengenes <- function(char.vec){
+
+	# Use default to assign names to elements in case problem with greengenes prefix
+	char.vec = parse_taxonomy_default(char.vec)
+	
+	# Define the meaning of each prefix according to GreenGenes taxonomy
+	Tranks = c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
+	
+	# Check for prefix using regexp, warn if there were none. trim indices, ti
+	ti = grep("[[:alpha:]]{1}\\_\\_", char.vec)
+	if( length(ti) == 0L ){
+		warning(
+			"No greengenes prefixes were found. \n",
+			"Consider using parse_taxonomy_default() instead if true for all OTUs. \n",
+			"Dummy ranks may be included among taxonomic ranks now."
+		)
+		# Will want to return without further modifying char.vec
+		taxvec = char.vec
+	# Replace names of taxvec according to prefix, if any present...
+	} else {
+		# Remove prefix using sub-"" regexp, call result taxvec
+		taxvec = gsub("[[:alpha:]]{1}\\_\\_", "", char.vec)
+		# Define the ranks that will be replaced
+		repranks = Tranks[substr(char.vec[ti], 1, 1)]
+		# Replace, being sure to avoid prefixes not present in Tranks
+		names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
+	}
 	return(taxvec)
 }
 ################################################################################
-#' Import phyloseq data from BIOM file
+#' Import phyloseq data from biom-format file
 #'
 #' New versions of QIIME produce a more-comprehensive and formally-defined
-#' JSON file format. From the QIIME website:
+#' JSON file format, called biom file format:
 #'
 #' ``The biom file format (canonically pronounced `biome') is designed to be a 
 #' general-use format for representing counts of observations in one or
-#' more biological samples.''
+#' more biological samples. BIOM is a recognized standard for the Earth Microbiome
+#' Project and is a Genomics Standards Consortium candidate project.''
 #'
-#' \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html} 
+#' \url{http://biom-format.org/} 
 #'
-#' @usage import_biom(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0.9)
+#' @usage import_biom(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9)
 #'
 #' @param BIOMfilename (Required). A character string indicating the 
 #'  file location of the BIOM formatted file. This is a JSON formatted file,
 #'  specific to biological datasets, as described in 
+#'  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the biom-format home page}.
 #' 
-#'  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}
-#' 
-#' @param taxaPrefix (Optional). Character string. What category of prefix precedes
-#'  the taxonomic label at each taxonomic rank. Currently only ``greengenes'' is
-#'  a supported option, and implies that the first letter indicates the 
-#'  taxonomic rank, followed by two underscores and then the actual taxonomic
-#'  assignment at that rank. The default value is \code{NULL}, meaning that
-#'  no prefix or rank identifier will be interpreted. 
+#' @param parseFunction (Optional). A function. It must be a function that
+#'  takes as its first argument a character vector of taxonomic rank labels
+#'  for a single OTU
+#'  and parses and names each element
+#'  (an optionally removes unwanted elements).
+#'  Further details and examples of acceptable functions are provided
+#'  in the documentation for \code{\link{parse_taxonomy_default}}. 
+#'  There are many variations on taxonomic nomenclature, and naming 
+#'  conventions used to store that information in various taxonomic 
+#'  databases and phylogenetic assignment algorithms. A popular database,
+#'  \url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
+#'  has its own custom parsing function provided in the phyloseq package,
+#'  \code{\link{parse_taxonomy_greengenes}},
+#'  and more can be contributed or posted as code snippets as needed.
+#'  They can be custom-defined by a user immediately prior to the the call to
+#'  \code{\link{import_biom}}, and this is a suggested first step to take
+#'  when trouble-shooting taxonomy-related errors during file import.
 #'
 #' @param parallel (Optional). Logical. Wrapper option for \code{.parallel}
 #'  parameter in \code{plyr-package} functions. If \code{TRUE}, apply 
@@ -1504,20 +1604,24 @@ parseGreenGenesPrefix <- function(char.vec){
 #'
 #' @seealso \code{\link{import}}, \code{\link{import_qiime}}
 #'
-#' @references \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}
+#' @references \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
 #' @importFrom RJSONIO fromJSON
 #' @importFrom plyr ldply
 #' @importFrom plyr laply
 #' @export
 #' @examples
-#'  # # # import with default parameters, specify a file
-#'  # import_BIOM(myBIOMfile)
-#'  # # # Example code for importing large file with parallel backend
-#'  # library("doParallel")
-#'  # registerDoParallel(cores=6)
-#'  # import_biom("my/file/path/file.biom", taxaPrefix="greengenes", parallel=TRUE)
-import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0.9){
+#' # An included example of a rich dense biom file
+#' rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
+#' import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
+#' # An included example of a sparse dense biom file
+#' rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
+#' import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
+#' # # # Example code for importing large file with parallel backend
+#' # library("doParallel")
+#' # registerDoParallel(cores=6)
+#' # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
+import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9){
 	
 	# Read the data
 	x <- fromJSON(BIOMfilename)
@@ -1527,14 +1631,13 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	########################################
 	# Check if sparse. Must parse differently than dense
 	if( x$matrix_type == "sparse" ){
-		otumat <- matrix(0, nrow=x$shape[1], ncol=x$shape[2])
-		dummy <- sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
+		otumat = matrix(0, nrow=x$shape[1], ncol=x$shape[2])
+		dummy  = sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
 	}
 	# parse the dense matrix instead.
 	if( x$matrix_type == "dense" ){
 		# each row will be complete data values, should use laply
-		# laply(x$data, vector, nrow=x$shape[1], ncol=x$shape[2])
-		otumat <- laply(x$data, function(i){i}, .parallel=parallel)
+		otumat = laply(x$data, function(i){i}, .parallel=parallel)
 	}
 	
 	# Get row (OTU) and col (sample) names
@@ -1550,35 +1653,27 @@ import_biom <- function(BIOMfilename, taxaPrefix=NULL, parallel=FALSE, version=0
 	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
 		tax_table <- NULL
 	} else {
-		# Test if it is jagged
-		nranks <- sapply(x$rows, function(i){length(i$metadata$taxonomy)})
-		jagged <- any( nranks != max(nranks))
-		
-		# Use the much faster/easier laply if not-jagged
-		if( !jagged ){
-			if( taxaPrefix == "greengenes" ){
-				taxmat <- laply(x$rows, function(i){parseGreenGenesPrefix(i$metadata$taxonomy)}, .parallel=parallel)
-			} else {
-				taxmat <- laply(x$rows, function(i){i$metadata$taxonomy}, .parallel=parallel)
+		# parse once each character vector, save as a list
+		taxlist = lapply(x$rows, function(i){
+			parseFunction(i$metadata$taxonomy)
+		})
+		# Determine column headers (rank names) of taxonomy table
+		columns = unique(unlist(sapply(taxlist, names)))
+		# Initialize taxonomic character matrix
+		taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
+		# Assign column names
+		colnames(taxmat) = columns
+		# Fill in the matrix by row.
+		for( i in 1:length(x$rows) ){
+			# Protect against empty taxonomy
+			if( length(taxlist[[i]]) > 0 ){
+				# The extra column name check solves issues with raggedness, and disorder.
+				taxmat[i, names(taxlist[[i]])] <- taxlist[[i]]
 			}
-		# Else it is jagged. Act accordingly.	
-		} else {
-			# Figure out the max number of columns 
-			ncols <- max(nranks)
-			# Initialize character matrix
-			taxmat <- matrix(NA_character_, nrow=length(x$rows), ncol=ncols)
-			# Fill in the matrix by row.
-			for( i in 1:length(x$rows) ){
-				if( taxaPrefix == "greengenes" ){
-					taxmat[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- parseGreenGenesPrefix(x$rows[[i]]$metadata$taxonomy)
-				} else {
-					taxmat[i, 1:length(x$rows[[i]]$metadata$taxonomy)] <- x$rows[[i]]$metadata$taxonomy
-				}
-			}			
 		}
-		# Convert functionally empty elements to NA
+		# Convert functionally empty elements, "", to NA
 		taxmat[taxmat==""] <- NA_character_
-		# Now convert to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
+		# Now coerce to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
 		taxmat			 <- as(taxmat, "matrix")
 		rownames(taxmat) <- sapply(x$rows, function(i){i$id})
 		tax_table <- tax_table(taxmat)	
