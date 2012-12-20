@@ -4,7 +4,7 @@
 See alternate documentation in the form of a [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
 
 ## Installation
-Please see the [phyloseq installation instructions](https://github.com/joey711/phyloseq/wiki/Installation) provided on the [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
+Please see the [phyloseq installation instructions](http://joey711.github.com/phyloseq/Installation) provided on the [phyloseq wiki](https://github.com/joey711/phyloseq/wiki).
 
 ## phyloseq-demo Repository
 [The phyloseq-demo repository](https://github.com/joey711/phyloseq-demo) contains many additional documentation materials created to support workshops on the use of phyloseq in microbiome research. These materials are available under an open-access copyright license.
@@ -20,18 +20,18 @@ More concretely, [phyloseq](http://joey711.github.com/phyloseq/) provides:
  	- Additional importers planned for [MG-RAST](http://metagenomics.anl.gov/), [CLoVR-16S](http://clovr.org/methods/clovr-16s/), [Genboree Microbiome](http://genboree.org/theCommons/projects/pub-gen-microbiome), [PANGEA](http://www.microgator.org/pangea/), and others.
 
  * Convenience analysis wrappers for common analysis tasks, e.g.
-	- [distance](https://github.com/joey711/phyloseq/wiki/distance)  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
-	- [ordinate](https://github.com/joey711/phyloseq/wiki/ordinate)  --> many supported methods, including constrained methods
+	- [distance](http://joey711.github.com/phyloseq/distance)  --> 44 distance methods supported (UniFrac, Jensen-Shannon, etc)
+	- [ordinate](http://joey711.github.com/phyloseq/ordinate)  --> many supported methods, including constrained methods
 
- * Native, parallelized implementation of [UniFrac](https://github.com/joey711/phyloseq/wiki/Fast-Parallel-UniFrac) distance calculations.
+ * Native, parallelized implementation of [UniFrac](http://joey711.github.com/phyloseq/Fast-Parallel-UniFrac) distance calculations.
 
  * Powerful, flexible custom plot methods using ggplot2 for rapid, convenient exploratory analysis.
-	- [plot_heatmap](https://github.com/joey711/phyloseq/wiki/plot_heatmap)
-	- [plot_tree](https://github.com/joey711/phyloseq/wiki/plot_tree)
-	- [plot_ordination](https://github.com/joey711/phyloseq/wiki/plot_ordination)
-	- [plot_network](https://github.com/joey711/phyloseq/wiki/plot_network)
-	- [plot_richness](https://github.com/joey711/phyloseq/wiki/plot_richness)
-	- [plot_taxa_bar](https://github.com/joey711/phyloseq/wiki/plot_taxa_bar)
+	- [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
+	- [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
+	- [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+	- [plot_taxa_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
+	- [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
+	- [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
 
  * Multiple testing methods specific to high-throughput phylogenetic sequencing data.
 
