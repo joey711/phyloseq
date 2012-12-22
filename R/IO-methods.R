@@ -112,7 +112,7 @@ import <- function(pipelineName, ...){
 #' example of where ot find the relevant files in the output directory. 
 #'
 #' @usage import_qiime(otufilename=NULL, mapfilename=NULL,
-#'	treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE, chunk.size=1000L, ...)
+#'	treefilename=NULL, parseFunction=NULL, showProgress=TRUE, chunk.size=1000L, ...)
 #'
 #' @param otufilename (Optional). A character string indicating the file location of the OTU file.
 #' The combined OTU abundance and taxonomic identification file,
@@ -180,15 +180,10 @@ import <- function(pipelineName, ...){
 #' @examples
 #'  # import_qiime(myOtuTaxFilePath, myMapFilePath)
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
-	treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE, chunk.size=1000L, ...){
+	treefilename=NULL, parseFunction=NULL, showProgress=TRUE, chunk.size=1000L, ...){
 
 	# initialize the argument-list for phyloseq. Start empty.
 	argumentlist <- list()
-		
-	if( is.null(biotaxonomy) ){
-	 	biotaxonomy=c("Root", "Domain", "Phylum", "Class", "Order",
-		 	"Family", "Genus", "Species", "Strain")
-	 }
 
 	if( !is.null(mapfilename) ){	
 		if( showProgress==TRUE ){
@@ -202,7 +197,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 		if( showProgress==TRUE ){
 			cat("Processing otu/tax file...", fill=TRUE)
 		}		
-		otutax <- import_qiime_otu_tax(otufilename, biotaxonomy, FALSE, chunk.size, showProgress)
+		otutax <- import_qiime_otu_tax(otufilename, parseFunction, FALSE, chunk.size, showProgress)
 		otutab <- otu_table(otutax$otutab, TRUE)
 		tax_table <- tax_table(otutax$tax_table)
 		argumentlist <- c(argumentlist, list(otutab), list(tax_table) )
@@ -306,7 +301,7 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #' a switch to a sparse matrix representation of the abundance
 #' -- which is typically well-suited to this data -- might provide a solution.
 #'
-#' @usage import_qiime_otu_tax(file, biotaxonomy=NULL, parallel=FALSE, chunk.size=1000, verbose=TRUE)
+#' @usage import_qiime_otu_tax(file, parseFunction=NULL, parallel=FALSE, chunk.size=1000, verbose=TRUE)
 #'
 #' @param file (Required). The path to the qiime-formatted file you want to
 #'  import into R. Can be compressed (e.g. \code{.gz}, etc.), though the
@@ -347,7 +342,7 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #' @export
 #' @examples
 #' # # data_list <- import_qiime_otu_tax(file) 
-import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.size=1000L, verbose=TRUE){
+import_qiime_otu_tax <- function(file, parseFunction=NULL, parallel=FALSE, chunk.size=1000L, verbose=TRUE){
 
 	### Some parallel-foreach housekeeping.    
     # If user specifies not-parallel run (the default), register the sequential "back-end"
@@ -423,7 +418,7 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 	
 	if(verbose) cat("Building Taxonomy Table...", fill=TRUE)
 
-	tax_table <- parse_qiime_tax_string(taxstring, biotaxonomy)
+	tax_table <- parse_qiime_tax_string(taxstring, parseFunction)
 	rownames(tax_table) <- rownames(otutab)
 
 	# Call garbage collection one more time. Lots of unneeded stuff.
@@ -440,6 +435,10 @@ import_qiime_otu_tax <- function(file, biotaxonomy=NULL, parallel=FALSE, chunk.s
 # 
 #' @importFrom plyr llply
 #' @keywords internal
+
+# Re-write this to be a parser for qiime and work with the build-taxonomy function
+# # parse_taxonomy_qiime_string
+
 parse_qiime_tax_string <- function(taxlist, biotaxonomy=NULL, parallel=FALSE, delimit=";"){
 
 	# Now how do we know how many columns to make for converting this to matrix?
@@ -1657,26 +1656,7 @@ import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, para
 		taxlist = lapply(x$rows, function(i){
 			parseFunction(i$metadata$taxonomy)
 		})
-		# Determine column headers (rank names) of taxonomy table
-		columns = unique(unlist(sapply(taxlist, names)))
-		# Initialize taxonomic character matrix
-		taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
-		# Assign column names
-		colnames(taxmat) = columns
-		# Fill in the matrix by row.
-		for( i in 1:length(x$rows) ){
-			# Protect against empty taxonomy
-			if( length(taxlist[[i]]) > 0 ){
-				# The extra column name check solves issues with raggedness, and disorder.
-				taxmat[i, names(taxlist[[i]])] <- taxlist[[i]]
-			}
-		}
-		# Convert functionally empty elements, "", to NA
-		taxmat[taxmat==""] <- NA_character_
-		# Now coerce to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
-		taxmat			 <- as(taxmat, "matrix")
-		rownames(taxmat) <- sapply(x$rows, function(i){i$id})
-		tax_table <- tax_table(taxmat)	
+		tax_table = build_tax_table(taxlist)
 	}
 	
 	########################################
@@ -1704,6 +1684,32 @@ import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, para
 
 }
 ################################################################################
+# Need to document this...
+
+#' @export
+build_tax_table = function(taxlist){
+	# Determine column headers (rank names) of taxonomy table
+	columns = unique(unlist(sapply(taxlist, names)))
+	# Initialize taxonomic character matrix
+	taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
+	# Assign column names
+	colnames(taxmat) = columns
+	# Fill in the matrix by row.
+	for( i in 1:length(x$rows) ){
+		# Protect against empty taxonomy
+		if( length(taxlist[[i]]) > 0 ){
+			# The extra column name check solves issues with raggedness, and disorder.
+			taxmat[i, names(taxlist[[i]])] <- taxlist[[i]]
+		}
+	}
+	# Convert functionally empty elements, "", to NA
+	taxmat[taxmat==""] <- NA_character_
+	# Now coerce to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
+	taxmat			 <- as(taxmat, "matrix")
+	rownames(taxmat) <- sapply(x$rows, function(i){i$id})
+	return( tax_table(taxmat) )
+}
+
 ################################################################################
 ################################################################################
 ################################################################################
