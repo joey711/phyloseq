@@ -1,11 +1,14 @@
 \name{parse_taxonomy_default}
 \alias{parse_taxonomy_default}
 \alias{parse_taxonomy_greengenes}
+\alias{parse_taxonomy_qiime}
 \title{Parse elements of a taxonomy vector}
 \usage{
   parse_taxonomy_default(char.vec)
 
   parse_taxonomy_greengenes(char.vec)
+
+  parse_taxonomy_qiime(char.vec)
 }
 \arguments{
   \item{char.vec}{(Required). A single character vector of
@@ -16,13 +19,11 @@
   taxonomic rank of the same OTU, and each element name is
   the name of the rank level. For example, an element might
   be \code{"Firmicutes"} and named \code{"phylum"}. These
-  parsed, named versions of the taxonomic vector are
-  hopefully modified appropriately to reflect known
-  redundancies or embedded information according to known
-  naming conventions, desired length limits, etc; or in the
-  case of \code{\link{parse_taxonomy_default}}, not
-  modified at all and given dummy rank names to each
-  element.
+  parsed, named versions of the taxonomic vector should
+  reflect embedded information, naming conventions, desired
+  length limits, etc; or in the case of
+  \code{\link{parse_taxonomy_default}}, not modified at all
+  and given dummy rank names to each element.
 }
 \description{
   These are provided example functions that provide default
@@ -64,6 +65,8 @@
 taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
 parse_taxonomy_default(taxvec1)
 parse_taxonomy_greengenes(taxvec1)
+taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
+parse_taxonomy_qiime(taxvec2)
 }
 \seealso{
   \code{\link{import_biom}} \code{\link{import_qiime}}
