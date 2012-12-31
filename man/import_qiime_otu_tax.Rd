@@ -2,8 +2,9 @@
 \alias{import_qiime_otu_tax}
 \title{Import a QIIME-formatted otu-tax file into a list of two matrices.}
 \usage{
-  import_qiime_otu_tax(file, biotaxonomy=NULL,
-  parallel=FALSE, chunk.size=1000, verbose=TRUE)
+  import_qiime_otu_tax(file,
+  parseFunction=parse_taxonomy_qiime, parallel=FALSE,
+  chunk.size=1000, verbose=TRUE)
 }
 \arguments{
   \item{file}{(Required). The path to the qiime-formatted
@@ -11,10 +12,14 @@
   \code{.gz}, etc.), though the details may be OS-specific.
   That is, Windows-beware.}
 
-  \item{biotaxonomy}{(Optional). A character vector of the
-  taxonomic ranks. Default is \code{NULL}, meaning no
-  rank-names will be added as colnames to the
-  \code{$tax_table} matrix.}
+  \item{parseFunction}{(Optional). An optional custom
+  function for parsing the character string that contains
+  the taxonomic assignment of each OTU. The default parsing
+  function is \code{\link{parse_taxonomy_qiime}},
+  specialized for splitting the \code{";"}-delimited
+  strings and also attempting to interpret greengenes
+  prefixes, if any, as that is a common format of the
+  taxonomy string produced by QIIME.}
 
   \item{parallel}{(Optional). Logical. Should the parsing
   be performed in parallel?. Default is \code{FALSE}. Only
@@ -68,7 +73,8 @@
   solution.
 }
 \examples{
-# # data_list <- import_qiime_otu_tax(file)
+otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
+import_qiime_otu_tax(otufile)
 }
 \seealso{
   \code{\link{import}}, \code{\link{merge_phyloseq}},
