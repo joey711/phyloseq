@@ -96,8 +96,16 @@ test_that("Features of the abundance data are consistent, match known values", {
 	expect_that(sum(sample_sums(t0) > 10000L), equals(20L))
 	expect_that(nsamples(t0), equals(26L))
 	expect_that(ntaxa(t0), equals(500L))
+	expect_that(length(rank_names(t0)), equals(7L))
 })
 
+test_that("Features of the taxonomy table match expected values", {
+	expect_that(length(rank_names(t0)), equals(7L))
+	expect_that(rank_names(t0), equals(c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")))
+	tax53 = as(tax_table(t0), "matrix")[53, ]
+	expect_that(tax53, is_equivalent_to(c("Bacteria", "Proteobacteria", "Deltaproteobacteria",
+		"Desulfovibrionales", "Desulfomicrobiaceae", "Desulfomicrobium", "Desulfomicrobiumorale")))	
+})
 ################################################################################
 # parse function tests - note, these are also used by import_biom
 
