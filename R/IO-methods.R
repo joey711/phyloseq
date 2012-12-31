@@ -1558,9 +1558,10 @@ import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, para
 ################################################################################
 #' Parse elements of a taxonomy vector
 #'
-#' These are provided example functions that provide default behavior for
-#' parsing a character vector of taxonomic rank information for a single taxa,
-#' for the cases where the data adheres to the naming convention used by greengenes
+#' These are provided as both example and default functions for
+#' parsing a character vector of taxonomic rank information for a single taxa.
+#' As default functions, these are intended for cases where the data adheres to
+#' the naming convention used by greengenes
 #' (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
 #' or where the convention is unknown, respectively.
 #' To work, these functions -- and any similar custom function you may want to
@@ -1695,7 +1696,7 @@ parse_taxonomy_qiime <- function(char.vec){
 #'  build_tax_table(taxlist2)
 build_tax_table = function(taxlist){
 	# Determine column headers (rank names) of taxonomy table
-	columns = unique(unlist(sapply(taxlist, names)))
+	columns = unique(unlist(lapply(taxlist, names)))
 	# Initialize taxonomic character matrix
 	taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
 	# Assign column names

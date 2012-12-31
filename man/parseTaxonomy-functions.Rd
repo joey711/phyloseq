@@ -26,10 +26,11 @@
   and given dummy rank names to each element.
 }
 \description{
-  These are provided example functions that provide default
-  behavior for parsing a character vector of taxonomic rank
-  information for a single taxa, for the cases where the
-  data adheres to the naming convention used by greengenes
+  These are provided as both example and default functions
+  for parsing a character vector of taxonomic rank
+  information for a single taxa. As default functions,
+  these are intended for cases where the data adheres to
+  the naming convention used by greengenes
   (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
   or where the convention is unknown, respectively. To
   work, these functions -- and any similar custom function
