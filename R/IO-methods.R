@@ -1699,7 +1699,6 @@ build_tax_table = function(taxlist){
 	columns = unique(unlist(lapply(taxlist, names)))
 	# Initialize taxonomic character matrix
 	taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
-	# Assign column names
 	colnames(taxmat) = columns
 	# Fill in the matrix by row.
 	for( i in 1:length(taxlist) ){
