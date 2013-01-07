@@ -47,10 +47,25 @@
 }
 \examples{
 #
-# data(GlobalPatterns)
-# t1 <- merge_samples(sample_data(GlobalPatterns), "SampleType")
-# t4 <- merge_samples(GlobalPatterns, "SampleType")
-# identical(t1, sample_data(t4))
+data(GlobalPatterns)
+GP = GlobalPatterns
+mergedGP = merge_samples(GlobalPatterns, "SampleType")
+SD = merge_samples(sample_data(GlobalPatterns), "SampleType")
+print(SD)
+print(mergedGP)
+sample_names(GlobalPatterns)
+sample_names(mergedGP)
+identical(SD, sample_data(mergedGP))
+# The OTU abundances of merged samples are summed
+# Let's investigate this ourselves looking at just the top10 most abundance OTUs...
+OTUnames10 = names(sort(taxa_sums(GP), TRUE)[1:10])
+GP10  = prune_taxa(OTUnames10,  GP)
+mGP10 = prune_taxa(OTUnames10, mergedGP)
+ocean_samples = sample_names(subset(sample_data(GP), SampleType=="Ocean"))
+print(ocean_samples)
+otu_table(GP10)[, ocean_samples]
+rowSums(otu_table(GP10)[, ocean_samples])
+otu_table(mGP10)["Ocean", ]
 }
 \seealso{
   \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}

@@ -32,6 +32,22 @@ test_that("Same otu_table result for separate and combined merge in merge_sample
 	)
 })
 
+test_that("Sample Names of merged object now same set as merging factor levels", {
+	sampleTypes = levels(data.frame(sample_data(GP))$SampleType)
+	expect_that(setdiff(sampleTypes, sample_names(mGP)), is_identical_to(character()))
+})
+
+test_that("Counts from merged-samples are summed...", {
+	OTUnames10 = names(sort(taxa_sums(GP), TRUE)[1:10])
+	GP10  = prune_taxa(OTUnames10,  GP)
+	mGP10 = prune_taxa(OTUnames10, mGP)
+	# Loop to check the correct summation has occured for all OTUs.
+	for( i in OTUnames10 ){
+		isum = as(tapply(get_sample(GP10, i), get_variable(GP10, "SampleType"), sum), "numeric")
+		expect_that(isum, is_equivalent_to(get_sample(mGP10, i)))
+	}
+})
+
 ################################################################################
 # merge_phyloseq
 test_that("merge_phyloseq: Break apart GP based on human-association, then merge back together.", {
