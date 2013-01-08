@@ -223,10 +223,104 @@ plot_tree(x1, color = "sample", size = "abundance", sizebase = 2, label.tips = "
 ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
-
+---
 ## merge_phyloseq
 
-As said earlier, `merge_phyloseq` is a convenience/support tool to help get your data into the right format. Here is an example in which we extract components from an example dataset, and then build them back up to the original form using `merge_phyloseq` along the way...
+As said earlier, `merge_phyloseq` is a convenience/support tool to help get your data into the right format. Here is an example in which we extract components from an example dataset, and then build them back up to the original form using `merge_phyloseq` along the way.
+
+Let's split apart the "Global Patterns" example dataset into some components
+
+
+```r
+data(GlobalPatterns)
+tree = phy_tree(GlobalPatterns)
+tax = tax_table(GlobalPatterns)
+otu = otu_table(GlobalPatterns)
+sam = sample_data(GlobalPatterns)
+otutax = phyloseq(otu, tax)
+otutax
+```
+
+```
+## phyloseq-class experiment-level object
+## OTU Table:          [19216 taxa and 26 samples]
+##                      taxa are rows
+## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
+```
+
+
+As you can see, our new `otutax` object has just the OTU table and taxonomy table. Now let's use `merge_phyloseq` to build up the original `GlobalPatterns` object, and compare to make sure they are identical. Note how the arguments to `merge_phyloseq` are a mixture of multi-component (`otutax`) and single component objects.
+
+
+```r
+GP2 = merge_phyloseq(otutax, sam, tree)
+identical(GP2, GlobalPatterns)
+```
+
+```
+## [1] TRUE
+```
+
+
+### More complicated merges
+The `merge_phyloseq` function will also work even with more than one multiple-component object.
+
+
+```r
+otusamtree = phyloseq(otu, sam, tree)
+GP3 = merge_phyloseq(otusamtree, otutax)
+GP3
+```
+
+```
+## phyloseq-class experiment-level object
+## OTU Table:          [19216 taxa and 26 samples]
+##                      taxa are rows
+## Sample Data:         [26 samples by 7 sample variables]:
+## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
+## Phylogenetic Tree:  [19216 tips and 19215 internal nodes]
+##                      rooted
+```
+
+```r
+identical(GP3, GlobalPatterns)
+```
+
+```
+## [1] FALSE
+```
+
+
+So this merge appears to have worked. The new object, `GP3`, looks similar to `GlobalPatterns` but is not identical. Why? Well, the assumption by `merge_phyloseq` is that you are atttempting to merge **separate** sources of abundance data, and so any portion of the OTU tables in the two phyloseq objects that have the same OTU indices are **summed** together, just like with `merge_taxa` earlier.
+
+This example scenario was illustrative, but hopefully rare in practice. Nevertheless, just in case, an easy fix would be to extract the unique component of `otutax` and provide it to `merge_phyloseq`, instead of the entire phyloseq object. This amounts to a small intuitive modification to the previous `merge_phyloseq` command:
+
+
+```r
+GP4 = merge_phyloseq(otusamtree, tax_table(otutax))
+GP4
+```
+
+```
+## phyloseq-class experiment-level object
+## OTU Table:          [19216 taxa and 26 samples]
+##                      taxa are rows
+## Sample Data:         [26 samples by 7 sample variables]:
+## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
+## Phylogenetic Tree:  [19216 tips and 19215 internal nodes]
+##                      rooted
+```
+
+```r
+identical(GP4, GlobalPatterns)
+```
+
+```
+## [1] TRUE
+```
+
+
+
 
 
 
