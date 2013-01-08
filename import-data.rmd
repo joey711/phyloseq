@@ -20,6 +20,13 @@ See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an 
 
 ### import_biom
 
+New versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called [biom file format](http://biom-format.org/):
+
+“The biom file format (canonically pronounced ‘biome’) is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project.”
+
+http://biom-format.org/
+
+
 ```{r}
 # An included example of a rich dense biom file
 rich_dense_biom  = system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
@@ -28,6 +35,8 @@ import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
 rich_sparse_biom = system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
 import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 ```
+
+
 
 Example code for importing large file with parallel backend
 ```{r eval=FALSE}
@@ -39,7 +48,7 @@ import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, p
 
 ### import_qiime
 
-QIIME produces several files that can be analyzed in the phyloseq-package, including especially an OTU file that typically contains both OTU-abundance and taxonomic identity information. The map-file is also an important input to QIIME that stores sample covariates, converted naturally to the sample_data-class component data type in the phyloseq-package. QIIME may also produce a phylogenetic tree with a tip for each OTU, which can also be imported by this function.
+[QIIME](http://www.qiime.org/) produces several files that can be analyzed in the phyloseq-package, including especially an OTU file that typically contains both OTU-abundance and taxonomic identity information. The map-file is also an important input to QIIME that stores sample covariates, converted naturally to the sample_data-class component data type in the phyloseq-package. QIIME may also produce a phylogenetic tree with a tip for each OTU, which can also be imported by this function.
 
 See [qiime.org](http://www.qiime.org/) for details on using QIIME. While there are many complex dependencies, QIIME can be downloaded as a pre-installed linux virtual machine that runs “off the shelf”.
 
