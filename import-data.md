@@ -17,14 +17,21 @@ library(phyloseq)
 
 ## Currently available import functions
 
-See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions, or see below for some of the more popular importers.
+See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions, or see below for examples using some of the more popular importers.
 
-
+---
 ### import_biom
+
+Newer versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called biom file format:
+
+"The biom file format (canonically pronounced ‘biome’) is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project."
+
+http://biom-format.org/
+
+The phyloseq package includes small examples of biom files with different levels and organization of data. The following shows how to import a so-called "rich dense" biom file from its location within the phyloseq package:
 
 
 ```r
-# An included example of a rich dense biom file
 rich_dense_biom = system.file("extdata", "rich_dense_otu_table.biom", package = "phyloseq")
 import_biom(rich_dense_biom, parseFunction = parse_taxonomy_greengenes)
 ```
@@ -37,8 +44,10 @@ import_biom(rich_dense_biom, parseFunction = parse_taxonomy_greengenes)
 ## Taxonomy Table:     [5 taxa by 7 taxonomic ranks]:
 ```
 
+
+And here is an equivalent example for a "sparse dense"" biom file:
+
 ```r
-# An included example of a sparse dense biom file
 rich_sparse_biom = system.file("extdata", "rich_sparse_otu_table.biom", package = "phyloseq")
 import_biom(rich_sparse_biom, parseFunction = parse_taxonomy_greengenes)
 ```
@@ -63,6 +72,7 @@ import_biom("my/file/path/file.biom", parseFunction = parse_taxonomy_greengenes,
 
 
 
+---
 ### import_qiime
 
 QIIME produces several files that can be analyzed in the phyloseq-package, including especially an OTU file that typically contains both OTU-abundance and taxonomic identity information. The map-file is also an important input to QIIME that stores sample covariates, converted naturally to the sample_data-class component data type in the phyloseq-package. QIIME may also produce a phylogenetic tree with a tip for each OTU, which can also be imported by this function.
@@ -91,16 +101,27 @@ import_qiime(otufile, mapfile, trefile, showProgress = FALSE)
 
 
 
+---
 ### import_mothur
-See [the mothur wiki](http://www.mothur.org/wiki/Main_Page) for further details about using mothur.
+The open-source, platform-independent, locally-installed software package, "mothur"", can also process barcoded amplicon sequences and perform OTU-clustering, among other things. It is extensively documented on a wiki at [the mothur wiki](http://www.mothur.org/wiki/Main_Page).
 
 
 ```r
 mothlist = system.file("extdata", "esophagus.fn.list.gz", package = "phyloseq")
 mothgroup = system.file("extdata", "esophagus.good.groups.gz", package = "phyloseq")
 mothtree = system.file("extdata", "esophagus.tree.gz", package = "phyloseq")
+show_mothur_list_cutoffs(mothlist)
+```
+
+```
+##  [1] "unique" "0.00"   "0.01"   "0.02"   "0.03"   "0.04"   "0.05"  
+##  [8] "0.06"   "0.07"   "0.08"   "0.09"   "0.10"
+```
+
+```r
 cutoff = "0.10"
-import_mothur(mothlist, mothgroup, mothtree, cutoff)
+x = import_mothur(mothlist, mothgroup, mothtree, cutoff)
+x
 ```
 
 ```
@@ -111,8 +132,93 @@ import_mothur(mothlist, mothgroup, mothtree, cutoff)
 ##                      rooted
 ```
 
+```r
+plot_tree(x, color = "samples")
+```
 
-Will fail with an error if no list file provided.
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-61.png) 
+
+```r
+SDF = data.frame(samples = sample_names(x), row.names = sample_names(x))
+sample_data(x) = sample_data(SDF)
+plot_richness(x)
+```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-62.png) 
+
+
+The class and data in the object returned by `import_mothur` depends on the  arguments. If the first three arguments are provided, then a phyloseq object should be returned containing both a tree and its associated OTU table. If only a list and group file are provided, then an "otu_table" object is returned. Similarly, if only a list and tree file are provided, then only a tree is returned ("phylo" class).
+
+Returns just a tree
+
+```r
+x1 = import_mothur(mothlist, mothur_tree_file = mothtree, cutoff = "0.10")
+x2 = import_mothur(mothlist, mothur_tree_file = mothtree, cutoff = "0.08")
+plot(x1)
+```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+
+Returns just an OTU table
+
+```r
+OTU = import_mothur(mothlist, mothgroup, cutoff = "0.08")
+dim(OTU)
+```
+
+```
+## [1] 64  3
+```
+
+```r
+head(OTU)
+```
+
+```
+## OTU Table:          [6 taxa and 3 samples]
+##                      taxa are rows
+##          B  C   D
+## 65_4_15 15 14   2
+## 59_8_22 23  2   2
+## 59_7_6  37 41  18
+## 59_5_19 14 42  10
+## 59_2_6  52 41 124
+## 9_4_6    2  2   2
+```
+
+
+Returns a list where each (outer) element represents an OTU, and is a vector of the sequencing reads that are clustered with that OTU.
+
+```r
+otulist = import_mothur(mothlist, cutoff = "0.08")
+length(otulist)
+```
+
+```
+## [1] 64
+```
+
+```r
+ntaxa(OTU)
+```
+
+```
+## [1] 64
+```
+
+
+Returns an error without a cutoff
+
+```r
+import_mothur(mothlist)
+```
+
+```
+## Error: non-character argument
+```
+
+
+The list file is required. Import will fail with an error if it is not provided.
 
 ```r
 import_mothur()
@@ -128,6 +234,7 @@ import_mothur()
 
 
 
+---
 ### import_pyrotagger
 
 PyroTagger is created and maintained by the [Joint Genome Institute](http://pyrotagger.jgi-psf.org/)
@@ -147,6 +254,7 @@ import_pyrotagger_tab(pyrotagger_tab_file)
 
 
 
+---
 ## Loading included data
 
 See [the wiki page on included example data in phyloseq](https://github.com/joey711/phyloseq/wiki/Example-Data) for more details.
