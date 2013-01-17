@@ -3,7 +3,7 @@
 \title{Returns a data frame defining segments to draw the phylogenetic tree.}
 \usage{
   tree.layout(phylo, layout = "default", layout.ancestors =
-  FALSE, align.seq.names = NA)
+  FALSE, ladderize = FALSE, align.seq.names = NA)
 }
 \description{
   This internal function is borrowed directly from the

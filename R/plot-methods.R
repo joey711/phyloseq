@@ -1707,6 +1707,7 @@ tree.has.tags <- function(phylo) {
 #' @author Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
 #' @importFrom plyr rbind.fill
+#' @import ape
 #'
 #' @keywords internal
 tree.layout <- function(
@@ -1717,13 +1718,13 @@ tree.layout <- function(
   align.seq.names = NA
 ) {
 
-  if (ladderize != FALSE) {
-    if (ladderize == 'left') {
-      phylo <- ladderize(phylo, FALSE)
-    } else {
-      phylo <- ladderize(phylo, TRUE)
-    }
-  }
+	if (ladderize != FALSE) {
+		if (ladderize == 'left') {
+			phylo <- ladderize(phylo, FALSE)
+		} else {
+			phylo <- ladderize(phylo, TRUE)
+		}
+	}
 
   # Number of nodes and leaves.
   n.nodes <- length(phylo$tip.label)+phylo$Nnode
@@ -1736,17 +1737,23 @@ tree.layout <- function(
   }
 
   # Create the skeleton data frame.
-  df <- data.frame(
-                   node=c(1:n.nodes),                                            # Nodes with IDs 1 to N.
-                   angle=0,
-                   x=0,                                                          # These will contain the x and y coordinates after the layout procedure below.
-                   y=0,
-                   label=c(t.labels, n.labels),            # The first n.leaves nodes are the labeled tips.
-                   is.leaf=c(rep(TRUE, n.leaves), rep(FALSE, n.nodes-n.leaves)),    # Just for convenience, store a boolean whether it's a leaf or not.
-                   parent=0,                                                     # Will contain the ID of the current node's parent
-                   children=0,                                                   # Will contain a list of IDs of the current node's children
-                   branch.length=0                                               # Will contain the branch lengths
-                   )
+  # node     - Nodes with IDs 1 to N
+  # x, y     - These will contain the x and y coords after the pending layout procedure.
+  # label    - The first n.leaves nodes are the labeled tips
+  # is.leaf  - Store is-leaf boolean for convenience
+  # parent   - Contain the ID of the current node's parent
+  # children - List of IDs of the current node's children
+  # branch.length - Contains the branch lengths
+  df <- data.frame(node     = c(1:n.nodes),
+                   angle    = 0,
+                   x        = 0,
+                   y        = 0,
+                   label    = c(t.labels, n.labels),
+                   is.leaf  = c(rep(TRUE, n.leaves), rep(FALSE, n.nodes-n.leaves)),
+                   parent   = 0,                                                     
+                   children = 0,                                                  
+                   branch.length = 0
+		)
 
   # Collect the parents, children, and branch lengths for each node
   parent <- c()
@@ -1813,7 +1820,9 @@ tree.layout <- function(
     }
   }
 
-  if (layout == 'unrooted') {
+	if (layout == 'unrooted') {
+	# Not currently supported option.
+	# 
     # # See http://code.google.com/p/phylowidget/source/browse/trunk/PhyloWidget/src/org/phylowidget/render/LayoutUnrooted.java
     # # For unrooted layout, we start from the root.
     # layout.f <- function(node, lo, hi) {
@@ -1949,6 +1958,7 @@ treeMapVar2Tips <- function(melted.tip, physeq, variate){
 ################################################################################
 # The "tree only" setting. Simple. No annotations.
 #' @keywords internal
+#' @import ggplot2
 plot_tree_only <- function(physeq, ladderize=FALSE){
 	# Create the tree data.frame
 	tdf <- tree.layout(phy_tree(physeq), ladderize=ladderize)
@@ -1961,14 +1971,16 @@ plot_tree_only <- function(physeq, ladderize=FALSE){
 ################################################################################
 # The "sampledodge" plot_tree subset function.
 #' @keywords internal
+#' @import ggplot2
 #' @import reshape 
 #' @import scales
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
 plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin, color.scale){
+				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin){
 
-  tree <- phy_tree(physeq)
+	# Access tree from data object. If already tree (phylo), no change except object copy
+	tree <- phy_tree(physeq)
 
 	# Create the tree data.frame
 	tdf <- tree.layout(tree, ladderize=ladderize)
@@ -2041,10 +2053,11 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	}
 	
 	# size-map handling. Names "abundance", "variable", "value" have special meaning.
+	ab_labels = c("abundance", "Abundance", "abund")
 	if( !is.null(size) ){	
-		if( size %in% c("abundance", "Abundance", "abund") ){
-			size <- "value"
-		} else if( !is.null(size) ){
+		if( size %in% ab_labels ){
+			size = "value"
+		} else {
 			melted.tip$size <- treeMapVar2Tips(melted.tip, physeq, size)
 			names(melted.tip)[names(melted.tip)=="size"] <- size # rename to name of size variable
 		}
@@ -2055,9 +2068,6 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	
 	# Add the new point layer.
 	p <- p + geom_point(tip.map, data=melted.tip)
-  if (!is.null(color.scale)) {
-    p <- p + color.scale
-  }
 
 	# Optionally-add abundance value label to each point.
 	# This size needs to match point size.
@@ -2092,26 +2102,27 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0)
 	}
 	
-	# Adjust name / scale of abundance...
-	if( !is.null(size) ){ 	
-		p <- p + scale_size_continuous("Abundance", trans=log_trans(sizebase))
+	# Adjust point size transform
+	if( !is.null(size) ){
+		p <- p + scale_size_continuous(trans=log_trans(sizebase))
 	}
 	
-  min.x <- min(tdf$x, melted.tip$x)
-  max.x <- max(tdf$x, melted.tip$x)
-  if (plot.margin > 0) {
-    max.x <- max.x + (max.x - 0) * plot.margin
-  } 
-  p <- p + scale_x_continuous(limits=c(min.x, max.x))
+	# Added to adjust margins so tip lables are not clipped.
+	min.x <- min(tdf$x, melted.tip$x)
+	max.x <- max(tdf$x, melted.tip$x)
+	if (plot.margin > 0) {
+		max.x <- max.x + (max.x - 0) * plot.margin
+	} 
+	p <- p + scale_x_continuous(limits=c(min.x, max.x))
 
 	# Update legend-name of color or shape or size
-	if( as.logical(sum(color == "variable")) ){
+	if( identical(color, "variable") ){
 		p <- update_labels(p, list(colour = "Samples"))
 	}
-	if( as.logical(sum(shape == "variable")) ){
+	if( identical(shape, "variable") ){
 		p <- update_labels(p, list(shape  = "Samples"))
 	}
-	if( as.logical(sum(size == "value")) ){
+	if( identical(size, "value") ){
 		p <- update_labels(p, list(size = "Abundance"))
 	}
 			
@@ -2125,7 +2136,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' sequencing of samples with large richness, some of the options in this 
 #' function will be prohibitively slow to render, or too dense to be
 #' interpretable. A rough ``rule of thumb'' is to use subsets of data 
-#' with not many more than 200 taxa per plot, sometimes less depending on the
+#' with not many more than 200 OTUs per plot, sometimes less depending on the
 #' complexity of the additional annotations being mapped to the tree. It is 
 #' usually possible to create an unreadable, uninterpretable tree with modern
 #' datasets. However, the goal should be toward parameter settings and data
@@ -2145,7 +2156,8 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' want to have soon.
 #'
 #' @usage plot_tree(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
-#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02, title=NULL)
+#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02,
+#' 	title=NULL, ladderize=FALSE, plot.margin=0.2)
 #'
 #' @param physeq (Required). The data about which you want to 
 #'  plot and annotate a phylogenetic tree, in the form of a
@@ -2220,13 +2232,13 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  The main title for the graphic.
 #'
 #' @param ladderize (Optional). Boolean or character string (either
-#'  \code{FALSE}, \code{TRUE}, or 'left'). Default is \code{FALSE}.
-#'  This parameter specifies whether or not to 'ladderize' the tree 
+#'  \code{FALSE}, \code{TRUE}, or \code{"left"}). Default is \code{FALSE}.
+#'  This parameter specifies whether or not to \code{\link[ape]{ladderize}} the tree 
 #'  (i.e., reorder nodes according to the depth of their enclosed
 #'  subtrees) prior to plotting. When set to \code{TRUE}, the default
-#'  ladderization ("right" ladderization) is used; when set to
-#'  \code{FALSE}, no ladderization is performed; when set to 'left',
-#'  the reverse direction ("left" ladderization) is applied.
+#'  ladderization (``right'' ladderization) is used; when set to
+#'  \code{FALSE}, no ladderization is performed; when set to \code{"left"},
+#'  the reverse direction (``left'' ladderization) is applied.
 #'
 #' @param plot.margin (Optional). Numeric. Default is \code{0.2}.
 #'  Should be positive.
@@ -2234,19 +2246,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  which can be required to not truncate tip labels. The margin value
 #'  is specified as a fraction of the overall tree width which is added
 #'  to the right side of the plot area. So a value of \code{0.2} adds
-#'  20% extra space to the right-hand side of the plot.
-#'  
-#' @param color.scale (Optional). The result of a call to a \code{ggplot2}
-#'  discrete color scale function, such as scale_colour_brewer(). Default
-#'  is \code{NULL}.
-#'  When not null, this parameter can provide an alternative color scheme
-#'  to the \code{ggplot2} default. Note that users must explicitly load
-#'  the \code{ggplot2} library before using one of the \code{scale_colour_xyz}
-#'  functions here. Some useful discrete color schemes can be accessed
-#'  with a \code{scale_colour_brewer()} call.
-#'
-#'  \code{FALSE}, \code{TRUE}, or 'left'). Default is \code{FALSE}.
-#'  This parameter specifies whether or not to 'ladderize' the tree 
+#'  twenty percent extra space to the right-hand side of the plot.
 #'
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
@@ -2264,6 +2264,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' 
 #' @import reshape
 #' @import scales
+#' @import ggplot2
 #' @export
 #' @examples
 #' # # Using plot_tree() with the esophagus dataset.
@@ -2304,7 +2305,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
 	sizebase=5, base.spacing = 0.02, title=NULL, 
-  ladderize=FALSE, plot.margin=0.2, color.scale=NULL){
+	ladderize=FALSE, plot.margin=0.2){
 
 	if( method %in% c("treeonly") ){
 		p <- plot_tree_only(physeq, ladderize)
@@ -2312,7 +2313,7 @@ plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size
 	
 	if( method == "sampledodge" ){
 		p <- plot_tree_sampledodge(physeq, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin, color.scale)
+				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin)
 	}
 	
 	# Theme-ing:
