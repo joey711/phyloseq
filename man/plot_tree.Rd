@@ -5,8 +5,8 @@
   plot_tree(physeq, method="sampledodge", color=NULL,
   shape=NULL, size=NULL, min.abundance=Inf,
   label.tips=NULL, text.size=NULL, sizebase=5,
-  base.spacing=0.02, title=NULL, ladderize=FALSE,
-  plot.margin=0.2)
+  base.spacing=0.02, ladderize=FALSE, plot.margin=0.2,
+  title=NULL)
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
@@ -85,9 +85,6 @@
   problem and want tighter point-spacing, you can shrink
   this value.}
 
-  \item{title}{(Optional). Default \code{NULL}. Character
-  string. The main title for the graphic.}
-
   \item{ladderize}{(Optional). Boolean or character string
   (either \code{FALSE}, \code{TRUE}, or \code{"left"}).
   Default is \code{FALSE}. This parameter specifies whether
@@ -107,6 +104,9 @@
   is added to the right side of the plot area. So a value
   of \code{0.2} adds twenty percent extra space to the
   right-hand side of the plot.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A \code{\link{ggplot}}2 plot.
