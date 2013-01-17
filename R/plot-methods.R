@@ -1529,7 +1529,6 @@ tree.branch.length <- function(phylo, node) {
 #' @keywords internal
 tree.child.nodes <- function(phylo, node) {
   edge.indices <- which(phylo$edge[,1]==node)
-  edge.indices <- sort(edge.indices)
   nodes <- phylo$edge[edge.indices,2]
   if (length(nodes)==0) {
     nodes <- list(c(-1,-1))
@@ -1713,18 +1712,8 @@ tree.layout <- function(
   phylo,
   layout = 'default',
   layout.ancestors = FALSE,
-  ladderize=FALSE,
   align.seq.names = NA
 ) {
-
-  if (ladderize != FALSE) {
-    if (ladderize == 'left') {
-      phylo <- ladderize(phylo, FALSE)
-    } else {
-      phylo <- ladderize(phylo, TRUE)
-    }
-  }
-
   # Number of nodes and leaves.
   n.nodes <- length(phylo$tip.label)+phylo$Nnode
   n.leaves <- length(phylo$tip.label)
@@ -1764,12 +1753,7 @@ tree.layout <- function(
   df$children <- children
 
   # Start the layout procedure by equally spacing the leaves in the y-dimension.
-  # ape uses the edge ordering to indicate the plot position.
-  # So we assign starting y-values according to the rank of each tip's location in
-  # the edge vector.
-  leaf.nodes <- which(df$is.leaf == TRUE)
-  leaf.node.edge.indices <- match(leaf.nodes, phylo$edge[,2])
-  df[df$is.leaf==TRUE,]$y <- rank(leaf.node.edge.indices)
+  df[df$is.leaf==TRUE,]$y = c(1:n.leaves)
 
   found.any.internal.node.sequences <- FALSE
 
@@ -1949,9 +1933,9 @@ treeMapVar2Tips <- function(melted.tip, physeq, variate){
 ################################################################################
 # The "tree only" setting. Simple. No annotations.
 #' @keywords internal
-plot_tree_only <- function(physeq, ladderize=FALSE){
+plot_tree_only <- function(physeq){
 	# Create the tree data.frame
-	tdf <- tree.layout(phy_tree(physeq), ladderize=ladderize)
+	tdf <- tree.layout(phy_tree(physeq))
 	# build tree lines
 	p <- ggplot(subset(tdf, type == "line")) + 
 			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
@@ -1966,12 +1950,10 @@ plot_tree_only <- function(physeq, ladderize=FALSE){
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
 plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin, color.scale){
-
-  tree <- phy_tree(physeq)
+				label.tips, text.size, sizebase, base.spacing){
 
 	# Create the tree data.frame
-	tdf <- tree.layout(tree, ladderize=ladderize)
+	tdf <- tree.layout(phy_tree(physeq))
 	
 	# build tree lines
 	p <- ggplot(subset(tdf, type == "line")) + 
@@ -2055,9 +2037,6 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	
 	# Add the new point layer.
 	p <- p + geom_point(tip.map, data=melted.tip)
-  if (!is.null(color.scale)) {
-    p <- p + color.scale
-  }
 
 	# Optionally-add abundance value label to each point.
 	# This size needs to match point size.
@@ -2097,13 +2076,6 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 		p <- p + scale_size_continuous("Abundance", trans=log_trans(sizebase))
 	}
 	
-  min.x <- min(tdf$x, melted.tip$x)
-  max.x <- max(tdf$x, melted.tip$x)
-  if (plot.margin > 0) {
-    max.x <- max.x + (max.x - 0) * plot.margin
-  } 
-  p <- p + scale_x_continuous(limits=c(min.x, max.x))
-
 	# Update legend-name of color or shape or size
 	if( as.logical(sum(color == "variable")) ){
 		p <- update_labels(p, list(colour = "Samples"))
@@ -2219,35 +2191,6 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
 #'
-#' @param ladderize (Optional). Boolean or character string (either
-#'  \code{FALSE}, \code{TRUE}, or 'left'). Default is \code{FALSE}.
-#'  This parameter specifies whether or not to 'ladderize' the tree 
-#'  (i.e., reorder nodes according to the depth of their enclosed
-#'  subtrees) prior to plotting. When set to \code{TRUE}, the default
-#'  ladderization ("right" ladderization) is used; when set to
-#'  \code{FALSE}, no ladderization is performed; when set to 'left',
-#'  the reverse direction ("left" ladderization) is applied.
-#'
-#' @param plot.margin (Optional). Numeric. Default is \code{0.2}.
-#'  Should be positive.
-#'  This defines how much right-hand padding to add to the tree plot,
-#'  which can be required to not truncate tip labels. The margin value
-#'  is specified as a fraction of the overall tree width which is added
-#'  to the right side of the plot area. So a value of \code{0.2} adds
-#'  20% extra space to the right-hand side of the plot.
-#'  
-#' @param color.scale (Optional). The result of a call to a \code{ggplot2}
-#'  discrete color scale function, such as scale_colour_brewer(). Default
-#'  is \code{NULL}.
-#'  When not null, this parameter can provide an alternative color scheme
-#'  to the \code{ggplot2} default. Note that users must explicitly load
-#'  the \code{ggplot2} library before using one of the \code{scale_colour_xyz}
-#'  functions here. Some useful discrete color schemes can be accessed
-#'  with a \code{scale_colour_brewer()} call.
-#'
-#'  \code{FALSE}, \code{TRUE}, or 'left'). Default is \code{FALSE}.
-#'  This parameter specifies whether or not to 'ladderize' the tree 
-#'
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
 #' @seealso
@@ -2303,16 +2246,15 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
 plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
-	sizebase=5, base.spacing = 0.02, title=NULL, 
-  ladderize=FALSE, plot.margin=0.2, color.scale=NULL){
+	sizebase=5, base.spacing = 0.02, title=NULL){
 
 	if( method %in% c("treeonly") ){
-		p <- plot_tree_only(physeq, ladderize)
+		p <- plot_tree_only(physeq)
 	}
 	
 	if( method == "sampledodge" ){
 		p <- plot_tree_sampledodge(physeq, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin, color.scale)
+				label.tips, text.size, sizebase, base.spacing)
 	}
 	
 	# Theme-ing:
