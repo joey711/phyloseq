@@ -17,6 +17,18 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+<<<<<<< HEAD
+=======
+phyloseq 1.3.7
+===========
+- Revisions to plot_tree to improve formatting, organization, "ladderize"
+	- contributed by Gregory Jordan
+- Color scale option removed from original pull request
+	- already supported as core ggplot2 functionality through layering
+- Added links and roxygen2-header revisions for proper doc formatting
+- Fixed bug in which alternative size-variables still labeled as "abundance" in legend.
+
+>>>>>>> fixes
 phyloseq 1.3.6
 ===========
 - Updated basics vignette

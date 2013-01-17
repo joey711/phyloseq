@@ -5,7 +5,8 @@
   plot_tree(physeq, method="sampledodge", color=NULL,
   shape=NULL, size=NULL, min.abundance=Inf,
   label.tips=NULL, text.size=NULL, sizebase=5,
-  base.spacing=0.02, title=NULL)
+  base.spacing=0.02, title=NULL, ladderize=FALSE,
+  plot.margin=0.2)
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
@@ -86,6 +87,26 @@
 
   \item{title}{(Optional). Default \code{NULL}. Character
   string. The main title for the graphic.}
+
+  \item{ladderize}{(Optional). Boolean or character string
+  (either \code{FALSE}, \code{TRUE}, or \code{"left"}).
+  Default is \code{FALSE}. This parameter specifies whether
+  or not to \code{\link[ape]{ladderize}} the tree (i.e.,
+  reorder nodes according to the depth of their enclosed
+  subtrees) prior to plotting. When set to \code{TRUE}, the
+  default ladderization (``right'' ladderization) is used;
+  when set to \code{FALSE}, no ladderization is performed;
+  when set to \code{"left"}, the reverse direction
+  (``left'' ladderization) is applied.}
+
+  \item{plot.margin}{(Optional). Numeric. Default is
+  \code{0.2}. Should be positive. This defines how much
+  right-hand padding to add to the tree plot, which can be
+  required to not truncate tip labels. The margin value is
+  specified as a fraction of the overall tree width which
+  is added to the right side of the plot area. So a value
+  of \code{0.2} adds twenty percent extra space to the
+  right-hand side of the plot.}
 }
 \value{
   A \code{\link{ggplot}}2 plot.
@@ -97,7 +118,7 @@
   with large richness, some of the options in this function
   will be prohibitively slow to render, or too dense to be
   interpretable. A rough ``rule of thumb'' is to use
-  subsets of data with not many more than 200 taxa per
+  subsets of data with not many more than 200 OTUs per
   plot, sometimes less depending on the complexity of the
   additional annotations being mapped to the tree. It is
   usually possible to create an unreadable, uninterpretable
