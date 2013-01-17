@@ -152,7 +152,12 @@ plot_tree(esophagus)
 plot_tree(esophagus, color="samples")
 plot_tree(esophagus, size="abundance")
 plot_tree(esophagus, size="abundance", color="samples")
-plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+p = plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+print(p)
+# Modify the color scale using ggplot2 functions
+library("ggplot2")
+p + scale_colour_brewer(palette="Set1")
+p + scale_color_manual(values=c(B="blue", C="green", D="red"))
 # # Using plot_tree with the Global Patterns dataset
 data("GlobalPatterns")
 # Subset Global Patterns dataset to just the observed Archaea
@@ -172,8 +177,12 @@ ntaxa(GlobalPatterns)
 # # somewhat crowded graphic.
 # #
 # # Let's instead subset further ot just the Crenarchaeota
-gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
-plot_tree(gpac, color="SampleType", shape="Genus")
+gpac = subset_species(gpa, Phylum=="Crenarchaeota")
+p = plot_tree(gpac, color="SampleType", shape="Order", ladderize="left")
+print(p)
+# Modify the color scale using ggplot2 functions
+p = p + scale_colour_brewer(palette="Set1")
+print(p)
 # plot_tree(gpac, color="SampleType", label.tips="Genus")
 # # Let's add some abundance information.
 # # Notice that the default spacing gets a little crowded when we map
