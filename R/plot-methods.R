@@ -2005,7 +2005,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	OTU[OTU==0] <- NA
 	
 	# # Now add abundance table
-	speciesDF 	<- data.frame(speciesDF, OTU)
+	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
 	melted.tip <- melt(speciesDF, id=c("x", "y", "taxa_names"))
