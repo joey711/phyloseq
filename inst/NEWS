@@ -17,6 +17,12 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.3.8
+===========
+- Fix bug in plot_tree graphic if sample names start with a number
+- This fixes https://github.com/joey711/phyloseq/issues/149
+- Also added fill argument to default aesthetic map definition, useful if fillable shapes defined in subsequent layers
+
 phyloseq 1.3.7
 ===========
 - Revisions to plot_tree to improve formatting, organization, "ladderize"
