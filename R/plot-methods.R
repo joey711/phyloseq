@@ -2005,7 +2005,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	OTU[OTU==0] <- NA
 	
 	# # Now add abundance table
-	speciesDF 	<- data.frame(speciesDF, OTU)
+	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
 	melted.tip <- melt(speciesDF, id=c("x", "y", "taxa_names"))
@@ -2064,7 +2064,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	}
 		
 	# The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
-	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, shape=shape, size=size)
+	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, fill=color, shape=shape, size=size)
 	
 	# Add the new point layer.
 	p <- p + geom_point(tip.map, data=melted.tip)
