@@ -2064,7 +2064,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	}
 		
 	# The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
-	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, shape=shape, size=size)
+	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, fill=color, shape=shape, size=size)
 	
 	# Add the new point layer.
 	p <- p + geom_point(tip.map, data=melted.tip)
