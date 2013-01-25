@@ -77,20 +77,23 @@
   shape.
 }
 \description{
-  A custom plotting function for displaying networks using
-  advanced \code{\link[ggplot2]{ggplot}}2 formatting. The
-  network itself should be represented using the
-  \code{igraph0} package. For the
-  \code{\link{phyloseq-package}} it is suggested that the
-  network object (argument \code{g}) be created using the
-  \code{\link{make_network}} function, and based upon
-  sample-wise or taxa-wise microbiome ecological distances
-  calculated from a phylogenetic sequencing experiment
-  (\code{\link{phyloseq-class}}). In this case, edges in
-  the network are created if the distance between nodes is
-  below a potentially arbitrary threshold, and special care
-  should be given to considering the choice of this
-  threshold.
+  There are many useful examples of phyloseq network
+  graphics in the
+  \href{http://joey711.github.com/phyloseq/plot_network-examples}{phyloseq
+  online tutorials}. A custom plotting function for
+  displaying networks using advanced
+  \code{\link[ggplot2]{ggplot}}2 formatting. The network
+  itself should be represented using the \code{igraph0}
+  package. For the \code{\link{phyloseq-package}} it is
+  suggested that the network object (argument \code{g}) be
+  created using the \code{\link{make_network}} function,
+  and based upon sample-wise or taxa-wise microbiome
+  ecological distances calculated from a phylogenetic
+  sequencing experiment (\code{\link{phyloseq-class}}). In
+  this case, edges in the network are created if the
+  distance between nodes is below a potentially arbitrary
+  threshold, and special care should be given to
+  considering the choice of this threshold.
 }
 \examples{
 data(enterotype)
