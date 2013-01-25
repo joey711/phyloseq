@@ -124,11 +124,15 @@
   A \code{\link{ggplot}}2 plot.
 }
 \description{
-  This function is intended to facilitate easy graphical
-  investigation of the phylogenetic tree, as well as sample
-  data. Note that for phylogenetic sequencing of samples
-  with large richness, some of the options in this function
-  will be prohibitively slow to render, or too dense to be
+  There are many useful examples of phyloseq tree graphics
+  in the
+  \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq
+  online tutorials}. This function is intended to
+  facilitate easy graphical investigation of the
+  phylogenetic tree, as well as sample data. Note that for
+  phylogenetic sequencing of samples with large richness,
+  some of the options in this function will be
+  prohibitively slow to render, or too dense to be
   interpretable. A rough ``rule of thumb'' is to use
   subsets of data with not many more than 200 OTUs per
   plot, sometimes less depending on the complexity of the

@@ -7,6 +7,8 @@
 ################################################################################
 #' Generic plot defaults for phyloseq.
 #'
+#' There are many useful examples of phyloseq graphics functions in the
+#' \href{http://joey711.github.com/phyloseq/}{phyloseq online tutorials}.
 #' The specific plot type is chosen according to available non-empty slots.
 #' This is mainly for syntactic convenience and quick-plotting. See links below
 #' for some examples of available graphics tools available in the
@@ -60,6 +62,8 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 ################################################################################
 #' Plot a network using ggplot2 (represent microbiome)
 #'
+#' There are many useful examples of phyloseq network graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_network-examples}{phyloseq online tutorials}.
 #' A custom plotting function for displaying networks
 #' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #' The network itself should be represented using
@@ -242,6 +246,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 ################################################################################
 #' Plot richness estimates, flexibly with ggplot2
 #'
+#' There are many useful examples of phyloseq richness graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 #' Performs a number of standard richness estimates using the 
 #' \code{\link{estimate_richness}} function,
 #' and returns a \code{ggplot} plotting object. 
@@ -396,6 +402,8 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 ################################################################################
 #' General ordination plotter based on ggplot2.
 #'
+#' There are many useful examples of phyloseq ordination graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_ordination-examples}{phyloseq online tutorials}.
 #' Convenience wrapper for plotting ordination results as a 
 #' \code{ggplot2}-graphic, including
 #' additional annotation in the form of shading, shape, and/or labels of
@@ -1039,6 +1047,8 @@ psmelt = function(physeq){
 ################################################################################
 #' A flexible, informative barplot phyloseq data
 #'
+#' There are many useful examples of phyloseq barplot graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
 #' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
 #'  graphic object
 #' that can be saved or further modified with additional layers, options, etc.
@@ -2298,6 +2308,8 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 ################################################################################
 #' Plot a phylogenetic tree with optional annotations
 #'
+#' There are many useful examples of phyloseq tree graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #' This function is intended to facilitate easy graphical investigation of 
 #' the phylogenetic tree, as well as sample data. Note that for phylogenetic
 #' sequencing of samples with large richness, some of the options in this 
@@ -2594,6 +2606,8 @@ RadialCoords <- function(pos)
 ################################################################################
 #' Create an ecologically-organized heatmap using ggplot2 graphics
 #'
+#' There are many useful examples of phyloseq heatmap graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' In a 2010 article in BMC Genomics, Rajaram and Oono show describe an 
 #' approach to creating a heatmap using ordination methods to organize the 
 #' rows and columns instead of (hierarchical) cluster analysis. In many cases
