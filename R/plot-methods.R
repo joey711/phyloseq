@@ -1959,35 +1959,23 @@ treeMapVar2Tips <- function(melted.tip, physeq, variate){
 # The "tree only" setting. Simple. No annotations.
 #' @keywords internal
 #' @import ggplot2
-plot_tree_only <- function(physeq, ladderize=FALSE){
-	# Create the tree data.frame
-	tdf <- tree.layout(phy_tree(physeq), ladderize=ladderize)
+plot_tree_only <- function(tdf){
 	# build tree lines
-	p <- ggplot(subset(tdf, type == "line")) + 
-			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
+	p <- ggplot(subset(tdf, type == "line")) + geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
 	# Return ggplot object
 	return(p)
 }
 ################################################################################
 # The "sampledodge" plot_tree subset function.
+# Assumes the tree data.frame, tdf, has already been built and is third argument.
 #' @keywords internal
 #' @import ggplot2
 #' @import reshape 
 #' @import scales
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
-plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin){
-
-	# Access tree from data object. If already tree (phylo), no change except object copy
-	tree <- phy_tree(physeq)
-
-	# Create the tree data.frame
-	tdf <- tree.layout(tree, ladderize=ladderize)
-	
-	# build tree lines
-	p <- ggplot(subset(tdf, type == "line")) + 
-			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
+plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abundance, 
+				label.tips, text.size, sizebase, base.spacing){
 								
 	# Get the subset of tdf for just the tips (leaves)
 	speciesDF <- subset(tdf, type=="label")
@@ -2008,7 +1996,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt(speciesDF, id=c("x", "y", "taxa_names"))
+	melted.tip <- melt.data.frame(speciesDF, id=c("x", "y", "taxa_names"))
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
@@ -2083,12 +2071,6 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 		}
 	}
 
-	# If no text.size given, calculate it from number of tips ("species", aka taxa)
-	# This is very fast. No need to worry about whether text is printed or not. DRY.
-	if( is.null(text.size) ){
-		text.size <- treetextsize(ntaxa(physeq))
-	}
-
 	# If indicated, add the species labels to the right of points.
 	if( !is.null(label.tips) ){
 		# melted.tip.far has only one row per tip,
@@ -2107,14 +2089,6 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 		p <- p + scale_size_continuous(trans=log_trans(sizebase))
 	}
 	
-	# Added to adjust margins so tip lables are not clipped.
-	min.x <- min(tdf$x, melted.tip$x)
-	max.x <- max(tdf$x, melted.tip$x)
-	if (plot.margin > 0) {
-		max.x <- max.x + (max.x - 0) * plot.margin
-	} 
-	p <- p + scale_x_continuous(limits=c(min.x, max.x))
-
 	# Update legend-name of color or shape or size
 	if( identical(color, "variable") ){
 		p <- update_labels(p, list(colour = "Samples"))
@@ -2127,6 +2101,196 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	}
 			
 	return(p)		
+}
+################################################################################
+# Return TRUE if the nodes of the tree in the phyloseq object provided are unlabeled.
+#' @keywords internal
+nodesnotlabeled = function(physeq){
+	if( is.null(phy_tree(physeq, FALSE)) ){
+		warning("There is no phylogenetic tree in the object you have provided. Try phy_tree(physeq) to see.")
+		return(TRUE)
+	} else {
+		return( is.null(phy_tree(physeq)$node.label) | length(phy_tree(physeq)$node.label)==0L )
+	}
+}
+# A quick test function to decide how nodes should be labeled by default, if at all.
+#  
+#' @keywords internal
+howtolabnodes = function(physeq){
+	if(!nodesnotlabeled(physeq)){
+		return(nodeplotdefault(treetextsize(ntaxa(physeq))))
+	} else {
+		return(nodeplotblank)
+	}
+}
+################################################################################
+#' Function to avoid plotting node labels
+#'
+#' Unlike, \code{\link{nodeplotdefault}} and \code{\link{nodeplotboot}},
+#' this function does not return a function, but instead is provided
+#' directly to the \code{nodelabf} argument of \code{\link{plot_tree}} to 
+#' ensure that node labels are not added to the graphic.
+#' Please note that you do not need to create or obtain the arguments to 
+#' this function. Instead, you can provide this function directly to 
+#' \code{\link{plot_tree}} and it will know what to do with it. Namely,
+#' use it to avoid plotting any node labels.
+#'
+#' @usage nodeplotblank(p, nodelabdf)
+#'
+#' @param p (Required). The \code{\link{plot_tree}} graphic.
+#'
+#' @param nodelabdf (Required). The \code{data.frame} produced internally in 
+#' \code{link{plot_tree}} to use as data for creating ggplot2-based tree graphics.  
+#'
+#' @return The same input object, \code{p}, provided as input. Unmodified.
+#'
+#' @seealso 
+#' \code{\link{nodeplotdefault}}
+#'
+#' \code{\link{nodeplotboot}}
+#'
+#' \code{\link{plot_tree}}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' data("esophagus")
+#' plot_tree(esophagus)
+#' plot_tree(esophagus, nodelabf=nodeplotblank)
+nodeplotblank = function(p, nodelabdf){
+	return(p)
+}
+################################################################################
+#' Generates a function for labeling bootstrap values on a phylogenetic tree.
+#'
+#' Is not a labeling function itself, but returns one.
+#' The returned function is specialized for labeling bootstrap values.
+#' Note that the function that 
+#' is returned has two completely different arguments from the four listed here:
+#' the plot object already built by earlier steps in
+#' \code{\link{plot_tree}}, and the \code{\link{data.frame}}
+#' that contains the relevant plotting data for the nodes
+#' (especially \code{x, y, label}),
+#' respectively.  
+#' See \code{\link{nodeplotdefault}} for a simpler example.
+#' The main purpose of this and \code{\link{nodeplotdefault}} is to
+#' provide a useful default function generator for arbitrary and
+#' bootstrap node labels, respectively, and also to act as 
+#' examples of functions that can successfully interact with 
+#' \code{\link{plot_tree}} to add node labels to the graphic.
+#'
+#' @usage nodeplotboot(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2)
+#'
+#' @param highthresh (Optional). A single integer between 0 and 100.
+#'  Any bootstrap values above this threshold will be annotated as
+#'  a black filled circle on the node, rather than the bootstrap
+#'  percentage value itself.
+#'
+#' @param lowcthresh (Optional). A single integer between 0 and 100,
+#'  less than \code{highthresh}. Any bootstrap values below this value
+#'  will not be added to the graphic. Set to 0 or below to add all
+#'  available values.
+#'
+#' @param size (Optional). Numeric. Should be positive. The 
+#'  size parameter used to control the text size of taxa labels.
+#'  Default is \code{2}. These are ggplot2 sizes.
+#'
+#' @param hjust (Optional). The horizontal justification of the
+#'  node labels. Default is \code{-0.2}.  
+#'
+#' @return A function that can add a bootstrap-values layer to the tree graphic.
+#'  The values are represented in two ways; either as black filled circles
+#'  indicating very high-confidence nodes, or the bootstrap value itself
+#'  printed in small text next to the node on the tree.
+#'
+#' @seealso 
+#' \code{\link{nodeplotdefault}}
+#'
+#' \code{\link{nodeplotblank}}
+#'
+#' \code{\link{plot_tree}}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' nodeplotboot()
+#' nodeplotboot(3, -0.4)
+nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
+	function(p, nodelabdf){
+		# For bootstrap, check that the node labels can be coerced to numeric
+		try(boot <- as(as(nodelabdf$label, "character"), "numeric"), TRUE)
+		# Want NAs/NaN to propagate, but still need to test remainder
+		goodboot = boot[complete.cases(boot)]
+		if( !is(goodboot, "numeric") & length(goodboot) > 0 ){
+			stop("The node labels, phy_tree(physeq)$node.label, are not coercable to a numeric vector with any elements.")
+		}
+		# So they look even more like bootstraps and display well, 
+		# force them to be between 0 and 100, rounded to 2 digits.
+		if( all( goodboot >= 0.0 & goodboot <= 1.0 ) ){
+			boot = round(boot, 2)*100L
+		}
+		nodelabdf$boot = boot
+		boottop = subset(nodelabdf, boot >= highthresh)
+		bootmid = subset(nodelabdf, boot > lowcthresh & boot < highthresh)
+		# Label the high-confidence nodes with a point.
+		if( nrow(boottop)>0L ){
+			p = p + geom_point(data = boottop, aes(x=x, y=y))
+		}
+		# Label the remaining bootstrap values as text at the nodes.
+		if( nrow(bootmid)>0L ){
+			bootmid$label = bootmid$boot
+			p = nodeplotdefault(size, hjust)(p, bootmid)
+		}
+		return(p)
+	}
+}
+################################################################################
+#' Generates a default node-label function 
+#'
+#' Is not a labeling function itself, but returns one.
+#' The returned function is capable of adding
+#' whatever label is on a node. Note that the function that 
+#' is returned has two completely different arguments to those listed here:
+#' the plot object already built by earlier steps in
+#' \code{\link{plot_tree}}, and the \code{\link{data.frame}}
+#' that contains the relevant plotting data for the nodes
+#' (especially \code{x, y, label}),
+#' respectively. 
+#' See \code{\link{nodeplotboot}} for a more sophisticated example.
+#' The main purpose of this and \code{\link{nodeplotboot}} is to
+#' provide a useful default function generator for arbitrary and
+#' bootstrap node labels, respectively, and also to act as 
+#' examples of functions that will successfully interact with 
+#' \code{\link{plot_tree}} to add node labels to the graphic.
+#'
+#' @usage nodeplotdefault(size=2L, hjust=-0.2)
+#'
+#' @param size (Optional). Numeric. Should be positive. The 
+#'  size parameter used to control the text size of taxa labels.
+#'  Default is \code{2}. These are ggplot2 sizes.
+#'
+#' @param hjust (Optional). The horizontal justification of the
+#'  node labels. Default is \code{-0.2}.  
+#'
+#' @return A function that can add a node-label layer to a graphic.
+#'
+#' @seealso 
+#' \code{\link{nodeplotboot}}
+#'
+#' \code{\link{nodeplotblank}}
+#'
+#' \code{\link{plot_tree}}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' nodeplotdefault()
+#' nodeplotdefault(3, -0.4)
+nodeplotdefault = function(size=2L, hjust=-0.2){
+	function(p, nodelabdf){
+		p = p + geom_text(data=nodelabdf, aes(x=x, y=y, label=label), size=size, hjust=hjust)	
+		return(p)
+	}
 }
 ################################################################################
 #' Plot a phylogenetic tree with optional annotations
@@ -2155,7 +2319,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' is planned. Send us development feedback if this is a feature you really
 #' want to have soon.
 #'
-#' @usage plot_tree(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
+#' @usage plot_tree(physeq, method="sampledodge", nodelabf=NULL, color=NULL, shape=NULL, size=NULL,
 #'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02,
 #' 	ladderize=FALSE, plot.margin=0.2, title=NULL)
 #'
@@ -2177,6 +2341,17 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  drawn next to leaves if individuals from that taxa were observed,
 #'  and a separate point is drawn for each sample.
 #' 
+#' @param nodelabf (Optional). A function. Default \code{NULL}.
+#'  If \code{NULL}, the default, a function will be selected for you based upon
+#'  whether or not there are node labels in \code{phy_tree(physeq)}.
+#'  For convenience, the phyloseq package includes two generator functions
+#'  for adding arbitrary node labels (can be any character string),
+#'  \code{\link{nodeplotdefault}};
+#'  as well as for adding bootstrap values in a certain range,
+#'  \code{\link{nodeplotboot}}.
+#'  To not have any node labels in the graphic, set this argument to
+#'  \code{\link{nodeplotblank}}.
+#'
 #' @param color (Optional). Character string. Default \code{NULL}.
 #'  The name of the variable in \code{physeq} to map to point color.
 #' 
@@ -2311,21 +2486,67 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance")
 #' # # So let's spread it out a little bit with the base.spacing parameter.
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
-plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
+plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
+	color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
 	sizebase=5, base.spacing = 0.02,
 	ladderize=FALSE, plot.margin=0.2, title=NULL){
 
-	if( method %in% c("treeonly") ){
-		p <- plot_tree_only(physeq, ladderize)
+	# Test that physeq has tree, top-level test.
+	if( is.null(phy_tree(physeq, FALSE)) ){
+		stop("There is no phylogenetic tree in the object you have provided. Try phy_tree(physeq) to see.")
 	}
+
+	# Create the tree data.frame
+	tdf <- tree.layout(phy_tree(physeq), ladderize=ladderize)
+
+	# "Naked" unannotated tree built in ggplot2 no matter what. Lines only.
+	p <- plot_tree_only(tdf)
 	
+	# If no text.size given, calculate it from number of tips ("species", aka taxa)
+	# This is very fast. No need to worry about whether text is printed or not. DRY.
+	if( is.null(text.size) ){
+		text.size <- treetextsize(ntaxa(physeq))
+	}
+
+	# Tip annotation section.
+	#
+	# Annotate dodged sample points, and other fancy tip labels
 	if( method == "sampledodge" ){
-		p <- plot_tree_sampledodge(physeq, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing, ladderize, plot.margin)
+		p <- plot_tree_sampledodge(physeq, p, tdf, color, shape, size, min.abundance, 
+				label.tips, text.size, sizebase, base.spacing)
 	}
+
+	# Node label section.
+	# 
+	# If no nodelabf ("node label function") given, ask internal function to pick one.
+	# Is NULL by default, meaning will dispatch to howtolabnodes to select function.
+	# For no node labels, the "dummy" function nodeplotnot will return tree plot 
+	# object, p, as-is, unmodified.
+	if( is.null(nodelabf) ){
+		nodelabf = howtolabnodes(physeq)
+	}
+	# Subset data.frame to just the internal nodes (not leaves).
+	nodelabdf = subset(tdf, is.leaf == FALSE & type == "node")
+	# Use the provided/inferred node label function to add the node labels layer(s)
+	p = nodelabf(p, nodelabdf)
 	
-	# Theme-ing:
+	# Plot margins. 
+	#
+	# Adjust the tree graphic plot margins.
+	# Helps to manually ensure that graphic elements aren't clipped,
+	# especially when there are long tip labels.
+	min.x <- min(tdf$x, melted.tip$x)
+	max.x <- max(tdf$x, melted.tip$x)
+	if (plot.margin > 0) {
+		max.x <- max.x + (max.x - 0) * plot.margin
+	} 
+	p <- p + scale_x_continuous(limits=c(min.x, max.x))	
+	
+	# Themeing section.
+	#
+	# Theme-ing: Blank theming 
+	# Should open this up as function-argument also.
 	p <- p + theme(axis.ticks = element_blank(),
 			axis.title.x=element_blank(), axis.text.x=element_blank(),
 			axis.title.y=element_blank(), axis.text.y=element_blank(),

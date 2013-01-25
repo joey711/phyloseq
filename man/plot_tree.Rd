@@ -2,8 +2,8 @@
 \alias{plot_tree}
 \title{Plot a phylogenetic tree with optional annotations}
 \usage{
-  plot_tree(physeq, method="sampledodge", color=NULL,
-  shape=NULL, size=NULL, min.abundance=Inf,
+  plot_tree(physeq, method="sampledodge", nodelabf=NULL,
+  color=NULL, shape=NULL, size=NULL, min.abundance=Inf,
   label.tips=NULL, text.size=NULL, sizebase=5,
   base.spacing=0.02, ladderize=FALSE, plot.margin=0.2,
   title=NULL)
@@ -29,6 +29,18 @@
   points drawn next to leaves if individuals from that taxa
   were observed, and a separate point is drawn for each
   sample.}
+
+  \item{nodelabf}{(Optional). A function. Default
+  \code{NULL}. If \code{NULL}, the default, a function will
+  be selected for you based upon whether or not there are
+  node labels in \code{phy_tree(physeq)}. For convenience,
+  the phyloseq package includes two generator functions for
+  adding arbitrary node labels (can be any character
+  string), \code{\link{nodeplotdefault}}; as well as for
+  adding bootstrap values in a certain range,
+  \code{\link{nodeplotboot}}. To not have any node labels
+  in the graphic, set this argument to
+  \code{\link{nodeplotblank}}.}
 
   \item{color}{(Optional). Character string. Default
   \code{NULL}. The name of the variable in \code{physeq} to
