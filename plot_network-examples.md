@@ -47,10 +47,6 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
     label = NULL)
 ```
 
-```
-## Warning: Removed 5 rows containing missing values (geom_point).
-```
-
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 
