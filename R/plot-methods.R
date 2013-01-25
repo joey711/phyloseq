@@ -220,16 +220,16 @@ plot_network <- function(g, physeq=NULL, type="samples",
 			)
 
 	# Add the graph vertices as points
-	p <- p + geom_point(aes_string(color=color, shape=shape), size=point_size)
+	p <- p + geom_point(aes_string(color=color, shape=shape), size=point_size, na.rm=TRUE)
 
 	# Add the text labels
 	if( !is.null(label) ){
-		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust)		
+		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust, na.rm=TRUE)
 	}
 	
 	# Add the edges:
 	p <- p + geom_line(aes_string(group="id", color=line_color), 
-				graphDF, size=line_weight, alpha=line_alpha)
+				graphDF, size=line_weight, alpha=line_alpha, na.rm=TRUE)
 				
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
@@ -377,7 +377,7 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 	
 	# Make the ggplot.
 	p <- ggplot(mdf, richness_map) + 
-		geom_point(size=2) + 
+		geom_point(size=2, na.rm=TRUE) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
 		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
 		scale_y_continuous('richness [number of taxa]') +
@@ -598,7 +598,7 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	# If there is nothing to map (data.frame only has two columns), just return simple plot
 	if(ncol(DF)<=2){
 		ord_map <- aes_string(x=x, y=y)
-		p <- ggplot(DF, ord_map) + geom_point()		
+		p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
 		return(p)
 	}
 	
@@ -2010,6 +2010,9 @@ plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abunda
 	
 	# Remove the NA values (the samples that had no individuals of a particular species)
 	melted.tip <- subset(melted.tip, !is.na(value))
+	if( nrow(melted.tip)==0L ){
+		stop("The number of rows of tip data.frame has dropped to 0 after rm NA values")		
+	}
 
 	# Build the tip-label portion of the melted.tip data.frame, if needed.
 	if( !is.null(label.tips) ){
@@ -2055,19 +2058,19 @@ plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abunda
 	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, fill=color, shape=shape, size=size)
 	
 	# Add the new point layer.
-	p <- p + geom_point(tip.map, data=melted.tip)
+	p <- p + geom_point(tip.map, data=melted.tip, na.rm=TRUE)
 
 	# Optionally-add abundance value label to each point.
 	# This size needs to match point size.
 	if( any(melted.tip$value >= min.abundance[1]) ){
 		if( is.null(size) ){
 			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", label="value")
-			p <- p + geom_text( point.label.map, data=subset(melted.tip, value>=min.abundance[1]), size=1)
+			p <- p + geom_text( point.label.map, data=subset(melted.tip, value>=min.abundance[1]), size=1, na.rm=TRUE)
 		} else {
 			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y",
 				label="value", size=paste("0.025*", size, sep=""))
 			p <- p + geom_text( point.label.map, angle=45, hjust=0,
-						data=subset(melted.tip, value>=min.abundance[1]) )
+						data=subset(melted.tip, value>=min.abundance[1]), na.rm=TRUE)
 		}
 	}
 
@@ -2081,7 +2084,7 @@ plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abunda
 		# Create the tip-label aesthetic map.
 		label.map <- aes(x=x + x.adj + 2*x.spacer.base, y=y, label=tipLabels)
 		# Add labels layer to plotting object.
-		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0)
+		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0, na.rm=TRUE)
 	}
 	
 	# Adjust point size transform
@@ -2234,7 +2237,7 @@ nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
 		bootmid = subset(nodelabdf, boot > lowcthresh & boot < highthresh)
 		# Label the high-confidence nodes with a point.
 		if( nrow(boottop)>0L ){
-			p = p + geom_point(data = boottop, aes(x=x, y=y))
+			p = p + geom_point(data = boottop, aes(x=x, y=y), na.rm=TRUE)
 		}
 		# Label the remaining bootstrap values as text at the nodes.
 		if( nrow(bootmid)>0L ){
@@ -2288,7 +2291,7 @@ nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
 #' nodeplotdefault(3, -0.4)
 nodeplotdefault = function(size=2L, hjust=-0.2){
 	function(p, nodelabdf){
-		p = p + geom_text(data=nodelabdf, aes(x=x, y=y, label=label), size=size, hjust=hjust)	
+		p = p + geom_text(data=nodelabdf, aes(x=x, y=y, label=label), size=size, hjust=hjust, na.rm=TRUE)
 		return(p)
 	}
 }
@@ -2536,10 +2539,15 @@ plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
 	# Adjust the tree graphic plot margins.
 	# Helps to manually ensure that graphic elements aren't clipped,
 	# especially when there are long tip labels.
-	min.x <- min(tdf$x, melted.tip$x)
-	max.x <- max(tdf$x, melted.tip$x)
+	if( method == "sampledodge" ){
+		min.x <- min(tdf$x, p$layers[[2]]$data$x, na.rm=TRUE)
+		max.x <- max(tdf$x, p$layers[[2]]$data$x, na.rm=TRUE)
+	} else {
+		min.x <- min(tdf$x, na.rm=TRUE)
+		max.x <- max(tdf$x, na.rm=TRUE)
+	}
 	if (plot.margin > 0) {
-		max.x <- max.x + (max.x - 0) * plot.margin
+		max.x <- max.x * (1.0 + plot.margin)
 	} 
 	p <- p + scale_x_continuous(limits=c(min.x, max.x))	
 	
