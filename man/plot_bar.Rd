@@ -48,13 +48,16 @@
   method.
 }
 \description{
-  This function wraps \code{ggplot2} plotting, and returns
-  a \code{ggplot2} graphic object that can be saved or
-  further modified with additional layers, options, etc.
-  The main purpose of this function is to quickly and
-  easily create informative summary graphics of the
-  differences in taxa abundance between samples in an
-  experiment.
+  There are many useful examples of phyloseq barplot
+  graphics in the
+  \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq
+  online tutorials}. This function wraps \code{ggplot2}
+  plotting, and returns a \code{ggplot2} graphic object
+  that can be saved or further modified with additional
+  layers, options, etc. The main purpose of this function
+  is to quickly and easily create informative summary
+  graphics of the differences in taxa abundance between
+  samples in an experiment.
 }
 \examples{
 data("GlobalPatterns")

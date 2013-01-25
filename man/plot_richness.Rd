@@ -57,15 +57,19 @@
   richness estimates, and their standard error.
 }
 \description{
-  Performs a number of standard richness estimates using
-  the \code{\link{estimate_richness}} function, and returns
-  a \code{ggplot} plotting object. This plot shows the
-  individual richness estimates for each sample, as well as
-  the observed richness. You must use untrimmed datasets
-  for meaningful results, as these estimates (and even the
-  ``observed'' richness) are highly dependent on the number
-  of singletons. You can always trim the data later on if
-  needed, just not before using this function.
+  There are many useful examples of phyloseq richness
+  graphics in the
+  \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq
+  online tutorials}. Performs a number of standard richness
+  estimates using the \code{\link{estimate_richness}}
+  function, and returns a \code{ggplot} plotting object.
+  This plot shows the individual richness estimates for
+  each sample, as well as the observed richness. You must
+  use untrimmed datasets for meaningful results, as these
+  estimates (and even the ``observed'' richness) are highly
+  dependent on the number of singletons. You can always
+  trim the data later on if needed, just not before using
+  this function.
 }
 \details{
   NOTE: Because this plotting function incorporates the
