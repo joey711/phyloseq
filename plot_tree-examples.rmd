@@ -6,17 +6,93 @@
 
 This page contains many already-constructed examples of trees created by the `plot_tree` function in the phyloseq package, which in turn is uses the powerful graphics framework package called [ggplot2](http://docs.ggplot2.org/current/).
 
-## The esophagus dataset.
-A simple dataset containing tree and OTU-table components.
-
-The esophagus is a small and relatively simple dataset by moderns standards. It only contains 3 samples, no sample-data, and a modest quantity of total sequencing per sample that is a relic of an earlier time when resources for this sort of investigation were sparse and sequencing was expensive. Nevertheless, it makes for a nice sized dataset to start displaying trees. (For more details about the dataset and its origin, try entering `?esophagus` into the command-line once you have loaded the phyloseq package)
-
-Load the package and dataset
+Load the package and datasets
 
 ```{r, message=FALSE}
 library("phyloseq")
 data("esophagus")
+data("GlobalPatterns")
 ```
+
+We want to plot trees, sometimes even bootstrap values, but notice that the node labels in the `GlobalPatterns` dataset are actually a bit strange. They look like they might be bootstrap values, but they sometimes have two decimals.
+```{r}
+head(phy_tree(GlobalPatterns)$node.label, 10)
+```
+
+Could systematically remove the second decimal, but why not just take the first 4 characters instead?
+```{r}
+phy_tree(GlobalPatterns)$node.label = substr(phy_tree(GlobalPatterns)$node.label, 1, 4)
+```
+
+Great, now that we're more happy with the node labels at least looking like bootstrap values, we can move on to using these along with other information about data mapped onto the tree graphic.
+
+The `GlobalPatterns` dataset has many OTUs, more than we would want to try to fit on a tree graphic
+```{r}
+ntaxa(GlobalPatterns)
+```
+So, let's arbitrarily prune to just the first 50 OTUs in `GlobalPatterns`, and store this as `physeq`, which also happens to be the name for most main data parameters of function in the phyloseq package.
+
+```{r}
+physeq = prune_taxa(taxa_names(GlobalPatterns)[1:50], GlobalPatterns)
+```
+
+Now let's look at what happens with the default `plot_tree` settings.
+```{r}
+plot_tree(physeq)
+```
+By default, black dots are annotated next to tips (OTUs) in the tree, one for each sample in which that OTU was observed. Some have more dots than others. Also by default, the node labels that were stored in the tree were added next to each node without any processing (although we had trimmed their length to 4 characters in the previous step).
+
+What if we want to just see the tree with no sample points next to the tips?
+```{r}
+plot_tree(physeq, "treeonly")
+```
+And what about without the node labels either?
+```{r}
+plot_tree(physeq, "treeonly", nodeplotblank)
+```
+We can adjust the way branches are rotated to make it look nicer using the `ladderize` parameter.
+```{r}
+plot_tree(physeq, "treeonly", nodeplotblank, ladderize="left")
+plot_tree(physeq, "treeonly", nodeplotblank, ladderize=TRUE)
+```
+And what if we want to add the OTU labels next to each tip?
+```{r}
+plot_tree(physeq, "treeonly", nodeplotblank, label.tips="taxa_names", ladderize="left")
+```
+
+Any `method` parameter argument other than `"sampledodge"` (the default) will not add dodged sample points next to the tips.
+```{r}
+plot_tree(physeq, "anythingelse")
+```
+
+## Mapping Variables in Data
+In the default argument to `method`, `"sampledodge"`, a point is added next to each OTU tip in the tree for every sample in which that OTU was observed. We can then map certain aesthetic features of these points to variables in our data.
+
+### Color
+Color is one of the most useful aesthetics in tree graphics that are usually pretty complicated. Color can be mapped to either taxonomic ranks or sample covariates. For instance, we can map color to the type of sample collected (environmental location).
+```{r}
+plot_tree(physeq, color="SampleType", ladderize="left")
+```
+
+### node labels
+One of the most common reasons to label nodes is to add confidence measures, often a bootstrap value, to the nodes of the tree. The following four graphics show different ways of doing (or not doing) this.
+```{r}
+plot_tree(physeq, nodelabf=nodeplotblank, color="SampleType", ladderize="left")
+plot_tree(physeq, nodelabf=NULL, color="SampleType", ladderize="left")
+plot_tree(physeq, nodelabf=nodeplotboot(), color="SampleType", ladderize="left")
+plot_tree(physeq, nodelabf=nodeplotboot(80,0,3), color="SampleType", ladderize="left")
+```
+
+### tip labels
+```{r}
+plot_tree(physeq, nodelabf=nodeplotboot(80,0,3), color="SampleType", label.tips="taxa_names", ladderize="left")
+```
+
+
+## The esophagus dataset.
+A simple dataset containing tree and OTU-table components.
+
+The esophagus is a small and relatively simple dataset by moderns standards. It only contains 3 samples, no sample-data, and a modest quantity of total sequencing per sample that is a relic of an earlier time when resources for this sort of investigation were sparse and sequencing was expensive. Nevertheless, it makes for a nice sized dataset to start displaying trees. (For more details about the dataset and its origin, try entering `?esophagus` into the command-line once you have loaded the phyloseq package)
 
 The default tree without any additional parameters is plot with black points that indicate in how many different samples each OTU was found. In this case, the term "OTU" is used quite loosely (it is a loose term, after all) to mean entries in the taxononmic data you are plotting; and in the specific case of trees, it means the tips, even if you have already agglomerated the data such that each tip is equivalent to a rank of class or phylum. 
 
@@ -24,7 +100,7 @@ The default tree without any additional parameters is plot with black points tha
 plot_tree(esophagus, title="Default tree.")
 ```
 
-If for some reason you just want a completely unadorned tree, the `"treeonly"` method can be selected. This tends to plot much faster than the annotated tree, and is still a ggplot2 object that you *might* be able to add further layers to manually.
+If for some reason you just want an unadorned tree, the `"treeonly"` method can be selected. This tends to plot much faster than the annotated tree, and is still a ggplot2 object that you *might* be able to add further layers to manually.
 
 ```{r}
 plot_tree(esophagus, "treeonly", title="method = \"treeonly\"")
@@ -60,13 +136,7 @@ Good, now what if we wanted to also display the specific numeric value of OTU ab
 plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03, min.abundance=3)
 ```
 
-# Examples with the Global Patterns dataset
-
-Load the dataset (quotes are optional, did you know that?)
-
-```{r}
-data(GlobalPatterns)
-```
+# More Examples with the Global Patterns dataset
 
 Subset Global Patterns dataset to just the observed Archaea.
 
@@ -124,20 +194,20 @@ plot_tree(gpac, color="SampleType", label.tips="Genus")
 Let's add some abundance information. Notice that the default spacing gets a little crowded when we map species-abundance to point-size:
 
 ```{r}
-plot_tree(gpac, color="SampleType", shape="Genus", size="abundance")
+plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", plot.margin=0.4)
 ```
 
-So let's spread it out a little bit with the base.spacing parameter.
+So let's spread it out a little bit with the `base.spacing` parameter, and while we're at it, let's call off the node labels...
 
 ```{r}
-plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
+plot_tree(gpac, nodelabf=nodeplotblank, color="SampleType", shape="Genus", size="abundance", base.spacing=0.04, plot.margin=0.4)
 ```
 
 ## Chlamydiae-only tree
 
 ```{r, fig.width=10}
 GP.chl <- subset_species(GlobalPatterns, Phylum=="Chlamydiae")
-plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
+plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance", plot.margin=0.6)
 ```			
 			
 
