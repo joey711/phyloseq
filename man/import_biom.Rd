@@ -2,9 +2,9 @@
 \alias{import_biom}
 \title{Import phyloseq data from biom-format file}
 \usage{
-  import_biom(BIOMfilename,
+  import_biom(BIOMfilename, tree=NULL,
   parseFunction=parse_taxonomy_default, parallel=FALSE,
-  version=0.9)
+  version=0.9, ...)
 }
 \arguments{
   \item{BIOMfilename}{(Required). A character string
@@ -12,7 +12,29 @@
   This is a JSON formatted file, specific to biological
   datasets, as described in
   \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the
-  biom-format home page}.}
+  biom-format home page}. In principle, this file should
+  include you OTU abundance data (OTU table), your
+  taxonomic classification data (taxonomy table), as well
+  as your sample data, for instance what might be in your
+  ``sample map'' in QIIME. A phylogenetic tree is not yet
+  supported by biom-format, and so is a separate argument
+  here. If, for some reason, your biom-format file is
+  missing one of these mentioned data types but you have it
+  in a separate file, you can first import the data that is
+  in the biom file using this function, \code{import_biom},
+  and then ``merge'' the remaining data after you have
+  imported with other tools using the relatively
+  general-purpose data merging function called
+  \code{\link{merge_phyloseq}}.}
+
+  \item{tree}{(Optional). Character string or ``phylo''
+  class. A file path to the phylogenetic tree file
+  associated with the data in the \code{BIOMfilename}, or
+  an already-imported version of that phylogenetic tree as
+  a phylo object. Import of the tree will be attempted
+  using \code{\link{read_tree}}, and additional import
+  parameters for that function can be supplied (see
+  below).}
 
   \item{parseFunction}{(Optional). A function. It must be a
   function that takes as its first argument a character
@@ -58,6 +80,9 @@
   version-specific importers will be available by adjusting
   the version value. Default is \code{0.9}. Not
   implemented. Has no effect (yet).}
+
+  \item{...}{Additional parameters passed on to
+  \code{\link{read_tree}}.}
 }
 \value{
   A \code{\link{phyloseq-class}} object.
@@ -93,6 +118,10 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
   \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 }
 \seealso{
-  \code{\link{import}}, \code{\link{import_qiime}}
+  \code{\link{import}}
+
+  \code{\link{import_qiime}}
+
+  \code{\link{read_tree}}
 }
 
