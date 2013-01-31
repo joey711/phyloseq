@@ -89,14 +89,16 @@
 }
 \examples{
 data(GlobalPatterns)
-plot_richness(GlobalPatterns, "SampleType")
+GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
+plot_richness(GP, x = "SampleType", color="SampleType")
+plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
 plot_richness(GlobalPatterns, "SampleType", "SampleType")
 # # Define a human-associated versus non-human categorical variable:
 GP <- GlobalPatterns
 human <- get_variable(GP, "SampleType") \%in\%
 c("Feces", "Mock", "Skin", "Tongue")
 names(human) <- sample_names(GP)
-# # Replace current SD with new one that includes human variable:
+# # Add human-associated logical:
 sample_data(GP)$human <- human
 # # Can use new "human" variable within GP as a discrete variable in the plot
 plot_richness(GP, "human", "SampleType")
