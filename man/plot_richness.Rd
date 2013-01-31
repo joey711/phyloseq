@@ -3,11 +3,11 @@
 \alias{plot_richness_estimates}
 \title{Plot richness estimates, flexibly with ggplot2}
 \usage{
-  plot_richness(physeq, x, color=NULL, shape=NULL,
-  title=NULL)
+  plot_richness(physeq, x="samples", color=NULL,
+  shape=NULL, title=NULL, shsi=FALSE)
 
-  plot_richness_estimates(physeq, x = "sample_names", color
-  = NULL, shape = NULL, title = NULL)
+  plot_richness_estimates(physeq, x = "samples", color =
+  NULL, shape = NULL, title = NULL, shsi = FALSE)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
@@ -23,9 +23,9 @@
   vector with length equal to the number of samples in the
   dataset (nsamples(physeq)).
 
-  The default value is \code{"sample_names"}, which will
-  map each sample's name to a separate horizontal position
-  in the plot.}
+  The default value is \code{"samples"}, which will map
+  each sample's name to a separate horizontal position in
+  the plot.}
 
   \item{color}{(Optional). Default \code{NULL}. The sample
   variable to map to different colors. Like \code{x}, this
@@ -51,6 +51,10 @@
 
   \item{title}{(Optional). Default \code{NULL}. Character
   string. The main title for the graphic.}
+
+  \item{shsi}{(Optional). Default \code{FALSE}. Logical.
+  Whether or not to include Shannon and Simpson indices in
+  the graphic as well.}
 }
 \value{
   A \code{\link{ggplot}} plot object summarizing the
