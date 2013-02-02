@@ -42,7 +42,7 @@
 %\bibliographystyle{naturemag} % works if bst provided
  
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
 %\setkeys{Gin}{width=0.55\textwidth}
 
 \title{Basic storage, access, and manipulation of phylogenetic sequencing data with \emph{phyloseq}}
@@ -68,6 +68,10 @@ The analysis of microbiological communities brings many challenges: the integrat
 %\clearpage
 \section{About this vignette}
 
+The most updated examples are posted in our online tutorials and wiki available from the phyloseq home page:
+
+\url{http://joey711.github.com/phyloseq}
+
 A separate vignette describes analysis tools included in phyloseq
 along with various examples using included example data.
 A quick way to load it is:
@@ -89,13 +93,15 @@ This not only reduces code repetition, but also decreases the likelihood of
 mistakes during data filtering and analysis. 
 For example, it is intentionally difficult in phyloseq to create an experiment-level object
 \footnote{``phyloseq-class'', required for many analysis tools}
-in which a component tree and OTU table have different species names. 
+in which a component tree and OTU table have different OTU names. 
 The import functions, trimming tools, as well as the main tool for creating
 an experiment-level object, \code{phyloseq}, 
-all automatically trim the species and samples indices to their intersection,
+all automatically trim the OTUs and samples indices to their intersection,
 such that these component data types are exactly coherent.
 
 Let's get started by loading phyloseq, and describing some methods for importing data.
+
+\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load phyloseq and Import Data.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,6 +115,18 @@ To use \emph{phyloseq} in a new R session, it will have to be loaded. This can b
 
 \subsection{Import data}\label{sec:import}
 An important feature of \emph{phyloseq} are methods for importing phylogenetic sequencing data from common taxonomic clustering pipelines. These methods take file pathnames as input, read and parse those files, and return a single object that contains all of the data. 
+
+Some additional background details are provided below. The best reproducible examples on importing data with phyloseq can be found on the official data import tutorial page:
+
+\url{http://joey711.github.com/phyloseq/import-data}
+
+\subsection{Import from biom-format}\label{sec:biom}
+New versions of QIIME (see below) produce a more-comprehensive and formally-defined JSON file format, called biom file format:
+
+``The biom file format (canonically pronounced `biome') is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project.''
+
+\url{http://biom-format.org/}
+
 
 \subsection{Import from QIIME}\label{sec:qiimeimport}
 QIIME is a free, open-source OTU clustering and analysis pipeline written for Unix (mostly Linux)~\cite{Caporaso:2010jf}. It is distributed in a number of different forms (including a pre-installed virtual machine), and relevant links for obtaining and using QIIME should be found at:
@@ -130,18 +148,6 @@ In practice, you will have to find the relevant QIIME files among a number of ot
 
 \subsubsection{Output}
 The class of the object returned by \code{import{\_}qiime()} depends upon which filenames are provided. The most comprehensive class is chosen automatically, based on the input files listed as arguments. At least one argument needs to be provided.
-
-\subsubsection{Example}
-The following lines of code would create a \code{phyloseqTaxTree} object (see Appendix~\ref{sec:app-classes} for class definitions) from files on your computer, had they been created by the QIIME pipeline.
-
-<<eval=FALSE>>=
-  otufilename <- "../data/ex1_otu_table.txt"
-  mapfilename <- "../data/ex1_sample_data.txt"
-  trefilename <- "../data/ex1_tree.tre"
-  MyExpmt1 <- import_qiime(otufilename, mapfilename, trefilename)
-@
-
-A separate object containing taxonomic data is not necessary, because this information is included in the ``otu{\_}table.txt'' file, and parsed into a proper \code{taxonomyTable} component object by \code{import{\_}qiime()}.
 
 
 \clearpage
@@ -166,17 +172,6 @@ If all three file types are provided,
 an instance of the phyloseq-class is returned
 that contains both an OTU abundance table and its associated phylogenetic tree.
 
-\subsubsection{Example}
-The path on your machine may (probably will) vary, but here is an example import with all three files:
-
-<<eval=FALSE>>=
-mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
-mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
-mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
-show_mothur_list_cutoffs(mothlist)
-cutoff    <- "0.10"
-import_mothur(mothlist, mothgroup, mothtree, cutoff)	
-@
 
 \clearpage
 \subsection{Import from PyroTagger}\label{sec:pyrotaggerimport}
@@ -198,19 +193,6 @@ To my knowledge, PyroTagger does not calculate a tree
 of the representative sequences from each OTU cluster,
 nor a distance object,
 so analyses like \code{tip{\_}glom()} and \code{UniFrac} are not applicable.
-
-\subsubsection{Example}
-Here is an example, importing a PyroTagger file:
-<<eval=FALSE>>=
-  pyrotagger_tab_file <- "path/to/my/filename.txt"
-  myData1 <- import_pyrotagger_tab(pyrotagger_tab_file,
-    strict_taxonomy=FALSE, keep_potential_chimeras=FALSE)
-@
-
-For completeness, the optional arguments were shown with their default values selected. If you do not need to modify the optional arguments, the import command simplifies to:
-<<eval=FALSE>>=
-  myData1 <- import_pyrotagger_tab(pyrotagger_tab_file)  
-@
 
 
 \clearpage
@@ -320,12 +302,26 @@ You do not need to have all four data types in the example above in order to com
 ex1c <- phyloseq(my_otu_table, my_sample_data)
 @
 
-Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\_}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same species and samples.
+Whenever an instance of the phyloseq-class is created by \emph{phyloseq} --- for example, when we use the \code{import{\_}qiime()} function to import data, or combine manually imported tables using \code{phyloseq()} --- the row and column indices representing taxa or samples are internally checked/trimmed for compatibility, such that all component data describe exactly (and only) the same OTUs and samples.
 
-\subsection{\code{merge{\_}phyloseq()} function: merge multiple phyloseq objects}
-What if you have multiple objects describing parts of the same experimental project (say, because they came from different files)? What if you had already built a combined object for the earlier trials with the \code{phyloseq()} function, but now want to add additional data tables to that new object? 
+\subsection{Merge} 
+The phyloseq project includes support for two complete different categories of merging.
 
-For all of these merging situations, the suggested function is \code{merge{\_}phyloseq()}.
+\begin{itemize}
+
+\item \textbf{Merging the OTUs or samples in a phyloseq object}, based upon a taxonomic or sample variable:
+
+merge\_{}samples() merge\_{}taxa()
+
+\item \textbf{Merging two or more data objects} that come from the same experiment, so that their data becomes part of the same phyloseq object:
+
+merge\_{}phyloseq()
+
+\end{itemize}
+
+For further details, see the reproducible online tutorial at:
+
+\url{http://joey711.github.com/phyloseq/merge}
 
 
 \clearpage
@@ -531,7 +527,7 @@ ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 \clearpage
 \section{Phylogenetic smoothing}\label{sec:glom}
 \subsection{\code{tax{\_}glom()} Method}
-Suppose we are skeptical about the importance of species-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{tax{\_}glom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
+Suppose we are skeptical about the importance of OTU-level distinctions in our dataset. For this scenario, \emph{phyloseq} includes a taxonomic-agglommeration method, \code{tax{\_}glom()}, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as \code{ex6}.
 
 <<eval=FALSE>>=
 ex6 <- tax_glom(GlobalPatterns, taxlevel="Genus")
@@ -559,14 +555,14 @@ Command output not provided here to save time during compilation of the vignette
 
 The class structure in the \emph{phyloseq} package follows the inheritance diagram shown in Fig.~\ref{fig:phyloseqclasses}. The \emph{phyloseq} package contains multiple inherited classes with incremental complexity so that methods can be extended to handle exactly the data types that are present in a particular object. Currently, \emph{phyloseq} uses 4 core data classes. They are the OTU abundance table (\code{otu{\_}table}), a table of sample data (\code{sample{\_}data}), a table of taxonomic descriptors (\code{taxonomyTable}), and a phylogenetic tree (\code{phylo4}, \emph{phylobase} package). The \code{otu{\_}table} class can be considered the central data type, as it directly represents the number and type of sequences observed in each sample. \code{otu{\_}table} extends the numeric matrix class in the \R{} base, and has a few additonal feature slots. The most important of these feature slots is the \code{taxa{\_}are{\_}rows} slot, which holds a single logical that indicates whether the table is oriented with taxa as rows (as in the \emph{genefilter} package in Bioconductor~\cite{Bioconductor}) or with taxa as columns (as in \emph{vegan} and \emph{picante} packages). In \emph{phyloseq} methods, as well as its extensions of methods in other packages, the \code{taxa{\_}are{\_}rows} value is checked to ensure proper orientation of the \code{otu{\_}table}. A \emph{phyloseq} user is only required to specify the \code{otu{\_}table} orientation during initialization, following which all handling is internal. 
 
-The \code{sample{\_}data} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa (e.g. \emph{species}) and columns are taxonomic levels (e.g. \emph{Phylum}). 
+The \code{sample{\_}data} class directly inherits \R's \code{data.frame} class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a \code{data.frame} in this context requires that samples/trials are rows, and variables are columns (consistent with \emph{vegan} and other packages). The \code{taxonomyTable} class directly inherits the \code{matrix} class, and is oriented such that rows are taxa/OTUs and columns are taxonomic levels (e.g. \emph{Phylum}). 
 
 The phyloseq-class can be considered an ``experiment-level class'' and should contain two or more of the previously-described core data classes. We assume that \emph{phyloseq} users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so the \code{phyloseq()} constructor will stop with an error if the arguments do not include an \code{otu{\_}table}. There are a number of common methods that require either an \code{otu{\_}table} and \code{sample{\_}data} combination, or an \code{otu{\_}table} and phylogenetic tree combination. These methods can operate on instances of the phyloseq-class, and will stop with an error if the required component data is missing.  
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.8\textwidth]{phyloseq_classes_4.pdf}
-\caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. Core data classes are shown with grey fill and rounded corners. The class name and its slots are shown with red- or blue-shaded text, respectively. Inheritance is indicated graphically by arrows. Lines without arrows indicate that a higher-order class contains a slot with the associated data class as one of its components.}
+\includegraphics[width=0.8\textwidth]{phyloseq_classes_7.pdf}
+\caption[]{ {\textbf Classes and inheritance in the \emph{phyloseq} package}. The class name and its slots are shown with red- or blue-shaded text, respectively. Coercibility is indicated graphically by arrows with the coercion function shown. Lines without arrows indicate that the more complex class (``phyloseq'') contains a slot with the associated data class as its components.}
 \label{fig:phyloseqclasses}
 \end{center}
 \end{figure}
@@ -577,14 +573,15 @@ The phyloseq-class can be considered an ``experiment-level class'' and should co
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Installation}\label{sec:install}
-\subsection{Installation Wiki}
-Please check the ``Installation'' page on the phyloseq wiki at GitHub:
+\subsection{Installation}
+Please check the ``Installation'' tutorial:
 
-\url{https://github.com/joey711/phyloseq/wiki/Installation} 
+\url{http://joey711.github.com/phyloseq/install} 
 
-if you have any problems, as this is likely to be the first place news
-about installation will be posted.
-Also check out the rest of the development homepage on GitHub 
+for help with installation. 
+This is likely to be the first place news and updated information
+about installation will be posted, as well.
+Also check out the rest of the phyloseq homepage on GitHub 
 
 (\url{http://joey711.github.com/phyloseq})
 

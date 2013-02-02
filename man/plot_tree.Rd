@@ -2,10 +2,11 @@
 \alias{plot_tree}
 \title{Plot a phylogenetic tree with optional annotations}
 \usage{
-  plot_tree(physeq, method="sampledodge", color=NULL,
-  shape=NULL, size=NULL, min.abundance=Inf,
+  plot_tree(physeq, method="sampledodge", nodelabf=NULL,
+  color=NULL, shape=NULL, size=NULL, min.abundance=Inf,
   label.tips=NULL, text.size=NULL, sizebase=5,
-  base.spacing=0.02, title=NULL)
+  base.spacing=0.02, ladderize=FALSE, plot.margin=0.2,
+  title=NULL)
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
@@ -28,6 +29,18 @@
   points drawn next to leaves if individuals from that taxa
   were observed, and a separate point is drawn for each
   sample.}
+
+  \item{nodelabf}{(Optional). A function. Default
+  \code{NULL}. If \code{NULL}, the default, a function will
+  be selected for you based upon whether or not there are
+  node labels in \code{phy_tree(physeq)}. For convenience,
+  the phyloseq package includes two generator functions for
+  adding arbitrary node labels (can be any character
+  string), \code{\link{nodeplotdefault}}; as well as for
+  adding bootstrap values in a certain range,
+  \code{\link{nodeplotboot}}. To not have any node labels
+  in the graphic, set this argument to
+  \code{\link{nodeplotblank}}.}
 
   \item{color}{(Optional). Character string. Default
   \code{NULL}. The name of the variable in \code{physeq} to
@@ -84,6 +97,26 @@
   problem and want tighter point-spacing, you can shrink
   this value.}
 
+  \item{ladderize}{(Optional). Boolean or character string
+  (either \code{FALSE}, \code{TRUE}, or \code{"left"}).
+  Default is \code{FALSE}. This parameter specifies whether
+  or not to \code{\link[ape]{ladderize}} the tree (i.e.,
+  reorder nodes according to the depth of their enclosed
+  subtrees) prior to plotting. When set to \code{TRUE}, the
+  default ladderization (``right'' ladderization) is used;
+  when set to \code{FALSE}, no ladderization is performed;
+  when set to \code{"left"}, the reverse direction
+  (``left'' ladderization) is applied.}
+
+  \item{plot.margin}{(Optional). Numeric. Default is
+  \code{0.2}. Should be positive. This defines how much
+  right-hand padding to add to the tree plot, which can be
+  required to not truncate tip labels. The margin value is
+  specified as a fraction of the overall tree width which
+  is added to the right side of the plot area. So a value
+  of \code{0.2} adds twenty percent extra space to the
+  right-hand side of the plot.}
+
   \item{title}{(Optional). Default \code{NULL}. Character
   string. The main title for the graphic.}
 }
@@ -91,13 +124,17 @@
   A \code{\link{ggplot}}2 plot.
 }
 \description{
-  This function is intended to facilitate easy graphical
-  investigation of the phylogenetic tree, as well as sample
-  data. Note that for phylogenetic sequencing of samples
-  with large richness, some of the options in this function
-  will be prohibitively slow to render, or too dense to be
+  There are many useful examples of phyloseq tree graphics
+  in the
+  \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq
+  online tutorials}. This function is intended to
+  facilitate easy graphical investigation of the
+  phylogenetic tree, as well as sample data. Note that for
+  phylogenetic sequencing of samples with large richness,
+  some of the options in this function will be
+  prohibitively slow to render, or too dense to be
   interpretable. A rough ``rule of thumb'' is to use
-  subsets of data with not many more than 200 taxa per
+  subsets of data with not many more than 200 OTUs per
   plot, sometimes less depending on the complexity of the
   additional annotations being mapped to the tree. It is
   usually possible to create an unreadable, uninterpretable
@@ -131,7 +168,12 @@ plot_tree(esophagus)
 plot_tree(esophagus, color="samples")
 plot_tree(esophagus, size="abundance")
 plot_tree(esophagus, size="abundance", color="samples")
-plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+p = plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+print(p)
+# Modify the color scale using ggplot2 functions
+library("ggplot2")
+p + scale_colour_brewer(palette="Set1")
+p + scale_color_manual(values=c(B="blue", C="green", D="red"))
 # # Using plot_tree with the Global Patterns dataset
 data("GlobalPatterns")
 # Subset Global Patterns dataset to just the observed Archaea
@@ -151,8 +193,12 @@ ntaxa(GlobalPatterns)
 # # somewhat crowded graphic.
 # #
 # # Let's instead subset further ot just the Crenarchaeota
-gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
-plot_tree(gpac, color="SampleType", shape="Genus")
+gpac = subset_species(gpa, Phylum=="Crenarchaeota")
+p = plot_tree(gpac, color="SampleType", shape="Order", ladderize="left")
+print(p)
+# Modify the color scale using ggplot2 functions
+p = p + scale_colour_brewer(palette="Set1")
+print(p)
 # plot_tree(gpac, color="SampleType", label.tips="Genus")
 # # Let's add some abundance information.
 # # Notice that the default spacing gets a little crowded when we map

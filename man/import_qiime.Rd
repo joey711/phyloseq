@@ -3,8 +3,8 @@
 \title{Import function to read files created by the QIIME pipeline.}
 \usage{
   import_qiime(otufilename=NULL, mapfilename=NULL,
-  treefilename=NULL, biotaxonomy=NULL, showProgress=TRUE,
-  chunk.size=1000L, ...)
+  treefilename=NULL, parseFunction=parse_taxonomy_qiime,
+  showProgress=TRUE, chunk.size=1000L, ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
@@ -35,10 +35,14 @@
   cases where the tree has been --- or needs to be ---
   imported separately.}
 
-  \item{biotaxonomy}{(Optional). A character vector
-  indicating the name of each taxonomic level in the
-  taxonomy-portion of the otu-file, which may not specify
-  these levels explicitly. Default value is \code{NULL}.}
+  \item{parseFunction}{(Optional). An optional custom
+  function for parsing the character string that contains
+  the taxonomic assignment of each OTU. The default parsing
+  function is \code{\link{parse_taxonomy_qiime}},
+  specialized for splitting the \code{";"}-delimited
+  strings and also attempting to interpret greengenes
+  prefixes, if any, as that is a common format of the
+  taxonomy string produced by QIIME.}
 
   \item{showProgress}{(Optional). A logical. Indicates
   whether import progress/status should be printed to the
@@ -82,7 +86,10 @@
   directory.
 }
 \examples{
-# import_qiime(myOtuTaxFilePath, myMapFilePath)
+otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
+mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
+trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
+import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
 }
 \references{
   \url{http://qiime.org/}

@@ -1,7 +1,6 @@
 \name{otu2df}
 \alias{otu2df}
-\title{Convert an otu_table object into a data.frame useful for plotting
-in the ggplot2 framework.}
+\title{DEPRECATED. SEE \code{\link{psmelt}} converts OTU-table to data.frame}
 \usage{
   otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL,
   threshold=NULL)
@@ -28,8 +27,8 @@ in the ggplot2 framework.}
   taxonomic groups are included.}
 }
 \description{
-  Convert an otu_table object into a data.frame useful for
-  plotting in the ggplot2 framework.
+  Was used for plotting with \code{\link{plot_taxa_bar}} in
+  the ggplot2 framework.
 }
 \keyword{internal}
 

@@ -13,17 +13,16 @@
 
   \item{ordination}{(Required). An ordination object. Many
   different classes of ordination are defined by \code{R}
-  packages. The supported classes should be listed
-  explicitly, but in the meantime, all ordination classes
-  currently supported by the \code{\link[vegan]{scores}}
-  function are supported here. There is no default, as the
-  expectation is that the ordination will be performed and
-  saved prior to calling this plot function.}
+  packages. Ordination classes currently supported/created
+  by the \code{\link{ordinate}} function are supported
+  here. There is no default, as the expectation is that the
+  ordination will be performed and saved prior to calling
+  this plot function.}
 
   \item{type}{(Optional). The plot type. Default is
   \code{"samples"}. The currently supported options are
   \code{c("samples", "sites", "species", "taxa", "biplot",
-  "split")}. The option ``taxa'' is equivalent to
+  "split", "scree")}. The option ``taxa'' is equivalent to
   ``species'' in this case, and similarly, ``samples'' is
   equivalent to ``sites''. The options \code{"sites"} and
   \code{"species"} result in a single-plot of just the
@@ -31,7 +30,11 @@
   respectively. The \code{"biplot"} and \code{"split"}
   options result in a combined plot with both taxa and
   samples, either combined into one plot (``biplot'') or
-  separated in two facet panels (``split''), respectively.}
+  separated in two facet panels (``split''), respectively.
+  The \code{"scree"} option results in a call to
+  \code{\link{plot_scree}}, which produces an ordered bar
+  plot of the normalized eigenvalues associated with each
+  ordination axis.}
 
   \item{axes}{(Optional). A 2-element vector indicating the
   axes of the ordination that should be used for plotting.
@@ -94,10 +97,13 @@
   summarizing the ordination result for the specified axes.
 }
 \description{
-  Convenience wrapper for plotting ordination results as a
-  \code{ggplot2}-graphic, including additional annotation
-  in the form of shading, shape, and/or labels of sample
-  variables.
+  There are many useful examples of phyloseq ordination
+  graphics in the
+  \href{http://joey711.github.com/phyloseq/plot_ordination-examples}{phyloseq
+  online tutorials}. Convenience wrapper for plotting
+  ordination results as a \code{ggplot2}-graphic, including
+  additional annotation in the form of shading, shape,
+  and/or labels of sample variables.
 }
 \examples{
 data(GlobalPatterns)
@@ -130,6 +136,7 @@ plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
 plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
 plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
 plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
+plot_ordination(GP1, GP.dpcoa, type="scree")
 }
 \seealso{
   The examples on the phyloseq wiki page for

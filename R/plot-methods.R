@@ -7,6 +7,8 @@
 ################################################################################
 #' Generic plot defaults for phyloseq.
 #'
+#' There are many useful examples of phyloseq graphics functions in the
+#' \href{http://joey711.github.com/phyloseq/}{phyloseq online tutorials}.
 #' The specific plot type is chosen according to available non-empty slots.
 #' This is mainly for syntactic convenience and quick-plotting. See links below
 #' for some examples of available graphics tools available in the
@@ -49,7 +51,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	if( all(c("otu_table", "sample_data", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else if( all(c("otu_table", "sample_data", "tax_table") %in% getslots.phyloseq(physeq) ) ){
-		plot_taxa_bar(physeq, ...)
+		plot_bar(physeq, ...)
 	} else if( all(c("otu_table", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
 	} else {
@@ -60,6 +62,8 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 ################################################################################
 #' Plot a network using ggplot2 (represent microbiome)
 #'
+#' There are many useful examples of phyloseq network graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_network-examples}{phyloseq online tutorials}.
 #' A custom plotting function for displaying networks
 #' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #' The network itself should be represented using
@@ -220,16 +224,21 @@ plot_network <- function(g, physeq=NULL, type="samples",
 			)
 
 	# Add the graph vertices as points
-	p <- p + geom_point(aes_string(color=color, shape=shape), size=point_size)
+	p <- p + geom_point(aes_string(color=color, shape=shape), size=point_size, na.rm=TRUE)
 
 	# Add the text labels
 	if( !is.null(label) ){
-		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust)		
+		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust, na.rm=TRUE)
 	}
 	
 	# Add the edges:
 	p <- p + geom_line(aes_string(group="id", color=line_color), 
-				graphDF, size=line_weight, alpha=line_alpha)
+				graphDF, size=line_weight, alpha=line_alpha, na.rm=TRUE)
+				
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
 	
 	return(p)
 }
@@ -237,6 +246,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 ################################################################################
 #' Plot richness estimates, flexibly with ggplot2
 #'
+#' There are many useful examples of phyloseq richness graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 #' Performs a number of standard richness estimates using the 
 #' \code{\link{estimate_richness}} function,
 #' and returns a \code{ggplot} plotting object. 
@@ -255,7 +266,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
 #'
-#' @usage plot_richness(physeq, x, color=NULL, shape=NULL, title=NULL)
+#' @usage plot_richness(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate
@@ -269,7 +280,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  or a custom supplied vector with length equal to the number of samples
 #'  in the dataset (nsamples(physeq)).
 #'
-#'  The default value is \code{"sample_names"}, which will map each sample's name
+#'  The default value is \code{"samples"}, which will map each sample's name
 #'  to a separate horizontal position in the plot.
 #'
 #' @param color (Optional). Default \code{NULL}. The sample variable to map
@@ -298,6 +309,10 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
 #'
+#' @param shsi (Optional). Default \code{FALSE}. Logical.
+#'  Whether or not to include Shannon and Simpson indices
+#'  in the graphic as well.
+#'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
 #' 
@@ -311,14 +326,16 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @export
 #' @examples 
 #' data(GlobalPatterns)
-#' plot_richness(GlobalPatterns, "SampleType")
+#' GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
+#' plot_richness(GP, x = "SampleType", color="SampleType")
+#' plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
 #' plot_richness(GlobalPatterns, "SampleType", "SampleType")
 #' # # Define a human-associated versus non-human categorical variable:
 #' GP <- GlobalPatterns
 #' human <- get_variable(GP, "SampleType") %in% 
 #'                   c("Feces", "Mock", "Skin", "Tongue")
 #' names(human) <- sample_names(GP)
-#' # # Replace current SD with new one that includes human variable:
+#' # # Add human-associated logical:
 #' sample_data(GP)$human <- human 
 #' # # Can use new "human" variable within GP as a discrete variable in the plot
 #' plot_richness(GP, "human", "SampleType")
@@ -329,54 +346,73 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' # # Not run: Should cause an error:
 #' # plot_richness(GP, "value", "value")
 #' # #
-plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, title=NULL){	
+plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE){
+
 	# Make the plotting data.frame 
 	DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
 	
-	# If there is no "sample_names" variable in DF, add it
-	if( !"sample_names" %in% names(DF) ){
-		DF <- data.frame(DF, sample_names=sample_names(physeq))		
-	}
-
-	# If manually-supplied x, color, shape, add to DF, dummy var_name
-	if(length(x) > 1){
-		DF$x <- x
-		names(DF)[names(DF)=="x"] <- deparse(substitute(x))
-		x <- deparse(substitute(x))
-	}
-	if(length(color) > 1){
-		DF$color <- color
-		names(DF)[names(DF)=="color"] <- deparse(substitute(color))
-		color <- deparse(substitute(color))
-	}
-	if(length(shape) > 1){
-		DF$shape <- shape
-		names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
-		shape <- deparse(substitute(shape))
+	# If there is no "samples" variable in DF, add it
+	if( !"samples" %in% names(DF) ){
+		DF$samples = sample_names(physeq)
 	}
 	
-	# melt, for different estimates
-	if( is.null(color) | identical(x, color) ){
-		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x)], 
-			id=c(x))
-	} else {
-		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x, color)], 
-			id=c(x, color))			
+	# sample_names used to be default, and should also work.
+	# #backwardcompatibility
+	if( !is.null(x) ){
+		if( x %in% c("sample", "samples", "sample_names") ){
+			x = "samples"
+		}
 	}
-			
-	# Add standard error to melted df
-	mdf    <- data.frame(mdf, se = c(rep(NA, nrow(DF)), DF[, "se.chao1"], DF[, "se.ACE"]) )	
+
+	# Define "measure" variables and s.e. labels (ses).
+	measures = c("S.obs", "S.chao1", "S.ACE", "shannon", "simpson")
+	ses = c("se.obs", "se.chao1", "se.ACE", "se.shannon", "se.simpson")
+
+	# melt, for different richnesses...
+	mdf = melt(DF, measure.vars=measures)
+
+	# Merge s.e. into one "se" column
+	mdf$se = NA_integer_
+	mdf$wse = paste("se.", substr(mdf$variable, 3, 10), sep="")
+	for( i in 1:nrow(mdf) ){
+		if( mdf[i, "wse"] %in% c("se.chao1", "se.ACE") ){
+			mdf[i, "se"] = mdf[i, (mdf[i, "wse"])]
+		}
+	}
+	
+	# Rm shannon/simpson if !shsi
+	if( !shsi ){
+		mdf = subset(mdf, variable %in% measures[1:3])
+	}
 	
 	# map variables
 	richness_map <- aes_string(x=x, y="value", color=color, shape=shape)		
 	
 	# Make the ggplot.
 	p <- ggplot(mdf, richness_map) + 
-		geom_point(size=2) + 
+		geom_point(na.rm=TRUE) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
-		scale_y_continuous('richness [number of taxa]') +
-		facet_grid(~variable) 
+		theme(axis.text.x = element_text(angle = -90, hjust = 0))
+	
+	# Add label according to whether or not shannon/simpson indices are included
+	if(shsi){
+		p = p + ylab('Alpha Diversity Measure') 				
+	} else {
+		p = p + ylab('Richness [number of taxa]') 		
+	}
+		
+	# Facet differently, depending on whether shannon or simpson indices included
+	if(shsi){
+		p = p + facet_wrap(~variable, nrow=1, scales="free") 				
+	} else {
+		p = p + facet_grid(~variable) 		
+	}
+		
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
+	
 	return(p)
 }
 ################################################################################
@@ -385,6 +421,8 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 ################################################################################
 #' General ordination plotter based on ggplot2.
 #'
+#' There are many useful examples of phyloseq ordination graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_ordination-examples}{phyloseq online tutorials}.
 #' Convenience wrapper for plotting ordination results as a 
 #' \code{ggplot2}-graphic, including
 #' additional annotation in the form of shading, shape, and/or labels of
@@ -398,15 +436,14 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 #'  plot and annotate the ordination.
 #'
 #' @param ordination (Required). An ordination object. Many different classes
-#'  of ordination are defined by \code{R} packages. The supported classes 
-#'  should be listed explicitly, but in the meantime, all ordination classes
-#'  currently supported by the \code{\link[vegan]{scores}} function are
+#'  of ordination are defined by \code{R} packages. Ordination classes
+#'  currently supported/created by the \code{\link{ordinate}} function are
 #'  supported here. There is no default, as the expectation is that the 
 #'  ordination will be performed and saved prior to calling this plot function.
 #'
 #' @param type (Optional). The plot type. Default is \code{"samples"}. The
 #'  currently supported options are 
-#'  \code{c("samples", "sites", "species", "taxa", "biplot", "split")}.
+#'  \code{c("samples", "sites", "species", "taxa", "biplot", "split", "scree")}.
 #'  The option
 #'  ``taxa'' is equivalent to ``species'' in this case, and similarly,
 #'  ``samples'' is equivalent to ``sites''. 
@@ -417,6 +454,9 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 #'  plot with both taxa and samples, either combined into one plot (``biplot'')
 #'  or 
 #'  separated in two facet panels (``split''), respectively.
+#'  The \code{"scree"} option results in a call to \code{\link{plot_scree}},
+#'  which produces an ordered bar plot of the normalized eigenvalues
+#'  associated with each ordination axis. 
 #'
 #' @param axes (Optional). A 2-element vector indicating the axes of the 
 #'  ordination that should be used for plotting. 
@@ -517,15 +557,24 @@ plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, titl
 #' plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
 #' plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
 #' plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
+#' plot_ordination(GP1, GP.dpcoa, type="scree")
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
 	if(class(physeq)!="phyloseq"){
 		warning("Full functionality requires physeq be phyloseq-class with multiple components.")
 	}
+	official_types = c("sites", "species", "biplot", "split", "scree")
 	if(type == "samples"){type <- "sites"} # vegan compatibility with phyloseq
 	if(type == "taxa"){type <- "species"} # vegan compatibility with phyloseq
-	if( !type %in% c("sites", "species", "biplot", "split") ){stop("type argument not supported.")}
+	if( !type %in% official_types ){
+		warning("type argument not supported. type set to \"samples\".")
+		type = "sites"
+	}
+	# Stop early by passing to plot_scree() if "scree" was chosen as a type
+	if( type %in% c("scree") ){
+		return( plot_scree(ordination, title=title) )
+	}
 
 	# Build data.frame:
 	if( type %in% c("sites", "species") ){
@@ -559,15 +608,15 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		names(specDF)[1] <- x <- names(siteDF)[1] # "x-axis"
 		names(specDF)[2] <- y <- names(siteDF)[2] # "y-axis"
 		# Add id.type label
-		specDF$id.type <- "species"
+		specDF$id.type <- "taxa"
 		siteDF$id.type <- "samples"
 		# Merge the two data.frame together, for joint plotting.
 		DF <- merge(specDF, siteDF, all=TRUE)
-		# Replace NA with "sample" or "species", where appropriate (factor/character)
+		# Replace NA with "samples" or "taxa", where appropriate (factor/character)
 		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "samples") }
-		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "species") }
+		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "taxa") }
 		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "samples") }
-		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "species") }		
+		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "taxa") }		
 	}
 	
 	# In case user wants the plot-DF for some other purpose, return early
@@ -576,7 +625,7 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	# If there is nothing to map (data.frame only has two columns), just return simple plot
 	if(ncol(DF)<=2){
 		ord_map <- aes_string(x=x, y=y)
-		p <- ggplot(DF, ord_map) + geom_point()		
+		p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
 		return(p)
 	}
 	
@@ -619,13 +668,13 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 				}
 				colvals <- gg_color_hue(length(levels(as(DF[, color], "factor"))))
 				names(colvals) <- levels(as(DF[, color], "factor"))
-				# Now make the species or sample dark grey
-				colvals[names(colvals) %in% c("samples", "species")] <- "grey45"
-				# Now add the manually re-scaled layer with species/samples as grey
+				# Now make the taxa or samples dark grey
+				colvals[names(colvals) %in% c("samples", "taxa")] <- "grey45"
+				# Now add the manually re-scaled layer with taxa/samples as grey
 				p <- p + scale_colour_manual(values=colvals)
 			}
-			# Adjust size so that samples are bigger than species by default.
-			p <- p + scale_size_manual("type", values=c(samples=5, species=2))		
+			# Adjust size so that samples are bigger than taxa by default.
+			p <- p + scale_size_manual("type", values=c(samples=5, taxa=2))		
 		}
 	}
 
@@ -648,7 +697,7 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 # Define the ord.plot.DF.internal
 ################################################################################
 #' @keywords internal
-ord.plot.DF.internal <- function(physeq, ordination, type="samples", axes=c(1, 2)){
+ord.plot.DF.internal <- function(physeq, ordination, type="sites", axes=c(1, 2)){
 
 	coord <- scores(ordination, choices=axes, display=type)
 	# coord row.names index order should match physeq. Enforce.
@@ -832,9 +881,307 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 }
 ################################################################################
 ################################################################################
+#' General ordination eigenvalue plotter using ggplot2.
+#'
+#' Convenience wrapper for plotting ordination eigenvalues (if available) 
+#' using a \code{ggplot2}-graphic.
+#'
+#' @param ordination (Required). An ordination object. Many different classes
+#'  of ordination are defined by \code{R} packages. Ordination classes
+#'  currently supported/created by the \code{\link{ordinate}} function are
+#'  supported here.
+#'  There is no default, as the expectation is that the 
+#'  ordination will be performed and saved prior to calling this plot function.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
+#' @return A \code{\link{ggplot}} plot object, graphically summarizing
+#'  the ordination result for the specified axes.
+#' 
+#' @seealso 
+#'
+#'  \code{\link{plot_ordination}}
+#'
+#'  \code{\link{ordinate}}
+#'
+#'  \code{\link{distance}}
+#' 
+#'  The examples on the phyloseq wiki page for \code{plot_ordination} show 
+#'  many more examples:
+#'
+#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' # First load and trim a dataset
+#' data(GlobalPatterns)
+#' GP = prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
+#' # Define a human-associated versus non-human categorical variable, and add new human variable to sample data:
+#' sample_data(GP)$human = factor( get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue") )
+#' # # filtering
+#' # Remove taxa not seen more than 3 times in at least 20% of the samples
+#' gp  = filter_taxa(GP, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
+#' # Standardize abundances to the median sequencing depth
+#' gpr = transform_sample_counts(gp, function(x, total=median(sample_sums(gp))) round(total * (x / sum(x))) )
+#' # Let's use Coefficient of Variation for filtering, arbitrary cutoff of 3.0
+#' gprf = filter_taxa(gpr, function(x) sd(x)/mean(x) > 3L, TRUE)
+#' # For a somewhat readable number of taxa on display, let's subset to just Bacteroidetes for some plots
+#' gprfb = subset_taxa(gprf, Phylum=="Bacteroidetes")
+#' # Test plots (preforms ordination in-line, then makes scree plot)
+#' plot_scree(ordinate(gprfb, "DPCoA", "bray"))
+#' plot_scree(ordinate(gprfb, "PCoA", "bray"))
+#' plot_scree(ordinate(gprfb, "NMDS", "bray")) # Empty return with message
+#' plot_scree(ordinate(gprfb ~ SampleType, "CCA"))
+#' plot_scree(ordinate(gprfb ~ SampleType, "RDA")) 
+#' plot_scree(ordinate(gprfb, "DCA"))
+#' plot_ordination(gprfb, ordinate(gprfb, "DCA"), type="scree")
+plot_scree = function(ordination, title=NULL){
+	# Use get_eigenvalue method dispatch. It always returns a numeric vector.
+	x = get_eigenvalue(ordination)
+	# Were eigenvalues found? If not, return NULL
+	if( is.null(x) ){
+		cat("No eigenvalues found in ordination\n")
+		return(NULL)
+	} else {
+		# If no names, add them arbitrarily "axis1, axis2, ..., axisN"
+		if( is.null(names(x)) ) names(x) = 1:length(x)
+		# For scree plot, want to show the fraction of total eigenvalues
+		x = x/sum(x)
+		# Create the ggplot2 data.frame, and basic ggplot2 plot
+		gdf = data.frame(axis=names(x), eigenvalue = x)
+		p = ggplot(gdf, aes(x=axis, y=eigenvalue)) + geom_bar()
+		# Force the order to be same as original in x
+		p = p + scale_x_discrete(limits = names(x))
+		# Orient the x-labels for space.
+		p = p + theme(axis.text.x = element_text(angle = 90))
+		# Optionally add a title to the plot
+		if( !is.null(title) ){
+			p <- p + ggtitle(title)
+		}		
+		return(p)
+	}
+}
 ################################################################################
-#' Convert an otu_table object into a data.frame useful for plotting
-#' in the ggplot2 framework.
+# Define generic get_eigenvalue function
+#' @keywords internal
+setGeneric("get_eigenvalue", function(ordination) standardGeneric("get_eigenvalue") )
+# Default is to return NULL (e.g. for NMDS, or non-supported ordinations/classes).
+setMethod("get_eigenvalue", "ANY", function(ordination) NULL )
+# for pcoa objects
+setMethod("get_eigenvalue", "pcoa", function(ordination) ordination$values$Relative_eig ) 
+# for CCA objects
+setMethod("get_eigenvalue", "cca", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+# for RDA objects
+setMethod("get_eigenvalue", "rda", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+# for dpcoa objects
+setMethod("get_eigenvalue", "dpcoa", function(ordination) ordination$eig )
+# for decorana (dca) objects
+setMethod("get_eigenvalue", "decorana", function(ordination) ordination$evals )
+################################################################################
+###############################################################################
+#' Melt phyloseq data object into large data.frame
+#'
+#' The psmelt function is a specialized melt function for melting phyloseq objects
+#' (instances of the phyloseq class), usually for the purpose of graphics production
+#' in ggplot2-based phyloseq-generated graphics. It relies heavily on the 
+#' \code{\link[reshape]{melt}} and \code{\link{merge}} functions. Note that
+#' ``melted'' phyloseq data is stored much less efficiently, and so RAM storage
+#' issues could arise with a smaller dataset
+#' (smaller number of samples/OTUs/variables) than one might otherwise expect.
+#' For average-sized datasets, however, this should not be a problem.
+#' Because the number of OTU entries has a large effect on the RAM requirement,
+#' methods to reduce the number of separate OTU entries, for instance by
+#' agglomerating based on phylogenetic distance using \code{\link{tipglom}},
+#' can help alleviate RAM usage problems.
+#' This function is made user-accessible for flexibility, but is also used 
+#' extensively by plot functions in phyloseq.
+#'
+#' @usage psmelt(physeq)
+#'
+#' @param physeq (Required). An \code{\link{otu_table-class}} or 
+#'  \code{\link{phyloseq-class}}. Function most useful for phyloseq-class.
+#'
+#' @return A \code{\link{data.frame}}-class table.
+#'
+#' @seealso
+#'  \code{\link{plot_bar}}
+#' 
+#'  \code{\link[reshape]{melt}}
+#'
+#'  \code{\link{merge}}
+#' 
+#' @import reshape
+#' @export
+#'
+#' @examples
+#' data("GlobalPatterns")
+#' gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+#' mdf = psmelt(gp.ch)
+#' nrow(mdf)
+#' ncol(mdf)
+#' colnames(mdf)
+#' head(rownames(mdf))
+#' # Create a ggplot similar to
+#' library("ggplot2")
+#' p = ggplot(mdf, aes(x=SampleType, y=Abundance, fill=Genus))
+#' p = p + geom_bar(color="black", stat="identity", position="stack")
+#' print(p)
+psmelt = function(physeq){
+	
+	# enforce orientation
+	otutab = otu_table(physeq)
+	if( !taxa_are_rows(otutab) ){
+		otutab = t(otutab)	
+	}
+	mot <- as(otutab, "matrix")
+	mdf <- melt(mot)
+	colnames(mdf)[1] = "OTU"
+	colnames(mdf)[2] = "Sample"
+		
+	# Merge the sample data.frame if present
+	if( !is.null(sample_data(physeq, FALSE)) ){
+		sdf = data.frame(sample_data(physeq))
+		sdf$Sample = sample_names(physeq)
+		# merge the sample-data and the melted otu table
+		mdf = merge(mdf, sdf, by.x="Sample")
+	}
+
+	# Next merge taxonomy data
+	if( !is.null(tax_table(physeq, FALSE)) ){
+		tdf = data.frame(tax_table(physeq), OTU=taxa_names(physeq))
+		mdf = merge(mdf, tdf, by.x="OTU")	
+	}
+	
+	# Annotate the "value" column as the measured OTU "Abundance"
+	colnames(mdf)[colnames(mdf)=="value"] = "Abundance"
+	
+	# Sort the entries by abundance
+	mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
+		
+	return(mdf)
+}
+################################################################################
+################################################################################
+#' A flexible, informative barplot phyloseq data
+#'
+#' There are many useful examples of phyloseq barplot graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
+#' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
+#'  graphic object
+#' that can be saved or further modified with additional layers, options, etc.
+#' The main purpose of this function is to quickly and easily create informative
+#' summary graphics of the differences in taxa abundance between samples in
+#' an experiment. 
+#'
+#' @usage plot_bar(physeq, x="Sample", y="Abundance", fill=NULL,
+#'  title=NULL, facet_grid=NULL)
+#'
+#' @param physeq (Required). An \code{\link{otu_table-class}} or 
+#'  \code{\link{phyloseq-class}}.
+#'
+#' @param x (Optional). Optional, but recommended, especially if your data
+#'  is comprised of many samples. A character string.
+#'  The variable in the melted-data that should be mapped to the x-axis.
+#'  See \code{\link{psmelt}}, \code{\link{melt}},
+#'  and \code{\link{ggplot}} for more details.
+#' 
+#' @param y (Optional). A character string.
+#'  The variable in the melted-data that should be mapped to the y-axis.
+#'  Typically this will be \code{"Abundance"}, in order to
+#'  quantitatively display the abundance values for each OTU/group. 
+#'  However, alternative variables could be used instead,
+#'  producing a very different, though possibly still informative, plot.
+#'  See \code{\link{psmelt}}, \code{\link{melt}},
+#'  and \code{\link{ggplot}} for more details.
+#'
+#' @param fill (Optional). A character string. Indicates which sample variable
+#'  should be used to map to the fill color of the bars. 
+#'  The default is \code{NULL}, resulting in a gray fill for all bar segments.
+#' 
+#' @param facet_grid (Optional). A formula object.
+#'  It should describe the faceting you want in exactly the same way as for 
+#'  \code{\link[ggplot2]{facet_grid}}, 
+#'  and is ulitmately provided to \code{\link{ggplot}}2 graphics.
+#'  The default is: \code{NULL}, resulting in no faceting.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'
+#' @return A \code{\link[ggplot2]{ggplot}}2 graphic object -- rendered in the graphical device
+#'  as the default \code{\link[base]{print}}/\code{\link[methods]{show}} method.
+#'
+#' @seealso 
+#'  \code{\link{psmelt}}
+#'
+#'  \code{\link{ggplot}}
+#' 
+#'  \code{\link{qplot}}
+#'
+#' @import ggplot2
+#' @export
+#'
+#' @examples
+#' data("GlobalPatterns")
+#' gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+#' plot_bar(gp.ch)
+#' plot_bar(gp.ch, fill="Genus")
+#' plot_bar(gp.ch, x="SampleType", fill="Genus")
+#' plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Family)
+#' # Need to load ggplot2 for custom faceting, and other custom ggplot2 goodies.
+#' library("ggplot2")
+#' plot_bar(gp.ch, fill="Genus") + facet_wrap(~SampleType) 
+#' plot_bar(gp.ch, fill="Genus") + facet_grid(SampleType ~ Family)
+#' plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=SampleType~Family)
+#' # A more complicated addition. Two lines. Second adds abundance points.
+#' p = plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Genus)
+#' p + geom_point(aes(x=SampleType, y=Abundance), color="black", position="jitter", size=1.5)
+#' # Enterotype Example
+#' data("enterotype")
+#' TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
+#' ent10   <- prune_species(TopNOTUs, enterotype)
+#' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
+#' # The previous was probably more informative, but here is the same
+#' # information presented with a different organization.
+#' plot_bar(ent10, "SeqTech", fill="Genus", facet_grid=~Enterotype)
+#' # Here is an example with a different faceting variable. 
+#' # Not super useful in this dataset, but always good to explore.
+#' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~ClinicalStatus)
+plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
+	title=NULL, facet_grid=NULL){
+		
+	# Start by melting the data in the "standard" way using psmelt.
+	mdf = psmelt(physeq)
+	
+	# Build the plot data structure
+	p = ggplot(mdf, aes_string(x=x, y=y, fill=fill))
+
+	# Add the bar geometric object. Creates a basic graphic. Basis for the rest.
+	# Test weather additional
+	p = p + geom_bar(stat="identity", position="stack", color="black")
+
+	# By default, rotate the x-axis labels (they might be long)
+	p = p + theme(axis.text.x=element_text(angle=-90, hjust=0))
+
+	# Add faceting, if given
+	if( !is.null(facet_grid) ){	
+		p <- p + facet_grid(facet_grid)
+	}
+	
+	# Optionally add a title to the plot
+	if( !is.null(title) ){
+		p <- p + ggtitle(title)
+	}
+	
+	return(p)
+}
+################################################################################
+################################################################################
+################################################################################
+#' DEPRECATED. SEE \code{\link{psmelt}} converts OTU-table to data.frame
+#'
+#' Was used for plotting with \code{\link{plot_taxa_bar}} in the ggplot2 framework.
 #'
 #' @usage otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 #'
@@ -915,7 +1262,7 @@ otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
 	return(df)
 }
 ################################################################################
-#' Create a structured barplot graphic of the taxonomic groups.
+#' DEPRECATED. USE \code{\link{plot_bar}} instead. Creates structured barplot.
 #'
 #' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
 #'  graphic object
@@ -1211,6 +1558,7 @@ tree.branch.length <- function(phylo, node) {
 #' @keywords internal
 tree.child.nodes <- function(phylo, node) {
   edge.indices <- which(phylo$edge[,1]==node)
+  edge.indices <- sort(edge.indices)
   nodes <- phylo$edge[edge.indices,2]
   if (length(nodes)==0) {
     nodes <- list(c(-1,-1))
@@ -1388,14 +1736,25 @@ tree.has.tags <- function(phylo) {
 #' @author Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
 #' @importFrom plyr rbind.fill
+#' @import ape
 #'
 #' @keywords internal
 tree.layout <- function(
   phylo,
   layout = 'default',
   layout.ancestors = FALSE,
+  ladderize=FALSE,
   align.seq.names = NA
 ) {
+
+	if (ladderize != FALSE) {
+		if (ladderize == 'left') {
+			phylo <- ladderize(phylo, FALSE)
+		} else {
+			phylo <- ladderize(phylo, TRUE)
+		}
+	}
+
   # Number of nodes and leaves.
   n.nodes <- length(phylo$tip.label)+phylo$Nnode
   n.leaves <- length(phylo$tip.label)
@@ -1407,17 +1766,23 @@ tree.layout <- function(
   }
 
   # Create the skeleton data frame.
-  df <- data.frame(
-                   node=c(1:n.nodes),                                            # Nodes with IDs 1 to N.
-                   angle=0,
-                   x=0,                                                          # These will contain the x and y coordinates after the layout procedure below.
-                   y=0,
-                   label=c(t.labels, n.labels),            # The first n.leaves nodes are the labeled tips.
-                   is.leaf=c(rep(TRUE, n.leaves), rep(FALSE, n.nodes-n.leaves)),    # Just for convenience, store a boolean whether it's a leaf or not.
-                   parent=0,                                                     # Will contain the ID of the current node's parent
-                   children=0,                                                   # Will contain a list of IDs of the current node's children
-                   branch.length=0                                               # Will contain the branch lengths
-                   )
+  # node     - Nodes with IDs 1 to N
+  # x, y     - These will contain the x and y coords after the pending layout procedure.
+  # label    - The first n.leaves nodes are the labeled tips
+  # is.leaf  - Store is-leaf boolean for convenience
+  # parent   - Contain the ID of the current node's parent
+  # children - List of IDs of the current node's children
+  # branch.length - Contains the branch lengths
+  df <- data.frame(node     = c(1:n.nodes),
+                   angle    = 0,
+                   x        = 0,
+                   y        = 0,
+                   label    = c(t.labels, n.labels),
+                   is.leaf  = c(rep(TRUE, n.leaves), rep(FALSE, n.nodes-n.leaves)),
+                   parent   = 0,                                                     
+                   children = 0,                                                  
+                   branch.length = 0
+		)
 
   # Collect the parents, children, and branch lengths for each node
   parent <- c()
@@ -1435,7 +1800,12 @@ tree.layout <- function(
   df$children <- children
 
   # Start the layout procedure by equally spacing the leaves in the y-dimension.
-  df[df$is.leaf==TRUE,]$y = c(1:n.leaves)
+  # ape uses the edge ordering to indicate the plot position.
+  # So we assign starting y-values according to the rank of each tip's location in
+  # the edge vector.
+  leaf.nodes <- which(df$is.leaf == TRUE)
+  leaf.node.edge.indices <- match(leaf.nodes, phylo$edge[,2])
+  df[df$is.leaf==TRUE,]$y <- rank(leaf.node.edge.indices)
 
   found.any.internal.node.sequences <- FALSE
 
@@ -1479,7 +1849,9 @@ tree.layout <- function(
     }
   }
 
-  if (layout == 'unrooted') {
+	if (layout == 'unrooted') {
+	# Not currently supported option.
+	# 
     # # See http://code.google.com/p/phylowidget/source/browse/trunk/PhyloWidget/src/org/phylowidget/render/LayoutUnrooted.java
     # # For unrooted layout, we start from the root.
     # layout.f <- function(node, lo, hi) {
@@ -1615,31 +1987,24 @@ treeMapVar2Tips <- function(melted.tip, physeq, variate){
 ################################################################################
 # The "tree only" setting. Simple. No annotations.
 #' @keywords internal
-plot_tree_only <- function(physeq){
-	# Create the tree data.frame
-	tdf <- tree.layout(phy_tree(physeq))
+#' @import ggplot2
+plot_tree_only <- function(tdf){
 	# build tree lines
-	p <- ggplot(subset(tdf, type == "line")) + 
-			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
+	p <- ggplot(subset(tdf, type == "line")) + geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
 	# Return ggplot object
 	return(p)
 }
 ################################################################################
 # The "sampledodge" plot_tree subset function.
+# Assumes the tree data.frame, tdf, has already been built and is third argument.
 #' @keywords internal
+#' @import ggplot2
 #' @import reshape 
 #' @import scales
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
-plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance, 
+plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abundance, 
 				label.tips, text.size, sizebase, base.spacing){
-
-	# Create the tree data.frame
-	tdf <- tree.layout(phy_tree(physeq))
-	
-	# build tree lines
-	p <- ggplot(subset(tdf, type == "line")) + 
-			geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
 								
 	# Get the subset of tdf for just the tips (leaves)
 	speciesDF <- subset(tdf, type=="label")
@@ -1657,10 +2022,10 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	OTU[OTU==0] <- NA
 	
 	# # Now add abundance table
-	speciesDF 	<- data.frame(speciesDF, OTU)
+	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt(speciesDF, id=c("x", "y", "taxa_names"))
+	melted.tip <- melt.data.frame(speciesDF, id=c("x", "y", "taxa_names"))
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
@@ -1674,6 +2039,9 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	
 	# Remove the NA values (the samples that had no individuals of a particular species)
 	melted.tip <- subset(melted.tip, !is.na(value))
+	if( nrow(melted.tip)==0L ){
+		stop("The number of rows of tip data.frame has dropped to 0 after rm NA values")		
+	}
 
 	# Build the tip-label portion of the melted.tip data.frame, if needed.
 	if( !is.null(label.tips) ){
@@ -1705,39 +2073,34 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 	}
 	
 	# size-map handling. Names "abundance", "variable", "value" have special meaning.
+	ab_labels = c("abundance", "Abundance", "abund")
 	if( !is.null(size) ){	
-		if( size %in% c("abundance", "Abundance", "abund") ){
-			size <- "value"
-		} else if( !is.null(size) ){
+		if( size %in% ab_labels ){
+			size = "value"
+		} else {
 			melted.tip$size <- treeMapVar2Tips(melted.tip, physeq, size)
 			names(melted.tip)[names(melted.tip)=="size"] <- size # rename to name of size variable
 		}
 	}
 		
 	# The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
-	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, shape=shape, size=size)
+	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, fill=color, shape=shape, size=size)
 	
 	# Add the new point layer.
-	p <- p + geom_point(tip.map, data=melted.tip)
+	p <- p + geom_point(tip.map, data=melted.tip, na.rm=TRUE)
 
 	# Optionally-add abundance value label to each point.
 	# This size needs to match point size.
 	if( any(melted.tip$value >= min.abundance[1]) ){
 		if( is.null(size) ){
 			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", label="value")
-			p <- p + geom_text( point.label.map, data=subset(melted.tip, value>=min.abundance[1]), size=1)
+			p <- p + geom_text( point.label.map, data=subset(melted.tip, value>=min.abundance[1]), size=1, na.rm=TRUE)
 		} else {
 			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y",
 				label="value", size=paste("0.025*", size, sep=""))
 			p <- p + geom_text( point.label.map, angle=45, hjust=0,
-						data=subset(melted.tip, value>=min.abundance[1]) )
+						data=subset(melted.tip, value>=min.abundance[1]), na.rm=TRUE)
 		}
-	}
-
-	# If no text.size given, calculate it from number of tips ("species", aka taxa)
-	# This is very fast. No need to worry about whether text is printed or not. DRY.
-	if( is.null(text.size) ){
-		text.size <- treetextsize(ntaxa(physeq))
 	}
 
 	# If indicated, add the species labels to the right of points.
@@ -1750,36 +2113,228 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 		# Create the tip-label aesthetic map.
 		label.map <- aes(x=x + x.adj + 2*x.spacer.base, y=y, label=tipLabels)
 		# Add labels layer to plotting object.
-		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0)
+		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0, na.rm=TRUE)
 	}
 	
-	# Adjust name / scale of abundance...
-	if( !is.null(size) ){ 	
-		p <- p + scale_size_continuous("Abundance", trans=log_trans(sizebase))
+	# Adjust point size transform
+	if( !is.null(size) ){
+		p <- p + scale_size_continuous(trans=log_trans(sizebase))
 	}
 	
 	# Update legend-name of color or shape or size
-	if( as.logical(sum(color == "variable")) ){
+	if( identical(color, "variable") ){
 		p <- update_labels(p, list(colour = "Samples"))
 	}
-	if( as.logical(sum(shape == "variable")) ){
+	if( identical(shape, "variable") ){
 		p <- update_labels(p, list(shape  = "Samples"))
 	}
-	if( as.logical(sum(size == "value")) ){
+	if( identical(size, "value") ){
 		p <- update_labels(p, list(size = "Abundance"))
 	}
 			
 	return(p)		
 }
 ################################################################################
+# Return TRUE if the nodes of the tree in the phyloseq object provided are unlabeled.
+#' @keywords internal
+nodesnotlabeled = function(physeq){
+	if( is.null(phy_tree(physeq, FALSE)) ){
+		warning("There is no phylogenetic tree in the object you have provided. Try phy_tree(physeq) to see.")
+		return(TRUE)
+	} else {
+		return( is.null(phy_tree(physeq)$node.label) | length(phy_tree(physeq)$node.label)==0L )
+	}
+}
+# A quick test function to decide how nodes should be labeled by default, if at all.
+#  
+#' @keywords internal
+howtolabnodes = function(physeq){
+	if(!nodesnotlabeled(physeq)){
+		return(nodeplotdefault(treetextsize(ntaxa(physeq))))
+	} else {
+		return(nodeplotblank)
+	}
+}
+################################################################################
+#' Function to avoid plotting node labels
+#'
+#' Unlike, \code{\link{nodeplotdefault}} and \code{\link{nodeplotboot}},
+#' this function does not return a function, but instead is provided
+#' directly to the \code{nodelabf} argument of \code{\link{plot_tree}} to 
+#' ensure that node labels are not added to the graphic.
+#' Please note that you do not need to create or obtain the arguments to 
+#' this function. Instead, you can provide this function directly to 
+#' \code{\link{plot_tree}} and it will know what to do with it. Namely,
+#' use it to avoid plotting any node labels.
+#'
+#' @usage nodeplotblank(p, nodelabdf)
+#'
+#' @param p (Required). The \code{\link{plot_tree}} graphic.
+#'
+#' @param nodelabdf (Required). The \code{data.frame} produced internally in 
+#' \code{link{plot_tree}} to use as data for creating ggplot2-based tree graphics.  
+#'
+#' @return The same input object, \code{p}, provided as input. Unmodified.
+#'
+#' @seealso 
+#' \code{\link{nodeplotdefault}}
+#'
+#' \code{\link{nodeplotboot}}
+#'
+#' \code{\link{plot_tree}}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' data("esophagus")
+#' plot_tree(esophagus)
+#' plot_tree(esophagus, nodelabf=nodeplotblank)
+nodeplotblank = function(p, nodelabdf){
+	return(p)
+}
+################################################################################
+#' Generates a function for labeling bootstrap values on a phylogenetic tree.
+#'
+#' Is not a labeling function itself, but returns one.
+#' The returned function is specialized for labeling bootstrap values.
+#' Note that the function that 
+#' is returned has two completely different arguments from the four listed here:
+#' the plot object already built by earlier steps in
+#' \code{\link{plot_tree}}, and the \code{\link{data.frame}}
+#' that contains the relevant plotting data for the nodes
+#' (especially \code{x, y, label}),
+#' respectively.  
+#' See \code{\link{nodeplotdefault}} for a simpler example.
+#' The main purpose of this and \code{\link{nodeplotdefault}} is to
+#' provide a useful default function generator for arbitrary and
+#' bootstrap node labels, respectively, and also to act as 
+#' examples of functions that can successfully interact with 
+#' \code{\link{plot_tree}} to add node labels to the graphic.
+#'
+#' @usage nodeplotboot(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2)
+#'
+#' @param highthresh (Optional). A single integer between 0 and 100.
+#'  Any bootstrap values above this threshold will be annotated as
+#'  a black filled circle on the node, rather than the bootstrap
+#'  percentage value itself.
+#'
+#' @param lowcthresh (Optional). A single integer between 0 and 100,
+#'  less than \code{highthresh}. Any bootstrap values below this value
+#'  will not be added to the graphic. Set to 0 or below to add all
+#'  available values.
+#'
+#' @param size (Optional). Numeric. Should be positive. The 
+#'  size parameter used to control the text size of taxa labels.
+#'  Default is \code{2}. These are ggplot2 sizes.
+#'
+#' @param hjust (Optional). The horizontal justification of the
+#'  node labels. Default is \code{-0.2}.  
+#'
+#' @return A function that can add a bootstrap-values layer to the tree graphic.
+#'  The values are represented in two ways; either as black filled circles
+#'  indicating very high-confidence nodes, or the bootstrap value itself
+#'  printed in small text next to the node on the tree.
+#'
+#' @seealso 
+#' \code{\link{nodeplotdefault}}
+#'
+#' \code{\link{nodeplotblank}}
+#'
+#' \code{\link{plot_tree}}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' nodeplotboot()
+#' nodeplotboot(3, -0.4)
+nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
+	function(p, nodelabdf){
+		# For bootstrap, check that the node labels can be coerced to numeric
+		try(boot <- as(as(nodelabdf$label, "character"), "numeric"), TRUE)
+		# Want NAs/NaN to propagate, but still need to test remainder
+		goodboot = boot[complete.cases(boot)]
+		if( !is(goodboot, "numeric") & length(goodboot) > 0 ){
+			stop("The node labels, phy_tree(physeq)$node.label, are not coercable to a numeric vector with any elements.")
+		}
+		# So they look even more like bootstraps and display well, 
+		# force them to be between 0 and 100, rounded to 2 digits.
+		if( all( goodboot >= 0.0 & goodboot <= 1.0 ) ){
+			boot = round(boot, 2)*100L
+		}
+		nodelabdf$boot = boot
+		boottop = subset(nodelabdf, boot >= highthresh)
+		bootmid = subset(nodelabdf, boot > lowcthresh & boot < highthresh)
+		# Label the high-confidence nodes with a point.
+		if( nrow(boottop)>0L ){
+			p = p + geom_point(data = boottop, aes(x=x, y=y), na.rm=TRUE)
+		}
+		# Label the remaining bootstrap values as text at the nodes.
+		if( nrow(bootmid)>0L ){
+			bootmid$label = bootmid$boot
+			p = nodeplotdefault(size, hjust)(p, bootmid)
+		}
+		return(p)
+	}
+}
+################################################################################
+#' Generates a default node-label function 
+#'
+#' Is not a labeling function itself, but returns one.
+#' The returned function is capable of adding
+#' whatever label is on a node. Note that the function that 
+#' is returned has two completely different arguments to those listed here:
+#' the plot object already built by earlier steps in
+#' \code{\link{plot_tree}}, and the \code{\link{data.frame}}
+#' that contains the relevant plotting data for the nodes
+#' (especially \code{x, y, label}),
+#' respectively. 
+#' See \code{\link{nodeplotboot}} for a more sophisticated example.
+#' The main purpose of this and \code{\link{nodeplotboot}} is to
+#' provide a useful default function generator for arbitrary and
+#' bootstrap node labels, respectively, and also to act as 
+#' examples of functions that will successfully interact with 
+#' \code{\link{plot_tree}} to add node labels to the graphic.
+#'
+#' @usage nodeplotdefault(size=2L, hjust=-0.2)
+#'
+#' @param size (Optional). Numeric. Should be positive. The 
+#'  size parameter used to control the text size of taxa labels.
+#'  Default is \code{2}. These are ggplot2 sizes.
+#'
+#' @param hjust (Optional). The horizontal justification of the
+#'  node labels. Default is \code{-0.2}.  
+#'
+#' @return A function that can add a node-label layer to a graphic.
+#'
+#' @seealso 
+#' \code{\link{nodeplotboot}}
+#'
+#' \code{\link{nodeplotblank}}
+#'
+#' \code{\link{plot_tree}}
+#'
+#' @import ggplot2
+#' @export
+#' @examples
+#' nodeplotdefault()
+#' nodeplotdefault(3, -0.4)
+nodeplotdefault = function(size=2L, hjust=-0.2){
+	function(p, nodelabdf){
+		p = p + geom_text(data=nodelabdf, aes(x=x, y=y, label=label), size=size, hjust=hjust, na.rm=TRUE)
+		return(p)
+	}
+}
+################################################################################
 #' Plot a phylogenetic tree with optional annotations
 #'
+#' There are many useful examples of phyloseq tree graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #' This function is intended to facilitate easy graphical investigation of 
 #' the phylogenetic tree, as well as sample data. Note that for phylogenetic
 #' sequencing of samples with large richness, some of the options in this 
 #' function will be prohibitively slow to render, or too dense to be
 #' interpretable. A rough ``rule of thumb'' is to use subsets of data 
-#' with not many more than 200 taxa per plot, sometimes less depending on the
+#' with not many more than 200 OTUs per plot, sometimes less depending on the
 #' complexity of the additional annotations being mapped to the tree. It is 
 #' usually possible to create an unreadable, uninterpretable tree with modern
 #' datasets. However, the goal should be toward parameter settings and data
@@ -1798,8 +2353,9 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' is planned. Send us development feedback if this is a feature you really
 #' want to have soon.
 #'
-#' @usage plot_tree(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
-#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02, title=NULL)
+#' @usage plot_tree(physeq, method="sampledodge", nodelabf=NULL, color=NULL, shape=NULL, size=NULL,
+#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02,
+#' 	ladderize=FALSE, plot.margin=0.2, title=NULL)
 #'
 #' @param physeq (Required). The data about which you want to 
 #'  plot and annotate a phylogenetic tree, in the form of a
@@ -1819,6 +2375,17 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  drawn next to leaves if individuals from that taxa were observed,
 #'  and a separate point is drawn for each sample.
 #' 
+#' @param nodelabf (Optional). A function. Default \code{NULL}.
+#'  If \code{NULL}, the default, a function will be selected for you based upon
+#'  whether or not there are node labels in \code{phy_tree(physeq)}.
+#'  For convenience, the phyloseq package includes two generator functions
+#'  for adding arbitrary node labels (can be any character string),
+#'  \code{\link{nodeplotdefault}};
+#'  as well as for adding bootstrap values in a certain range,
+#'  \code{\link{nodeplotboot}}.
+#'  To not have any node labels in the graphic, set this argument to
+#'  \code{\link{nodeplotblank}}.
+#'
 #' @param color (Optional). Character string. Default \code{NULL}.
 #'  The name of the variable in \code{physeq} to map to point color.
 #' 
@@ -1870,6 +2437,23 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #'  don't have this problem and want tighter point-spacing, you can 
 #'  shrink this value.
 #'
+#' @param ladderize (Optional). Boolean or character string (either
+#'  \code{FALSE}, \code{TRUE}, or \code{"left"}). Default is \code{FALSE}.
+#'  This parameter specifies whether or not to \code{\link[ape]{ladderize}} the tree 
+#'  (i.e., reorder nodes according to the depth of their enclosed
+#'  subtrees) prior to plotting. When set to \code{TRUE}, the default
+#'  ladderization (``right'' ladderization) is used; when set to
+#'  \code{FALSE}, no ladderization is performed; when set to \code{"left"},
+#'  the reverse direction (``left'' ladderization) is applied.
+#'
+#' @param plot.margin (Optional). Numeric. Default is \code{0.2}.
+#'  Should be positive.
+#'  This defines how much right-hand padding to add to the tree plot,
+#'  which can be required to not truncate tip labels. The margin value
+#'  is specified as a fraction of the overall tree width which is added
+#'  to the right side of the plot area. So a value of \code{0.2} adds
+#'  twenty percent extra space to the right-hand side of the plot.
+#'
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
 #'
@@ -1889,6 +2473,7 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' 
 #' @import reshape
 #' @import scales
+#' @import ggplot2
 #' @export
 #' @examples
 #' # # Using plot_tree() with the esophagus dataset.
@@ -1897,7 +2482,12 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' plot_tree(esophagus, color="samples")
 #' plot_tree(esophagus, size="abundance")
 #' plot_tree(esophagus, size="abundance", color="samples")
-#' plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+#' p = plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
+#' print(p)
+#' # Modify the color scale using ggplot2 functions
+#' library("ggplot2")
+#' p + scale_colour_brewer(palette="Set1")
+#' p + scale_color_manual(values=c(B="blue", C="green", D="red"))
 #' # # Using plot_tree with the Global Patterns dataset
 #' data("GlobalPatterns")
 #' # Subset Global Patterns dataset to just the observed Archaea
@@ -1917,8 +2507,12 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # # somewhat crowded graphic. 
 #' # # 
 #' # # Let's instead subset further ot just the Crenarchaeota
-#' gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
-#' plot_tree(gpac, color="SampleType", shape="Genus")
+#' gpac = subset_species(gpa, Phylum=="Crenarchaeota")
+#' p = plot_tree(gpac, color="SampleType", shape="Order", ladderize="left")
+#' print(p)
+#' # Modify the color scale using ggplot2 functions
+#' p = p + scale_colour_brewer(palette="Set1")
+#' print(p)
 #' # plot_tree(gpac, color="SampleType", label.tips="Genus")
 #' # # Let's add some abundance information.
 #' # # Notice that the default spacing gets a little crowded when we map
@@ -1926,20 +2520,72 @@ plot_tree_sampledodge <- function(physeq, color, shape, size, min.abundance,
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance")
 #' # # So let's spread it out a little bit with the base.spacing parameter.
 #' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
-plot_tree <- function(physeq, method="sampledodge", color=NULL, shape=NULL, size=NULL,
+plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
+	color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
-	sizebase=5, base.spacing = 0.02, title=NULL){
+	sizebase=5, base.spacing = 0.02,
+	ladderize=FALSE, plot.margin=0.2, title=NULL){
 
-	if( method %in% c("treeonly") ){
-		p <- plot_tree_only(physeq)
+	# Test that physeq has tree, top-level test.
+	if( is.null(phy_tree(physeq, FALSE)) ){
+		stop("There is no phylogenetic tree in the object you have provided. Try phy_tree(physeq) to see.")
 	}
+
+	# Create the tree data.frame
+	tdf <- tree.layout(phy_tree(physeq), ladderize=ladderize)
+
+	# "Naked" unannotated tree built in ggplot2 no matter what. Lines only.
+	p <- plot_tree_only(tdf)
 	
+	# If no text.size given, calculate it from number of tips ("species", aka taxa)
+	# This is very fast. No need to worry about whether text is printed or not. DRY.
+	if( is.null(text.size) ){
+		text.size <- treetextsize(ntaxa(physeq))
+	}
+
+	# Tip annotation section.
+	#
+	# Annotate dodged sample points, and other fancy tip labels
 	if( method == "sampledodge" ){
-		p <- plot_tree_sampledodge(physeq, color, shape, size, min.abundance, 
+		p <- plot_tree_sampledodge(physeq, p, tdf, color, shape, size, min.abundance, 
 				label.tips, text.size, sizebase, base.spacing)
 	}
+
+	# Node label section.
+	# 
+	# If no nodelabf ("node label function") given, ask internal function to pick one.
+	# Is NULL by default, meaning will dispatch to howtolabnodes to select function.
+	# For no node labels, the "dummy" function nodeplotnot will return tree plot 
+	# object, p, as-is, unmodified.
+	if( is.null(nodelabf) ){
+		nodelabf = howtolabnodes(physeq)
+	}
+	# Subset data.frame to just the internal nodes (not leaves).
+	nodelabdf = subset(tdf, is.leaf == FALSE & type == "node")
+	# Use the provided/inferred node label function to add the node labels layer(s)
+	p = nodelabf(p, nodelabdf)
 	
-	# Theme-ing:
+	# Plot margins. 
+	#
+	# Adjust the tree graphic plot margins.
+	# Helps to manually ensure that graphic elements aren't clipped,
+	# especially when there are long tip labels.
+	if( method == "sampledodge" ){
+		min.x <- min(tdf$x, p$layers[[2]]$data$x, na.rm=TRUE)
+		max.x <- max(tdf$x, p$layers[[2]]$data$x, na.rm=TRUE)
+	} else {
+		min.x <- min(tdf$x, na.rm=TRUE)
+		max.x <- max(tdf$x, na.rm=TRUE)
+	}
+	if (plot.margin > 0) {
+		max.x <- max.x * (1.0 + plot.margin)
+	} 
+	p <- p + scale_x_continuous(limits=c(min.x, max.x))	
+	
+	# Themeing section.
+	#
+	# Theme-ing: Blank theming 
+	# Should open this up as function-argument also.
 	p <- p + theme(axis.ticks = element_blank(),
 			axis.title.x=element_blank(), axis.text.x=element_blank(),
 			axis.title.y=element_blank(), axis.text.y=element_blank(),
@@ -1979,6 +2625,8 @@ RadialCoords <- function(pos)
 ################################################################################
 #' Create an ecologically-organized heatmap using ggplot2 graphics
 #'
+#' There are many useful examples of phyloseq heatmap graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' In a 2010 article in BMC Genomics, Rajaram and Oono show describe an 
 #' approach to creating a heatmap using ordination methods to organize the 
 #' rows and columns instead of (hierarchical) cluster analysis. In many cases

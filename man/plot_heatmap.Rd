@@ -89,15 +89,18 @@
   plot object, which can be further saved and modified.
 }
 \description{
-  In a 2010 article in BMC Genomics, Rajaram and Oono show
-  describe an approach to creating a heatmap using
-  ordination methods to organize the rows and columns
-  instead of (hierarchical) cluster analysis. In many cases
-  the ordination-based ordering does a much better job than
-  h-clustering. An immediately useful example of their
-  approach is provided in the NeatMap package for R. The
-  NeatMap package can be used directly on the abundance
-  table (\code{\link{otu_table-class}}) of
+  There are many useful examples of phyloseq heatmap
+  graphics in the
+  \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq
+  online tutorials}. In a 2010 article in BMC Genomics,
+  Rajaram and Oono show describe an approach to creating a
+  heatmap using ordination methods to organize the rows and
+  columns instead of (hierarchical) cluster analysis. In
+  many cases the ordination-based ordering does a much
+  better job than h-clustering. An immediately useful
+  example of their approach is provided in the NeatMap
+  package for R. The NeatMap package can be used directly
+  on the abundance table (\code{\link{otu_table-class}}) of
   phylogenetic-sequencing data, but the NMDS or PCA
   ordination options that it supports are not based on
   ecological distances. To fill this void, phyloseq

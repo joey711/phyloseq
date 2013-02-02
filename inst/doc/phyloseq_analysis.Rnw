@@ -173,7 +173,7 @@ And now we will create the tree graphic form this subset of \code{GlobalPatterns
 \setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[htbp]
 \centering
-<<GP_chl_tree, fig=TRUE, width=15, height=7, message=FALSE, warning=FALSE>>=
+<<GP:chl:tree, fig=TRUE, width=15, height=7, message=FALSE, warning=FALSE>>=
 plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
 @
 \caption{Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}
@@ -212,7 +212,7 @@ rank_names(enterotype)
 @
 This means the OTUs in this dataset have been grouped at the level of genera, and no other taxonomic grouping/transformation is possible without additional information (like might be present in a phylogenetic tree, or with further taxonomic classification analysis).
 
-We need to know which taxonomic rank classifiers, if any, we have available to specify in the second barplot function in this example, \code{plot{\_}taxa{\_}bar()}. We have already observed how quickly the abundance decreases with rank, so wo we will subset the enterotype dataset to the most abundant \code{N} taxa in order to make the barplot legible on this page.
+We need to know which taxonomic rank classifiers, if any, we have available to specify in the second barplot function in this example, \code{plot{\_}bar()}. We have already observed how quickly the abundance decreases with rank, so wo we will subset the enterotype dataset to the most abundant \code{N} taxa in order to make the barplot legible on this page.
 
 <<>>=
 TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
@@ -226,17 +226,16 @@ Note also that there are \Sexpr{nsamples(ent10)} samples in this dataset, and so
 sample_variables(ent10)
 @
 
-The parameters to \code{plot{\_}taxa{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sample{\_}data}, the \code{plot{\_}taxa{\_}bar()} function recognizes a special parameter name \code{"TaxaGroup"}, which is not (should not be) a sample variable name in
-\mbox{\code{sample{\_}data(enterotype)}}, but instead indicates that the particular graphic parameter should group values by the taxanomic rank specified in the \code{taxavec} argument. In this example we have also elected to separate the samples by ``facets'' (separate, adjacent sub-plots) according to the enterotype to which they have been assigned. Within each enterotype facet, the samples are further separated by sequencing technology, and the genera is indicated by fill color. Multiple samples having the same enterotype designation and sequencing technology are plotted side-by-side as separate bars. 
+The parameters to \code{plot{\_}bar} in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of \code{sample{\_}data}, the \code{plot{\_}bar()} function recognizes the names of taxonomic ranks (if present). See the help documentation and further details in the examples and on the wiki page. In this example we have also elected to organize data by ``facets'' (separate, adjacent sub-plots) according to the genus of each OTU. Within each genus facet, the data is further separated by sequencing technology, and the enterotype label for the sample from which each OTU originated is indicated by fill color. Abundance values from different samples and OTUs but having the same variables mapped to the horizontal (\code{x}) axis are sorted and stacked, with thin horizontal lines designating the boundaries. With this display it is very clear that the choice of sequencing technology had a large effect on which genera were detected, as well as the fraction of OTUs that were assigned to a Genus.
 
 \setkeys{Gin}{width=1.1\textwidth}
 \begin{figure}[htbp]
 \centering
-<<entbarplot0, fig=TRUE, height=6, width=8>>=
-plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype)
+<<entbarplot0, fig=TRUE, height=6, width=10>>=
+plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
 @
 \captionsetup{width=1.0\textwidth}
-\caption{An example exploratory barplot using the \code{plot{\_}taxa{\_}bar()} function. In this case we have faceted the samples according to their assigned Enterotype. The small subset of samples in the dataset that do not have an assigned Enterotype are shown in the \code{NA} panel. Within each Enterotype facet, the samples are further separated by sequencing technology, and each genera is shaded a different color. Multiple samples from the same Enterotype and sequencing technology are plotted side-by-side as separate bars (dodged).}
+\caption{An example exploratory bar plot using the \code{plot{\_}bar()} function. In this case we have faceted the data (abundance values) according to the genera of each OTU. The  subset of OTUs that have not been assigned to a specific genus are in the \code{NA} panel. Within each facet, the data is further separated by sequencing technology, and each OTU is shaded according to the enterotype of the sample it form which it came. Abundance values from different samples and OTUs but having the same variables mapped to the horizontal (\code{x}) axis are sorted and stacked, with thin horizontal lines designating the boundaries.}
 \label{fig:barplot}
 \end{figure}
 \setkeys{Gin}{width=0.8\textwidth}
@@ -537,14 +536,13 @@ ggsave("phyloseq_analysis-GPCAjitter.pdf", p, width=7, height=7)
 \end{figure}
 
 \clearpage
-One way to relate some of the high-level patterns we observed from correspondence analysis is to visualize the relative abundances of the relevant phylogenetic groups, to see if this does in fact support / explain the human/environment microbiome differences. Here is an example using the \code{plot{\_}taxa{\_}bar} function described earlier in Section~\ref{sec:barplots}.
+One way to relate some of the high-level patterns we observed from correspondence analysis is to directly visualize the abundances in an organized, quantitative way, to see if this does in fact support / explain the human/environment microbiome differences. Here is an example using the \code{plot{\_}bar} function described earlier in Section~\ref{sec:barplots}.
 
 <<GPtaxaplot0, fig=FALSE, include=FALSE>>=
-(p <- plot_taxa_bar(GP, "Phylum", NULL, threshold=0.9, "human", "SampleType", 
-							facet_formula= TaxaGroup ~ .) )
+plot_bar(GP, x="human", fill="SampleType", facet_grid= ~ Phylum)
 @
 <<GPtaxaplot, fig=FALSE, include=FALSE, width=6, height=7, echo=FALSE>>=
-ggsave("phyloseq_analysis-GPtaxaplot.pdf", p, width=8, height=10)
+ggsave("phyloseq_analysis-GPtaxaplot.pdf", last_plot(), width=8, height=10)
 @
 \begin{figure}[htbp]
 \centering
