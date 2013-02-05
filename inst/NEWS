@@ -17,6 +17,17 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.3.12
+===========
+- Fixed a parsing issue for some QIIME-produced .biom files
+  that had leading space characters. Issue further described at
+https://github.com/joey711/phyloseq/issues/171
+  Fixed such that any number of leading/lagging space characters
+  are removed from taxonomic classification entries
+
+- Fixed build issue on some windows machines derived from problem
+  with figure files having colons in the filename.
+
 phyloseq 1.3.11
 ===========
 - Added tree option for import_biom() importer so that users can avoid
