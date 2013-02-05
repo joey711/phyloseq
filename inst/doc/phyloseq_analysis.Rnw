@@ -46,7 +46,7 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{ Vignette for phyloseq: A Bioconductor package for handling and analysis of high-throughput phylogenetic sequence data }
+\title{ Vignette for phyloseq: A Bioconductor package for handling and analysis of high-throughput microbiome census data }
 
 \author{Paul J. M{c}Murdie$^*$ and Susan Holmes\\
 Statistics Department, Stanford University,\\
@@ -173,7 +173,7 @@ And now we will create the tree graphic form this subset of \code{GlobalPatterns
 \setkeys{Gin}{width=0.99\textwidth}
 \begin{figure}[htbp]
 \centering
-<<GP:chl:tree, fig=TRUE, width=15, height=7, message=FALSE, warning=FALSE>>=
+<<GP-chl-tree, fig=TRUE, width=15, height=7, message=FALSE, warning=FALSE>>=
 plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
 @
 \caption{Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the ``Global Patterns'' dataset~\cite{Caporaso15032011}.}

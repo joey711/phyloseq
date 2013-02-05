@@ -1655,6 +1655,10 @@ import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_de
 #'  taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
 #'  parse_taxonomy_qiime(taxvec2)
 parse_taxonomy_default = function(char.vec){
+	# Remove any leading empty space
+	char.vec = gsub("^[[:space:]]{1,}", "", char.vec)
+	# Remove any trailing space
+	char.vec = gsub("[[:space:]]{1,}$", "", char.vec)
 	if( length(char.vec) > 0 ){
 		# Add dummy element (rank) name
 		names(char.vec) = paste("Rank", 1:length(char.vec), sep="")
