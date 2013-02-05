@@ -14,8 +14,18 @@ This will not necessarily have the very latest features and fixes, but the insta
 
 ```r
 source("http://bioconductor.org/biocLite.R")
+```
+
+```
+## Bioconductor version 2.11 (BiocInstaller 1.8.3), ?biocLite for help
+```
+
+
+```r
 biocLite("phyloseq")
 ```
+
+If it asks to update old packages, you should probably choose option `a`, to update all packages.
 
 
 ### GitHub Development Version
@@ -37,6 +47,58 @@ then go ahead and load the devtools package and attempt to install phyloseq with
 ```r
 library("devtools")
 install_github("phyloseq", "joey711")
+```
+
+
+
+### Bioconductor Devel Version
+
+There are [official instructions for using development versions of Bioconductor packages](http://bioconductor.org/developers/useDevel/), and these will apply to phyloseq as well as any other package in the BioC-devel repository. However, using their tool, especially the `useDevel()` command, appears to force you to use development versions of all your Bioconductor packages. 
+
+Instead, I recommend installing the stable release versions of all the packages on which phyloseq depends, especially the whichever version is explicitly listed in [the DESCRIPTION file](https://github.com/joey711/phyloseq/blob/master/DESCRIPTION). This is actually pretty easy. 
+
+- (1) *Install/update dependencies using release version*. First let's follow the previous instructions for installing the stable release version of phyloseq, shown again here. This is an easy way of installing the stable dependencies for phyloseq while also making sure there are no other strange problems. If it works you will already have the stable version of phyloseq installed as well as updated versions of the packages on which it depends, but this section is about installing the latest devel version. 
+
+
+```r
+source("http://bioconductor.org/biocLite.R")
+```
+
+
+```r
+biocLite("phyloseq")
+```
+
+```
+Update all/some/none? [a/s/n]:
+```
+If these two commands result in a request to update old packages, you should probably choose option `a`, to update all packages.
+
+- (2) *Use special arguments to biocLite*. By investigating the [phyloseq/BioC development version home page](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html) I was able to determine that the BioC devel branch version is `2.12`, and that the repo URL for BioC devel right now is http://bioconductor.org/packages/2.12/bioc . We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
+
+
+```r
+source("http://bioconductor.org/biocLite.R")
+devel = "http://bioconductor.org/packages/2.12/bioc"
+biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
+```
+
+```
+## BioC_mirror: http://bioconductor.org
+```
+
+```
+## Using Bioconductor version 2.11 (BiocInstaller 1.8.3), R version 2.15.
+```
+
+```
+## Installing package(s) 'phyloseq'
+```
+
+```
+## 
+## The downloaded source packages are in
+## 	'/private/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T/Rtmp2vJKAI/downloaded_packages'
 ```
 
 
@@ -134,6 +196,51 @@ There is no way for us to guarantee or troubleshoot all the possible issues that
 # Manual Download and Local Install
 Depending on the problem that you're having, it might help to download a compressed version of the phyloseq package, and then attempt to install it locally with standard R commands/tools.
 
+## BioC devel from within R only
+In this particular approach to installing the BioC-devel version of phyloseq, we need a specific URL for downloading the package file. We have provided example URLs below, but they may change slight as package version numbers change. To check the links, go to [the phyloseq page for Bioconductor devel branch](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html). In this example, the phyloseq-devel version on Bioconductor was `1.3.11`.
+
+The URLs below are for installing from source (any properly configured system), from a Mac binary (Mac only), or from a Windows binary (Windows only).
+
+Now, using the links we just checked and the temporary system file that we initialized, we will download the package type appropriate for your system, and use the `install.packages` command that is part of standard R in order to install the just-downloaded package. Remember that you should only use one of the options below, depending on your system. All other things being equal, the binary versions are supposed to install faster and easier than source. If the binary installation doesn't work, however, try "installing from source" as shown below.
+
+In all three examples, we first have to define a fresh new temporary file where your system will store the downloaded package file. We can simply call this `temp`, regardless of which system or package type.
+
+For Windows binary install
+
+```r
+temp <- tempfile()
+windowsURL = "http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/2.16/phyloseq_1.3.0.zip"
+download.file(windowsURL, temp)
+install.packages(temp, repos = NULL, type = "win.binary")
+```
+
+
+For Mac binary install
+
+```r
+temp <- tempfile()
+macURL = "http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/2.16/phyloseq_1.3.11.tgz"
+download.file(macURL, temp)
+install.packages(temp, repos = NULL, type = "mac.binary.leopard")
+```
+
+
+For installing from source
+
+```r
+temp <- tempfile()
+sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz"
+download.file(sourceURL, temp)
+install.packages(temp, repos = NULL, type = "source")
+```
+
+```
+## Installing package(s) into
+## '/Applications/RStudio.app/Contents/Resources/R/library' (as 'lib' is
+## unspecified)
+```
+
+
 
 ## Manual [Download from GitHub](https://github.com/joey711/phyloseq/tarball/master)
 The `tar.gz` "tarball" of the latest package build can be downloaded by clicking this [phyloseq tarball](https://github.com/joey711/phyloseq/tarball/master) link. Both zipball and tarball versions of the repository are also linked from [the phyloseq front page](joey711.github.com/phyloseq/).
@@ -201,14 +308,14 @@ R CMD INSTALL joey711-phyloseq-*.tar.gz`.
 
 
 ---
-# Install BioC devel branch, automated
-The previous options for installation are recommended
-
-There are [official instructions for using development versions of Bioconductor packages](http://bioconductor.org/developers/useDevel/), and these will apply to phyloseq as well as any other package in the BioC-devel repository. However, using their tool, especially the `useDevel()` command, appears to force you to use development versions of all your Bioconductor packages. There are more complicated ways around this requirement described on their page, but the "manual download and local install" instructions above will allow you to get around it. 
-
-
----
 # Customization
 
 If you want to make modifications to phyloseq on your own fork, and then install from your modified repository, just change the `"joey711"` argument to your GitHub username (and if you named the repository something other than `"phyloseq"`, change that too).
 Otherwise, you can follow the instructions above for using the `install_github` command.
+
+
+
+--- 
+For my own development tasks, I'm going to re-install the latest devel version from GitHub.
+
+
