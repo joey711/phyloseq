@@ -9,6 +9,12 @@ plot_network Examples
 library(phyloseq); library(ggplot2)
 data(enterotype)
 ```
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+```{r}
+packageDescription("phyloseq")$Version
+packageDescription("ggplot2")$Version
+```
 
 Create an igraph-based network based on the default distance method, "Jaccard", and a maximum distance between connected nodes of `0.3`.
 

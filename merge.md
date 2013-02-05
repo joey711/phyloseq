@@ -29,6 +29,17 @@ Let's first remove unobserved OTUs (sum 0 across all samples), and add a human-a
 library("phyloseq")
 ```
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+
 
 ```r
 data(GlobalPatterns)
@@ -168,7 +179,7 @@ Let's look at the merge graphically between two [richness estimate summary plots
 plot_richness(GP, "human", "SampleType", title = "unmerged")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 The merge can do some weird things to sample variables. Let's re-add these variables to the `sample_data` before we plot.
@@ -180,7 +191,7 @@ sample_data(mergedGP)$human = sample_names(mergedGP) %in% humantypes
 plot_richness(mergedGP, "human", "SampleType", title = "merged")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 Perhaps not surprisingly, when we combine the abundances of non-replicate samples from the same environment, the estimates of absolute richness increase for each environment. More to the example, however, the new merged plot is easier to read and interpret, which is one of the reasons one might use the `merge_samples` function.
@@ -210,7 +221,7 @@ Now that the original unmerged dataset has been combined into a phyloseq object,
 plot_tree(x0, color = "sample", size = "abundance", sizebase = 2, label.tips = "taxa_names")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
 Now let's use `merge_taxa` to merge the first 8 OTUS of `x0` into one new OTU. By choosing `2` as the optional third argument to `merge_taxa`, we are choosing to essentially pile the data of these 8 OTUs into the index for the second OTU. The default is to use the first OTU of the second argument.
@@ -220,7 +231,7 @@ x1 = merge_taxa(x0, taxa_names(x0)[1:8], 2)
 plot_tree(x1, color = "sample", size = "abundance", sizebase = 2, label.tips = "taxa_names")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 ---

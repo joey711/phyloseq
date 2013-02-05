@@ -12,6 +12,11 @@ which is invoked internally by the importers, and is also the suggested function
 library(phyloseq)
 ```
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line. If your version is lower than the one shown here AND you are having trouble with the import examples, try updating your phyloseq version to the latest development version available from GitHub, using [the phyloseq installation tutorial](http://joey711.github.com/phyloseq/install).
+
+```{r}
+packageDescription("phyloseq")$Version
+```
 
 ## Currently available import functions
 

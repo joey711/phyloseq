@@ -26,6 +26,18 @@ data(GlobalPatterns)
 ```
 
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+
 "Trim" data. This is useful for plotting, and in this case, also useful for making examples that run in a short amount of time. Your reasoning and decisions in trimming are extremely important, and up to you. I am using several different methods of trimming here, for illustration and because the extent of data reduction is useful for my purposes. However, I make no assertion that these are the "right" approach(es) for your data, but rather, I highly recommend that you think hard about any trimming you do, and only commit to including it in your final analysis pipeline if you can defend the choices and have checked that they are robust. 
 
 Need to clean the zeros from GlobalPatterns. While we're at it, let's remove any OTUs observed less than 5 times, cumulative for all samples
@@ -84,7 +96,7 @@ p1 = plot_ordination(GP1, GP.ord, type = "taxa", color = "Phylum", title = "taxa
 print(p1)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 
@@ -95,7 +107,7 @@ This is a complicated looking plot, but that's not necessarily good. There is ac
 p1 + facet_wrap(~Phylum, 3)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 
 
@@ -107,7 +119,7 @@ p2 = plot_ordination(GP1, GP.ord, type = "samples", color = "SampleType", shape 
 p2 + geom_line() + geom_point(size = 5) + ggtitle("samples")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
 
@@ -125,7 +137,7 @@ GP1.shape["samples"] <- 16
 p3 + scale_shape_manual(values = GP1.shape)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 
@@ -148,7 +160,7 @@ p4cols["samples"] <- "black"
 p4 + scale_color_manual(values = p4cols)
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 			
 

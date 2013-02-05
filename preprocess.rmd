@@ -7,6 +7,14 @@ Functions for Accessing and (Pre)Processing Data
 
 ```{r message=FALSE, warning=FALSE}
 library(phyloseq)
+```
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+```{r}
+packageDescription("phyloseq")$Version
+```
+Load the `GlobalPatterns` dataset, included with the phyloseq package.
+```{r}
 data(GlobalPatterns)
 ```
 

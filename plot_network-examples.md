@@ -12,6 +12,25 @@ library(ggplot2)
 data(enterotype)
 ```
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+```r
+packageDescription("ggplot2")$Version
+```
+
+```
+## [1] "0.9.3"
+```
+
 
 Create an igraph-based network based on the default distance method, "Jaccard", and a maximum distance between connected nodes of `0.3`.
 
@@ -37,7 +56,7 @@ Now plot this network representation with the default settings.
 plot_network(ig, enterotype)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 The previous graphic displayed some interesting structure, with a major subgraph comprising a majority of samples. Furthermore, there seemed to be a correlation in the sample naming scheme and position within the network. Instead of trying to read all of the sample names to understand the pattern, let's map some of the sample variables onto this graphic as color and shape:
 
@@ -47,7 +66,7 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
     label = NULL)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 In the previous examples, the choice of maximum-distance and distance method were informed, but arbitrary. Let's see what happens when the maximum distance is lowered, decreasing the number of edges in the network
@@ -59,7 +78,7 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
     label = NULL)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 Let's repeat the previous exercise, but replace the Jaccard (default) distance  method with Bray-Curtis
@@ -71,7 +90,7 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
     label = NULL)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 			
 

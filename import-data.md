@@ -14,6 +14,17 @@ library(phyloseq)
 ```
 
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line. If your version is lower than the one shown here AND you are having trouble with the import examples, try updating your phyloseq version to the latest development version available from GitHub, using [the phyloseq installation tutorial](http://joey711.github.com/phyloseq/install).
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
 
 ## Currently available import functions
 
@@ -136,7 +147,7 @@ x
 plot_tree(x, color = "samples")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-61.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-71.png) 
 
 ```r
 SDF = data.frame(samples = sample_names(x), row.names = sample_names(x))
@@ -144,7 +155,7 @@ sample_data(x) = sample_data(SDF)
 plot_richness(x)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-62.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-72.png) 
 
 
 The class and data in the object returned by `import_mothur` depends on the  arguments. If the first three arguments are provided, then a phyloseq object should be returned containing both a tree and its associated OTU table. If only a list and group file are provided, then an "otu_table" object is returned. Similarly, if only a list and tree file are provided, then only a tree is returned ("phylo" class).
@@ -157,7 +168,7 @@ x2 = import_mothur(mothlist, mothur_tree_file = mothtree, cutoff = "0.08")
 plot(x1)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 Returns just an OTU table
 

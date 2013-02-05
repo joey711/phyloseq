@@ -8,6 +8,22 @@ Functions for Accessing and (Pre)Processing Data
 
 ```r
 library(phyloseq)
+```
+
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+Load the `GlobalPatterns` dataset, included with the phyloseq package.
+
+```r
 data(GlobalPatterns)
 ```
 
@@ -229,13 +245,13 @@ title = "plot_bar; Bacteroidetes-only"
 plot_bar(gpsfb, "SampleType", "Abundance", title = title)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-61.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-81.png) 
 
 ```r
 plot_bar(gpsfb, "SampleType", "Abundance", "Family", title = title)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-62.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-82.png) 
 
 
 
@@ -243,6 +259,6 @@ plot_bar(gpsfb, "SampleType", "Abundance", "Family", title = title)
 plot_bar(gpsfb, "Family", "Abundance", "Family", title = title, facet_grid = "SampleType~.")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 

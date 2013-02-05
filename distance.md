@@ -33,7 +33,24 @@ Note that this may take a little while to run, depending on the size of your dat
 ```r
 library(phyloseq)
 library(ggplot2)
-# Load the enterotype data
+```
+
+
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+
+Load the enterotype data
+
+```r
 data(enterotype)
 ```
 
@@ -140,7 +157,7 @@ Jensen-Shannon Divergence
 print(plist[["jsd"]])
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 Jaccard
@@ -149,7 +166,7 @@ Jaccard
 print(plist[["jaccard"]])
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 
 Bray-Curtis
@@ -158,7 +175,7 @@ Bray-Curtis
 print(plist[["bray"]])
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
 
 
 Gower
@@ -167,7 +184,7 @@ Gower
 print(plist[["gower"]])
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
 
 w
@@ -176,5 +193,5 @@ w
 print(plist[["w"]])
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 

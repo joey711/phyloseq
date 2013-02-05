@@ -15,6 +15,18 @@ data("GlobalPatterns")
 ```
 
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+
 Since we are interested in richness estimates, it is probably not a bad idea to prune OTUs that are not present in any of the samples (for some reason there are a few in `"GlobalPatterns"`) -- **BUT DON'T TRIM MORE THAN THAT!** I know it is tempting to trim noise right away, but many richness estimates are modeled on singletons and doubletons in the abundance data. You need to leave them in the dataset if you want a meaningful estimate.
 
 
@@ -40,7 +52,21 @@ We can specify a sample variable on which to group/organize samples along the ho
 plot_richness(GP, "SampleType")
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-31.png) 
+
+```r
+plot_richness(GP, x = "SampleType", color = "SampleType")
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-32.png) 
+
+We can also add the Shannon and Simpson alpha diversity indices by setting the `shsi` argument to `TRUE`. Naturally, the scales of these indices are very different from estimates for numbers of OTUs, and so the axes limits are allowed to differ in each panel when this option is `TRUE`.
+
+```r
+plot_richness(GP, x = "SampleType", color = "SampleType", shsi = TRUE)
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
 
 Now suppose we wanted to use an external variable in the plot that isn't in the `GP` dataset already -- for example, a logical that indicated whether or not the samples are human-associated. First, define this new variable, `human`, as a factor (other vectors could also work).
@@ -60,7 +86,7 @@ Now tell `plot_richness` to map the new `human` variable on the horizontal axis,
 plot_richness(GP, "human", "SampleType")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 		
 			

@@ -33,6 +33,13 @@ library("phyloseq")
 data("GlobalPatterns")
 ```
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+```{r}
+packageDescription("phyloseq")$Version
+```
+
+
 ## Plot a 300-taxa dataset
 The following two lines subset the dataset to just the top 300 most abundant Bacteria taxa across all samples (in this case, with no prior preprocessing. Not recommended, but quick).
 

@@ -11,6 +11,12 @@ Load the dataset, and trim to just the *Chlamydiae* phylum.
 
 ```{r, message=FALSE}
 library("phyloseq")
+```
+
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+```{r}
+packageDescription("phyloseq")$Version
 data("GlobalPatterns")
 gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
 ```

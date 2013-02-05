@@ -23,6 +23,12 @@ library("phyloseq"); library("ggplot2")
 data(GlobalPatterns)
 ```
 
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+```{r}
+packageDescription("phyloseq")$Version
+```
+
 "Trim" data. This is useful for plotting, and in this case, also useful for making examples that run in a short amount of time. Your reasoning and decisions in trimming are extremely important, and up to you. I am using several different methods of trimming here, for illustration and because the extent of data reduction is useful for my purposes. However, I make no assertion that these are the "right" approach(es) for your data, but rather, I highly recommend that you think hard about any trimming you do, and only commit to including it in your final analysis pipeline if you can defend the choices and have checked that they are robust. 
 
 Need to clean the zeros from GlobalPatterns. While we're at it, let's remove any OTUs observed less than 5 times, cumulative for all samples

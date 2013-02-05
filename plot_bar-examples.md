@@ -12,6 +12,21 @@ Load the dataset, and trim to just the *Chlamydiae* phylum.
 
 ```r
 library("phyloseq")
+```
+
+
+For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+
+
+```r
+packageDescription("phyloseq")$Version
+```
+
+```
+## [1] "1.3.12"
+```
+
+```r
 data("GlobalPatterns")
 gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
 ```
@@ -25,7 +40,7 @@ The following is the default barplot when no parameters are given. The dataset i
 plot_bar(gp.ch)
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
 
 
 Add fill color to represent the Genus to which each OTU belongs.
@@ -35,7 +50,7 @@ Add fill color to represent the Genus to which each OTU belongs.
 plot_bar(gp.ch, fill = "Genus")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
 
 Now keep the same fill color, and group the samples together by the `SampleType` variable; essentially, the environment from which the sample was taken and sequenced. 
@@ -44,7 +59,7 @@ Now keep the same fill color, and group the samples together by the `SampleType`
 plot_bar(gp.ch, x = "SampleType", fill = "Genus")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 Note that abundance values for the same OTU from the same `SampleType` will be stacked as separate bar segments, and so the segment lines may not accurately portray the observed richness (because the same OTU might be shown more than once for the same horizontal axis grouping). However, all other aspects of the representation are quantitative, with the total stacked bar height at each horizontal position indicating the sum of all reads for that sample(s). There is not attempt by `plot_bar` to normalize or standardize your data, which is your job to do (using other tools in the phyloseq pacakge, for instance) before attempting to interpret/compare these values between samples.
 
@@ -56,7 +71,7 @@ In the following example we elected to further organize the data using "facets" 
 plot_bar(gp.ch, "Family", fill = "Genus", facet_grid = ~SampleType)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 
@@ -71,7 +86,7 @@ p + geom_point(aes(x = Family, y = Abundance), color = "black", position = "jitt
     size = 3)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 
@@ -96,7 +111,7 @@ The parameters to `plot_bar` in the following code-chunk were chosen after vario
 plot_bar(ent10, "SeqTech", fill = "Enterotype", facet_grid = ~Genus)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
 You could nix the approach in which OTU abundance values from different samples, different enterotypes, are stacked together and simply shaded differently, and instead opt to separate both the enterotype designation of the samples and the genus designation of the OTUs into one grid. Only a slight modification to the previous function call is necessary in that case (with an added fill to make it even easier to read):
@@ -106,7 +121,7 @@ You could nix the approach in which OTU abundance values from different samples,
 plot_bar(ent10, "Genus", fill = "Genus", facet_grid = SeqTech ~ Enterotype)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 
@@ -128,18 +143,20 @@ p = plot_bar(ent10, "Genus", fill = "Genus", facet_grid = SeqTech ~ Enterotype)
 p + geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "stack")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
 
-
+			
 
 ## Other key graphics functions in the phyloseq package:
 
 ### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
 
-### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+### [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
 
 ### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
 
-### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
 
 ### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
+
+### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
