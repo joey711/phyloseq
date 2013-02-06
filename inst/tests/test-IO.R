@@ -124,6 +124,11 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	chvec4 = c("Root", "k__Bacteria", "Firmicutes", "c__Bacilli",
 		"o__Bacillales", "Staphylococcaceae", "z__mistake")
 
+	# Even more terrible example, where leading or trailing space characters included
+	# (the exact weirdnes of chvec4, compounded by leading and/or trailing space characters)
+	chvec5 = c("  Root \n ", " k__Bacteria", "  Firmicutes", " c__Bacilli   ",
+		"o__Bacillales  ", "Staphylococcaceae ", "\t z__mistake \t\n")		
+
 	# This should give a warning because there were no greengenes prefixes
 	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
 	# And output from previous call, t1, should be identical to default
@@ -145,7 +150,14 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	# Check that everything given dummy rank in default parse.
 	chvec4ranks = names(parse_taxonomy_default(chvec4))
 	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(1:7))
-
+	
+	# chvec4 and chvec5 result in identical vectors.
+	expect_that(parse_taxonomy_default(chvec4), is_identical_to(parse_taxonomy_default(chvec5)))
+	expect_that(parse_taxonomy_greengenes(chvec4), is_identical_to(parse_taxonomy_greengenes(chvec5)))	
+	
+	# The names of chvec5, greengenes parsed, should be...
+	correct5names = c("Rank1", "Kingdom", "Rank3", "Class", "Order", "Rank6", "Rank7")
+	expect_that(names(parse_taxonomy_greengenes(chvec5)), is_identical_to(correct5names))
 })
 
 ################################################################################
