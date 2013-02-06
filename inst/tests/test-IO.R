@@ -18,17 +18,17 @@ test_that("import_mothur: import of esophagus dataset from mothur files in extda
 
 test_that("import_mothur: The two phyloseq objects, example and just-imported, are identical", {
 	data("esophagus")
-	expect_that(esophagus, is_equivalent_to(esophman))
+	expect_that(esophagus, is_identical_to(esophman))
 })
 
 test_that("import_mothur: Test mothur file import on the (esophagus data).", {
 	smlc <- show_mothur_list_cutoffs(mothlist)
-	expect_that(smlc, is_equivalent_to(c("unique", "0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10")))	
+	expect_that(smlc, is_identical_to(c("unique", "0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10")))	
 })
 
 test_that("import_mothur: abundances can be manipulated mathematically", {
 	x1 <- as(otu_table(esophman), "matrix")
-	expect_that(2*x1-x1, is_equivalent_to(x1) )
+	expect_that(2*x1-x1, is_identical_to(x1) )
 })
 
 test_that("import_mothur: empty stuff is NULL", {
@@ -84,8 +84,8 @@ test_that("Classes of components are as expected", {
 test_that("Changing the chunk.size does not affect resulting tables", {
 	t1 <- import_qiime(otufile, mapfile, trefile, chunk.size=300L, showProgress=FALSE)
 	t2 <- import_qiime(otufile, mapfile, trefile, chunk.size=13L, showProgress=FALSE)
-	expect_that(t0, is_equivalent_to(t1))
-	expect_that(t1, is_equivalent_to(t2))
+	expect_that(t0, is_identical_to(t1))
+	expect_that(t1, is_identical_to(t2))
 })	
 
 test_that("Features of the abundance data are consistent, match known values", {
@@ -127,7 +127,7 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	# This should give a warning because there were no greengenes prefixes
 	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
 	# And output from previous call, t1, should be identical to default
-	expect_that(parse_taxonomy_default(chvec1), is_equivalent_to(t1))
+	expect_that(parse_taxonomy_default(chvec1), is_identical_to(t1))
 	
 	# All the greengenes entries get trimmed by parse_taxonomy_greengenes
 	expect_that(all(sapply(chvec2, nchar) > sapply(parse_taxonomy_greengenes(chvec2), nchar)), is_true())
@@ -203,21 +203,21 @@ test_that("The different types of biom files yield phyloseq objects", {
 	expect_that(max(diff(combmin, length(access(min_dense, "otu_table")))), is_identical_to(2))
 	expect_that(min(diff(combmin, length(access(min_dense, "otu_table")))), is_identical_to(-2))
 
-	expect_that(access(min_dense, "otu_table"),  is_equivalent_to(access(rich_dense, "otu_table")))
-	expect_that(access(min_sparse, "otu_table"), is_equivalent_to(access(rich_sparse, "otu_table")))
+	expect_that(access(min_dense, "otu_table"),  is_identical_to(access(rich_dense, "otu_table")))
+	expect_that(access(min_sparse, "otu_table"), is_identical_to(access(rich_sparse, "otu_table")))
 
 	# Compare values in the sample_data
-	expect_that(access(rich_dense, "sam_data"), is_equivalent_to(access(rich_sparse, "sam_data")))
+	expect_that(access(rich_dense, "sam_data"), is_identical_to(access(rich_sparse, "sam_data")))
 	
 	# Compare values in the taxonomyTable
-	expect_that(access(rich_dense, "tax_table"), is_equivalent_to(access(rich_sparse, "tax_table")))
+	expect_that(access(rich_dense, "tax_table"), is_identical_to(access(rich_sparse, "tax_table")))
 	
 })
 
 test_that("the import_biom and import(\"biom\", ) syntax give same result", {
 	x1 <- import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
 	x2 <- import("biom", BIOMfilename=rich_dense_biom, parseFunction=parse_taxonomy_greengenes)	
-	expect_that(x1, is_equivalent_to(x2))
+	expect_that(x1, is_identical_to(x2))
 })
 ################################################################################
 # read_tree tests
@@ -227,7 +227,7 @@ test_that("The read_tree function works as expected:", {
 	expect_that(ntaxa(GPNewick), equals(length(GPNewick$tip.label)))
 	expect_that(ntaxa(GPNewick), equals(500))
 	expect_that(GPNewick$Nnode, equals(499))
-	expect_that(taxa_names(GPNewick), is_equivalent_to(GPNewick$tip.label))	
+	expect_that(taxa_names(GPNewick), is_identical_to(GPNewick$tip.label))	
 	# Now read a nexus tree... 
 	# Some error-handling expectations
 	expect_that(read_tree("alskflsakjsfskfhas.akshfaksj"), gives_warning()) # file not exist

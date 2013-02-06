@@ -1424,29 +1424,12 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'
 #' \url{http://biom-format.org/} 
 #'
-#' @usage import_biom(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9, ...)
+#' @usage import_biom(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9)
 #'
 #' @param BIOMfilename (Required). A character string indicating the 
 #'  file location of the BIOM formatted file. This is a JSON formatted file,
 #'  specific to biological datasets, as described in 
 #'  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the biom-format home page}.
-#'  In principle, this file should include you OTU abundance data (OTU table),
-#'  your taxonomic classification data (taxonomy table), as well as your
-#'  sample data, for instance what might be in your ``sample map'' in QIIME.
-#'  A phylogenetic tree is not yet supported by biom-format, and so is a
-#'  separate argument here. If, for some reason, your biom-format file is
-#'  missing one of these mentioned data types but you have it in a separate file,
-#'  you can first import the data that is in the biom file using this function,
-#'  \code{import_biom}, and then ``merge'' the remaining data after you have
-#'  imported with other tools using the relatively general-purpose data
-#'  merging function called \code{\link{merge_phyloseq}}.
-#'
-#' @param tree (Optional). Character string or ``phylo'' class. 
-#'  A file path to the phylogenetic tree file associated
-#'  with the data in the \code{BIOMfilename}, or an already-imported version
-#'  of that phylogenetic tree as a phylo object.
-#'  Import of the tree will be attempted using \code{\link{read_tree}},
-#'  and additional import parameters for that function can be supplied (see below).
 #' 
 #' @param parseFunction (Optional). A function. It must be a function that
 #'  takes as its first argument a character vector of taxonomic rank labels
@@ -1485,16 +1468,9 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  by adjusting the version value. Default is \code{0.9}. Not implemented.
 #'  Has no effect (yet).
 #'
-#' @param ... Additional parameters passed on to \code{\link{read_tree}}.
-#'
 #' @return A \code{\link{phyloseq-class}} object.
 #'
-#' @seealso
-#' \code{\link{import}}
-#'
-#' \code{\link{import_qiime}}
-#'
-#' \code{\link{read_tree}}
+#' @seealso \code{\link{import}}, \code{\link{import_qiime}}
 #'
 #' @references \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
@@ -1513,7 +1489,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' # library("doParallel")
 #' # registerDoParallel(cores=6)
 #' # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
-import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9, ...){
+import_biom <- function(BIOMfilename, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9){
 	
 	# Read the data
 	x = fromJSON(BIOMfilename)
@@ -1570,24 +1546,11 @@ import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_de
 		rownames(sam_data) <- sapply(x$columns, function(i){i$id})
 		sam_data <- sample_data(sam_data)
 	}
-
-	########################################
-	# Tree data
-	########################################
-	if( !is.null(tree) ){
-		# If tree is already a tree, do nothing but explain to user
-		if( identical(class(tree)[1], "phylo") ){
-			cat("tree is already phylo-class, will be included")
-		} else {
-			cat("Attempting to import phylogenetic tree from the file-path you provided as tree, using function: read_tree")
-			tree = read_tree(tree, ...)
-		}
-	}
 	
 	########################################
 	# Put together into a phyloseq object
 	########################################
-	return( phyloseq(otutab, tax_table, sam_data, tree) )
+	return( phyloseq(otutab, tax_table, sam_data) )
 
 }
 ################################################################################

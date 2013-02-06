@@ -17,24 +17,6 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
-phyloseq 1.3.11
-===========
-- Added tree option for import_biom() importer so that users can avoid
-  using merge_phyloseq() if their files are otherwise standard vanilla
-- Address Issue 169 and 167
-https://github.com/joey711/phyloseq/issues/169
-https://github.com/joey711/phyloseq/issues/167
-
-phyloseq 1.3.10
-===========
-- Added support for Shannon/Simpson alpha-diversity indices in plot_richness
-  https://github.com/joey711/phyloseq/issues/164
-
-- All sample_data now embedded in plot_richness output graphic, in case want 
-  to use other covariates in additional layers not originally specified.
-  For instance, if you wanted to include geom_text(label=addLayer1).
-  See plot_richness online tutorial.
-
 phyloseq 1.3.9
 ===========
 - Added ability to add node labels, bootstrap values to tree graphics

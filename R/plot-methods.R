@@ -266,7 +266,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #'  \code{c("S.obs", "S.chao1", "se.chao1", "S.ACE", "se.ACE", "shannon", "simpson")}
 #'
-#' @usage plot_richness(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE)
+#' @usage plot_richness(physeq, x, color=NULL, shape=NULL, title=NULL)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate
@@ -280,7 +280,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  or a custom supplied vector with length equal to the number of samples
 #'  in the dataset (nsamples(physeq)).
 #'
-#'  The default value is \code{"samples"}, which will map each sample's name
+#'  The default value is \code{"sample_names"}, which will map each sample's name
 #'  to a separate horizontal position in the plot.
 #'
 #' @param color (Optional). Default \code{NULL}. The sample variable to map
@@ -309,10 +309,6 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
 #'
-#' @param shsi (Optional). Default \code{FALSE}. Logical.
-#'  Whether or not to include Shannon and Simpson indices
-#'  in the graphic as well.
-#'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
 #' 
@@ -326,16 +322,14 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @export
 #' @examples 
 #' data(GlobalPatterns)
-#' GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
-#' plot_richness(GP, x = "SampleType", color="SampleType")
-#' plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
+#' plot_richness(GlobalPatterns, "SampleType")
 #' plot_richness(GlobalPatterns, "SampleType", "SampleType")
 #' # # Define a human-associated versus non-human categorical variable:
 #' GP <- GlobalPatterns
 #' human <- get_variable(GP, "SampleType") %in% 
 #'                   c("Feces", "Mock", "Skin", "Tongue")
 #' names(human) <- sample_names(GP)
-#' # # Add human-associated logical:
+#' # # Replace current SD with new one that includes human variable:
 #' sample_data(GP)$human <- human 
 #' # # Can use new "human" variable within GP as a discrete variable in the plot
 #' plot_richness(GP, "human", "SampleType")
@@ -346,67 +340,54 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' # # Not run: Should cause an error:
 #' # plot_richness(GP, "value", "value")
 #' # #
-plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE){
-
+plot_richness <- function(physeq, x="sample_names", color=NULL, shape=NULL, title=NULL){	
 	# Make the plotting data.frame 
 	DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
 	
-	# If there is no "samples" variable in DF, add it
-	if( !"samples" %in% names(DF) ){
-		DF$samples = sample_names(physeq)
+	# If there is no "sample_names" variable in DF, add it
+	if( !"sample_names" %in% names(DF) ){
+		DF <- data.frame(DF, sample_names=sample_names(physeq))		
+	}
+
+	# If manually-supplied x, color, shape, add to DF, dummy var_name
+	if(length(x) > 1){
+		DF$x <- x
+		names(DF)[names(DF)=="x"] <- deparse(substitute(x))
+		x <- deparse(substitute(x))
+	}
+	if(length(color) > 1){
+		DF$color <- color
+		names(DF)[names(DF)=="color"] <- deparse(substitute(color))
+		color <- deparse(substitute(color))
+	}
+	if(length(shape) > 1){
+		DF$shape <- shape
+		names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
+		shape <- deparse(substitute(shape))
 	}
 	
-	# sample_names used to be default, and should also work.
-	# #backwardcompatibility
-	if( !is.null(x) ){
-		if( x %in% c("sample", "samples", "sample_names") ){
-			x = "samples"
-		}
+	# melt, for different estimates
+	if( is.null(color) | identical(x, color) ){
+		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x)], 
+			id=c(x))
+	} else {
+		mdf <- melt(DF[, c("S.obs", "S.chao1", "S.ACE", x, color)], 
+			id=c(x, color))			
 	}
-
-	# Define "measure" variables and s.e. labels (ses).
-	measures = c("S.obs", "S.chao1", "S.ACE", "shannon", "simpson")
-	ses = c("se.obs", "se.chao1", "se.ACE", "se.shannon", "se.simpson")
-
-	# melt, for different richnesses...
-	mdf = melt(DF, measure.vars=measures)
-
-	# Merge s.e. into one "se" column
-	mdf$se = NA_integer_
-	mdf$wse = paste("se.", substr(mdf$variable, 3, 10), sep="")
-	for( i in 1:nrow(mdf) ){
-		if( mdf[i, "wse"] %in% c("se.chao1", "se.ACE") ){
-			mdf[i, "se"] = mdf[i, (mdf[i, "wse"])]
-		}
-	}
-	
-	# Rm shannon/simpson if !shsi
-	if( !shsi ){
-		mdf = subset(mdf, variable %in% measures[1:3])
-	}
+			
+	# Add standard error to melted df
+	mdf    <- data.frame(mdf, se = c(rep(NA, nrow(DF)), DF[, "se.chao1"], DF[, "se.ACE"]) )	
 	
 	# map variables
 	richness_map <- aes_string(x=x, y="value", color=color, shape=shape)		
 	
 	# Make the ggplot.
 	p <- ggplot(mdf, richness_map) + 
-		geom_point(na.rm=TRUE) + 
+		geom_point(size=2, na.rm=TRUE) + 
 		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		theme(axis.text.x = element_text(angle = -90, hjust = 0))
-	
-	# Add label according to whether or not shannon/simpson indices are included
-	if(shsi){
-		p = p + ylab('Alpha Diversity Measure') 				
-	} else {
-		p = p + ylab('Richness [number of taxa]') 		
-	}
-		
-	# Facet differently, depending on whether shannon or simpson indices included
-	if(shsi){
-		p = p + facet_wrap(~variable, nrow=1, scales="free") 				
-	} else {
-		p = p + facet_grid(~variable) 		
-	}
+		theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
+		scale_y_continuous('richness [number of taxa]') +
+		facet_grid(~variable) 
 		
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
