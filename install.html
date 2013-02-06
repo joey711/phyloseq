@@ -186,7 +186,9 @@ hljs.initHighlightingOnLoad();
 
 <h1>Quick Install</h1>
 
-<p>If one of these two methods works with no errors, you&#39;re done. The phyloseq package has been installed and you can move on to <a href="http://joey711.github.com/phyloseq/">the phyloseq tutorials</a>. If not, see some of the additional troubleshooting recommendations below. Some of the issues might depend on your system. See if you can install all of the required packages ahead of time before attempting to install phyloseq.</p>
+<p>If one of these three methods works with no errors, you&#39;re done. The phyloseq package has been installed and you can move on to <a href="http://joey711.github.com/phyloseq/">the phyloseq tutorials</a>. If not, see some of the additional troubleshooting recommendations below. Some of the issues might depend on your system. See if you can install all of the required packages ahead of time before attempting to install phyloseq. Lastly, check that the phyloseq version that you have installed matches well with what is shown in the tutorial you want to emulate. Typically the version used in the tutorial is shown at the top of the page. If your package version number is behind and the tutorial does not work as expected for you, please consider installing the latest devel version of phyloseq from GitHub, described below. </p>
+
+<p><strong>Special Note</strong> When installing a recent (&ldquo;devel&rdquo;) version of the phyloseq package from GitHub or Bioconductor, you may need to &ldquo;install from source&rdquo;. Although the commands for doing this are straightforward and shown below, one dependency that is often missed by users is <a href="http://latex-project.org/ftp.html">LaTeX2e</a>. For example, Mac users probably want to install the <a href="http://www.tug.org/mactex/">MacTeX</a> distro of LateX2e prior to any attempts at installing phyloseq from GitHub, as described in more detail in <a href="https://github.com/joey711/phyloseq/issues/174">Issue 174</a>.</p>
 
 <h3>Bioconductor Release Version</h3>
 
@@ -261,7 +263,7 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 
 <pre><code>## 
 ## The downloaded source packages are in
-##  &#39;/private/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T/Rtmp2vJKAI/downloaded_packages&#39;
+##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmp4X4g5o/downloaded_packages&#39;
 </code></pre>
 
 <hr/>
