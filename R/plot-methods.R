@@ -939,7 +939,7 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' plot_ordination(gprfb, ordinate(gprfb, "DCA"), type="scree")
 plot_scree = function(ordination, title=NULL){
 	# Use get_eigenvalue method dispatch. It always returns a numeric vector.
-	x = get_eigenvalue(ordination)
+	x = extract_eigenvalue(ordination)
 	# Were eigenvalues found? If not, return NULL
 	if( is.null(x) ){
 		cat("No eigenvalues found in ordination\n")
@@ -949,9 +949,11 @@ plot_scree = function(ordination, title=NULL){
 		if( is.null(names(x)) ) names(x) = 1:length(x)
 		# For scree plot, want to show the fraction of total eigenvalues
 		x = x/sum(x)
+		# Set negative values to zero
+		x[x <= 0.0] = 0.0		
 		# Create the ggplot2 data.frame, and basic ggplot2 plot
 		gdf = data.frame(axis=names(x), eigenvalue = x)
-		p = ggplot(gdf, aes(x=axis, y=eigenvalue)) + geom_bar()
+		p = ggplot(gdf, aes(x=axis, y=eigenvalue)) + geom_bar(stat="identity")
 		# Force the order to be same as original in x
 		p = p + scale_x_discrete(limits = names(x))
 		# Orient the x-labels for space.
@@ -964,23 +966,29 @@ plot_scree = function(ordination, title=NULL){
 	}
 }
 ################################################################################
-# Define generic get_eigenvalue function
+# Define S3 generic extract_eigenvalue function; formerly S4 generic get_eigenvalue()
+# Function is used by `plot_scree` to get the eigenvalue vector from different
+# types of ordination objects. 
+# Used S3 generic in this case because many ordination objects, the input, are
+# not formally-defined S4 classes, but vaguely-/un-defined S3. This throws
+# warnings during package build if extract_eigenvalue were S4 generic method,
+# because the ordination classes don't appear to have any definition in phyloseq
+# or dependencies.
 #' @keywords internal
-setGeneric("get_eigenvalue", function(ordination) standardGeneric("get_eigenvalue") )
+extract_eigenvalue = function(ordination) UseMethod("extract_eigenvalue", ordination)
 # Default is to return NULL (e.g. for NMDS, or non-supported ordinations/classes).
-setMethod("get_eigenvalue", "ANY", function(ordination) NULL )
+extract_eigenvalue.default = function(ordination) NULL
 # for pcoa objects
-setMethod("get_eigenvalue", "pcoa", function(ordination) ordination$values$Relative_eig ) 
+extract_eigenvalue.pcoa = function(ordination) ordination$values$Relative_eig
 # for CCA objects
-setMethod("get_eigenvalue", "cca", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+extract_eigenvalue.cca = function(ordination) c(ordination$CCA$eig, ordination$CA$eig)
 # for RDA objects
-setMethod("get_eigenvalue", "rda", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+extract_eigenvalue.rda = function(ordination) c(ordination$CCA$eig, ordination$CA$eig)
 # for dpcoa objects
-setMethod("get_eigenvalue", "dpcoa", function(ordination) ordination$eig )
+extract_eigenvalue.dpcoa = function(ordination) ordination$eig
 # for decorana (dca) objects
-setMethod("get_eigenvalue", "decorana", function(ordination) ordination$evals )
+extract_eigenvalue.decorana = function(ordination) ordination$evals
 ################################################################################
-###############################################################################
 #' Melt phyloseq data object into large data.frame
 #'
 #' The psmelt function is a specialized melt function for melting phyloseq objects
@@ -2025,7 +2033,7 @@ plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abunda
 	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt.data.frame(speciesDF, id=c("x", "y", "taxa_names"))
+	melted.tip <- melt.data.frame(speciesDF, id.vars=c("x", "y", "taxa_names"))
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
