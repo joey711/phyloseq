@@ -13,7 +13,10 @@ and
 
 [ordinate](https://github.com/joey711/phyloseq/wiki/ordinate)
 
-functions. See their wiki-pages for further details and examples.
+functions. See their tutorials for further details and examples.
+
+Also, the phyloseq package includes a "convenience function" for subsetting from large collections of points in an ordination, called `subset_ord_plot`. [Its tutorial](http://joey711.github.com/phyloseq/subset_ord_plot-examples) can be found here.
+
 
 ## Examples
 
