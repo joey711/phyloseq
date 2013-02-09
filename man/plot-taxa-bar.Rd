@@ -1,7 +1,7 @@
 \name{plot_taxa_bar}
 \alias{plot_taxa_bar}
 \alias{taxaplot}
-\title{DEPRECATED. USE \code{\link{plot_bar}} instead. Creates structured barplot.}
+\title{DEPRECATED. USE \code{\link{plot_bar}} instead. Creates abundance barplot.}
 \usage{
   plot_taxa_bar(physeq, taxavec="Domain",
   showOnlyTheseTaxa=NULL, threshold=NULL, x="sample",
@@ -103,12 +103,9 @@
   the \code{\link{sample_data}} component of \code{physeq}.
 }
 \examples{
-data(enterotype)
-TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10])
-ent10   <- prune_species(TopNOTUs, enterotype)
-plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup")
-library("ggplot2")
-plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype)
+data("GlobalPatterns")
+gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+plot_taxa_bar(gp.ch, "Genus", x="SampleType", fill="SampleType", title="plot_taxa_bar: deprecated. Do not use.")
 }
 \seealso{
   \code{\link{otu2df}}, \code{\link{qplot}},

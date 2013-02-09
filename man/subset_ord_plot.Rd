@@ -54,38 +54,19 @@
   Easily retrieve a plot-derived \code{data.frame} with a
   subset of points according to a threshold and method. The
   meaning of the threshold depends upon the method. See
-  argument description below.
+  argument description below. There are many useful
+  examples of phyloseq ordination graphics in the
+  \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq
+  online tutorials}.
 }
 \examples{
-data(GlobalPatterns)
-# Need to clean the zeros from GlobalPatterns:
-GP <- GlobalPatterns
-GP <- prune_species(taxa_sums(GP)>0, GP)
-# # Add "human" variable to GP
-human <- get_variable(GP, "SampleType") \%in\%
-c("Feces", "Mock", "Skin", "Tongue")
-names(human) <- sample_names(GP)
-sample_data(GP)$human <- human
-# Get the names of the most-abundant phyla
-top.TaxaGroup <- sort(
-tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
-decreasing = TRUE)
-top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-# Prune to just the most-abundant phyla
-GP <- subset_species(GP, Phylum \%in\% names(top.TaxaGroup))
-# Perform a correspondence analysis
-gpca <- ordinate(GP, "CCA")
-# # Make species topo with a subset of points layered
-# First, make a basic plot of just the species
-p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
-# Re-draw this as topo without points, and facet
-library("ggplot2")
-p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
-# Add a layer of a subset of species-points that are furthest from origin.
-p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1)
-print(p53)
+## See the online tutorials.
+## http://joey711.github.com/phyloseq/subset_ord_plot-examples
 }
 \seealso{
+  \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq
+  online tutorial} for this function.
+
   \code{\link{plot_ordination}}
 }
 
