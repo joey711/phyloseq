@@ -2,7 +2,7 @@
 \alias{plot_scree}
 \title{General ordination eigenvalue plotter using ggplot2.}
 \usage{
-  plot_scree(ordination)
+  plot_scree(ordination, title = NULL)
 }
 \arguments{
   \item{ordination}{(Required). An ordination object. Many
@@ -12,6 +12,9 @@
   here. There is no default, as the expectation is that the
   ordination will be performed and saved prior to calling
   this plot function.}
+
+  \item{title}{(Optional). Default \code{NULL}. Character
+  string. The main title for the graphic.}
 }
 \value{
   A \code{\link{ggplot}} plot object, graphically

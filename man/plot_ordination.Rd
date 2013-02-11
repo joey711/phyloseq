@@ -97,10 +97,13 @@
   summarizing the ordination result for the specified axes.
 }
 \description{
-  Convenience wrapper for plotting ordination results as a
-  \code{ggplot2}-graphic, including additional annotation
-  in the form of shading, shape, and/or labels of sample
-  variables.
+  There are many useful examples of phyloseq ordination
+  graphics in the
+  \href{http://joey711.github.com/phyloseq/plot_ordination-examples}{phyloseq
+  online tutorials}. Convenience wrapper for plotting
+  ordination results as a \code{ggplot2}-graphic, including
+  additional annotation in the form of shading, shape,
+  and/or labels of sample variables.
 }
 \examples{
 data(GlobalPatterns)

@@ -22,11 +22,14 @@
   which component data classes are present.
 }
 \description{
-  The specific plot type is chosen according to available
-  non-empty slots. This is mainly for syntactic convenience
-  and quick-plotting. See links below for some examples of
-  available graphics tools available in the
-  \code{\link{phyloseq-package}}.
+  There are many useful examples of phyloseq graphics
+  functions in the
+  \href{http://joey711.github.com/phyloseq/}{phyloseq
+  online tutorials}. The specific plot type is chosen
+  according to available non-empty slots. This is mainly
+  for syntactic convenience and quick-plotting. See links
+  below for some examples of available graphics tools
+  available in the \code{\link{phyloseq-package}}.
 }
 \examples{
 data(esophagus)

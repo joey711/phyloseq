@@ -1,9 +1,9 @@
 \docType{methods}
 \name{get_sample}
-\alias{getSamples}
 \alias{get_sample}
 \alias{get_sample,otu_table-method}
 \alias{get_sample,phyloseq-method}
+\alias{getSamples}
 \title{Returns all abundance values for species \code{i}.}
 \usage{
   get_sample(physeq, i)

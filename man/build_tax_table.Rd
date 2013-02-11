@@ -1,0 +1,44 @@
+\name{build_tax_table}
+\alias{build_tax_table}
+\title{Build a \code{\link{tax_table}} from a named possibly-jagged list}
+\usage{
+  build_tax_table(taxlist)
+}
+\arguments{
+  \item{taxlist}{(Required). A list in which each element
+  is a vector of taxonomic assignments named by rank. Every
+  element of every vector must be named by the rank it
+  represents. Every element of the list (every vector)
+  should correspond to a single OTU and be named for that
+  OTU.}
+}
+\value{
+  A \code{\link{tax_table}}
+  (\code{\link{taxonomyTable-class}}) that has been built
+  from \code{taxlist}. The OTU names of this output will be
+  the element names of \code{taxlist}, and a separate
+  taxonomic rank (column) will be included for each unique
+  rank found among the element names of each vector in the
+  list. \code{NA_character_} is the default value of
+  elements in the \code{\link{tax_table}} for which there
+  is no corresponding information in \code{taxlist}.
+}
+\description{
+  Build a \code{\link{tax_table}} from a named
+  possibly-jagged list
+}
+\examples{
+taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
+parse_taxonomy_default(taxvec1)
+parse_taxonomy_greengenes(taxvec1)
+taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
+parse_taxonomy_qiime(taxvec2)
+taxlist1 = list(OTU1=parse_taxonomy_greengenes(taxvec1), OTU2=parse_taxonomy_qiime(taxvec2))
+taxlist2 = list(OTU1=parse_taxonomy_default(taxvec1), OTU2=parse_taxonomy_qiime(taxvec2))
+build_tax_table(taxlist1)
+build_tax_table(taxlist2)
+}
+\seealso{
+  \code{\link{import_biom}} \code{\link{import_qiime}}
+}
+
