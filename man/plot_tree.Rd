@@ -163,49 +163,15 @@
 }
 \examples{
 # # Using plot_tree() with the esophagus dataset.
+# # Please note that many more interesting examples are shown
+# # in the online tutorials"
+# # http://joey711.github.com/phyloseq/plot_tree-examples
 data(esophagus)
 plot_tree(esophagus)
 plot_tree(esophagus, color="samples")
 plot_tree(esophagus, size="abundance")
 plot_tree(esophagus, size="abundance", color="samples")
-p = plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
-print(p)
-# Modify the color scale using ggplot2 functions
-library("ggplot2")
-p + scale_colour_brewer(palette="Set1")
-p + scale_color_manual(values=c(B="blue", C="green", D="red"))
-# # Using plot_tree with the Global Patterns dataset
-data("GlobalPatterns")
-# Subset Global Patterns dataset to just the observed Archaea
-gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
-# The number of different Archaeal species from this dataset is small enough ...
-ntaxa(gpa)
-# ... that it is reasonable to consider displaying the phylogenetic tree directly.
-# (probably not true of the total dataset)
-ntaxa(GlobalPatterns)
-# Some patterns are immediately discernable with minimal parameter choices:
-# plot_tree(gpa, color="SampleType")
-# plot_tree(gpa, color="Phylum")
-# plot_tree(gpa, color="SampleType", shape="Phylum")
-# plot_tree(gpa, color="Phylum", label.tips="Genus")
-# # However, the text-label size scales with number of species, and with common
-# # graphics-divice sizes/resolutions, these ~200 taxa still make for a
-# # somewhat crowded graphic.
-# #
-# # Let's instead subset further ot just the Crenarchaeota
-gpac = subset_species(gpa, Phylum=="Crenarchaeota")
-p = plot_tree(gpac, color="SampleType", shape="Order", ladderize="left")
-print(p)
-# Modify the color scale using ggplot2 functions
-p = p + scale_colour_brewer(palette="Set1")
-print(p)
-# plot_tree(gpac, color="SampleType", label.tips="Genus")
-# # Let's add some abundance information.
-# # Notice that the default spacing gets a little crowded when we map
-# # species-abundance to point-size:
-# plot_tree(gpac, color="SampleType", shape="Genus", size="abundance")
-# # So let's spread it out a little bit with the base.spacing parameter.
-# plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
+plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 }
 \author{
   Paul McMurdie, relying on supporting code from Gregory
@@ -219,5 +185,10 @@ print(p)
   not-yet-officially-released package, \code{ggphylo},
   currently only available from GitHub at:
   \url{https://github.com/gjuggler/ggphylo}
+
+  There are many useful examples of phyloseq tree graphics
+  in the
+  \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq
+  online tutorials}.
 }
 
