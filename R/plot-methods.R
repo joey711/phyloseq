@@ -321,31 +321,19 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  \code{\link[vegan]{estimateR}},
 #'  \code{\link[vegan]{diversity}}
 #'
+#' There are many more interesting examples at the
+#' \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
+#'
 #' @import ggplot2
 #' @import reshape
 #' @export
 #' @examples 
+#' ## There are many more interesting examples at the phyloseq online tutorials.
+#' ## http://joey711.github.com/phyloseq/plot_richness-examples
 #' data(GlobalPatterns)
 #' GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
 #' plot_richness(GP, x = "SampleType", color="SampleType")
 #' plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
-#' plot_richness(GlobalPatterns, "SampleType", "SampleType")
-#' # # Define a human-associated versus non-human categorical variable:
-#' GP <- GlobalPatterns
-#' human <- get_variable(GP, "SampleType") %in% 
-#'                   c("Feces", "Mock", "Skin", "Tongue")
-#' names(human) <- sample_names(GP)
-#' # # Add human-associated logical:
-#' sample_data(GP)$human <- human 
-#' # # Can use new "human" variable within GP as a discrete variable in the plot
-#' plot_richness(GP, "human", "SampleType")
-#' plot_richness(GP, "SampleType", "human")
-#' # # Can also provide custom factor directly:
-#' plot_richness(GP, "SampleType", human)
-#' plot_richness(GP, human, "SampleType")
-#' # # Not run: Should cause an error:
-#' # plot_richness(GP, "value", "value")
-#' # #
 plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE){
 
 	# Make the plotting data.frame 
@@ -772,6 +760,8 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' Easily retrieve a plot-derived \code{data.frame} with a subset of points
 #' according to a threshold and method. The meaning of the threshold depends
 #' upon the method. See argument description below.
+#' There are many useful examples of phyloseq ordination graphics in the
+#' \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq online tutorials}.
 #'
 #' @usage subset_ord_plot(p, threshold=0.05, method="farthest")
 #' 
@@ -819,38 +809,15 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #'  the ordination result according to previously-specified parameters.
 #' 
 #' @seealso 
+#'  \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq online tutorial} for this function.
+#'
 #'  \code{\link{plot_ordination}}
 #'
 #' @import ggplot2
 #' @export
 #' @examples 
-#' data(GlobalPatterns)
-#' # Need to clean the zeros from GlobalPatterns:
-#' GP <- GlobalPatterns
-#' GP <- prune_species(taxa_sums(GP)>0, GP)
-#' # # Add "human" variable to GP
-#' human <- get_variable(GP, "SampleType") %in% 
-#'                   c("Feces", "Mock", "Skin", "Tongue")
-#' names(human) <- sample_names(GP)
-#' sample_data(GP)$human <- human 
-#' # Get the names of the most-abundant phyla
-#' top.TaxaGroup <- sort(
-#'   	tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
-#'   decreasing = TRUE)
-#' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-#' # Prune to just the most-abundant phyla
-#' GP <- subset_species(GP, Phylum %in% names(top.TaxaGroup))
-#' # Perform a correspondence analysis
-#' gpca <- ordinate(GP, "CCA")
-#' # # Make species topo with a subset of points layered
-#' # First, make a basic plot of just the species
-#' p1 <- plot_ordination(GP, gpca, "species", color="Phylum")
-#' # Re-draw this as topo without points, and facet
-#' library("ggplot2")
-#' p1 <- ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Phylum)
-#' # Add a layer of a subset of species-points that are furthest from origin.
-#' p53 <- p1 + geom_point(data=subset_ord_plot(p1, 1.0, "square"), size=1) 
-#' print(p53)
+#' ## See the online tutorials.
+#' ## http://joey711.github.com/phyloseq/subset_ord_plot-examples
 subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 	threshold <- threshold[1] # ignore all but first threshold value.
 	method    <- method[1] # ignore all but first string.
@@ -939,7 +906,7 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' plot_ordination(gprfb, ordinate(gprfb, "DCA"), type="scree")
 plot_scree = function(ordination, title=NULL){
 	# Use get_eigenvalue method dispatch. It always returns a numeric vector.
-	x = get_eigenvalue(ordination)
+	x = extract_eigenvalue(ordination)
 	# Were eigenvalues found? If not, return NULL
 	if( is.null(x) ){
 		cat("No eigenvalues found in ordination\n")
@@ -949,9 +916,11 @@ plot_scree = function(ordination, title=NULL){
 		if( is.null(names(x)) ) names(x) = 1:length(x)
 		# For scree plot, want to show the fraction of total eigenvalues
 		x = x/sum(x)
+		# Set negative values to zero
+		x[x <= 0.0] = 0.0		
 		# Create the ggplot2 data.frame, and basic ggplot2 plot
 		gdf = data.frame(axis=names(x), eigenvalue = x)
-		p = ggplot(gdf, aes(x=axis, y=eigenvalue)) + geom_bar()
+		p = ggplot(gdf, aes(x=axis, y=eigenvalue)) + geom_bar(stat="identity")
 		# Force the order to be same as original in x
 		p = p + scale_x_discrete(limits = names(x))
 		# Orient the x-labels for space.
@@ -964,23 +933,29 @@ plot_scree = function(ordination, title=NULL){
 	}
 }
 ################################################################################
-# Define generic get_eigenvalue function
+# Define S3 generic extract_eigenvalue function; formerly S4 generic get_eigenvalue()
+# Function is used by `plot_scree` to get the eigenvalue vector from different
+# types of ordination objects. 
+# Used S3 generic in this case because many ordination objects, the input, are
+# not formally-defined S4 classes, but vaguely-/un-defined S3. This throws
+# warnings during package build if extract_eigenvalue were S4 generic method,
+# because the ordination classes don't appear to have any definition in phyloseq
+# or dependencies.
 #' @keywords internal
-setGeneric("get_eigenvalue", function(ordination) standardGeneric("get_eigenvalue") )
+extract_eigenvalue = function(ordination) UseMethod("extract_eigenvalue", ordination)
 # Default is to return NULL (e.g. for NMDS, or non-supported ordinations/classes).
-setMethod("get_eigenvalue", "ANY", function(ordination) NULL )
+extract_eigenvalue.default = function(ordination) NULL
 # for pcoa objects
-setMethod("get_eigenvalue", "pcoa", function(ordination) ordination$values$Relative_eig ) 
+extract_eigenvalue.pcoa = function(ordination) ordination$values$Relative_eig
 # for CCA objects
-setMethod("get_eigenvalue", "cca", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+extract_eigenvalue.cca = function(ordination) c(ordination$CCA$eig, ordination$CA$eig)
 # for RDA objects
-setMethod("get_eigenvalue", "rda", function(ordination) c(ordination$CCA$eig, ordination$CA$eig) )
+extract_eigenvalue.rda = function(ordination) c(ordination$CCA$eig, ordination$CA$eig)
 # for dpcoa objects
-setMethod("get_eigenvalue", "dpcoa", function(ordination) ordination$eig )
+extract_eigenvalue.dpcoa = function(ordination) ordination$eig
 # for decorana (dca) objects
-setMethod("get_eigenvalue", "decorana", function(ordination) ordination$evals )
+extract_eigenvalue.decorana = function(ordination) ordination$evals
 ################################################################################
-###############################################################################
 #' Melt phyloseq data object into large data.frame
 #'
 #' The psmelt function is a specialized melt function for melting phyloseq objects
@@ -1017,7 +992,7 @@ setMethod("get_eigenvalue", "decorana", function(ordination) ordination$evals )
 #'
 #' @examples
 #' data("GlobalPatterns")
-#' gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+#' gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 #' mdf = psmelt(gp.ch)
 #' nrow(mdf)
 #' ncol(mdf)
@@ -1113,6 +1088,8 @@ psmelt = function(physeq){
 #'  as the default \code{\link[base]{print}}/\code{\link[methods]{show}} method.
 #'
 #' @seealso 
+#'  \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
+#'
 #'  \code{\link{psmelt}}
 #'
 #'  \code{\link{ggplot}}
@@ -1124,30 +1101,12 @@ psmelt = function(physeq){
 #'
 #' @examples
 #' data("GlobalPatterns")
-#' gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+#' gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 #' plot_bar(gp.ch)
 #' plot_bar(gp.ch, fill="Genus")
 #' plot_bar(gp.ch, x="SampleType", fill="Genus")
 #' plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Family)
-#' # Need to load ggplot2 for custom faceting, and other custom ggplot2 goodies.
-#' library("ggplot2")
-#' plot_bar(gp.ch, fill="Genus") + facet_wrap(~SampleType) 
-#' plot_bar(gp.ch, fill="Genus") + facet_grid(SampleType ~ Family)
-#' plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=SampleType~Family)
-#' # A more complicated addition. Two lines. Second adds abundance points.
-#' p = plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Genus)
-#' p + geom_point(aes(x=SampleType, y=Abundance), color="black", position="jitter", size=1.5)
-#' # Enterotype Example
-#' data("enterotype")
-#' TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
-#' ent10   <- prune_species(TopNOTUs, enterotype)
-#' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
-#' # The previous was probably more informative, but here is the same
-#' # information presented with a different organization.
-#' plot_bar(ent10, "SeqTech", fill="Genus", facet_grid=~Enterotype)
-#' # Here is an example with a different faceting variable. 
-#' # Not super useful in this dataset, but always good to explore.
-#' plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~ClinicalStatus)
+#' # See additional examples in the plot_bar online tutorial. Link above.
 plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 	title=NULL, facet_grid=NULL){
 		
@@ -1176,302 +1135,6 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 	
 	return(p)
 }
-################################################################################
-################################################################################
-################################################################################
-#' DEPRECATED. SEE \code{\link{psmelt}} converts OTU-table to data.frame
-#'
-#' Was used for plotting with \code{\link{plot_taxa_bar}} in the ggplot2 framework.
-#'
-#' @usage otu2df(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL)
-#'
-#' @param physeq An \code{otu_table} object.
-#'
-#' @param taxavec A character vector of the desired taxonomic names to 
-#'  categorize each species in physeq. 
-#' 
-#' @param map The corresponding sample_data object for \code{physeq}.
-#' 
-#' @param keepOnlyTheseTaxa A vector of the taxonomic labels that you want
-#'  included. If NULL, the default, then all taxonomic labels are used, except
-#'  for the empty character string, ``'', which is trimmed away.
-#'
-#' @param threshold A [0,1] numeric. Fraction of abundance of the taxonomic
-#'  groups to keep for each sample. The higher the value, the larger
-#'  the diversity of taxonomic groups included. That is, a greater number of
-#'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
-#'  are included.
-#'
-#' @keywords internal
-otu2df <- function(physeq, taxavec, map, keepOnlyTheseTaxa=NULL, threshold=NULL){
-	########################################
-	# sample_i - A sample name. A single character string.
-	# physeq      - An otu_table object.
-	# taxavec  - A character vector of the desired taxonomic names 
-	#             to categorize each species in physeq. 
-	otu2dfi <- function(sample_i, physeq, taxavec, normalized=TRUE){
-		Abundance_i <- get_taxa(physeq, sample_i)
-		if(normalized){ 
-			Abundance_i <- Abundance_i / sum(Abundance_i)
-		}
-		dflist <- list(
-			TaxaGroup = taxavec[taxa_names(physeq)],
-			Abundance = Abundance_i,
-			ID        = taxa_names(physeq),
-			sample    = sample_i
-		)
-		dflist <- c(dflist, map[sample_i, , drop=TRUE])
-		do.call("data.frame", dflist)
-	}
-	########################################
-	# keepOnlyTheseTaxa - A character vector of the taxonomy labels to keep.
-	# threshold     	- A [0, 1] numeric. Fraction of TaxaGroups to keep.
-	#             the higher the value, the more TaxaGroups are included and
-	#             the more the rare groups are included.
-	# Trim subroutine
-	trimdf <- function(df, keepOnlyTheseTaxa=NULL, threshold=NULL){
-		# Force rows (OTUs) to be ordered by relative abundance
-		df <- df[order(df$Abundance, decreasing=TRUE), ]
-		# Trim nameless / unnecessary phyla from table:
-		df <- subset(df, TaxaGroup != "", drop=TRUE)
-		df <- subset(df, !is.na(TaxaGroup), drop=TRUE)
-		# Keep a subset of phyla if keepOnlyTheseTaxa is specified
-		if( !is.null(keepOnlyTheseTaxa) ){
-			df <- subset(df, TaxaGroup %in% keepOnlyTheseTaxa, drop=TRUE)
-		}
-		# If threshold is provided, trim to most abundant threshold fraction.
-		if( !is.null(threshold) ){
-			top.TaxaGroup <- sort(tapply(df$Abundance, df$TaxaGroup,
-								sum, na.rm=TRUE), decreasing=TRUE)
-			top.TaxaGroup <- top.TaxaGroup[cumsum(top.TaxaGroup) <= threshold]
-			df            <- subset(df, TaxaGroup %in% names(top.TaxaGroup))
-		}
-		# trim so that rows with zero abundance are removed
-		df <- subset(df, Abundance > 0, drop=TRUE)
-		return(df)		
-	}
-	########################################		
-	# Main control loop to create large redundant data.frame for ggplot2	
-	df <- otu2dfi(sample_names(physeq)[1], physeq, taxavec)
-	df <- trimdf(df, keepOnlyTheseTaxa, threshold)
-	for( j in sample_names(physeq)[-1] ){ 
-		dfj <- otu2dfi( j, physeq, taxavec)
-		dfj <- trimdf(dfj, keepOnlyTheseTaxa, threshold)
-		df  <- rbind(df, dfj)
-	}
-	return(df)
-}
-################################################################################
-#' DEPRECATED. USE \code{\link{plot_bar}} instead. Creates structured barplot.
-#'
-#' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
-#'  graphic object
-#' that can be saved or further modified with additional layers, options, etc.
-#' The main purpose of this function is to quickly and easily create informative
-#' summary graphics of the differences in taxa abundance between samples in
-#' an experiment. 
-#'
-#' The vertical axis is always relative abundance, but the data
-#' can be further organized at the horizontal axis and faceting grid
-#' by any combination of variates present in
-#' the \code{\link{sample_data}} component of \code{physeq}.
-#'
-#' @usage plot_taxa_bar(physeq, taxavec="Domain",
-#'	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x,  
-#'	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL)
-#'
-#' @param physeq (Required). An \code{\link{otu_table-class}} or 
-#'  \code{\link{phyloseq-class}}.
-#'  If \code{physeq} does not contain a taxonomyTable component,
-#'  then the second argument, \code{taxavec}, is
-#'  required and should have length equal to the number of species/taxa in
-#'  \code{physeq}.
-#'
-#' @param taxavec (Optional, but recommended). A character vector of 
-#'  the desired taxonomic rank to use in grouping 
-#'  each species/OTU in \code{physeq}. If \code{physeq}  
-#'  contains a taxonomyTable, then taxavec can alternatively specify the
-#'  desired taxonomic level as a character string of length 1. 
-#'  E.g. \code{taxavec = "Phylum"}. Default value is \code{"Domain"}.
-#' 
-#' @param showOnlyTheseTaxa A vector of the taxonomic labels that you want
-#'  included. If NULL, the default, then all taxonomic labels are used, except
-#'  for the empty character string, ``'', which is trimmed away.
-#'
-#' @param threshold (Optional). A [0,1] numeric. Fraction of abundance of the taxonomic
-#'  groups to keep for each sample. The higher the value, the larger
-#'  the diversity of taxonomica groups included. That is, a greater number of
-#'  the rare groups are included. If NULL (or 1), the default, all taxonomic groups
-#'  are included.
-#'
-#' @param x (Optional). A character string indicating which sample variable should be
-#'  used to define the horizontal axis categories. Default is \code{"sample"}. Note
-#'  that a few column-names are added by default and are available as options. 
-#'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
-#' 
-#' @param fill (Optional). A character string. Indicates which sample variable
-#'  should be used to define the fill color of the bars. This does not have to 
-#'  match \code{x}, but does so by default. Note
-#'  that a few column-names are added by default and are available as options. 
-#'  They are ``sample'', ``Abundance'', and ``TaxaGroup''.
-#' 
-#' @param facet_formula A formula object as used by
-#'  \code{\link{facet_grid}} in \code{\link{ggplot}} or \code{\link{qplot}}
-#'  commands The default is: \code{. ~ TaxaGroup}. Note
-#'  that a few column-names are added by default and are available as options. 
-#'  They are ``sample'', ``Abundance'', and ``TaxaGroup''. E.g. An alternative
-#'  \code{facet_grid} could be \code{sample ~ TaxaGroup}.
-#'
-#' @param OTUpoints (Optional). Logical. Default \code{FALSE}. Whether to add small grey 
-#'  semi-transparent points for each OTU. Helps convey the relative distribution
-#'  within each bar if it combines many different OTUs. For datasets with
-#'  large numbers of samples and for complicated plotting arrangements, this
-#'  might be too cluttered to be meaningful.
-#'
-#' @param labelOTUs (Optional). Logical. Default \code{FALSE}. Whether to add
-#'  a label over the top
-#'  few OTUs within each bar. As with \code{OTUpoints}, this is probably not
-#'  a good idea for plots with large complexity. For low numbers of total OTUs
-#'  this can be informative, and help display multiple layers of information 
-#'  on the same graphic.
-#'
-#' @param title (Optional). Default \code{NULL}. Character string.
-#'  The main title for the graphic.
-#'
-#' @return A ggplot2 graphic object.
-#'
-#' @seealso \code{\link{otu2df}}, \code{\link{qplot}}, \code{\link{ggplot}}
-#'
-#' @import ggplot2
-#' @export
-#' @aliases taxaplot
-#' @rdname plot-taxa-bar
-#'
-#' @examples
-#' data(enterotype)
-#' TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10]) 
-#' ent10   <- prune_species(TopNOTUs, enterotype)
-#' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup")
-#' library("ggplot2")
-#' plot_taxa_bar(ent10, "Genus", x="SeqTech", fill="TaxaGroup") + facet_wrap(~Enterotype) 
-plot_taxa_bar <- function(physeq, taxavec="Domain",
-	showOnlyTheseTaxa=NULL, threshold=NULL, x="sample", fill=x, 
-	facet_formula = . ~ TaxaGroup, OTUpoints=FALSE, labelOTUs=FALSE, title=NULL){
-
-	# Some preliminary assignments. Assumes physeq has non-empty sample_data slot.
-	map <- sample_data(physeq)
-	if( length(taxavec) == 1 ){ 
-		taxavec <- as(tax_table(physeq), "matrix")[, taxavec, drop=TRUE]
-	}
-
-	# Build the main species-level data.frame
-	df <- otu2df(physeq, taxavec, map,	showOnlyTheseTaxa, threshold)
-
-	########################################
-	# Set the factor-order for df to ensure the
-	# taxonomic groups are neatly ordered
-	# by their relative contribution in the total dataset.
-	top.TaxaGroup   <- sort(tapply(df$Abundance, df$TaxaGroup,
-						sum, na.rm=TRUE), decreasing=TRUE)
-	top.TaxaGroup   <- 	top.TaxaGroup / sum(top.TaxaGroup)
-	top.TaxaGroup   <- 	top.TaxaGroup[top.TaxaGroup > 0]						
-	   df$TaxaGroup <- factor(as.character(df$TaxaGroup),
-						levels=names(top.TaxaGroup))
-
-	# If there is a showOnlyTheseTaxa provided, use that as the order instead.
-	if( !is.null(showOnlyTheseTaxa) ){
-		df$TaxaGroup <- factor(df$TaxaGroup, levels=showOnlyTheseTaxa)	
-	}
-
-	########################################
-	# Create taxaGroup-summed df for making solid bars, dftot
-	df2sampleTGtot <- function(df, map){
-		AbundTot <- tapply(df$Abundance, list(df$sample, df$TaxaGroup), sum)
-		
-		TaxaGrouptot <- as.vector(sapply( levels(df$TaxaGroup),
-						rep, times = length(levels(df$sample)) ))
-		sampletot    <- rep(levels(df$sample), times=length(levels(df$TaxaGroup)))
-		
-		dftot <- data.frame(
-			TaxaGroup = TaxaGrouptot,
-			sample    = sampletot,
-			Abundance = as.vector(AbundTot)
-		)
-		dftot <- cbind(dftot, map[factor(dftot$sample), ])
-		# Make sure TaxaGroup levels-order matches df
-		dftot$TaxaGroup <- factor(dftot$TaxaGroup, levels(df$TaxaGroup))		
-		return(dftot)
-	}
-	dftot <- df2sampleTGtot(df, map)
-
-	########################################
-	# Build the ggplot
-	p  <- ggplot(df) + 
-		theme(axis.text.x=element_text(angle=-90, hjust=0))
-
-	p <- p + 
-		# The full stack
-		geom_bar(
-			data=dftot, 
-			eval(call("aes",
-				x=as.name(x), 
-				y=quote(Abundance), 
-				fill=as.name(fill)
-			)),
-			position="dodge", stat="identity"
-		) + 
-		# Some reasonable default options
-		theme(panel.grid.minor = element_blank()) + 
-		theme(panel.grid.major = element_blank()) +
-		theme(panel.border = element_blank()) +
-		labs(y="Relative Abundance", x=x, fill=fill)
-		
-	# Should the individual OTU points be added. Default FALSE
-	if( OTUpoints ){
-		p <- p + geom_point(
-			data=df, 
-			eval(call("aes",
-				x=as.name(x), 
-				y=quote(Abundance)
-			)),
-			color="black", size=1.5, position="jitter", alpha=I(1/2)
-		)
-	}
-		
-	# Should the most abundant OTUs be labeled. Default FALSE
-	if( labelOTUs ){
-		# Create a small df subset for labelling abundant OTUs
-		dfLabel <- subset(df, Abundance > 0.05)	
-		p <- p + geom_text(data=dfLabel, size=2,
-			eval(call("aes", 
-				x=as.name(x), 
-				y=quote(Abundance+0.01), 
-				label=quote(ID)
-			)),
-		)
-	}
-		
-
-	if( !is.null(facet_formula) ){	
-		p <- p + facet_grid(facet_formula)
-	}
-	
-	# Optionally add a title to the plot
-	if( !is.null(title) ){
-		p <- p + ggtitle(title)
-	}	
-	
-	########################################
-	# Return the ggplot object so the user can 
-	# additionally manipulate it.
-	return(p)
-}
-################################################################################
-#' @export
-#' @aliases plot_taxa_bar
-#' @rdname plot-taxa-bar
-taxaplot <- plot_taxa_bar
-################################################################################
 ################################################################################
 ################################################################################
 # plot_tree section.  
@@ -2025,7 +1688,7 @@ plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abunda
 	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt.data.frame(speciesDF, id=c("x", "y", "taxa_names"))
+	melted.tip <- melt.data.frame(speciesDF, id.vars=c("x", "y", "taxa_names"))
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
@@ -2468,6 +2131,9 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' available from GitHub at:
 #' \url{https://github.com/gjuggler/ggphylo}
 #'
+#' There are many useful examples of phyloseq tree graphics in the
+#' \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
+#'
 #' @author Paul McMurdie, relying on supporting code from
 #'  Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
@@ -2477,49 +2143,15 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' @export
 #' @examples
 #' # # Using plot_tree() with the esophagus dataset.
+#' # # Please note that many more interesting examples are shown
+#' # # in the online tutorials"
+#' # # http://joey711.github.com/phyloseq/plot_tree-examples
 #' data(esophagus)
 #' plot_tree(esophagus)
 #' plot_tree(esophagus, color="samples")
 #' plot_tree(esophagus, size="abundance")
 #' plot_tree(esophagus, size="abundance", color="samples")
-#' p = plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
-#' print(p)
-#' # Modify the color scale using ggplot2 functions
-#' library("ggplot2")
-#' p + scale_colour_brewer(palette="Set1")
-#' p + scale_color_manual(values=c(B="blue", C="green", D="red"))
-#' # # Using plot_tree with the Global Patterns dataset
-#' data("GlobalPatterns")
-#' # Subset Global Patterns dataset to just the observed Archaea
-#' gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
-#' # The number of different Archaeal species from this dataset is small enough ...
-#' ntaxa(gpa)
-#' # ... that it is reasonable to consider displaying the phylogenetic tree directly.
-#' # (probably not true of the total dataset)
-#' ntaxa(GlobalPatterns)
-#' # Some patterns are immediately discernable with minimal parameter choices:
-#' # plot_tree(gpa, color="SampleType")
-#' # plot_tree(gpa, color="Phylum")
-#' # plot_tree(gpa, color="SampleType", shape="Phylum")
-#' # plot_tree(gpa, color="Phylum", label.tips="Genus")
-#' # # However, the text-label size scales with number of species, and with common
-#' # # graphics-divice sizes/resolutions, these ~200 taxa still make for a 
-#' # # somewhat crowded graphic. 
-#' # # 
-#' # # Let's instead subset further ot just the Crenarchaeota
-#' gpac = subset_species(gpa, Phylum=="Crenarchaeota")
-#' p = plot_tree(gpac, color="SampleType", shape="Order", ladderize="left")
-#' print(p)
-#' # Modify the color scale using ggplot2 functions
-#' p = p + scale_colour_brewer(palette="Set1")
-#' print(p)
-#' # plot_tree(gpac, color="SampleType", label.tips="Genus")
-#' # # Let's add some abundance information.
-#' # # Notice that the default spacing gets a little crowded when we map
-#' # # species-abundance to point-size:
-#' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance")
-#' # # So let's spread it out a little bit with the base.spacing parameter.
-#' # plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", base.spacing=0.05)
+#' plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
 	color=NULL, shape=NULL, size=NULL,
 	min.abundance=Inf, label.tips=NULL, text.size=NULL,
@@ -2746,13 +2378,16 @@ RadialCoords <- function(pos)
 #' 
 #'  Rajaram, S., & Oono, Y. (2010). NeatMap--non-clustering heat map alternatives in R. BMC Bioinformatics, 11, 45.
 #'
+#' Please see further examples in the 
+#' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
+#'
 #' @import vegan
 #' @import scales 
 #' 
 #' @export
 #' @examples
 #' data("GlobalPatterns")
-#' gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
+#' gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 #' # FYI, the base-R function uses a non-ecological ordering scheme,
 #' # but does add potentially useful hclust dendrogram to the sides...
 #' heatmap(otu_table(gpac))
@@ -2760,20 +2395,7 @@ RadialCoords <- function(pos)
 #' # example relabelling based on a sample variable and taxonomic rank.
 #' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
 #' # Now repeat the plot, but change the color scheme in various ways.
-#' # This may be worthwhile, depending on the graphics device or paper
-#' # on which you want to discplay the heatmap.
-#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#CCFF66")
-#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#FF3300")
-#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#66CCFF")
-#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#66CCFF", high="#000033", na.value="white")
-#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#FFFFCC", high="#000033", na.value="white")
-#' # Now try the default color scheme, but using different ecological distances/ordinations
-#' plot_heatmap(gpac, "NMDS", "jaccard")
-#' plot_heatmap(gpac, "DCA")
-#' plot_heatmap(gpac, "RDA")
-#' plot_heatmap(gpac, "MDS", "bray")
-#' plot_heatmap(gpac, "MDS", "unifrac")
-#' plot_heatmap(gpac, "MDS", "unifrac", weighted=TRUE)
+#' # See the online tutorial for many other examples.
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
 	sample.label=NULL, species.label=NULL, 
 	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 

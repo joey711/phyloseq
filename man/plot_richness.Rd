@@ -88,31 +88,20 @@
   "se.ACE", "shannon", "simpson")}
 }
 \examples{
+## There are many more interesting examples at the phyloseq online tutorials.
+## http://joey711.github.com/phyloseq/plot_richness-examples
 data(GlobalPatterns)
 GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
 plot_richness(GP, x = "SampleType", color="SampleType")
 plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
-plot_richness(GlobalPatterns, "SampleType", "SampleType")
-# # Define a human-associated versus non-human categorical variable:
-GP <- GlobalPatterns
-human <- get_variable(GP, "SampleType") \%in\%
-c("Feces", "Mock", "Skin", "Tongue")
-names(human) <- sample_names(GP)
-# # Add human-associated logical:
-sample_data(GP)$human <- human
-# # Can use new "human" variable within GP as a discrete variable in the plot
-plot_richness(GP, "human", "SampleType")
-plot_richness(GP, "SampleType", "human")
-# # Can also provide custom factor directly:
-plot_richness(GP, "SampleType", human)
-plot_richness(GP, human, "SampleType")
-# # Not run: Should cause an error:
-# plot_richness(GP, "value", "value")
-# #
 }
 \seealso{
   \code{\link{estimate_richness}},
   \code{\link[vegan]{estimateR}},
   \code{\link[vegan]{diversity}}
+
+  There are many more interesting examples at the
+  \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq
+  online tutorials}.
 }
 

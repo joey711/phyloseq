@@ -35,7 +35,7 @@
 }
 \examples{
 data("GlobalPatterns")
-gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 mdf = psmelt(gp.ch)
 nrow(mdf)
 ncol(mdf)
