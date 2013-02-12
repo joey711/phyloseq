@@ -43,10 +43,10 @@ phyloseq <- function(...){
 	names(arglist) <- NULL
 
 	# ignore all but component data classes.
-	arglist  <- arglist[sapply(arglist, class) %in% phyloseq:::get.component.classes()]
+	arglist  <- arglist[sapply(arglist, class) %in% get.component.classes()]
 	
 	# Make the name-replaced, splatted list
-	splatlist <- sapply(arglist, phyloseq:::splat.phyloseq.objects)
+	splatlist <- sapply(arglist, splat.phyloseq.objects)
 
 	####################
 	## Fix extra quotes in phylogenetic tree.
@@ -88,7 +88,7 @@ phyloseq <- function(...){
 	# (A) instantiate a new phyloseq object, or
 	# (B) return a single component, or
 	# (C) to stop with an error because of incorrect argument types.
-	if( length(splatlist) > 4){
+	if( length(splatlist) > length(get.component.classes()) ){
 		stop("Too many components provided\n")
 	} else if( length(names(splatlist)) > length(unique(names(splatlist))) ){
 		stop("Only one of each component type allowed.\n",
@@ -103,40 +103,45 @@ phyloseq <- function(...){
 	## Reconcile the taxa and sample index names between components
 	## in the newly-minted phyloseq object
 	# Verify there is more than one component that describes species before attempting to reconcile.
-	if( sum(!sapply(lapply(phyloseq:::splat.phyloseq.objects(ps), species.names), is.null)) >= 2 ){	
-		ps <- phyloseq:::reconcile_species(ps)
+	# Note: reconcile_species does not attempt to reorder
+	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), taxa_names), is.null)) >= 2 ){	
+		ps <- reconcile_species(ps)
 	}
 	# Verify there is more than one component that describes samples before attempting to reconcile.
-	if( sum(!sapply(lapply(phyloseq:::splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
-		ps <- phyloseq:::reconcile_samples(ps)		
+	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
+		ps <- reconcile_samples(ps)		
 	}
 	####################	
 	## ENFORCE CONSISTENT ORDER OF TAXA INDICES.
-	# If there is a phylogenetic tree included, re-order the otu_table based 
-	# according to the order of taxa-names on the tree, and optionally for
-	# the taxonomyTable, if present.
 	if( !is.null(phy_tree(ps, FALSE)) ){
-		otu <- as(otu_table(ps), "matrix")
-		# Re-order the matrix order matches tree
+		# If there is a phylogenetic tree included, 
+		# re-order based on that, and reorder the otu_table
+		# The new taxa order, torder, will also trickle down to
+		# the taxonomyTable or XStringSet if present.
+		torder = taxa_names(phy_tree(ps))
+		# Re-order the OTU table
 		if( taxa_are_rows(ps) ){
-			otu <- otu[species.names(phy_tree(ps)), ]
+			ps@otu_table = otu_table(ps)[torder, ]
 		} else {
-			otu <- otu[, species.names(phy_tree(ps))]
+			ps@otu_table = otu_table(ps)[, torder]
 		}
-		ps@otu_table <- otu_table(otu, taxa_are_rows(ps))
-		
+	} else {
+		# Else, re-order anything/everything else based on the OTU-table order
+		torder = taxa_names(otu_table(ps))
+	}
+	if( !is.null(tax_table(ps, FALSE)) ){
 		# If there is a taxonomyTable, re-order that too.
-		if( !is.null(tax_table(ps, FALSE)) ){
-			tax <- as(tax_table(ps), "matrix")
-			tax <- tax[species.names(phy_tree(ps)), ]
-			ps@tax_table <- tax_table(tax)
-		}
+		ps@tax_table = tax_table(ps)[torder, ]
+	}
+	if( !is.null(refseq(ps, FALSE)) ){
+		# If there is a XStringSet, re-order that too.
+		ps@refseq = refseq(ps)[torder]
 	}
 	####################
 	## ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
 	# Other errors have been detected for when sample indices do not match.
-	# check first that ps has sample_data
 	if( !is.null(sample_data(ps, FALSE)) ){
+		# check first that ps has sample_data
 		if( !all(sample.names(otu_table(ps)) == rownames(sample_data(ps))) ){
 			# Reorder the sample_data rows so that they match the otu_table order.
 			ps@sam_data <- sample_data(ps)[sample.names(otu_table(ps)), ]
@@ -163,9 +168,9 @@ phyloseq <- function(...){
 #' #get.component.classes()
 get.component.classes <- function(){
 	# define classes vector
-	component.classes <- c("otu_table", "sample_data", "phylo", "taxonomyTable")
+	component.classes <- c("otu_table", "sample_data", "phylo", "taxonomyTable", "XStringSet")
 	# the names of component.classes needs to be the slot names to match getSlots / splat
-	names(component.classes) <- c("otu_table", "sam_data", "phy_tree", "tax_table")	
+	names(component.classes) <- c("otu_table", "sam_data", "phy_tree", "tax_table", "refseq")	
 	return(component.classes)
 }
 ################################################################################
@@ -332,9 +337,9 @@ intersect_species <- function(x){
 	component_list  <- splat.phyloseq.objects(x)
 	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("sam_data") )
 	if( length(doesnt_have_species) > 0 ){
-		species_vectors <- lapply(component_list[-doesnt_have_species], species.names)		
+		species_vectors <- lapply(component_list[-doesnt_have_species], taxa_names)		
 	} else {
-		species_vectors <- lapply(component_list, species.names)		
+		species_vectors <- lapply(component_list, taxa_names)		
 	}
 	return( Reduce("intersect", species_vectors) )
 }
@@ -378,9 +383,9 @@ setGeneric("reconcile_species", function(x) standardGeneric("reconcile_species")
 setMethod("reconcile_species", signature("phyloseq"), function(x){
 	# Make species the intersection of all species in the components
 	species <- intersect_species(x)
-	# prune_species(species, x) already checks if species and species.names(x)
+	# prune_taxa(species, x) already checks if species and taxa_names(x)
 	# sets are equal, no need to re-check.
-	x       <- prune_species(species, x)
+	x       <- prune_taxa(species, x)
 	return(x)
 })
 ################################################################################

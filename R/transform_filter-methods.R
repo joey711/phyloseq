@@ -579,21 +579,31 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
 })
+#' @import Biostrings
 #' @aliases prune_taxa,character,XStringSet-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 	# Only use the intersection.
 	keep_taxa = intersect( taxa, taxa_names(x) )
-	# Error if intersection is zero.
-	if( length(keep_taxa) == 0 ) stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")
-	# Warning if some elements of taxa argument are thrown out.
-	if( length(keep_taxa) < length(taxa) ) warning("Some names in taxa not found in taxa_names(x); ignored.")
-	# If they are already the same, just return XStringSet object, unchanged.
-	if( setequal(keep_taxa, taxa_names(x)) ) return(x)
-	# Pop the taxa that you don't want, without re-ordering.
-	remove_index = which( !taxa_names(x) %in% keep_taxa )
-	x = x[-remove_index]
-	return(x)
+	if( length(keep_taxa) == 0 ){
+		# Error if intersection is zero.
+		stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")		
+	}
+	if( length(keep_taxa) < length(taxa) ){
+		# Warning if some elements of the taxa argument are thrown out. They are ignored/lost
+		nlostnames = length(taxa) - length(keep_taxa)
+		warnmsg = paste(nlostnames, " taxa names provided to prune_taxa were not found among refseq names; they are ignored", sep="")
+		warning(warnmsg)
+	}
+	if( setequal(keep_taxa, taxa_names(x)) ){	
+		# If they are already the same, just return XStringSet object, unchanged.
+		return(x)	
+	} else {
+		# Pop the taxa that you don't want, without re-ordering.
+		remove_index = which( !taxa_names(x) %in% keep_taxa )
+		x = x[-remove_index]
+		return(x)		
+	}
 })
 ################################################################################
 ################################################################################

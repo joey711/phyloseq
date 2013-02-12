@@ -7,6 +7,7 @@
 \alias{ntaxa,phylo-method}
 \alias{ntaxa,phyloseq-method}
 \alias{ntaxa,taxonomyTable-method}
+\alias{ntaxa,XStringSet-method}
 \title{Get the number of taxa/species.}
 \usage{
   ntaxa(physeq)
