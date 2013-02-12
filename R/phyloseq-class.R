@@ -43,7 +43,7 @@ phyloseq <- function(...){
 	names(arglist) <- NULL
 
 	# ignore all but component data classes.
-	arglist  <- arglist[sapply(arglist, class) %in% get.component.classes()]
+	arglist  <- arglist[sapply(arglist, is.component.class)]
 	
 	# Make the name-replaced, splatted list
 	splatlist <- sapply(arglist, splat.phyloseq.objects)
@@ -77,7 +77,7 @@ phyloseq <- function(...){
 	if( length(shared_taxa) <= 0 ){
 		stop(
 			"Error in phyloseq-constructor:\n",
-			"No shared taxa names among the taxa-describing components your provided.\n",
+			"No shared taxa names among the taxa-describing components you provided.\n",
 			"Solution: Check the taxa/OTU names of each component separately, using taxa_names()\n",
 			"Note: This does not apply to a sample_data component, because it does not describe taxa/OTUs."
 		)
@@ -92,7 +92,7 @@ phyloseq <- function(...){
 		stop("Too many components provided\n")
 	} else if( length(names(splatlist)) > length(unique(names(splatlist))) ){
 		stop("Only one of each component type allowed.\n",
-		"For merging multiple objects of the same class, try merge_phyloseq(...)\n")
+		"For merging multiple objects of the same type/class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
 	# Instantiate the phyloseq-class object, ps.
@@ -173,6 +173,11 @@ get.component.classes <- function(){
 	names(component.classes) <- c("otu_table", "sam_data", "phy_tree", "tax_table", "refseq")	
 	return(component.classes)
 }
+# Returns TRUE if x is a component class, FALSE otherwise. This shows up over and over again in data infrastructure
+#' @keywords internal
+is.component.class = function(x){
+	inherits(x, get.component.classes())
+}
 ################################################################################
 #' Convert \code{\link{phyloseq-class}} into a named list of its non-empty components.
 #'
@@ -199,16 +204,17 @@ get.component.classes <- function(){
 #' @keywords internal
 #' @examples #
 splat.phyloseq.objects <- function(x){
-	component.classes <- get.component.classes()
-	# Check if class of x is among the component classes (not phyloseq-class)
-	if( class(x) %in% component.classes ){
+	if( is.component.class(x) ){
+	# Check if class of x is among the component classes already (not phyloseq-class)		
 		splatx <- list(x)
-		names(splatx) <- names(component.classes)[component.classes==class(x)]
-	} else if( class(x) == "phyloseq" ){ 
-		slotnames <- names(getSlots("phyloseq"))
-		allslots  <- sapply(slotnames, function(i, x){access(x, i, FALSE)}, x)
-		splatx    <- allslots[!sapply(allslots, is.null)]
+		names(splatx) <- names(which(sapply(get.component.classes(), function(cclass, x) inherits(x, cclass), x)))
+	} else if( inherits(x, "phyloseq") ){
+	# Else, check if it inherits from phyloseq, and if-so splat
+		slotnames = names(getSlots("phyloseq"))
+		allslots  = sapply(slotnames, function(i, x){access(x, i, FALSE)}, x)
+		splatx    = allslots[!sapply(allslots, is.null)]
 	} else {
+	# Otherwise, who knows what it is, silently return NULL.
 		return(NULL)
 	}
 	return(splatx)
@@ -237,18 +243,8 @@ splat.phyloseq.objects <- function(x){
 #'  getslots.phyloseq(GlobalPatterns)
 #'  data(esophagus)
 #'  getslots.phyloseq(esophagus)
-getslots.phyloseq <- function(physeq){
-	# Check if class of physeq is among the component classes (not phyloseq-class)
-	component.classes <- get.component.classes()	
-	if( class(physeq) %in% component.classes ){
-		slotsx        <- as.character(class(physeq))
-		names(slotsx) <- names(component.classes)[component.classes==class(physeq)]
-	} else {
-		# Make sure to return only the names of non-empty slots of physeq
-		splatx <- splat.phyloseq.objects(physeq)
-		slotsx <- names(splatx)
-	}
-	return(slotsx)
+getslots.phyloseq = function(physeq){
+	names(splat.phyloseq.objects(physeq))
 }
 ################################################################################
 #' Universal slot accessor function for phyloseq-class.
@@ -290,22 +286,24 @@ getslots.phyloseq <- function(physeq){
 #' ## access(otuTree(GlobalPatterns), "sample_data")
 #' ## access(otuSam(GlobalPatterns), "phy_tree")
 access <- function(physeq, slot, errorIfNULL=FALSE){
-	component.classes <- get.component.classes()
-	# Check if class of x is among the component classes (not H.O.)
-	if( class(physeq) %in% component.classes ){
-		# if slot-name matches physeq, return physeq as-is.
-		if( component.classes[slot] == class(physeq) ){
-			out <- physeq
+	if( is.component.class(physeq) ){
+		# If physeq is a component class, might return as-is. Depends on slot.
+		if( inherits(physeq, get.component.classes()[slot]) ){
+			# if slot-name matches, return physeq as-is.
+			out = physeq
 		} else {
-			out <- NULL
+			# If slot/component mismatch, set out to NULL. Test later if this is an error.			
+			out = NULL
 		}
 	} else if(!slot %in% slotNames(physeq) ){
-		out <- NULL
+		# If slot is invalid, set out to NULL. Test later if this is an error.
+		out = NULL
 	} else {
-		out <- eval(parse(text=paste("physeq@", slot, sep=""))) 
+		# By elimination, must be valid. Access slot
+		out = eval(parse(text=paste("physeq@", slot, sep=""))) 
 	}
-	# Test if you should error upon the emptiness of the slot being accessed
 	if( errorIfNULL & is.null(out) ){
+		# Only error regarding a NULL return value if errorIfNULL is TRUE.
 		stop(slot, " slot is empty.")
 	}
 	return(out)

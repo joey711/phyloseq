@@ -86,5 +86,11 @@ setMethod("show", "phyloseq", function(object){
 			cat("                     unrooted", fill=TRUE)
 		}        
 	}
+	
+	# print refseq summary if there
+	if(!is.null(refseq(object, FALSE))){
+        cat(paste("A ", class(refseq(object))[1], ": ", ntaxa(refseq(object)), " reference sequences", sep = ""), fill=TRUE)
+	}
+	
 })
 ############################################################################
