@@ -29,7 +29,7 @@ setGeneric("otu_table<-", function(x, value) standardGeneric("otu_table<-"))
 #' @rdname assign-otu_table
 #' @aliases otu_table<-,phyloseq,otu_table-method
 setMethod("otu_table<-", c("phyloseq", "otu_table"), function(x, value){
-	phyloseq(otu_table=value, sam_data=x@sam_data, tax_table=x@tax_table, phy_tree=x@phy_tree)
+	phyloseq(value, x@sam_data, x@tax_table, x@phy_tree, x@refseq)
 })
 #' @rdname assign-otu_table
 #' @aliases otu_table<-,otu_table,otu_table-method
@@ -37,7 +37,7 @@ setMethod("otu_table<-", c("otu_table", "otu_table"), function(x, value){ value 
 #' @rdname assign-otu_table
 #' @aliases otu_table<-,phyloseq,phyloseq-method
 setMethod("otu_table<-", c("phyloseq", "phyloseq"), function(x, value){
-	phyloseq(otu_table=otu_table(value), sam_data=x@sam_data, tax_table=x@tax_table, phy_tree=x@phy_tree)
+	phyloseq(otu_table(value), x@sam_data, x@tax_table, x@phy_tree, x@refseq)
 })
 ################################################################################
 #' Manually change taxa_are_rows through assignment.
@@ -130,16 +130,20 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 #' # sample_data(ex2b) <- GlobalPatterns
 #' # identical(ex2a, ex2b) # still true.
 "sample_data<-" <- function(x, value){
-	if(class(value) != "sample_data"){value <- sample_data(value)}
-	phyloseq(otu_table=x@otu_table, sam_data=value, tax_table=x@tax_table, phy_tree=x@phy_tree)
+	if( !inherits(value, "sample_data") ){
+		value <- sample_data(value)
+	}
+	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
 }
 #' @export
 #' @rdname assign-sample_data
 #' @aliases assign-sample_data sample_data<- sam_data<-
 #' @usage sam_data(x) <- value
 "sam_data<-" <- function(x, value){
-	if(class(value) != "sample_data"){value <- sample_data(value)}
-	phyloseq(otu_table=x@otu_table, sam_data=value, tax_table=x@tax_table, phy_tree=x@phy_tree)
+	if( !inherits(value, "sample_data") ){
+		value <- sample_data(value)
+	}
+	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
 }
 ################################################################################
 #' Assign a (new) Taxonomy Table to \code{x}
@@ -177,16 +181,17 @@ setGeneric("tax_table<-", function(x, value) standardGeneric("tax_table<-"))
 #' @rdname assign-tax_table
 #' @aliases tax_table<-,phyloseq,taxonomyTable-method
 setMethod("tax_table<-", c("phyloseq", "taxonomyTable"), function(x, value){
-	phyloseq(otu_table=x@otu_table, sam_data=x@sam_data, tax_table=value, phy_tree=x@phy_tree)
+	phyloseq(x@otu_table, x@sam_data, value, x@phy_tree, x@refseq)
 })
 #' @rdname assign-tax_table
 #' @aliases tax_table<-,phyloseq,ANY-method
 setMethod("tax_table<-", c("phyloseq", "ANY"), function(x, value){
-	phyloseq(otu_table=x@otu_table, sam_data=x@sam_data, tax_table=tax_table(value, FALSE), phy_tree=x@phy_tree)
+	phyloseq(x@otu_table, x@sam_data, tax_table(value, FALSE), x@phy_tree, x@refseq)
 })
 #' @rdname assign-tax_table
 #' @aliases tax_table<-,taxonomyTable,taxonomyTable-method
 setMethod("tax_table<-", c("taxonomyTable", "taxonomyTable"), function(x, value){
+	# Asign as-is.
 	value
 })
 #' @rdname assign-tax_table
@@ -223,11 +228,11 @@ setGeneric("phy_tree<-", function(x, value) standardGeneric("phy_tree<-"))
 #' @rdname assign-phy_tree
 #' @aliases phy_tree<-,phyloseq,phylo-method
 setMethod("phy_tree<-", c("phyloseq", "phylo"), function(x, value){
-	phyloseq(otu_table=x@otu_table, sam_data=x@sam_data, tax_table=x@tax_table, phy_tree=value)
+	phyloseq(x@otu_table, x@sam_data, x@tax_table, value, x@refseq)
 })
 #' @rdname assign-phy_tree
 #' @aliases phy_tree<-,phyloseq,phyloseq-method
 setMethod("phy_tree<-", c("phyloseq", "phyloseq"), function(x, value){
-	phyloseq(otu_table=x@otu_table, sam_data=x@sam_data, tax_table=x@tax_table, phy_tree=phy_tree(value))
+	phyloseq(x@otu_table, x@sam_data, x@tax_table, phy_tree(value), x@refseq)
 })
 ################################################################################

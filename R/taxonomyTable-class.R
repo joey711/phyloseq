@@ -113,7 +113,7 @@ subset_taxa <- function(physeq, ...){
 		oldDF <- data.frame(oldMA)
 		newDF <- subset(oldDF, ...)
 		newMA <- as(newDF, "matrix")
-		if( class(physeq) == "taxonomyTable" ){
+		if( inherits(physeq, "taxonomyTable") ){
 			return(tax_table(newMA))
 		} else {
 			tax_table(physeq) <- tax_table(newMA)
