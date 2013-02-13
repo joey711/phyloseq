@@ -108,7 +108,7 @@ phyloseq <- function(...){
 		ps <- reconcile_species(ps)
 	}
 	# Verify there is more than one component that describes samples before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample.names), is.null)) >= 2 ){
+	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample_names), is.null)) >= 2 ){
 		ps <- reconcile_samples(ps)		
 	}
 	####################	
@@ -142,9 +142,9 @@ phyloseq <- function(...){
 	# Other errors have been detected for when sample indices do not match.
 	if( !is.null(sample_data(ps, FALSE)) ){
 		# check first that ps has sample_data
-		if( !all(sample.names(otu_table(ps)) == rownames(sample_data(ps))) ){
+		if( !all(sample_names(otu_table(ps)) == rownames(sample_data(ps))) ){
 			# Reorder the sample_data rows so that they match the otu_table order.
-			ps@sam_data <- sample_data(ps)[sample.names(otu_table(ps)), ]
+			ps@sam_data <- sample_data(ps)[sample_names(otu_table(ps)), ]
 		}		
 	}
 	
@@ -171,6 +171,24 @@ get.component.classes <- function(){
 	component.classes <- c("otu_table", "sample_data", "phylo", "taxonomyTable", "XStringSet")
 	# the names of component.classes needs to be the slot names to match getSlots / splat
 	names(component.classes) <- c("otu_table", "sam_data", "phy_tree", "tax_table", "refseq")	
+	return(component.classes)
+}
+# Explicitly define components/slots that describe taxa.
+#' @keywords internal
+taxa.components = function(){
+	# define classes vector
+	component.classes <- c("otu_table", "phylo", "taxonomyTable", "XStringSet")
+	# the names of component.classes needs to be the slot names to match getSlots / splat
+	names(component.classes) <- c("otu_table", "phy_tree", "tax_table", "refseq")	
+	return(component.classes)
+}
+# Explicitly define components/slots that describe samples.
+#' @keywords internal
+sample.components = function(){
+	# define classes vector
+	component.classes <- c("otu_table", "sample_data")
+	# the names of component.classes needs to be the slot names to match getSlots / splat
+	names(component.classes) <- c("otu_table", "sam_data")
 	return(component.classes)
 }
 # Returns TRUE if x is a component class, FALSE otherwise. This shows up over and over again in data infrastructure
@@ -332,13 +350,8 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' ## data(GlobalPatterns)
 #' ## head(intersect_species(GlobalPatterns), 10)
 intersect_species <- function(x){
-	component_list  <- splat.phyloseq.objects(x)
-	doesnt_have_species <- which( getslots.phyloseq(x) %in% c("sam_data") )
-	if( length(doesnt_have_species) > 0 ){
-		species_vectors <- lapply(component_list[-doesnt_have_species], taxa_names)		
-	} else {
-		species_vectors <- lapply(component_list, taxa_names)		
-	}
+	species_vectors = lapply(splat.phyloseq.objects(x), taxa_names)
+	species_vectors = species_vectors[!sapply(species_vectors, is.null)]
 	return( Reduce("intersect", species_vectors) )
 }
 ################################################################################
@@ -411,10 +424,10 @@ setMethod("reconcile_species", signature("phyloseq"), function(x){
 #' ## reconcile_samples(GlobalPatterns)
 reconcile_samples <- function(x){
 	# prevent infinite recursion issues by checking if intersection already satisfied
-	if( setequal(sample.names(sample_data(x)), sample.names(otu_table(x))) ){
+	if( setequal(sample_names(sample_data(x)), sample_names(otu_table(x))) ){
 		return(x)
 	} else {
-		samples <- intersect(sample.names(sample_data(x)), sample.names(otu_table(x)))		
+		samples <- intersect(sample_names(sample_data(x)), sample_names(otu_table(x)))		
 		x@sam_data <- prune_samples(samples, x@sam_data)
 		x@otu_table  <- prune_samples(samples, x@otu_table)
 		return(x)

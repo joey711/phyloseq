@@ -654,13 +654,20 @@ setMethod("prune_samples", signature("character", "sample_data"), function(sampl
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	# protect missing sample_data component. Don't need to prune if empty
-	if( !is.null(access(x, "sam_data", FALSE)) ){
-		x@sam_data  <- prune_samples(samples, access(x, "sam_data", FALSE) )
+	
+	# Save time and return if the union of all component sample names
+	# captured by sample_names(x) is same as `samples`. 
+	if( setequal(sample_names(x), samples) ){
+		return(x)
+	} else {
+		# protect missing sample_data component. Don't need to prune if empty
+		if( !is.null(access(x, "sam_data", FALSE)) ){
+			x@sam_data  <- prune_samples(samples, access(x, "sam_data", FALSE) )
+		}
+		# Don't need to protect otu_table, it is mandatory for phyloseq-class
+		x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )
+		return(x)
 	}
-	# Don't need to protect otu_table, it is mandatory for phyloseq-class
-	x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )
-	return(x)
 })
 # A logical should specify the samples to keep, or not. Have same length as nsamples(x) 
 #' @aliases prune_samples,logical,ANY-method
