@@ -140,6 +140,41 @@ import <- function(pipelineName, ...){
 #'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
 #'  for cases where the tree has been --- or needs to be --- imported separately.
 #'
+#' @param refseqfilename (Optional). Default \code{NULL}.
+#'  The file path of the biological sequence file that contains at a minimum
+#'  a sequence for each OTU in the dataset.
+#'  Alternatively, you may provide an already-imported
+#'  \code{\link[Biostrings]{XStringSet}} object that satisfies this condition.
+#'  In either case, the \code{\link{names}} of each OTU need to match exactly the
+#'  \code{\link{taxa_names}} of the other components of your data.
+#'  If this is not the case, for example if the data file is a FASTA format but
+#'  contains additional information after the OTU name in each sequence header,
+#'  then some additional parsing is necessary,
+#'  which you can either perform separately before calling this function, 
+#'  or describe explicitly in a custom function provided in the (next) argument,
+#'  \code{refseqFunction}.
+#'  Note that the \code{\link[Biostrings]{XStringSet}} class can represent any 
+#'  arbitrary sequence, including user-defined subclasses, but is most-often
+#'  used to represent RNA, DNA, or amino acid sequences. 
+#'  The only constraint is that this special list of sequences
+#'  has exactly one named element for each OTU in the dataset.
+#' 
+#' @param refseqFunction (Optional). 
+#'  Default is \code{\link[Biostrings]{readDNAStringSet}}, 
+#'  which expects to read a fasta-formatted DNA sequence file.
+#'  If your reference sequences for each OTU are amino acid, RNA, or something else,
+#'  then you will need to specify a different function here.
+#'  This is the function used to read the file connection provided as the
+#'  the previous argument, \code{refseqfilename}.
+#'  This argument is ignored if \code{refseqfilename} is already a
+#'  \code{\link[Biostrings]{XStringSet}} class. 
+#' 
+#' @param refseqArgs (Optional). 
+#'  Default \code{NULL}.
+#'  Additional arguments to \code{refseqFunction}.
+#'  See \code{\link[Biostrings]{XStringSet-io}} for details about
+#'  additional arguments to the standard read functions in the Biostrings package.
+#'
 #' @param parseFunction (Optional). An optional custom function for parsing the
 #'  character string that contains the taxonomic assignment of each OTU. 
 #'  The default parsing function is \code{\link{parse_taxonomy_qiime}},
@@ -168,6 +203,8 @@ import <- function(pipelineName, ...){
 #' 
 #' \code{\link{read_tree}}
 #'
+#' \code{\link[Biostrings]{XStringSet-io}}
+#'
 #' @references \url{http://qiime.org/}
 #'
 #' ``QIIME allows analysis of high-throughput community sequencing data.''
@@ -178,6 +215,7 @@ import <- function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
+#' @import Biostrings
 #' @export
 #' @examples
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
@@ -185,7 +223,8 @@ import <- function(pipelineName, ...){
 #'  trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
 #'  import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
-	treefilename=NULL, parseFunction=parse_taxonomy_qiime, showProgress=TRUE, chunk.size=1000L, ...){
+	treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
+	parseFunction=parse_taxonomy_qiime, showProgress=TRUE, chunk.size=1000L, ...){
 
 	# initialize the argument-list for phyloseq. Start empty.
 	argumentlist <- list()
@@ -210,17 +249,39 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 
 	if( !is.null(treefilename) ){
 		if( showProgress==TRUE ){
-			cat("Processing phylogenetic tree file...", fill=TRUE)
-		}		
-		
-		tree <- read_tree(treefilename, ...)
-		
+			cat("Processing phylogenetic tree...", fill=TRUE)
+		}
+		if( inherits(treefilename, "phylo") ){
+			# If argument is already a tree, don't read, just assign.
+			tree = treefilename
+		} else {
+			# NULL is silently returned if tree is not read properly.
+			tree <- read_tree(treefilename, ...)		
+		}
 		# Add to argument list or warn
 		if( is.null(tree) ){
 			warning("treefilename failed import. It not included.")
 		} else {
 			argumentlist <- c(argumentlist, list(tree) )
 		}
+	}
+	
+	if( !is.null(refseqfilename) ){
+		if( showProgress==TRUE ){
+			cat("Processing Reference Sequences...", fill=TRUE)
+		}
+		if( inherits(refseqfilename, "XStringSet") ){
+			# If argument is already a XStringSet, don't read, just assign.
+			refseq = refseqfilename
+		} else {
+			# call refseqFunction and read refseqfilename, either with or without additional args
+			if( !is.null(refseqArgs) ){
+				refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
+			} else {
+				refseq = refseqFunction(refseqfilename)
+			}
+		}
+		argumentlist <- c(argumentlist, list(refseq) )
 	}
 
 	do.call("phyloseq", argumentlist)
@@ -1441,13 +1502,56 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  imported with other tools using the relatively general-purpose data
 #'  merging function called \code{\link{merge_phyloseq}}.
 #'
-#' @param tree (Optional). Character string or ``phylo'' class. 
-#'  A file path to the phylogenetic tree file associated
-#'  with the data in the \code{BIOMfilename}, or an already-imported version
-#'  of that phylogenetic tree as a phylo object.
-#'  Import of the tree will be attempted using \code{\link{read_tree}},
-#'  and additional import parameters for that function can be supplied (see below).
+#' @param treefilename (Optional).
+#'  A file representing a phylogenetic tree
+#'  or a \code{\link{phylo}} object.
+#'  Files can be NEXUS or Newick format.
+#'  See \code{\link{read_tree}} for more details. 
+#'  If provided, the tree should have the same OTUs/tip-labels
+#'  as the OTUs in the other files. 
+#'  Any taxa or samples missing in one of the files is removed from all. 
+#'  For the QIIME pipeline
+#'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
+#'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
+#'  Default value is \code{NULL}. 
+#'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
+#'  for cases where the tree has been --- or needs to be --- imported separately.
+#'
+#' @param refseqfilename (Optional). Default \code{NULL}.
+#'  The file path of the biological sequence file that contains at a minimum
+#'  a sequence for each OTU in the dataset.
+#'  Alternatively, you may provide an already-imported
+#'  \code{\link[Biostrings]{XStringSet}} object that satisfies this condition.
+#'  In either case, the \code{\link{names}} of each OTU need to match exactly the
+#'  \code{\link{taxa_names}} of the other components of your data.
+#'  If this is not the case, for example if the data file is a FASTA format but
+#'  contains additional information after the OTU name in each sequence header,
+#'  then some additional parsing is necessary,
+#'  which you can either perform separately before calling this function, 
+#'  or describe explicitly in a custom function provided in the (next) argument,
+#'  \code{refseqFunction}.
+#'  Note that the \code{\link[Biostrings]{XStringSet}} class can represent any 
+#'  arbitrary sequence, including user-defined subclasses, but is most-often
+#'  used to represent RNA, DNA, or amino acid sequences. 
+#'  The only constraint is that this special list of sequences
+#'  has exactly one named element for each OTU in the dataset.
 #' 
+#' @param refseqFunction (Optional). 
+#'  Default is \code{\link[Biostrings]{readDNAStringSet}}, 
+#'  which expects to read a fasta-formatted DNA sequence file.
+#'  If your reference sequences for each OTU are amino acid, RNA, or something else,
+#'  then you will need to specify a different function here.
+#'  This is the function used to read the file connection provided as the
+#'  the previous argument, \code{refseqfilename}.
+#'  This argument is ignored if \code{refseqfilename} is already a
+#'  \code{\link[Biostrings]{XStringSet}} class. 
+#' 
+#' @param refseqArgs (Optional). 
+#'  Default \code{NULL}.
+#'  Additional arguments to \code{refseqFunction}.
+#'  See \code{\link[Biostrings]{XStringSet-io}} for details about
+#'  additional arguments to the standard read functions in the Biostrings package.
+#'
 #' @param parseFunction (Optional). A function. It must be a function that
 #'  takes as its first argument a character vector of taxonomic rank labels
 #'  for a single OTU
@@ -1513,7 +1617,12 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' # library("doParallel")
 #' # registerDoParallel(cores=6)
 #' # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
-import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9, ...){
+import_biom <- function(BIOMfilename, 
+	treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
+	parseFunction=parse_taxonomy_default, parallel=FALSE, version=1.0, ...){
+
+	# initialize the argument-list for phyloseq. Start empty.
+	argumentlist <- list()
 	
 	# Read the data
 	x = fromJSON(BIOMfilename)
@@ -1538,6 +1647,8 @@ import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_de
 	
 	otutab = otu_table(otumat, TRUE)
 	
+	argumentlist <- c(argumentlist, list(otutab))
+	
 	########################################
 	# Taxonomy Table
 	########################################
@@ -1552,6 +1663,7 @@ import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_de
 		names(taxlist) = sapply(x$rows, function(i){i$id})
 		tax_table = build_tax_table(taxlist)
 	}
+	argumentlist <- c(argumentlist, list(tax_table))
 	
 	########################################
 	# Sample Data ("columns" in QIIME/BIOM)
@@ -1570,24 +1682,47 @@ import_biom <- function(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_de
 		rownames(sam_data) <- sapply(x$columns, function(i){i$id})
 		sam_data <- sample_data(sam_data)
 	}
+	argumentlist <- c(argumentlist, list(sam_data))
 
 	########################################
 	# Tree data
 	########################################
-	if( !is.null(tree) ){
-		# If tree is already a tree, do nothing but explain to user
-		if( identical(class(tree)[1], "phylo") ){
-			cat("tree is already phylo-class, will be included")
+	if( !is.null(treefilename) ){
+		if( inherits(treefilename, "phylo") ){
+			# If argument is already a tree, don't read, just assign.
+			tree = treefilename
 		} else {
-			cat("Attempting to import phylogenetic tree from the file-path you provided as tree, using function: read_tree")
-			tree = read_tree(tree, ...)
+			# NULL is silently returned if tree is not read properly.
+			tree <- read_tree(treefilename, ...)		
+		}
+		# Add to argument list or warn
+		if( is.null(tree) ){
+			warning("treefilename failed import. It not included.")
+		} else {
+			argumentlist <- c(argumentlist, list(tree) )
 		}
 	}
+	
+	if( !is.null(refseqfilename) ){
+		if( inherits(refseqfilename, "XStringSet") ){
+			# If argument is already a XStringSet, don't read, just assign.
+			refseq = refseqfilename
+		} else {
+			# call refseqFunction and read refseqfilename, either with or without additional args
+			if( !is.null(refseqArgs) ){
+				refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
+			} else {
+				refseq = refseqFunction(refseqfilename)
+			}
+		}
+		argumentlist <- c(argumentlist, list(refseq) )
+	}
+	argumentlist <- c(argumentlist, list(tree))
 	
 	########################################
 	# Put together into a phyloseq object
 	########################################
-	return( phyloseq(otutab, tax_table, sam_data, tree) )
+	return( do.call("phyloseq", argumentlist) )
 
 }
 ################################################################################
