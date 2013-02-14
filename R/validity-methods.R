@@ -104,7 +104,7 @@ validphyloseq <- function(object){
 		return("\n An otu_table is required for most analysis / graphics in the phyloseq-package")
 	}
 	# intersection of species-names must have non-zero length
-	if( length(intersect_species(object)) <= 0 ){
+	if( length(intersect_taxa(object)) <= 0 ){
 		return(paste("\n Component taxa/OTU names do not match.\n",
 			" Taxa indices are critical to analysis.\n Try taxa_names()", sep=""))
 	}

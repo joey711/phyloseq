@@ -549,15 +549,18 @@ setMethod("prune_taxa", signature("character", "phyloseq"),
 		return(x)
 	} else {	
 		# All phyloseq objects have an otu_table slot, no need to test.
-		x@otu_table   <- prune_taxa(taxa, otu_table(x))
+		x@otu_table     = prune_taxa(taxa, otu_table(x))
 		
 		# Test if slot is present. If so, perform the component prune.
 		if( !is.null(access(x, "tax_table")) ){
-			x@tax_table <- prune_taxa(taxa, tax_table(x))
+			x@tax_table = prune_taxa(taxa, tax_table(x))
 		}
 		if( !is.null(access(x, "phy_tree")) ){
-			x@phy_tree    <- prune_taxa(taxa, phy_tree(x))
+			x@phy_tree  = prune_taxa(taxa, phy_tree(x))
 		}
+		if( !is.null(access(x, "refseq")) ){
+			x@refseq    = prune_taxa(taxa, refseq(x))
+		}		
 		return(x)
 	}
 })
@@ -654,19 +657,18 @@ setMethod("prune_samples", signature("character", "sample_data"), function(sampl
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	
 	# Save time and return if the union of all component sample names
 	# captured by sample_names(x) is same as `samples`. 
 	if( setequal(sample_names(x), samples) ){
 		return(x)
 	} else {
-		# protect missing sample_data component. Don't need to prune if empty
-		if( !is.null(access(x, "sam_data", FALSE)) ){
-			x@sam_data  <- prune_samples(samples, access(x, "sam_data", FALSE) )
-		}
 		# Don't need to protect otu_table, it is mandatory for phyloseq-class
-		x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )
-		return(x)
+		x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )	
+		if( !is.null(access(x, "sam_data", FALSE)) ){
+			# protect missing sample_data component. Don't need to prune if empty
+			x@sam_data  <- prune_samples(samples, sample_data(x) )
+		}
+		return(x)		
 	}
 })
 # A logical should specify the samples to keep, or not. Have same length as nsamples(x) 

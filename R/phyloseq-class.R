@@ -105,11 +105,11 @@ phyloseq <- function(...){
 	# Verify there is more than one component that describes species before attempting to reconcile.
 	# Note: reconcile_species does not attempt to reorder
 	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), taxa_names), is.null)) >= 2 ){	
-		ps <- reconcile_species(ps)
+		ps <- prune_taxa(intersect_taxa(ps), ps)
 	}
 	# Verify there is more than one component that describes samples before attempting to reconcile.
 	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample_names), is.null)) >= 2 ){
-		ps <- reconcile_samples(ps)		
+		ps <- prune_samples(intersect_samples(ps), ps)
 	}
 	####################	
 	## ENFORCE CONSISTENT ORDER OF TAXA INDICES.
@@ -327,15 +327,14 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 	return(out)
 }
 ################################################################################
-################################################################################
-#' Returns the intersection of species for the components of x
+#' Returns the intersection of species and samples for the components of x
 #'
 #' This function is used internally as part of the infrastructure to ensure that
 #' component data types in a phyloseq-object have exactly the same taxa/species.
 #' It relies heavily on the \code{\link{Reduce}} function to determine the 
 #' strictly common species.
 #'
-#' @usage intersect_species(x)
+#' @usage intersect_taxa(x)
 #'
 #' @param x (Required). A \code{\link{phyloseq-class}} object
 #'  that contains 2 or more components
@@ -348,89 +347,16 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' @keywords internal
 #' @examples #
 #' ## data(GlobalPatterns)
-#' ## head(intersect_species(GlobalPatterns), 10)
-intersect_species <- function(x){
-	species_vectors = lapply(splat.phyloseq.objects(x), taxa_names)
-	species_vectors = species_vectors[!sapply(species_vectors, is.null)]
-	return( Reduce("intersect", species_vectors) )
+#' ## head(intersect_taxa(GlobalPatterns), 10)
+intersect_taxa <- function(x){
+	taxa_vectors = lapply(splat.phyloseq.objects(x), taxa_names)
+	taxa_vectors = taxa_vectors[!sapply(taxa_vectors, is.null)]
+	return( Reduce("intersect", taxa_vectors) )
 }
-################################################################################
-#' Keep only species-indices common to all components.
-#'
-#' This function is used internally as part of the infrastructure to ensure that
-#' component data types in a phyloseq-object have exactly the same taxa/species.
-#' It relies heavily on the \code{\link{prune_species}} S4 methods to perform the
-#' actual trimming. In expected cases, a user will not need to invoke this
-#' function, because phyloseq objects are reconciled during instantiation by
-#' default.
-#'
-#' @usage reconcile_species(x)
-#'
-#' @param x (Required). A phyloseq object. Only meaningful if \code{x} has at
-#'  least two non-empty slots of the following slots that describe species:
-#'  \code{\link{otu_table}}, \code{\link{tax_table}}, \code{\link{phy_tree}}.
-#'
-#' @return A trimmed version of the argument, \code{x}, in which each component
-#'  describes exactly the same set of species/taxa. Class of return should match
-#'  argument, \code{x}.
-#'
-#' @seealso \code{\link{reconcile_samples}}, \code{\link{Reduce}}
-#' @rdname reconcile_species-methods
 #' @keywords internal
-#' @examples #
-#' ## data(GlobalPatterns)
-#' ## head(intersect_species(GlobalPatterns), 10)
-#' ## reconcile_species(GlobalPatterns)
-#' # # data(phylocom)
-#' # # tree <- phylocom$phylo
-#' # # OTU  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-#' # # ex3  <- phyloseq(OTU, tree)
-#' # # reconcile_species(ex3)
-#' # # intersect_species(ex3)
-setGeneric("reconcile_species", function(x) standardGeneric("reconcile_species"))
-################################################################################
-#' @aliases reconcile_species,phyloseq-method
-#' @rdname reconcile_species-methods
-setMethod("reconcile_species", signature("phyloseq"), function(x){
-	# Make species the intersection of all species in the components
-	species <- intersect_species(x)
-	# prune_taxa(species, x) already checks if species and taxa_names(x)
-	# sets are equal, no need to re-check.
-	x       <- prune_taxa(species, x)
-	return(x)
-})
-################################################################################
-#' Keep only sample-indices common to all components.
-#'
-#' This function is used internally as part of the infrastructure to ensure that
-#' component data types in a phyloseq-object describe exactly the same samples.
-#' In expected cases, a user will not need to invoke this
-#' function, because phyloseq objects are reconciled during instantiation by
-#' default.
-#'
-#' @usage reconcile_samples(x)
-#'
-#' @param x An instance of phyloseq-class that contains 2 or more component
-#'  data tables that in-turn describe samples. 
-#'
-#' @return A trimmed version of the argument, \code{x}, in which each component
-#'  describes exactly the same set of samples. Class of \code{x} should be
-#'  unchanged.
-#'
-#' @seealso \code{\link{reconcile_species}}
-#' @keywords internal
-#' @examples #
-#' ## data(GlobalPatterns)
-#' ## reconcile_samples(GlobalPatterns)
-reconcile_samples <- function(x){
-	# prevent infinite recursion issues by checking if intersection already satisfied
-	if( setequal(sample_names(sample_data(x)), sample_names(otu_table(x))) ){
-		return(x)
-	} else {
-		samples <- intersect(sample_names(sample_data(x)), sample_names(otu_table(x)))		
-		x@sam_data <- prune_samples(samples, x@sam_data)
-		x@otu_table  <- prune_samples(samples, x@otu_table)
-		return(x)
-	}
+intersect_samples <- function(x){
+	sample_vectors = lapply(splat.phyloseq.objects(x), sample_names)
+	sample_vectors = sample_vectors[!sapply(sample_vectors, is.null)]
+	return( Reduce("intersect", sample_vectors) )
 }
 ################################################################################
