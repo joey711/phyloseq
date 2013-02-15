@@ -161,7 +161,7 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
 }
 \references{
-  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
+  \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 }
 \seealso{
   \code{\link{import}}
@@ -169,5 +169,7 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
   \code{\link{import_qiime}}
 
   \code{\link{read_tree}}
+
+  \code{\link[Biostrings]{XStringSet-io}}
 }
 

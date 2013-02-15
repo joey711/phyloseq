@@ -1602,7 +1602,9 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'
 #' \code{\link{read_tree}}
 #'
-#' @references \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
+#' \code{\link[Biostrings]{XStringSet-io}}
+#'
+#' @references \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
 #' @importFrom RJSONIO fromJSON
 #' @importFrom plyr ldply
@@ -1705,6 +1707,9 @@ import_biom <- function(BIOMfilename,
 		}
 	}
 	
+	########################################
+	# Reference Sequence data
+	########################################	
 	if( !is.null(refseqfilename) ){
 		if( inherits(refseqfilename, "XStringSet") ){
 			# If argument is already a XStringSet, don't read, just assign.
@@ -1719,7 +1724,6 @@ import_biom <- function(BIOMfilename,
 		}
 		argumentlist <- c(argumentlist, list(refseq) )
 	}
-	argumentlist <- c(argumentlist, list(tree))
 	
 	########################################
 	# Put together into a phyloseq object
