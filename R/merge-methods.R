@@ -232,6 +232,21 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 	}
 })
 ################################################################################
+#' @aliases merge_phyloseq_pair,XStringSet,XStringSet-method
+#' @rdname merge_phyloseq_pair-methods
+setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function(x, y){
+	# Add to x the stuff that is in y, but not in x
+	add_y_taxa = setdiff(taxa_names(y), taxa_names(x))
+	if( length(add_y_taxa) < 1L ){
+		# If there is nothing from y to add, just return x as-is
+		return(x)
+	} else {
+		# Else, add unique stuff from y only to x (they are both lists!)
+		x = c(x, y[add_y_taxa])
+		return( x )
+	}
+})
+################################################################################
 ################################################################################
 #' Merge a subset of the species in \code{x} into one species/taxa/OTU.
 #'
@@ -305,7 +320,20 @@ setMethod("merge_taxa", "otu_table", function(x, eqspecies, archetype=1){
 	}
 	
 	removeIndex <- which( taxa_names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_taxa(taxa_names(x)[-removeIndex], x)	
+	
+	# TODO: Change this to a matrix replacement (x is an otu_table, inherits from matrix)
+	# This should help speed up merge_taxa, as well as this method itself. 
+	# Should do same with taxonomyTable version for same reason.
+	# prune_taxa() re-checks intersection
+	# # 
+	# # It will look like this:
+	# # # # # if (taxa_are_rows(x)) {
+		# # # # # x[-removeIndex, , drop = FALSE]
+	# # # # # } else {
+		# # # # # x[, -removeIndex, drop = FALSE]
+	# # # # # }
+	x <- prune_taxa(taxa_names(x)[-removeIndex], x)
+		
 	return(x)
 })
 ###############################################################################
@@ -386,6 +414,7 @@ setMethod("merge_taxa", "taxonomyTable", function(x, eqspecies, archetype=1){
 	}
 	
 	# Finally, prune all the merging taxa, except the archetype
+	# TO DO. Mod this slightly to skip prune_taxa and just subset... See above.
 	x <- prune_taxa(taxa_names(x)[-removeIndex], x)
 		
 	return(x)

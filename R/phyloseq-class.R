@@ -103,7 +103,6 @@ phyloseq <- function(...){
 	## Reconcile the taxa and sample index names between components
 	## in the newly-minted phyloseq object
 	# Verify there is more than one component that describes species before attempting to reconcile.
-	# Note: reconcile_species does not attempt to reorder
 	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), taxa_names), is.null)) >= 2 ){	
 		ps <- prune_taxa(intersect_taxa(ps), ps)
 	}
@@ -343,7 +342,7 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' @return Returns a character vector of only those species that are present in
 #'  all species-describing components of \code{x}.
 #'
-#' @seealso \code{\link{reconcile_species}}, \code{\link{Reduce}}
+#' @seealso \code{\link{Reduce}}, \code{\link{intersect}}
 #' @keywords internal
 #' @examples #
 #' ## data(GlobalPatterns)

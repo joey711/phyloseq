@@ -5,6 +5,7 @@
 \alias{merge_phyloseq_pair,phylo,phylo-method}
 \alias{merge_phyloseq_pair,sample_data,sample_data-method}
 \alias{merge_phyloseq_pair,taxonomyTable,taxonomyTable-method}
+\alias{merge_phyloseq_pair,XStringSet,XStringSet-method}
 \title{Merge pair of phyloseq component data objects of the same class.}
 \usage{
   merge_phyloseq_pair(x, y)

@@ -91,7 +91,6 @@ import <- function(pipelineName, ...){
 	}
 }
 ################################################################################
-######################################################################################
 #' Import function to read files created by the QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
@@ -112,7 +111,8 @@ import <- function(pipelineName, ...){
 #' example of where ot find the relevant files in the output directory. 
 #'
 #' @usage import_qiime(otufilename=NULL, mapfilename=NULL,
-#'	treefilename=NULL, parseFunction=parse_taxonomy_qiime, showProgress=TRUE, chunk.size=1000L, ...)
+#'  treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
+#'  parseFunction=parse_taxonomy_qiime, showProgress=TRUE, chunk.size=1000L, ...)
 #'
 #' @param otufilename (Optional). A character string indicating the file location of the OTU file.
 #' The combined OTU abundance and taxonomic identification file,
@@ -1485,7 +1485,9 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'
 #' \url{http://biom-format.org/} 
 #'
-#' @usage import_biom(BIOMfilename, tree=NULL, parseFunction=parse_taxonomy_default, parallel=FALSE, version=0.9, ...)
+#' @usage import_biom(BIOMfilename, 
+#'  treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
+#'  parseFunction=parse_taxonomy_default, parallel=FALSE, version=1.0, ...)
 #'
 #' @param BIOMfilename (Required). A character string indicating the 
 #'  file location of the BIOM formatted file. This is a JSON formatted file,
