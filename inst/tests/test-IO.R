@@ -65,11 +65,13 @@ test_that("the import_RDP_otu function can properly read gzipped-example", {
 
 ################################################################################
 # import_qiime tests
+################################################################################
 otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
 trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
+rs_file <- system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
 
-t0 <- import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
+t0 <- import_qiime(otufile, mapfile, trefile, rs_file, showProgress=FALSE)
 test_that("Class of import result is phyloseq-class", {
 	expect_that(t0, is_a("phyloseq"))
 })
@@ -79,11 +81,12 @@ test_that("Classes of components are as expected", {
 	expect_that(tax_table(t0), is_a("taxonomyTable"))
 	expect_that(sam_data(t0), is_a("sample_data"))
 	expect_that(phy_tree(t0), is_a("phylo"))		
+	expect_that(refseq(t0), is_a("DNAStringSet"))
 })
 
 test_that("Changing the chunk.size does not affect resulting tables", {
-	t1 <- import_qiime(otufile, mapfile, trefile, chunk.size=300L, showProgress=FALSE)
-	t2 <- import_qiime(otufile, mapfile, trefile, chunk.size=13L, showProgress=FALSE)
+	t1 <- import_qiime(otufile, mapfile, trefile, rs_file, chunk.size=300L, showProgress=FALSE)
+	t2 <- import_qiime(otufile, mapfile, trefile, rs_file, chunk.size=13L, showProgress=FALSE)
 	expect_that(t0, is_equivalent_to(t1))
 	expect_that(t1, is_equivalent_to(t2))
 })	
@@ -167,17 +170,25 @@ rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package
 rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
 min_dense_biom   <- system.file("extdata", "min_dense_otu_table.biom",   package="phyloseq")
 min_sparse_biom  <- system.file("extdata", "min_sparse_otu_table.biom",  package="phyloseq")
+# the tree and refseq file paths that are suitable for all biom format style examples
+treefilename = system.file("extdata", "biom-tree.phy",  package="phyloseq")
+refseqfilename = system.file("extdata", "biom-refseq.fasta",  package="phyloseq")
 
 test_that("The different types of biom files yield phyloseq objects", {
-	rich_dense  <- import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
-	rich_sparse <- import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
-	min_dense   <- import_biom(min_dense_biom,   parseFunction=parse_taxonomy_greengenes)
-	min_sparse  <- import_biom(min_sparse_biom,  parseFunction=parse_taxonomy_greengenes)
+	rich_dense = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+	rich_sparse = import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+	min_dense = import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+	min_sparse = import_biom(min_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	
 	expect_that(rich_dense,  is_a("phyloseq"))
 	expect_that(rich_sparse, is_a("phyloseq"))
-	expect_that(min_dense,   is_a("otu_table"))
-	expect_that(min_sparse,  is_a("otu_table"))
+	expect_that(min_dense,   is_a("phyloseq"))
+	expect_that(min_sparse,  is_a("phyloseq"))
+
+	expect_that(ntaxa(rich_dense), equals(5L))
+	expect_that(ntaxa(rich_sparse), equals(5L))
+	expect_that(ntaxa(min_dense), equals(5L))
+	expect_that(ntaxa(min_sparse), equals(5L))			
 
 	# # Component classes
 	# sample_data
@@ -193,10 +204,20 @@ test_that("The different types of biom files yield phyloseq objects", {
 	expect_that(access(min_sparse,  "tax_table"), is_a("NULL"))		
 	
 	# phylo tree
-	expect_that(access(rich_dense,  "phy_tree"), is_a("NULL"))
-	expect_that(access(rich_sparse, "phy_tree"), is_a("NULL"))
-	expect_that(access(min_dense,   "phy_tree"), is_a("NULL"))
-	expect_that(access(min_sparse,  "phy_tree"), is_a("NULL"))
+	expect_that(access(rich_dense,  "phy_tree"), is_a("phylo"))
+	expect_that(access(rich_sparse, "phy_tree"), is_a("phylo"))
+	expect_that(access(min_dense,   "phy_tree"), is_a("phylo"))
+	expect_that(access(min_sparse,  "phy_tree"), is_a("phylo"))
+
+	# reference sequences
+	expect_that(inherits(access(rich_dense,  "refseq"), "XStringSet"), is_true())
+	expect_that(inherits(access(rich_sparse,  "refseq"), "XStringSet"), is_true())
+	expect_that(inherits(access(min_dense,  "refseq"), "XStringSet"), is_true())
+	expect_that(inherits(access(min_sparse,  "refseq"), "XStringSet"), is_true())
+	expect_that(access(rich_dense,  "refseq"), is_a("DNAStringSet"))
+	expect_that(access(rich_sparse, "refseq"), is_a("DNAStringSet"))
+	expect_that(access(min_dense,   "refseq"), is_a("DNAStringSet"))
+	expect_that(access(min_sparse,  "refseq"), is_a("DNAStringSet"))	
 		
 	# otu_table		
 	expect_that(access(rich_dense,  "otu_table"), is_a("otu_table"))
