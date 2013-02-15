@@ -131,7 +131,6 @@ hr {
       page-break-after: avoid; 
    }
 }
-
 </style>
 
 <!-- Styles for R syntax highlighter -->
@@ -172,7 +171,9 @@ var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/<
 hljs.initHighlightingOnLoad();
 </script>
 
-
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 
 </head>
@@ -195,7 +196,7 @@ data(&quot;GlobalPatterns&quot;)
 <pre><code class="r">packageDescription(&quot;phyloseq&quot;)$Version
 </code></pre>
 
-<pre><code>## [1] &quot;1.3.12&quot;
+<pre><code>## [1] &quot;1.3.20&quot;
 </code></pre>
 
 <p>Some subsetting and light massaging of the <code>GlobalPatterns</code> dataset.</p>
@@ -281,4 +282,3 @@ p1
 </body>
 
 </html>
-

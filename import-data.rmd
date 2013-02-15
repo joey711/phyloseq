@@ -20,28 +20,36 @@ packageDescription("phyloseq")$Version
 
 ## Currently available import functions
 
-See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions, or see below for examples using some of the more popular importers.
+See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions and documentation links to their specific doc pages, or see below for examples using some of the more popular importers.
 
 ---
 ### import_biom
 
-Newer versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called biom file format:
+Newer versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called [biom file format](http://biom-format.org/):
 
 "The biom file format (canonically pronounced ‘biome’) is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project."
 
 http://biom-format.org/
 
-The phyloseq package includes small examples of biom files with different levels and organization of data. The following shows how to import a so-called "rich dense" biom file from its location within the phyloseq package:
+The phyloseq package includes small examples of biom files with different levels and organization of data. The following shows how to import each of the four main types of biom files (in practice, you don't need to know which type your file is, only that it is a biom file). In addition, the `import_biom` function allows you to simultaneously import an associated phylogenetic tree file and reference sequence file (e.g. fasta).
 
-```{r}
+First, define the file paths. In this case, this will be within the phyloseq package, so we use special features of the `system.file` command to get the paths. This should also work on your system if you have phyloseq installed, regardless of your Operating System.
+
+```{r biom-define-files}
 rich_dense_biom  = system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
-import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
+rich_sparse_biom = system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
+min_dense_biom   = system.file("extdata", "min_dense_otu_table.biom",   package="phyloseq")
+min_sparse_biom  = system.file("extdata", "min_sparse_otu_table.biom",  package="phyloseq")
+treefilename = system.file("extdata", "biom-tree.phy",  package="phyloseq")
+refseqfilename = system.file("extdata", "biom-refseq.fasta",  package="phyloseq")
 ```
 
-And here is an equivalent example for a "sparse dense"" biom file:
+Now that we've defined the file paths, let's use these as argument to the `import_biom` function. Note that the tree and reference sequence files are both suitable for any of the example biom files, which is why we only need one path for each. In practice, you will be specifying a path to a sequence or tree file that matches the rest of your data (include tree tip names and sequence headers)
 ```{r}
-rich_sparse_biom = system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
-import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
+import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+import_biom(min_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 ```
 
 Example code for importing large file with parallel backend
@@ -49,6 +57,16 @@ Example code for importing large file with parallel backend
 library("doParallel")
 registerDoParallel(cores=6)
 import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
+```
+
+In practice, you will store the result of your import as some variable name, like `myData`, and then use this data object in downstream data manipulations and analysis. For example,
+
+```{r}
+myData = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+plot_tree(myData, color="Genus", shape="BODY_SITE", size="abundance")
+plot_richness(myData, x="BODY_SITE", color="Description")
+plot_bar(myData, fill="Genus")
+refseq(myData)
 ```
 
 
@@ -61,11 +79,20 @@ See [qiime.org](http://www.qiime.org/) for details on using QIIME. While there a
 
 The different files useful for import to phyloseq are not collocated in a typical run of the QIIME pipeline. See the basics phyloseq vignette for an example of where to find the relevant files in the output directory.
 
-```{r}
+```{r import-qiime}
 otufile = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 mapfile = system.file("extdata", "master_map.txt", package="phyloseq")
 trefile = system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
-import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
+rs_file = system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
+qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)
+print(qiimedata)
+```
+
+So it has Let's try some quick graphics built from our newly-imported dataset, `qiimedata`.
+
+```{r import-qiime-graphics}
+plot_bar(qiimedata, x="SampleType", fill="Phylum")
+plot_heatmap(qiimedata, sample.label="SampleType", species.label="Phylum")
 ```
 
 

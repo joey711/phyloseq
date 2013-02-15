@@ -22,53 +22,86 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.12"
+## [1] "1.3.20"
 ```
 
 
 ## Currently available import functions
 
-See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions, or see below for examples using some of the more popular importers.
+See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions and documentation links to their specific doc pages, or see below for examples using some of the more popular importers.
 
 ---
 ### import_biom
 
-Newer versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called biom file format:
+Newer versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called [biom file format](http://biom-format.org/):
 
 "The biom file format (canonically pronounced ‘biome’) is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project."
 
 http://biom-format.org/
 
-The phyloseq package includes small examples of biom files with different levels and organization of data. The following shows how to import a so-called "rich dense" biom file from its location within the phyloseq package:
+The phyloseq package includes small examples of biom files with different levels and organization of data. The following shows how to import each of the four main types of biom files (in practice, you don't need to know which type your file is, only that it is a biom file). In addition, the `import_biom` function allows you to simultaneously import an associated phylogenetic tree file and reference sequence file (e.g. fasta).
+
+First, define the file paths. In this case, this will be within the phyloseq package, so we use special features of the `system.file` command to get the paths. This should also work on your system if you have phyloseq installed, regardless of your Operating System.
 
 
 ```r
 rich_dense_biom = system.file("extdata", "rich_dense_otu_table.biom", package = "phyloseq")
-import_biom(rich_dense_biom, parseFunction = parse_taxonomy_greengenes)
-```
-
-```
-## phyloseq-class experiment-level object
-## OTU Table:          [5 taxa and 6 samples]
-##                      taxa are rows
-## Sample Data:         [6 samples by 4 sample variables]:
-## Taxonomy Table:     [5 taxa by 7 taxonomic ranks]:
+rich_sparse_biom = system.file("extdata", "rich_sparse_otu_table.biom", package = "phyloseq")
+min_dense_biom = system.file("extdata", "min_dense_otu_table.biom", package = "phyloseq")
+min_sparse_biom = system.file("extdata", "min_sparse_otu_table.biom", package = "phyloseq")
+treefilename = system.file("extdata", "biom-tree.phy", package = "phyloseq")
+refseqfilename = system.file("extdata", "biom-refseq.fasta", package = "phyloseq")
 ```
 
 
-And here is an equivalent example for a "sparse dense"" biom file:
+Now that we've defined the file paths, let's use these as argument to the `import_biom` function. Note that the tree and reference sequence files are both suitable for any of the example biom files, which is why we only need one path for each. In practice, you will be specifying a path to a sequence or tree file that matches the rest of your data (include tree tip names and sequence headers)
 
 ```r
-rich_sparse_biom = system.file("extdata", "rich_sparse_otu_table.biom", package = "phyloseq")
-import_biom(rich_sparse_biom, parseFunction = parse_taxonomy_greengenes)
+import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction = parse_taxonomy_greengenes)
 ```
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [5 taxa and 6 samples]
-##                      taxa are rows
-## Sample Data:         [6 samples by 4 sample variables]:
-## Taxonomy Table:     [5 taxa by 7 taxonomic ranks]:
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
+## tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]
+```
+
+```r
+import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction = parse_taxonomy_greengenes)
+```
+
+```
+## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
+## tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]
+```
+
+```r
+import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction = parse_taxonomy_greengenes)
+```
+
+```
+## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]
+```
+
+```r
+import_biom(min_sparse_biom, treefilename, refseqfilename, parseFunction = parse_taxonomy_greengenes)
+```
+
+```
+## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]
 ```
 
 
@@ -79,6 +112,43 @@ library("doParallel")
 registerDoParallel(cores = 6)
 import_biom("my/file/path/file.biom", parseFunction = parse_taxonomy_greengenes, 
     parallel = TRUE)
+```
+
+
+In practice, you will store the result of your import as some variable name, like `myData`, and then use this data object in downstream data manipulations and analysis. For example,
+
+
+```r
+myData = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction = parse_taxonomy_greengenes)
+plot_tree(myData, color = "Genus", shape = "BODY_SITE", size = "abundance")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-51.png) 
+
+```r
+plot_richness(myData, x = "BODY_SITE", color = "Description")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-52.png) 
+
+```r
+plot_bar(myData, fill = "Genus")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-53.png) 
+
+```r
+refseq(myData)
+```
+
+```
+##   A DNAStringSet instance of length 5
+##     width seq                                          names               
+## [1]   334 AACGTAGGTCACAAGCGTTGT...TTCCGTGCCGGAGTTAACAC GG_OTU_1
+## [2]   465 TACGTAGGGAGCAAGCGTTAT...CCTTACCAGGGCTTGACATA GG_OTU_2
+## [3]   249 TACGTAGGGGGCAAGCGTTAT...GGCTCGAAAGCGTGGGGAGC GG_OTU_3
+## [4]   453 TACGTATGGTGCAAGCGTTAT...AAGCAACGCGAAGAACCTTA GG_OTU_4
+## [5]   178 AACGTAGGGTGCAAGCGTTGT...GGAATGCGTAGATATCGGGA GG_OTU_5
 ```
 
 
@@ -97,18 +167,50 @@ The different files useful for import to phyloseq are not collocated in a typica
 otufile = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package = "phyloseq")
 mapfile = system.file("extdata", "master_map.txt", package = "phyloseq")
 trefile = system.file("extdata", "GP_tree_rand_short.newick.gz", package = "phyloseq")
-import_qiime(otufile, mapfile, trefile, showProgress = FALSE)
+rs_file = system.file("extdata", "qiime500-refseq.fasta", package = "phyloseq")
+qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)
+```
+
+```
+## Processing map file...
+## Processing otu/tax file...
+## 
+## Reading and parsing file in chunks ... Could take some time. Please be patient...
+## 
+## Building OTU Table in chunks. Each chunk is one dot.
+## .Building Taxonomy Table...
+## Processing phylogenetic tree...
+## Processing Reference Sequences...
+```
+
+```r
+print(qiimedata)
 ```
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [500 taxa and 26 samples]
-##                      taxa are rows
-## Sample Data:         [26 samples by 7 sample variables]:
-## Taxonomy Table:     [500 taxa by 7 taxonomic ranks]:
-## Phylogenetic Tree:  [500 tips and 499 internal nodes]
-##                      rooted
+## otu_table()   OTU Table:         [ 500 taxa and 26 samples ]
+## sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 500 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 500 tips and 499 internal nodes ]
+## refseq()      DNAStringSet:      [ 500 reference sequences ]
 ```
+
+
+So it has Let's try some quick graphics built from our newly-imported dataset, `qiimedata`.
+
+
+```r
+plot_bar(qiimedata, x = "SampleType", fill = "Phylum")
+```
+
+![plot of chunk import-qiime-graphics](figure/import-qiime-graphics1.png) 
+
+```r
+plot_heatmap(qiimedata, sample.label = "SampleType", species.label = "Phylum")
+```
+
+![plot of chunk import-qiime-graphics](figure/import-qiime-graphics2.png) 
 
 
 
@@ -137,17 +239,15 @@ x
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [58 taxa and 3 samples]
-##                      taxa are rows
-## Phylogenetic Tree:  [58 tips and 57 internal nodes]
-##                      rooted
+## otu_table()   OTU Table:         [ 58 taxa and 3 samples ]
+## phy_tree()    Phylogenetic Tree: [ 58 tips and 57 internal nodes ]
 ```
 
 ```r
 plot_tree(x, color = "samples")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-71.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-61.png) 
 
 ```r
 SDF = data.frame(samples = sample_names(x), row.names = sample_names(x))
@@ -155,7 +255,7 @@ sample_data(x) = sample_data(SDF)
 plot_richness(x)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-72.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-62.png) 
 
 
 The class and data in the object returned by `import_mothur` depends on the  arguments. If the first three arguments are provided, then a phyloseq object should be returned containing both a tree and its associated OTU table. If only a list and group file are provided, then an "otu_table" object is returned. Similarly, if only a list and tree file are provided, then only a tree is returned ("phylo" class).
@@ -168,7 +268,7 @@ x2 = import_mothur(mothlist, mothur_tree_file = mothtree, cutoff = "0.08")
 plot(x1)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 Returns just an OTU table
 

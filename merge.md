@@ -36,7 +36,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.12"
+## [1] "1.3.20"
 ```
 
 
@@ -77,12 +77,10 @@ print(mergedGP)
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [18988 taxa and 9 samples]
-##                      taxa are columns
-## Sample Data:         [9 samples by 8 sample variables]:
-## Taxonomy Table:     [18988 taxa by 7 taxonomic ranks]:
-## Phylogenetic Tree:  [18988 tips and 18987 internal nodes]
-##                      rooted
+## otu_table()   OTU Table:         [ 18988 taxa and 9 samples ]
+## sample_data() Sample Data:       [ 9 samples by 8 sample variables ]
+## tax_table()   Taxonomy Table:    [ 18988 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 18988 tips and 18987 internal nodes ]
 ```
 
 ```r
@@ -254,9 +252,8 @@ otutax
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [19216 taxa and 26 samples]
-##                      taxa are rows
-## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
+## otu_table()   OTU Table:         [ 19216 taxa and 26 samples ]
+## tax_table()   Taxonomy Table:    [ 19216 taxa by 7 taxonomic ranks ]
 ```
 
 
@@ -285,12 +282,10 @@ GP3
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [19216 taxa and 26 samples]
-##                      taxa are rows
-## Sample Data:         [26 samples by 7 sample variables]:
-## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
-## Phylogenetic Tree:  [19216 tips and 19215 internal nodes]
-##                      rooted
+## otu_table()   OTU Table:         [ 19216 taxa and 26 samples ]
+## sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 19216 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 19216 tips and 19215 internal nodes ]
 ```
 
 ```r
@@ -314,12 +309,10 @@ GP4
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [19216 taxa and 26 samples]
-##                      taxa are rows
-## Sample Data:         [26 samples by 7 sample variables]:
-## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
-## Phylogenetic Tree:  [19216 tips and 19215 internal nodes]
-##                      rooted
+## otu_table()   OTU Table:         [ 19216 taxa and 26 samples ]
+## sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 19216 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 19216 tips and 19215 internal nodes ]
 ```
 
 ```r

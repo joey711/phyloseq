@@ -18,7 +18,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.12"
+## [1] "1.3.20"
 ```
 
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
@@ -38,12 +38,10 @@ GlobalPatterns
 
 ```
 ## phyloseq-class experiment-level object
-## OTU Table:          [19216 taxa and 26 samples]
-##                      taxa are rows
-## Sample Data:         [26 samples by 7 sample variables]:
-## Taxonomy Table:     [19216 taxa by 7 taxonomic ranks]:
-## Phylogenetic Tree:  [19216 tips and 19215 internal nodes]
-##                      rooted
+## otu_table()   OTU Table:         [ 19216 taxa and 26 samples ]
+## sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 19216 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 19216 tips and 19215 internal nodes ]
 ```
 
 ```r
@@ -128,7 +126,7 @@ phy_tree(GlobalPatterns)
 ## 
 ## Tip labels:
 ## 	549322, 522457, 951, 244423, 586076, 246140, ...
-## 	Node labels:
+## Node labels:
 ## 	, 0.858.4, 1.000.154, 0.764.3, 0.995.2, 1.000.2, ...
 ## 
 ## Rooted; includes branch lengths.
