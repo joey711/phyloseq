@@ -235,6 +235,12 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' @aliases merge_phyloseq_pair,XStringSet,XStringSet-method
 #' @rdname merge_phyloseq_pair-methods
 setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function(x, y){
+	if( class(x) != class(y) ){
+		# if class of x and y don't match, throw warning, try anyway (just in case)
+		warning("For merging reference sequence objects, x and y should be same type.\n",
+			"That is, the same subclass of XStringSet. e.g. both DNAStringSet.\n", 
+			"Try coercing each to the same compatible class prior to merge.")
+	}
 	# Add to x the stuff that is in y, but not in x
 	add_y_taxa = setdiff(taxa_names(y), taxa_names(x))
 	if( length(add_y_taxa) < 1L ){
@@ -243,7 +249,7 @@ setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function
 	} else {
 		# Else, add unique stuff from y only to x (they are both lists!)
 		x = c(x, y[add_y_taxa])
-		return( x )
+		return(x)
 	}
 })
 ################################################################################
