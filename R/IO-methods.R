@@ -1169,10 +1169,10 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 	# cycle through each otu, and sum the number of seqs observed for each sample
 	for( i in names(otulist) ){
 		# i <- names(otulist)[1]
-		# First merge the reads that are in the same OTU ("eqspecies" argument)
+		# First merge the reads that are in the same OTU ("eqtaxa" argument)
 		tree <- merge_taxa(tree, otulist[[i]])
 		# Rename the tip that was kept to the otuID.
-		# By default, the first element of eqspecies is used as archetype.
+		# By default, the first element of eqtaxa is used as archetype.
 		# This also ensures reliable behavior in the instances of singleton OTUs
 		tree$tip.label[tree$tip.label == otulist[[i]][1]] <- i
 	}

@@ -204,7 +204,7 @@ tip_glom.internal <- function(tree, speciationMinLength){
 	spCliques   <- edgelist2clique( get.edgelist(ig) )
 	# successively merge
 	for( i in 1:length(spCliques)){
-		tree <- merge_taxa(tree, eqspecies=spCliques[[i]])
+		tree <- merge_taxa(tree, spCliques[[i]])
 	}
 	return(tree)
 }
@@ -444,7 +444,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	
 	# Successively merge taxa in physeq.
 	for( i in names(spCliques)){
-		physeq <- merge_taxa(physeq, eqspecies=spCliques[[i]])
+		physeq <- merge_taxa(physeq, spCliques[[i]])
 	}
 	
 	# "Empty" the values to the right of the rank, using NA_character_.
@@ -466,6 +466,8 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' more than one component that describes OTUs.
 #' Credit: the \code{phylo}-class version is adapted from
 #' \code{\link[picante]{prune.sample}}.
+#'
+#' @usage prune_taxa(taxa, x)
 #'
 #' @param taxa (Required). A character vector of the taxa in object x that you want to
 #' keep -- OR alternatively -- a logical vector where the kept taxa are TRUE, and length

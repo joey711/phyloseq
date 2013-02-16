@@ -216,9 +216,35 @@ test_that("merge_taxa() replaces disagreements in taxonomy with NA", {
 	expect_that("951" %in% taxa_names(n9), equals(FALSE))	
 
 })
-
-
-
-
-
-
+test_that("merge_taxa() properly handles different types and orders of taxa specified by the eqtaxa and archetype arguments, and also handles refseq data", {
+# Test merge_taxa on data with a reference sequence file.
+otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
+mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
+trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
+rs_file <- system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
+rs0 <- import_qiime(otufile, mapfile, trefile, rs_file, showProgress=FALSE)
+rs1 = merge_taxa(rs0, c("71074", "10517", "8096"))
+rs2 = merge_taxa(rs0, c("71074", "8096", "10517"), "71074")
+rs3 = merge_taxa(rs0, c("71074", "10517", "8096"), 3)
+rs4 = merge_taxa(rs0, c("8096", "71074", "10517"))
+# rs1 and rs2 should be identical
+# rs3 and rs4 should be identical
+expect_that(identical(rs1, rs2), is_true())
+expect_that(identical(rs1, rs3), is_false())
+expect_that(identical(rs3, rs4), is_true())
+# double-check that components are all there
+expect_that(length(getslots.phyloseq(rs1)), equals(5L))
+expect_that(length(getslots.phyloseq(rs2)), equals(5L))
+expect_that(length(getslots.phyloseq(rs3)), equals(5L))
+expect_that(length(getslots.phyloseq(rs4)), equals(5L))
+# The number of taxa should be the same as the original less two
+expect_that(ntaxa(rs1), equals(ntaxa(rs0)-2L))
+expect_that(ntaxa(rs2), equals(ntaxa(rs0)-2L))
+expect_that(ntaxa(rs3), equals(ntaxa(rs0)-2L))
+expect_that(ntaxa(rs4), equals(ntaxa(rs0)-2L))	
+# merge_taxa() errors when a bad archetype is provided
+# Throws error because keepIndex is NULL
+expect_that(merge_taxa(rs0, c("71074", "10517", "8096"), "wtf"), throws_error())
+# Throws error because keepIndex is not part of eqtaxa (logic error, invalid merge)
+expect_that(merge_taxa(rs0, c("71074", "10517", "8096"), "13662"), throws_error())
+})

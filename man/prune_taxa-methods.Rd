@@ -11,6 +11,8 @@
 \alias{prune_taxa,NULL,ANY-method}
 \title{Prune unwanted OTUs / taxa from a phylogenetic object.}
 \usage{
+  prune_taxa(taxa, x)
+
   prune_species(taxa, x)
 }
 \arguments{
