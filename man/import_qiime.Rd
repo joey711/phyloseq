@@ -3,8 +3,10 @@
 \title{Import function to read files created by the QIIME pipeline.}
 \usage{
   import_qiime(otufilename=NULL, mapfilename=NULL,
-  treefilename=NULL, parseFunction=parse_taxonomy_qiime,
-  showProgress=TRUE, chunk.size=1000L, ...)
+  treefilename=NULL, refseqfilename=NULL,
+  refseqFunction=readDNAStringSet, refseqArgs=NULL,
+  parseFunction=parse_taxonomy_qiime, showProgress=TRUE,
+  chunk.size=1000L, ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
@@ -34,6 +36,45 @@
   be a tree object (\code{\link[ape]{phylo}}-class) for
   cases where the tree has been --- or needs to be ---
   imported separately.}
+
+  \item{refseqfilename}{(Optional). Default \code{NULL}.
+  The file path of the biological sequence file that
+  contains at a minimum a sequence for each OTU in the
+  dataset. Alternatively, you may provide an
+  already-imported \code{\link[Biostrings]{XStringSet}}
+  object that satisfies this condition. In either case, the
+  \code{\link{names}} of each OTU need to match exactly the
+  \code{\link{taxa_names}} of the other components of your
+  data. If this is not the case, for example if the data
+  file is a FASTA format but contains additional
+  information after the OTU name in each sequence header,
+  then some additional parsing is necessary, which you can
+  either perform separately before calling this function,
+  or describe explicitly in a custom function provided in
+  the (next) argument, \code{refseqFunction}. Note that the
+  \code{\link[Biostrings]{XStringSet}} class can represent
+  any arbitrary sequence, including user-defined
+  subclasses, but is most-often used to represent RNA, DNA,
+  or amino acid sequences. The only constraint is that this
+  special list of sequences has exactly one named element
+  for each OTU in the dataset.}
+
+  \item{refseqFunction}{(Optional). Default is
+  \code{\link[Biostrings]{readDNAStringSet}}, which expects
+  to read a fasta-formatted DNA sequence file. If your
+  reference sequences for each OTU are amino acid, RNA, or
+  something else, then you will need to specify a different
+  function here. This is the function used to read the file
+  connection provided as the the previous argument,
+  \code{refseqfilename}. This argument is ignored if
+  \code{refseqfilename} is already a
+  \code{\link[Biostrings]{XStringSet}} class.}
+
+  \item{refseqArgs}{(Optional). Default \code{NULL}.
+  Additional arguments to \code{refseqFunction}. See
+  \code{\link[Biostrings]{XStringSet-io}} for details about
+  additional arguments to the standard read functions in
+  the Biostrings package.}
 
   \item{parseFunction}{(Optional). An optional custom
   function for parsing the character string that contains
@@ -112,5 +153,7 @@ import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
   \code{\link{merge_phyloseq}}
 
   \code{\link{read_tree}}
+
+  \code{\link[Biostrings]{XStringSet-io}}
 }
 

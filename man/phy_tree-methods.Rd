@@ -34,7 +34,8 @@
   See Also, below), the default behavior of this method is
   to stop with an error if \code{physeq} is a
   \code{phyloseq-class} but does not contain a phylogenetic
-  tree.
+  tree (the component data you are trying to access in this
+  case).
 }
 \details{
   Note that the tip labels should be named to match the
@@ -54,7 +55,7 @@ phy_tree(GlobalPatterns)
 }
 \seealso{
   \code{\link{otu_table}}, \code{\link{sample_data}},
-  \code{\link{tax_table}} \code{\link{phyloseq}},
-  \code{\link{merge_phyloseq}}
+  \code{\link{tax_table}} \code{\link{refseq}},
+  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 }
 
