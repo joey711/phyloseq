@@ -1,6 +1,55 @@
 ################################################################################
 ### Accessor / subset methods.
 ################################################################################
+################################################################################
+#' Retrieve reference sequences (\code{\link[Biostrings]{XStringSet}}-class) from object.
+#'
+#' This is the suggested method
+#' for accessing
+#' the phylogenetic tree, (\code{\link[Biostrings]{XStringSet}}-class)
+#' from a phyloseq data object (\code{\link{phyloseq-class}}).
+#' Like other accessors (see See Also, below), the default behavior of this method
+#' is to stop with an
+#' error if \code{physeq} is a \code{phyloseq-class} but does not 
+#' contain reference sequences (the component data type you are trying to access in this case).  
+#'
+#' @usage refseq(physeq, errorIfNULL=TRUE)
+#' 
+#' @param physeq (Required). An instance of phyloseq-class
+#'  that contains a phylogenetic tree. If physeq is a phylogenetic
+#'  tree (a component data class), then it is returned as-is.
+#'
+#' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
+#'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
+#'
+#' @return The \code{\link[ape]{phylo}}-class object contained within \code{physeq};
+#'  or NULL if \code{physeq} does not have a tree.
+#'  This method stops with an error in the latter NULL case be default, which
+#'  can be over-ridden by changing the value of \code{errorIfNULL} to \code{FALSE}.
+#'
+#' @seealso \code{\link{otu_table}}, \code{\link{sample_data}}, \code{\link{tax_table}}
+#'  \code{\link{phy_tree}},
+#'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
+#' 
+#' @import Biostrings
+#' @export
+#' @rdname refseq-methods
+#' @docType methods
+#'
+#' @examples
+#'  data(GlobalPatterns)
+#'  refseq(GlobalPatterns, FALSE)
+setGeneric("refseq", function(physeq, errorIfNULL=TRUE) standardGeneric("refseq"))
+#' @rdname refseq-methods
+#' @aliases refseq,ANY-method
+setMethod("refseq", "ANY", function(physeq, errorIfNULL=TRUE){
+	access(physeq, "refseq", errorIfNULL)
+})
+# Return as-is if already a "XStringSet" object
+#' @rdname refseq-methods
+#' @aliases refseq,XStringSet-method
+setMethod("refseq", "XStringSet", function(physeq){ return(physeq) })
+################################################################################
 #' Retrieve phylogenetic tree (\code{\link[ape]{phylo}}-class) from object.
 #'
 #' This is the suggested method
@@ -9,7 +58,7 @@
 #' Like other accessors (see See Also, below), the default behavior of this method
 #' is to stop with an
 #' error if \code{physeq} is a \code{phyloseq-class} but does not 
-#' contain a phylogenetic tree.  
+#' contain a phylogenetic tree (the component data you are trying to access in this case).  
 #' 
 #' Note that the tip labels should be named to match the
 #' \code{taxa_names} of the other objects to which it is going to be paired.
@@ -35,6 +84,7 @@
 #'  can be over-ridden by changing the value of \code{errorIfNULL} to \code{FALSE}.
 #'
 #' @seealso \code{\link{otu_table}}, \code{\link{sample_data}}, \code{\link{tax_table}}
+#'  \code{\link{refseq}},
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #' 
 #' @export
@@ -126,6 +176,9 @@ setMethod("ntaxa", "taxonomyTable", function(physeq){ nrow(physeq) })
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,phylo-method
 setMethod("ntaxa", "phylo", function(physeq) length(physeq$tip.label) )
+#' @rdname ntaxa-methods
+#' @aliases ntaxa,XStringSet-method
+setMethod("ntaxa", "XStringSet", function(physeq) length(physeq) )
 ################################################################################
 #' Get species / taxa names.
 #'
@@ -180,6 +233,9 @@ setMethod("taxa_names", "sample_data", function(physeq) NULL )
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,phylo-method
 setMethod("taxa_names", "phylo", function(physeq) physeq$tip.label )
+#' @rdname taxa_names-methods
+#' @aliases taxa_names,XStringSet-method
+setMethod("taxa_names", "XStringSet", function(physeq) names(physeq) )
 ################################################################################
 #' Get the number of samples.
 #'

@@ -2,9 +2,10 @@
 \alias{import_biom}
 \title{Import phyloseq data from biom-format file}
 \usage{
-  import_biom(BIOMfilename, tree=NULL,
-  parseFunction=parse_taxonomy_default, parallel=FALSE,
-  version=0.9, ...)
+  import_biom(BIOMfilename, treefilename=NULL,
+  refseqfilename=NULL, refseqFunction=readDNAStringSet,
+  refseqArgs=NULL, parseFunction=parse_taxonomy_default,
+  parallel=FALSE, version=1.0, ...)
 }
 \arguments{
   \item{BIOMfilename}{(Required). A character string
@@ -27,14 +28,59 @@
   general-purpose data merging function called
   \code{\link{merge_phyloseq}}.}
 
-  \item{tree}{(Optional). Character string or ``phylo''
-  class. A file path to the phylogenetic tree file
-  associated with the data in the \code{BIOMfilename}, or
-  an already-imported version of that phylogenetic tree as
-  a phylo object. Import of the tree will be attempted
-  using \code{\link{read_tree}}, and additional import
-  parameters for that function can be supplied (see
-  below).}
+  \item{treefilename}{(Optional). A file representing a
+  phylogenetic tree or a \code{\link{phylo}} object. Files
+  can be NEXUS or Newick format. See
+  \code{\link{read_tree}} for more details. If provided,
+  the tree should have the same OTUs/tip-labels as the OTUs
+  in the other files. Any taxa or samples missing in one of
+  the files is removed from all. For the QIIME pipeline
+  this tree is typically a tree of the representative 16S
+  rRNA sequences from each OTU cluster, with the number of
+  leaves/tips equal to the number of taxa/species/OTUs.
+  Default value is \code{NULL}. Note that this argument can
+  be a tree object (\code{\link[ape]{phylo}}-class) for
+  cases where the tree has been --- or needs to be ---
+  imported separately.}
+
+  \item{refseqfilename}{(Optional). Default \code{NULL}.
+  The file path of the biological sequence file that
+  contains at a minimum a sequence for each OTU in the
+  dataset. Alternatively, you may provide an
+  already-imported \code{\link[Biostrings]{XStringSet}}
+  object that satisfies this condition. In either case, the
+  \code{\link{names}} of each OTU need to match exactly the
+  \code{\link{taxa_names}} of the other components of your
+  data. If this is not the case, for example if the data
+  file is a FASTA format but contains additional
+  information after the OTU name in each sequence header,
+  then some additional parsing is necessary, which you can
+  either perform separately before calling this function,
+  or describe explicitly in a custom function provided in
+  the (next) argument, \code{refseqFunction}. Note that the
+  \code{\link[Biostrings]{XStringSet}} class can represent
+  any arbitrary sequence, including user-defined
+  subclasses, but is most-often used to represent RNA, DNA,
+  or amino acid sequences. The only constraint is that this
+  special list of sequences has exactly one named element
+  for each OTU in the dataset.}
+
+  \item{refseqFunction}{(Optional). Default is
+  \code{\link[Biostrings]{readDNAStringSet}}, which expects
+  to read a fasta-formatted DNA sequence file. If your
+  reference sequences for each OTU are amino acid, RNA, or
+  something else, then you will need to specify a different
+  function here. This is the function used to read the file
+  connection provided as the the previous argument,
+  \code{refseqfilename}. This argument is ignored if
+  \code{refseqfilename} is already a
+  \code{\link[Biostrings]{XStringSet}} class.}
+
+  \item{refseqArgs}{(Optional). Default \code{NULL}.
+  Additional arguments to \code{refseqFunction}. See
+  \code{\link[Biostrings]{XStringSet-io}} for details about
+  additional arguments to the standard read functions in
+  the Biostrings package.}
 
   \item{parseFunction}{(Optional). A function. It must be a
   function that takes as its first argument a character
@@ -115,7 +161,7 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
 }
 \references{
-  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
+  \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 }
 \seealso{
   \code{\link{import}}
@@ -123,5 +169,7 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
   \code{\link{import_qiime}}
 
   \code{\link{read_tree}}
+
+  \code{\link[Biostrings]{XStringSet-io}}
 }
 

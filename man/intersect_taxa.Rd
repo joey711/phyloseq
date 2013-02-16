@@ -1,8 +1,8 @@
-\name{intersect_species}
-\alias{intersect_species}
-\title{Returns the intersection of species for the components of x}
+\name{intersect_taxa}
+\alias{intersect_taxa}
+\title{Returns the intersection of species and samples for the components of x}
 \usage{
-  intersect_species(x)
+  intersect_taxa(x)
 }
 \arguments{
   \item{x}{(Required). A \code{\link{phyloseq-class}}
@@ -23,10 +23,10 @@
 \examples{
 #
 ## data(GlobalPatterns)
-## head(intersect_species(GlobalPatterns), 10)
+## head(intersect_taxa(GlobalPatterns), 10)
 }
 \seealso{
-  \code{\link{reconcile_species}}, \code{\link{Reduce}}
+  \code{\link{Reduce}}, \code{\link{intersect}}
 }
 \keyword{internal}
 

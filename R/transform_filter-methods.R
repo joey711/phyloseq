@@ -204,7 +204,7 @@ tip_glom.internal <- function(tree, speciationMinLength){
 	spCliques   <- edgelist2clique( get.edgelist(ig) )
 	# successively merge
 	for( i in 1:length(spCliques)){
-		tree <- merge_taxa(tree, eqspecies=spCliques[[i]])
+		tree <- merge_taxa(tree, spCliques[[i]])
 	}
 	return(tree)
 }
@@ -444,7 +444,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	
 	# Successively merge taxa in physeq.
 	for( i in names(spCliques)){
-		physeq <- merge_taxa(physeq, eqspecies=spCliques[[i]])
+		physeq <- merge_taxa(physeq, spCliques[[i]])
 	}
 	
 	# "Empty" the values to the right of the rank, using NA_character_.
@@ -466,6 +466,8 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' more than one component that describes OTUs.
 #' Credit: the \code{phylo}-class version is adapted from
 #' \code{\link[picante]{prune.sample}}.
+#'
+#' @usage prune_taxa(taxa, x)
 #'
 #' @param taxa (Required). A character vector of the taxa in object x that you want to
 #' keep -- OR alternatively -- a logical vector where the kept taxa are TRUE, and length
@@ -506,7 +508,6 @@ setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
 setMethod("prune_taxa", signature("NULL"), function(taxa, x){
 	return(x)
 })
-################################################################################
 # import covering ape::drop.tip
 #' @import ape
 #' @aliases prune_taxa,character,phylo-method
@@ -524,7 +525,6 @@ setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
 		return(x)
 	}
 })
-################################################################################
 #' @aliases prune_taxa,character,otu_table-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
@@ -535,13 +535,11 @@ setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
 		x[, taxa, drop=FALSE]
 	}	
 })
-################################################################################
 #' @aliases prune_taxa,character,sample_data-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
 	return(x)
 })
-################################################################################
 #' @aliases prune_taxa,character,phyloseq-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "phyloseq"), 
@@ -553,19 +551,21 @@ setMethod("prune_taxa", signature("character", "phyloseq"),
 		return(x)
 	} else {	
 		# All phyloseq objects have an otu_table slot, no need to test.
-		x@otu_table   <- prune_taxa(taxa, otu_table(x))
+		x@otu_table     = prune_taxa(taxa, otu_table(x))
 		
 		# Test if slot is present. If so, perform the component prune.
 		if( !is.null(access(x, "tax_table")) ){
-			x@tax_table <- prune_taxa(taxa, tax_table(x))
+			x@tax_table = prune_taxa(taxa, tax_table(x))
 		}
 		if( !is.null(access(x, "phy_tree")) ){
-			x@phy_tree    <- prune_taxa(taxa, phy_tree(x))
+			x@phy_tree  = prune_taxa(taxa, phy_tree(x))
 		}
+		if( !is.null(access(x, "refseq")) ){
+			x@refseq    = prune_taxa(taxa, refseq(x))
+		}		
 		return(x)
 	}
 })
-################################################################################
 #' @aliases prune_taxa,character,taxonomyTable-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "taxonomyTable"), 
@@ -573,7 +573,6 @@ setMethod("prune_taxa", signature("character", "taxonomyTable"),
 	taxa <- intersect( taxa, taxa_names(x) )
 	return( x[taxa, , drop=FALSE] )
 })
-################################################################################
 #' @aliases prune_taxa,logical,ANY-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
@@ -583,6 +582,32 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 	} else {
 		# Pass on to names-based prune_taxa method
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
+	}
+})
+#' @import Biostrings
+#' @aliases prune_taxa,character,XStringSet-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
+	# Only use the intersection.
+	keep_taxa = intersect( taxa, taxa_names(x) )
+	if( length(keep_taxa) == 0 ){
+		# Error if intersection is zero.
+		stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")		
+	}
+	if( length(keep_taxa) < length(taxa) ){
+		# Warning if some elements of the taxa argument are thrown out. They are ignored/lost
+		nlostnames = length(taxa) - length(keep_taxa)
+		warnmsg = paste(nlostnames, " taxa names provided to prune_taxa were not found among refseq names; they are ignored", sep="")
+		warning(warnmsg)
+	}
+	if( setequal(keep_taxa, taxa_names(x)) ){	
+		# If they are already the same, just return XStringSet object, unchanged.
+		return(x)	
+	} else {
+		# Pop the taxa that you don't want, without re-ordering.
+		remove_index = which( !taxa_names(x) %in% keep_taxa )
+		x = x[-remove_index]
+		return(x)		
 	}
 })
 ################################################################################
@@ -634,13 +659,19 @@ setMethod("prune_samples", signature("character", "sample_data"), function(sampl
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	# protect missing sample_data component. Don't need to prune if empty
-	if( !is.null(access(x, "sam_data", FALSE)) ){
-		x@sam_data  <- prune_samples(samples, access(x, "sam_data", FALSE) )
+	# Save time and return if the union of all component sample names
+	# captured by sample_names(x) is same as `samples`. 
+	if( setequal(sample_names(x), samples) ){
+		return(x)
+	} else {
+		# Don't need to protect otu_table, it is mandatory for phyloseq-class
+		x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )	
+		if( !is.null(access(x, "sam_data", FALSE)) ){
+			# protect missing sample_data component. Don't need to prune if empty
+			x@sam_data  <- prune_samples(samples, sample_data(x) )
+		}
+		return(x)		
 	}
-	# Don't need to protect otu_table, it is mandatory for phyloseq-class
-	x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )
-	return(x)
 })
 # A logical should specify the samples to keep, or not. Have same length as nsamples(x) 
 #' @aliases prune_samples,logical,ANY-method

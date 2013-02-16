@@ -232,6 +232,27 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 	}
 })
 ################################################################################
+#' @aliases merge_phyloseq_pair,XStringSet,XStringSet-method
+#' @rdname merge_phyloseq_pair-methods
+setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function(x, y){
+	if( class(x) != class(y) ){
+		# if class of x and y don't match, throw warning, try anyway (just in case)
+		warning("For merging reference sequence objects, x and y should be same type.\n",
+			"That is, the same subclass of XStringSet. e.g. both DNAStringSet.\n", 
+			"Try coercing each to the same compatible class prior to merge.")
+	}
+	# Add to x the stuff that is in y, but not in x
+	add_y_taxa = setdiff(taxa_names(y), taxa_names(x))
+	if( length(add_y_taxa) < 1L ){
+		# If there is nothing from y to add, just return x as-is
+		return(x)
+	} else {
+		# Else, add unique stuff from y only to x (they are both lists!)
+		x = c(x, y[add_y_taxa])
+		return(x)
+	}
+})
+################################################################################
 ################################################################################
 #' Merge a subset of the species in \code{x} into one species/taxa/OTU.
 #'
@@ -244,20 +265,20 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' related methods, such as \code{\link{tip_glom}} and \code{\link{tax_glom}}
 #' can both reliably call \code{merge_taxa} for their respective purposes.
 #'
-#' @usage merge_taxa(x, eqspecies, archetype=1)
+#' @usage merge_taxa(x, eqtaxa, archetype=1)
 #'
 #' @param x (Required). An object that describes species (taxa). This includes
 #'  \code{\link{phyloseq-class}}, \code{\link{otu_table-class}}, \code{\link{taxonomyTable-class}}, 
 #'  \code{\link[ape]{phylo}}.
 #' 
-#' @param eqspecies (Required). The species names, or indices, that should be merged together.
-#'  If \code{length(eqspecies) < 2}, then the object \code{x} will be returned
+#' @param eqtaxa (Required). The species names, or indices, that should be merged together.
+#'  If \code{length(eqtaxa) < 2}, then the object \code{x} will be returned
 #'  safely unchanged. 
 #' 
-#' @param archetype The index of \code{eqspecies} indicating the species 
+#' @param archetype The index of \code{eqtaxa} indicating the species 
 #'   that should be kept (default is 1) to represent the summed/merged group
 #'   of species/taxa/OTUs. 
-#'   If archetype is not an index or index-name in \code{eqspecies}, the
+#'   If archetype is not an index or index-name in \code{eqtaxa}, the
 #'   first will be used, and the value in archetype will be used 
 #'   as the index-name for the new species.
 #'
@@ -267,68 +288,112 @@ setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 #' @seealso \code{\link{tip_glom}}, \code{\link{tax_glom}}, \code{\link{merge_phyloseq}},
 #'  \code{\link{merge_samples}}
 #'
-#' @import ape
 #' @export
 #' @docType methods
 #' @rdname merge_taxa-methods
 #' @examples #
-#' # # data(phylocom)
-#' # # tree <- phylocom$phylo
-#' # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-#' # # otutree0 <- phyloseq(otu, tree)
-#' # # plot(otutree0)
-#' # # otutree1 <- merge_taxa(otutree0, tree$tip.label[1:8], 2)
-#' # # plot(otutree1)
-setGeneric("merge_taxa", function(x, eqspecies, archetype=1) standardGeneric("merge_taxa"))
-###############################################################################
-#' @aliases merge_taxa,otu_table-method
+#' data(phylocom)
+#' tree <- phylocom$phylo
+#' otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
+#' otutree0 <- phyloseq(otu, tree)
+#' plot_tree(otutree0)
+#' otutree1 <- merge_taxa(otutree0, 1:8, 2)
+#' plot_tree(otutree1)
+setGeneric("merge_taxa", function(x, eqtaxa, archetype=1L) standardGeneric("merge_taxa"))
+################################################################################
+#' @keywords internal
+merge_taxa.indices.internal = function(x, eqtaxa, archetype){
+	## If eqtaxa or archetype are character, interpret them to be OTUs and coerce them to integer indices
+	if( is.character(archetype) ){
+		# If archetype is already an OTU, just assign it to keepIndex		
+		keepIndex = which(taxa_names(x) %in% archetype[1L])
+	} else {
+		# Else archetype is the numeric index of the eqtaxa that should be kept.
+		# Need to grab from unmodifed eqtaxa, and then decide
+		archetype = eqtaxa[as.integer(archetype[1L])]
+		if( is.character(archetype) ){
+			# If archetype is now an OTU name, find the index and assign to keepIndex		
+			keepIndex = which(taxa_names(x) %in% archetype[1L])	
+		} else {
+			# Otherwise, assume it is a taxa index, and assign to keepIndex
+			keepIndex = as.integer(archetype)
+		}
+	}
+	# Ensure eqtaxa is the integer indices of the taxa that are being merged together
+	if( is.character(eqtaxa) ){
+		# assume OTU name, index it against the OTU names in x
+		eqtaxa = which(taxa_names(x) %in% eqtaxa)
+	} else {
+		# Else assume numeric index of the OTU that are being merged
+		eqtaxa = as.integer(eqtaxa)
+	}
+	# keepIndex is index of the OTU that is kept / everything merged into.
+	# It must be among the set of indices in eqtaxa or there is a logic error. Stop.
+	if( length(keepIndex) <= 0L ){ stop("invalid archetype provided.") }
+	if( !keepIndex %in% eqtaxa ){ stop("invalid archetype provided. It is not part of eqtaxa.") }
+	# removeIndex is the index of each OTU that will be removed
+	removeIndex = setdiff(eqtaxa, keepIndex)
+	# Check that indices are valid
+	allIndices = unlist(list(keepIndex, removeIndex))
+	if( any(allIndices > ntaxa(x) | allIndices < 0L) ){
+		stop("invalid OTU indices provided as eqtaxa or archetype.")		
+	}
+	return(list(removeIndex=removeIndex, keepIndex=keepIndex))
+}
+################################################################################
+#' @aliases merge_taxa,phyloseq-method
 #' @rdname merge_taxa-methods
-setMethod("merge_taxa", "otu_table", function(x, eqspecies, archetype=1){
-	if( length(eqspecies) < 2 ){ return(x) }
-
-	if( class(eqspecies) != "character" ){
-		eqspecies <- taxa_names(x)[eqspecies]
-	}
-	# Shrink newx table to just those species in eqspecies
-	newx <- prune_taxa(eqspecies, x)
-	
-	if( class(archetype) != "character" ){
-		keepIndex = archetype
-	} else {
-		keepIndex = which(eqspecies==archetype)
-	}
-	
-	if( taxa_are_rows(x) ){
-		x[eqspecies[keepIndex], ] <- sample_sums(newx)
-	} else {
-		x[, eqspecies[keepIndex]] <- sample_sums(newx)	
-	}
-	
-	removeIndex <- which( taxa_names(x) %in% eqspecies[-keepIndex] )
-	x <- prune_taxa(taxa_names(x)[-removeIndex], x)	
+setMethod("merge_taxa", "phyloseq", function(x, eqtaxa, archetype=1L){
+	comp_list   <- splat.phyloseq.objects(x)
+	merged_list <- lapply(comp_list, merge_taxa, eqtaxa, archetype)
+	# the element names can wreak havoc on do.call
+	names(merged_list) <- NULL
+	# Re-instantiate the combined object using the species-merged object.
+	do.call("phyloseq", merged_list)
+})
+###############################################################################
+# Don't need to merge anything for sample_data. Return As-is.
+#' @aliases merge_taxa,sample_data-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "sample_data", function(x, eqtaxa, archetype=1L){
 	return(x)
 })
 ###############################################################################
-# require(ape)
-#' @aliases merge_taxa,phylo-method
+#' @aliases merge_taxa,otu_table-method
 #' @rdname merge_taxa-methods
-setMethod("merge_taxa", "phylo", function(x, eqspecies, archetype=1){
-	# If there is nothing to merge, return x as-is
-	if( length(eqspecies) < 2 ){
+setMethod("merge_taxa", "otu_table", function(x, eqtaxa, archetype=1L){
+	if( length(eqtaxa) < 2 ){
 		return(x)
 	}
-
-	if( class(eqspecies) != "character" ){
-		eqspecies <- x$tip.label[eqspecies]
-	}
-	if( class(archetype) != "character" ){
-		keepIndex <- archetype
+	indList = merge_taxa.indices.internal(x, eqtaxa, archetype)
+	removeIndex = indList$removeIndex
+	keepIndex   = indList$keepIndex
+	# Merge taxa by summing all the equivalent taxa and assigning to the one in keepIndex
+	if( taxa_are_rows(x) ){
+		x[keepIndex, ] = colSums(x[eqtaxa, ])
 	} else {
-		keepIndex <- which(eqspecies==archetype)
+		x[, keepIndex] = rowSums(x[, eqtaxa])	
 	}
-	removeIndex <- which( x$tip.label %in% eqspecies[-keepIndex] )
-
-	# If there is too much to merge (tree would have one or 0 branches), return NULL/warning
+	# For speed, use matrix subsetting instead of prune_taxa()
+	if (taxa_are_rows(x)) {
+		x = x[-removeIndex, , drop = FALSE]
+	} else {
+		x = x[, -removeIndex, drop = FALSE]
+	}
+	return(x)
+})
+###############################################################################
+#' @import ape
+#' @aliases merge_taxa,phylo-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "phylo", function(x, eqtaxa, archetype=1L){
+	# If there is nothing to merge, return x as-is
+	if( length(eqtaxa) < 2 ){
+		return(x)
+	}
+	indList = merge_taxa.indices.internal(x, eqtaxa, archetype)
+	removeIndex = indList$removeIndex
+	# If there is too much to merge (tree would have 1 or 0 branches), return NULL/warning
 	if( length(removeIndex) >= (ntaxa(x)-1) ){
 		# Can't have a tree with 1 or fewer tips
 		warning("merge_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
@@ -338,58 +403,53 @@ setMethod("merge_taxa", "phylo", function(x, eqspecies, archetype=1){
 		return( drop.tip(x, removeIndex) )		
 	}
 })
+###############################################################################
+#' @import Biostrings
+#' @aliases merge_taxa,XStringSet-method
+#' @rdname merge_taxa-methods
+setMethod("merge_taxa", "XStringSet", function(x, eqtaxa, archetype=1L){
+	# If there is nothing to merge, return x as-is
+	if( length(eqtaxa) < 2 ){
+		return(x)
+	}
+	indList = merge_taxa.indices.internal(x, eqtaxa, archetype)
+	removeIndex = indList$removeIndex
+	# If there is too much to merge (refseq would have 0 sequences), return NULL/warning
+	if( length(removeIndex) >= ntaxa(x) ){
+		# Can't have a refseq list with less 
+		warning("merge_taxa attempted to reduce reference sequence list to 0 sequences.\n refseq replaced with NULL.")
+		return(NULL)
+	} else {
+		# Else, drop the removeIndex sequences and returns the pruned XStringSet object
+		x <- x[-removeIndex]
+		return(x)
+	}
+})
 ################################################################################
-#' @aliases merge_taxa,phyloseq-method
-#' @rdname merge_taxa-methods
-setMethod("merge_taxa", "phyloseq", function(x, eqspecies, archetype=1){
-	comp_list   <- splat.phyloseq.objects(x)
-	merged_list <- lapply(comp_list, merge_taxa, eqspecies, archetype)
-	# the element names can wreak havoc on do.call
-	names(merged_list) <- NULL
-	# Re-instantiate the combined object using the species-merged object.
-	do.call("phyloseq", merged_list)
-})
-###############################################################################
-#' @aliases merge_taxa,sample_data-method
-#' @rdname merge_taxa-methods
-setMethod("merge_taxa", "sample_data", function(x, eqspecies, archetype=1){
-	return(x)
-})
-###############################################################################
 #' @aliases merge_taxa,taxonomyTable-method
 #' @rdname merge_taxa-methods
-setMethod("merge_taxa", "taxonomyTable", function(x, eqspecies, archetype=1){
-	if( length(eqspecies) < 2 ){ return(x) }
-
-	if( class(eqspecies) != "character" ){
-		eqspecies <- taxa_names(x)[eqspecies]
+setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L){
+	if( length(eqtaxa) < 2 ){
+		return(x)
 	}
-	
-	if( class(archetype) != "character" ){
-		keepIndex <- archetype
-	} else {
-		keepIndex <- which(eqspecies==archetype)
-	}
-	
-	removeIndex <- which( taxa_names(x) %in% eqspecies[-keepIndex] )	
-		
+	indList = merge_taxa.indices.internal(x, eqtaxa, archetype)
+	removeIndex = indList$removeIndex
+	keepIndex   = indList$keepIndex
 	# # # Taxonomy is trivial in ranks after disagreement among merged taxa
 	# # # Make those values NA_character_
-	taxmerge  <- as(tax_table(x), "matrix")[eqspecies, ]
+	taxmerge  <- as(x, "matrix")[eqtaxa, ]
 	bad_ranks <- apply(taxmerge, 2, function(i){ length(unique(i)) != 1 })
 	# Test if all taxonomies agree. If so, do nothing. Just continue to pruning.
 	if( any(bad_ranks) ){
 		# The col indices of the bad ranks
 		bad_ranks <- min(which(bad_ranks)):length(bad_ranks)
 		# Replace bad taxonomy elements in the archetype only (others are pruned)
-		tax_table(x)[eqspecies[keepIndex], bad_ranks] <- NA_character_		
+		x[keepIndex, bad_ranks] <- NA_character_		
 	}
-	
-	# Finally, prune all the merging taxa, except the archetype
-	x <- prune_taxa(taxa_names(x)[-removeIndex], x)
-		
-	return(x)
+	# Finally, remove the OTUs that have been merged into keepIndex
+	return( x[-removeIndex, , drop = FALSE] )
 })
+################################################################################
 ################################################################################
 #' Merge samples based on a sample variable or factor.
 #'
