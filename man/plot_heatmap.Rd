@@ -144,7 +144,7 @@
 }
 \examples{
 data("GlobalPatterns")
-gpac <- subset_species(GlobalPatterns, Phylum=="Crenarchaeota")
+gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 # FYI, the base-R function uses a non-ecological ordering scheme,
 # but does add potentially useful hclust dendrogram to the sides...
 heatmap(otu_table(gpac))
@@ -152,20 +152,7 @@ plot_heatmap(gpac)
 # example relabelling based on a sample variable and taxonomic rank.
 plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
 # Now repeat the plot, but change the color scheme in various ways.
-# This may be worthwhile, depending on the graphics device or paper
-# on which you want to discplay the heatmap.
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#CCFF66")
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#FF3300")
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#66CCFF")
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#66CCFF", high="#000033", na.value="white")
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#FFFFCC", high="#000033", na.value="white")
-# Now try the default color scheme, but using different ecological distances/ordinations
-plot_heatmap(gpac, "NMDS", "jaccard")
-plot_heatmap(gpac, "DCA")
-plot_heatmap(gpac, "RDA")
-plot_heatmap(gpac, "MDS", "bray")
-plot_heatmap(gpac, "MDS", "unifrac")
-plot_heatmap(gpac, "MDS", "unifrac", weighted=TRUE)
+# See the online tutorial for many other examples.
 }
 \references{
   Because this function relies so heavily in principle, and
@@ -174,5 +161,9 @@ plot_heatmap(gpac, "MDS", "unifrac", weighted=TRUE)
 
   Rajaram, S., & Oono, Y. (2010). NeatMap--non-clustering
   heat map alternatives in R. BMC Bioinformatics, 11, 45.
+
+  Please see further examples in the
+  \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq
+  online tutorials}.
 }
 

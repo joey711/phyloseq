@@ -1,5 +1,6 @@
 phyloseq
 ===========
+* Supports reference sequences - biological sequences representing each OTU
 * plot_ordination() powerful, flexible ordination plots built with ggplot2
 * plot_bar() powerful, flexible quantitative summary plots built with ggplot2
 * plot_heatmap() easy, flexible heat maps built with ggplot2
@@ -16,6 +17,69 @@ phyloseq
 * Bioconductor development release updates.
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+phyloseq 1.3.20 - reference sequence class update.
+===========
+- formally define the new version of phyloseq-class with refseq slot included
+- new/augmented accessors:
+	- taxa_names
+	- ntaxa
+	- refseq
+- phyloseq() constructor now supports XStringSet components
+- reconcile_species internal function removed/replaced
+	- reconcile_species removed from constructor and package. internal, so no need to deprecate.
+- check the component slot list provided by the "splat" infrastructure
+- prune_taxa
+- Rebuild current example data.
+- print/show methods. 
+- subset_taxa
+- add refseq (XStringSet) object argument to import functions.
+	- import_qiime
+	- import_biom
+- merge_phyloseq
+	- works with refseq data
+- Add merge_taxa method for XStringSet objects
+- Include reference sequences in example datasets
+Additional improvements included in version:
+- prune_* / reconcile_* / intersect_*
+	- add intersect_samples() function, model after new version of intersect_species()
+	- rename intersect_species to intersect_taxa()
+	- rm/replace reconcile_* functions with prune_*(intersect_*(), ps).
+	- These changes make simpler / DRYer code. Easier to extend.
+- DRY (and hopefully speed) improvements to merge_taxa()
+	- Additional speed improvements may be possible for tip_glom, tax_glom in later revisions
+
+
+phyloseq 1.3.14
+===========
+- Shortened/replaced examples in the longest-running doc examples.
+  This substantially reduces the time it takes to run package checks.
+
+- Focused on worst offenders
+
+- Created a new online tutorial for `subset_ord_plot`. 
+  Linked to it from `plot_ordination`
+
+- `plot_taxa_bar` moved to deprecated function file where it belongs,
+   and examples completely removed from doc.
+
+
+phyloseq 1.3.13
+===========
+- Fixed unofficial warning from missing (unregistered) classes 
+  of ordination objects. Stems from the internal get_eigenvalue
+  being defined as S4 generic instead of S3.
+Solves the following logged issue:
+https://github.com/joey711/phyloseq/issues/166
+
+- Name of get_eigenvalue generic replaced with extract_eigenvalue,
+  in addition to re-defining as S3 generic. 
+
+- Fixed ggplot2 warning from over-specified "bins" in the
+  plot_scree bar plot. Changed to stat="identity", solves problem
+
+- Fixed warning when eigenvalues get (slightly) negative. They
+  are now set to 0.0 for the purposes of plotting in plot_scree.
 
 phyloseq 1.3.12
 ===========

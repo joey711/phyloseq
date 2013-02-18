@@ -2,26 +2,28 @@
 \alias{phyloseq-class}
 \title{The main experiment-level class for phyloseq data}
 \description{
-  Contains all component classes:
+  Contains all currently-supported component data classes:
   \code{\link{otu_table-class}},
   \code{\link{sample_data-class}},
   \code{\link{taxonomyTable-class}} (\code{"tax_table"}
-  slot), and \code{\link[ape]{phylo}}-class
-  (\code{"phy_tree"} slot). There are several advantages to
+  slot), \code{\link[ape]{phylo}}-class (\code{"phy_tree"}
+  slot), and the \code{\link[Biostrings]{XStringSet-class}}
+  (\code{"refseq"} slot). There are several advantages to
   storing your phylogenetic sequencing experiment as an
   instance of the phyloseq class, not the least of which is
   that it is easy to return to the data later and feel
   confident that the different data types ``belong'' to one
   another. Furthermore, the \code{\link{phyloseq}}
   constructor ensures that the different data components
-  have compatible indices (e.g. species and samples), and
+  have compatible indices (e.g. OTUs and samples), and
   performs the necessary trimming automatically when you
   create your ``experiment-level'' object. Downstream
   analyses are aware of which data classes they require --
   and where to find them -- often making your
-  \code{phyloseq-class} object the only data argument to
-  analysis and plotting functions (although there are many
-  options and parameter arguments waiting for you).
+  \code{phyloseq-class} object the only data argument
+  required for analysis and plotting functions (although
+  there are many options and parameter arguments available
+  to you).
 }
 \details{
   In the case of missing component data, the slots are set
@@ -38,14 +40,17 @@
   class otu_table.} \item{sam_data}{ a single object of
   class sample_data.} \item{tax_table}{ a single object of
   class taxonomyTable.} \item{phy_tree}{ a single object of
-  the \code{\link[ape]{phylo}}-class, from the ape package}
-  }
+  the \code{\link[ape]{phylo}}-class, from the ape
+  package.} \item{refseq}{ a biological sequence set object
+  of a class that inherits from the
+  \code{\link[Biostrings]{XStringSet-class}}, from the
+  Biostrings package.} }
 }
 \seealso{
   The constructor, \code{\link{phyloseq}}, the merger
   \code{\link{merge_phyloseq}}, and also the component
   constructor/accessors \code{\link{otu_table}},
-  \code{\link{sample_data}}, \code{\link{tax_table}}, and
-  \code{\link{phy_tree}}.
+  \code{\link{sample_data}}, \code{\link{tax_table}},
+  \code{\link{phy_tree}}, and \code{\link{refseq}}.
 }
 

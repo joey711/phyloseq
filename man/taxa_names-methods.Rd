@@ -8,6 +8,7 @@
 \alias{taxa_names,phyloseq-method}
 \alias{taxa_names,sample_data-method}
 \alias{taxa_names,taxonomyTable-method}
+\alias{taxa_names,XStringSet-method}
 \title{Get species / taxa names.}
 \usage{
   taxa_names(physeq)

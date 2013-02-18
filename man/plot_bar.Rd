@@ -61,32 +61,17 @@
 }
 \examples{
 data("GlobalPatterns")
-gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 plot_bar(gp.ch)
 plot_bar(gp.ch, fill="Genus")
 plot_bar(gp.ch, x="SampleType", fill="Genus")
 plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Family)
-# Need to load ggplot2 for custom faceting, and other custom ggplot2 goodies.
-library("ggplot2")
-plot_bar(gp.ch, fill="Genus") + facet_wrap(~SampleType)
-plot_bar(gp.ch, fill="Genus") + facet_grid(SampleType ~ Family)
-plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=SampleType~Family)
-# A more complicated addition. Two lines. Second adds abundance points.
-p = plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Genus)
-p + geom_point(aes(x=SampleType, y=Abundance), color="black", position="jitter", size=1.5)
-# Enterotype Example
-data("enterotype")
-TopNOTUs <- names(sort(taxa_sums(enterotype), TRUE)[1:10])
-ent10   <- prune_species(TopNOTUs, enterotype)
-plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~Genus)
-# The previous was probably more informative, but here is the same
-# information presented with a different organization.
-plot_bar(ent10, "SeqTech", fill="Genus", facet_grid=~Enterotype)
-# Here is an example with a different faceting variable.
-# Not super useful in this dataset, but always good to explore.
-plot_bar(ent10, "SeqTech", fill="Enterotype", facet_grid=~ClinicalStatus)
+# See additional examples in the plot_bar online tutorial. Link above.
 }
 \seealso{
+  \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq
+  online tutorials}.
+
   \code{\link{psmelt}}
 
   \code{\link{ggplot}}
