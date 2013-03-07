@@ -1,5 +1,5 @@
 `r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 
 Subset points in an ordination plot
