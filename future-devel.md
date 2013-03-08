@@ -1,5 +1,5 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="markdown.css" rel="stylesheet"></link>
 
 Future Development of phyloseq
 ========================================================
@@ -23,3 +23,16 @@ In broader strokes, the near-term plans include:
 1. Animated ordinations for time-series (and analogous) data. See beta-version support package: [animate.phyloseq](https://github.com/joey711/animate.phyloseq)
 
 1. The compilation of a [Bioconductor data package](http://www.bioconductor.org/packages/release/data/experiment/) ("phyloseqData") that includes many key published datasets already imported as separate "phyloseq" instances and available through R's `data` interface.
+
+1. **Big(ger)** Data
+The firehose of new-gen sequencing data is making possible "big" datasets in this realm. For example, [the demo on importing the Human Microbiome Project data into R](http://joey711.github.com/phyloseq-demo/HMP_import_example.html) takes a considerable amount of time to run on a typical desktop/laptop and may push some less powerful machines to their limit. And that's just data import. We are considering some of the best approaches to help a tool like phyloseq address computational issues that are arising from dealing with this data of this size, without compromising some of the other features (interactivity, reproducibility, connection with existing R tools). Some promising tools already available for R that might help include:
+
+##### Sparse matrix classes
+Like in [the Matrix package](http://cran.r-project.org/web/packages/Matrix/index.html). This mainly applies to in-RAM computations, especially when the full matrix is actually needed. In principle, this might only apply be required to represent the preprocessed data, which could still be sparse.
+
+##### Store full dataset in a database
+Some candidate packages are:
+
+- [the hdf5 package](http://cran.r-project.org/web/packages/hdf5/index.html)
+
+- [the ff package](http://cran.r-project.org/web/packages/ff/index.html)

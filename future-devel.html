@@ -131,6 +131,7 @@ hr {
       page-break-after: avoid; 
    }
 }
+
 </style>
 
 
@@ -140,7 +141,7 @@ hr {
 </head>
 
 <body>
-<p><link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link></p>
+<p><link href="markdown.css" rel="stylesheet"></link></p>
 
 <h1>Future Development of phyloseq</h1>
 
@@ -157,8 +158,24 @@ hr {
 <li><p>Structures for additional data components, e.g. mass spec and expression data.</p></li>
 <li><p>Animated ordinations for time-series (and analogous) data. See beta-version support package: <a href="https://github.com/joey711/animate.phyloseq">animate.phyloseq</a></p></li>
 <li><p>The compilation of a <a href="http://www.bioconductor.org/packages/release/data/experiment/">Bioconductor data package</a> (&ldquo;phyloseqData&rdquo;) that includes many key published datasets already imported as separate &ldquo;phyloseq&rdquo; instances and available through R&#39;s <code>data</code> interface.</p></li>
+<li><p><strong>Big(ger)</strong> Data
+The firehose of new-gen sequencing data is making possible &ldquo;big&rdquo; datasets in this realm. For example, <a href="http://joey711.github.com/phyloseq-demo/HMP_import_example.html">the demo on importing the Human Microbiome Project data into R</a> takes a considerable amount of time to run on a typical desktop/laptop and may push some less powerful machines to their limit. And that&#39;s just data import. We are considering some of the best approaches to help a tool like phyloseq address computational issues that are arising from dealing with this data of this size, without compromising some of the other features (interactivity, reproducibility, connection with existing R tools). Some promising tools already available for R that might help include:</p></li>
 </ol>
+
+<h5>Sparse matrix classes</h5>
+
+<p>Like in <a href="http://cran.r-project.org/web/packages/Matrix/index.html">the Matrix package</a>. This mainly applies to in-RAM computations, especially when the full matrix is actually needed. In principle, this might only apply be required to represent the preprocessed data, which could still be sparse.</p>
+
+<h5>Store full dataset in a database</h5>
+
+<p>Some candidate packages are:</p>
+
+<ul>
+<li><p><a href="http://cran.r-project.org/web/packages/hdf5/index.html">the hdf5 package</a></p></li>
+<li><p><a href="http://cran.r-project.org/web/packages/ff/index.html">the ff package</a></p></li>
+</ul>
 
 </body>
 
 </html>
+
