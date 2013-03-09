@@ -135,16 +135,6 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 	}
 	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
 }
-#' @export
-#' @rdname assign-sample_data
-#' @aliases assign-sample_data sample_data<- sam_data<-
-#' @usage sam_data(x) <- value
-"sam_data<-" <- function(x, value){
-	if( !inherits(value, "sample_data") ){
-		value <- sample_data(value)
-	}
-	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
-}
 ################################################################################
 #' Assign a (new) Taxonomy Table to \code{x}
 #'

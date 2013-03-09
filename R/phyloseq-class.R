@@ -56,8 +56,10 @@ phyloseq <- function(...){
 	# Avoid modifying splatlist directly until good reason.
 	splatlist_taxa = splatlist
 	# Don't consider components that don't describe taxa, in this case, "sample_data".
-	not_taxa = which(names(splatlist) %in% c("sam_data"))
-	if( length(not_taxa) > 0 ) splatlist_taxa = splatlist[-not_taxa] 
+	not_taxa = which(sapply(splatlist, inherits, c("sample_data")))
+	if( length(not_taxa) > 0 ){
+		splatlist_taxa = splatlist[-not_taxa]
+	}
 	# Use Reduce to find the intersection of all taxa indices among the components.
 	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))
 	# If there are no "shared" taxa/OTU names, try first removing any quotation marks taxa names.
@@ -74,7 +76,7 @@ phyloseq <- function(...){
 	not_taxa = which(names(splatlist) %in% c("sam_data"))
 	if( length(not_taxa) > 0 ) splatlist_taxa = splatlist[-not_taxa] 
 	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))	
-	if( length(shared_taxa) <= 0 ){
+	if( length(shared_taxa) < 1 ){
 		stop(
 			"Error in phyloseq-constructor:\n",
 			"No shared taxa names among the taxa-describing components you provided.\n",
@@ -95,19 +97,18 @@ phyloseq <- function(...){
 		"For merging multiple objects of the same type/class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
-	# Instantiate the phyloseq-class object, ps.
 	} else {
+		# Instantiate the phyloseq-class object, ps.
 		ps <- do.call("new", c(list(Class="phyloseq"), splatlist) )
 	}
+	
 	####################
 	## Reconcile the taxa and sample index names between components
 	## in the newly-minted phyloseq object
-	# Verify there is more than one component that describes species before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), taxa_names), is.null)) >= 2 ){	
-		ps <- prune_taxa(intersect_taxa(ps), ps)
-	}
+	ps <- prune_taxa(intersect_taxa(ps), ps)
+	
 	# Verify there is more than one component that describes samples before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample_names), is.null)) >= 2 ){
+	if( sum(!sapply(f_comp_ps("sample_names", ps), is.null)) >= 2L ){
 		ps <- prune_samples(intersect_samples(ps), ps)
 	}
 	####################	
@@ -150,6 +151,19 @@ phyloseq <- function(...){
 	return(ps)
 }
 ################################################################################
+# A relatively fast way to access from phyloseq object components
+# f - function name as character string
+# physeq - a phyloseq object (phyloseq-class instance)
+#' @keywords internal
+f_comp_ps = function(f, physeq){
+	sapply(names(getSlots("phyloseq")), function(i, ps){
+		eval(parse(text=paste(f, "(ps@", i, ")", sep="")))
+	}, physeq)
+}
+# f_comp_ps("taxa_names", ps)
+# f_comp_ps("ntaxa", ps)
+# Reduce("union", f_comp_ps("taxa_names", ps))
+# Reduce("intersect", f_comp_ps("taxa_names", ps))
 ################################################################################
 #' Show the component objects classes and slot names.
 #'
@@ -348,13 +362,13 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' ## data(GlobalPatterns)
 #' ## head(intersect_taxa(GlobalPatterns), 10)
 intersect_taxa <- function(x){
-	taxa_vectors = lapply(splat.phyloseq.objects(x), taxa_names)
+	taxa_vectors = f_comp_ps("taxa_names", x)
 	taxa_vectors = taxa_vectors[!sapply(taxa_vectors, is.null)]
 	return( Reduce("intersect", taxa_vectors) )
 }
 #' @keywords internal
 intersect_samples <- function(x){
-	sample_vectors = lapply(splat.phyloseq.objects(x), sample_names)
+	sample_vectors = f_comp_ps("sample_names", x)
 	sample_vectors = sample_vectors[!sapply(sample_vectors, is.null)]
 	return( Reduce("intersect", sample_vectors) )
 }

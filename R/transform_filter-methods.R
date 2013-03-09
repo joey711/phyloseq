@@ -508,71 +508,9 @@ setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
 setMethod("prune_taxa", signature("NULL"), function(taxa, x){
 	return(x)
 })
-# import covering ape::drop.tip
-#' @import ape
-#' @aliases prune_taxa,character,phylo-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
-	if( length(taxa) <= 1 ){
-		# Can't have a tree with 1 or fewer tips
-		warning("prune_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
-		return(NULL)
-	}
-	trimTaxa <- setdiff(x$tip.label, taxa)
-	if( length(trimTaxa) > 0 ){
-		return( drop.tip(x, trimTaxa) )
-	} else {
-		return(x)
-	}
-})
-#' @aliases prune_taxa,character,otu_table-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
-	taxa <- intersect( taxa, taxa_names(x) )
-	if( taxa_are_rows(x) ){
-		x[taxa, , drop=FALSE]
-	} else {
-		x[, taxa, drop=FALSE]
-	}	
-})
-#' @aliases prune_taxa,character,sample_data-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
-	return(x)
-})
-#' @aliases prune_taxa,character,phyloseq-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "phyloseq"), 
-		function(taxa, x){
-			
-	# Save time and return if the union of all component taxa names
-	# captured by taxa_names(x) is same as taxa. 
-	if( setequal(taxa_names(x), taxa) ){
-		return(x)
-	} else {	
-		# All phyloseq objects have an otu_table slot, no need to test.
-		x@otu_table     = prune_taxa(taxa, otu_table(x))
-		
-		# Test if slot is present. If so, perform the component prune.
-		if( !is.null(access(x, "tax_table")) ){
-			x@tax_table = prune_taxa(taxa, tax_table(x))
-		}
-		if( !is.null(access(x, "phy_tree")) ){
-			x@phy_tree  = prune_taxa(taxa, phy_tree(x))
-		}
-		if( !is.null(access(x, "refseq")) ){
-			x@refseq    = prune_taxa(taxa, refseq(x))
-		}		
-		return(x)
-	}
-})
-#' @aliases prune_taxa,character,taxonomyTable-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "taxonomyTable"), 
-		function(taxa, x){
-	taxa <- intersect( taxa, taxa_names(x) )
-	return( x[taxa, , drop=FALSE] )
-})
+# Any prune_taxa call w/ signature starting with a logical
+# converts the logical to a character vector, and then dispatches
+# to more specific method.
 #' @aliases prune_taxa,logical,ANY-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
@@ -584,30 +522,83 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
 })
+# import covering ape::drop.tip
+#' @import ape
+#' @aliases prune_taxa,character,phylo-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
+	if( length(taxa) <= 1 ){
+		# Can't have a tree with 1 or fewer tips
+		warning("prune_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		return(NULL)
+	} else if( setequal(taxa, taxa_names(x)) ){
+		return(x)
+	} else {
+		return( drop.tip(x, setdiff(taxa_names(x), taxa)) )		
+	}
+})
+#' @aliases prune_taxa,character,otu_table-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
+	if( setequal(taxa, taxa_names(x)) ){
+		return(x)
+	} else {
+		taxa = intersect( taxa, taxa_names(x) )
+		if( taxa_are_rows(x) ){
+			return(x[taxa, , drop=FALSE])
+		} else {
+			return(x[, taxa, drop=FALSE])
+		}
+	}
+})
+#' @aliases prune_taxa,character,sample_data-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
+	return(x)
+})
+#' @aliases prune_taxa,character,phyloseq-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "phyloseq"), function(taxa, x){
+	# Re-define `taxa` as the intersection of OTU names for each component AND `taxa`
+	taxa = intersect(intersect_taxa(x), taxa)
+	# Now prune them all.
+	# All phyloseq objects have an otu_table slot, no need to test for existence.
+	x@otu_table     = prune_taxa(taxa, otu_table(x))
+	# Test if slot is present. If so, perform the component prune.
+	if( !is.null(access(x, "tax_table")) ){
+		x@tax_table = prune_taxa(taxa, tax_table(x))
+	}
+	if( !is.null(access(x, "phy_tree")) ){
+		x@phy_tree  = prune_taxa(taxa, phy_tree(x))
+	}
+	if( !is.null(access(x, "refseq")) ){
+		x@refseq    = prune_taxa(taxa, refseq(x))
+	}		
+	return(x)
+})
+#' @aliases prune_taxa,character,taxonomyTable-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "taxonomyTable"), function(taxa, x){
+	if( setequal(taxa, taxa_names(x)) ){
+		return(x)
+	} else {
+		taxa = intersect( taxa, taxa_names(x) )
+		return( x[taxa, , drop=FALSE] )
+	}
+})
 #' @import Biostrings
 #' @aliases prune_taxa,character,XStringSet-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
-	# Only use the intersection.
-	keep_taxa = intersect( taxa, taxa_names(x) )
-	if( length(keep_taxa) == 0 ){
-		# Error if intersection is zero.
+	if( setequal(taxa, taxa_names(x)) ){
+		# Nothing to do, return x as-is.
+		return(x)
+	} else if( length(intersect(taxa, taxa_names(x))) == 0 ){
+		# Informative error if intersection is zero.
 		stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")		
-	}
-	if( length(keep_taxa) < length(taxa) ){
-		# Warning if some elements of the taxa argument are thrown out. They are ignored/lost
-		nlostnames = length(taxa) - length(keep_taxa)
-		warnmsg = paste(nlostnames, " taxa names provided to prune_taxa were not found among refseq names; they are ignored", sep="")
-		warning(warnmsg)
-	}
-	if( setequal(keep_taxa, taxa_names(x)) ){	
-		# If they are already the same, just return XStringSet object, unchanged.
-		return(x)	
 	} else {
-		# Pop the taxa that you don't want, without re-ordering.
-		remove_index = which( !taxa_names(x) %in% keep_taxa )
-		x = x[-remove_index]
-		return(x)		
+		# Pop the OTUs that are not in `taxa`, without reordering.
+		return(x[-which(!taxa_names(x) %in% taxa)])
 	}
 })
 ################################################################################
@@ -645,33 +636,42 @@ setGeneric("prune_samples", function(samples, x) standardGeneric("prune_samples"
 #' @aliases prune_samples,character,otu_table-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "otu_table"), function(samples, x){
-	if( taxa_are_rows(x) ){
-		x[, samples]
+	if( setequal(samples, sample_names(x)) ){
+		# If the sets of `samples` and sample_names are the same, return as-is.
+		return(x)
 	} else {
-		x[samples, ]
+		samples = intersect(samples, sample_names(x))
+		if( taxa_are_rows(x) ){
+			return( x[, samples] )
+		} else {
+			return( x[samples, ] )
+		}
 	}
 })
 #' @aliases prune_samples,character,sample_data-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "sample_data"), function(samples, x){
-	x[samples, ]
+	if( setequal(samples, sample_names(x)) ){
+		# If the sets of `samples` and sample_names are the same, return as-is.
+		return(x)
+	} else {
+		samples = intersect(samples, sample_names(x))	
+		return(x[samples, ])
+	}
 })
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	# Save time and return if the union of all component sample names
-	# captured by sample_names(x) is same as `samples`. 
-	if( setequal(sample_names(x), samples) ){
-		return(x)
-	} else {
-		# Don't need to protect otu_table, it is mandatory for phyloseq-class
-		x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )	
-		if( !is.null(access(x, "sam_data", FALSE)) ){
-			# protect missing sample_data component. Don't need to prune if empty
-			x@sam_data  <- prune_samples(samples, sample_data(x) )
-		}
-		return(x)		
+	# Re-define `samples` as the intersection of samples names for each component AND `samples`
+	samples = intersect(intersect_samples(x), samples)
+	# Now prune each component.
+	# All phyloseq objects have an otu_table slot, no need to test for existence.
+	x@otu_table = prune_samples(samples, otu_table(x))	
+	if( !is.null(access(x, "sam_data", FALSE)) ){
+		# protect missing sample_data component. Don't need to prune if empty
+		x@sam_data = prune_samples(samples, sample_data(x))
 	}
+	return(x)		
 })
 # A logical should specify the samples to keep, or not. Have same length as nsamples(x) 
 #' @aliases prune_samples,logical,ANY-method
