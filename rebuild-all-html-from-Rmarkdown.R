@@ -13,7 +13,7 @@ unlink("cache", TRUE)
 unlink("figure", TRUE)
 
 # Create vector of .rmd files in this directory
-files = list.files(pattern=".rmd")
+files = list.files(pattern=".[Rr]md")
 
 # Load and run knit2html on all of the .rmd files
 library("knitr")
