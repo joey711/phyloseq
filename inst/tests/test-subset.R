@@ -5,7 +5,11 @@ library("phyloseq"); library("testthat")
 # Load GP dataset
 data("GlobalPatterns")
 GP <- GlobalPatterns
-keepNames <- sample.names(GP)[5:7]
+keepNames <- sample_names(GP)[5:7]
+
+################################################################################
+# prune_
+################################################################################
 
 test_that("Classes of pruned phyloseq and its components are as expected", {
 	GP3     <- prune_samples(keepNames, GP)
@@ -35,6 +39,40 @@ test_that("prune_samples works on sample_data-only and otu_table-only data", {
 	expect_that(dim(GPotu), is_identical_to(c(19216L, 3L)))
 	expect_that(dim(GPsd), is_identical_to(c(3L, 7L)))			
 })
+
+# Count in how many samples each OTU was observed more than 5 times.
+samobs = apply(otu_table(GP), 1, function(x, m) sum(x > m), m=5L)
+# Keep only the most prevalent 50 of these
+samobs = sort(samobs, TRUE)[1:50]
+
+test_that("Initial order before pruning check is different", {
+	expect_that(setequal(names(samobs), taxa_names(phy_tree(GP))[1:50]), is_false())
+	expect_that(setequal(names(samobs), taxa_names(GP)[1:50]), is_false())
+	expect_that(identical(names(samobs), taxa_names(GP)[1:50]), is_false())
+})
+
+# prune to just samobs OTUs
+pGP = prune_taxa(names(samobs), GP)
+
+test_that("The set of names should be the same after pruning, names(samobs)", {
+	expect_that(setequal(names(samobs), taxa_names(phy_tree(pGP))), is_true())	
+	expect_that(setequal(names(samobs), taxa_names(otu_table(pGP))), is_true())	
+	expect_that(setequal(names(samobs), taxa_names(tax_table(pGP))), is_true())	
+})
+
+test_that("The set/order of taxa names after pruning should be consistent", {
+	# set equal
+	expect_that(setequal(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(setequal(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(setequal(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	# identical
+	expect_that(identical(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(names(samobs), taxa_names(phy_tree(pGP))), is_true())
+	# plot_tree(pGP, "sampledodge", nodeplotblank, label.tips="taxa_names", plot.margin=0.75)
+})
+
 
 ################################################################################
 # test filter_taxa and other filter methods.
