@@ -226,3 +226,99 @@ setMethod("phy_tree<-", c("phyloseq", "phyloseq"), function(x, value){
 	phyloseq(x@otu_table, x@sam_data, x@tax_table, phy_tree(value), x@refseq)
 })
 ################################################################################
+#' Assign a new OTU names to \code{x}
+#'
+#' @usage taxa_names(x) <- value
+#'
+#' @param x (Required). \code{\link{phyloseq-class}}
+#' @param value (Required). A character vector 
+#'  to replace the current \code{\link{taxa_names}}.
+#'
+#' @export
+#' @docType methods
+#' @rdname assign-taxa_names
+#' @aliases assign-taxa_names taxa_names<-
+#'
+#' @examples
+#' data("esophagus")
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+#' taxa_names(esophagus) <- paste("OTU-", taxa_names(esophagus), sep="")
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+#' ## non-characters are first coerced to characters.
+#' taxa_names(esophagus) <- 1:ntaxa(esophagus)
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+#' ## CAUTION! No test for uniqueness of names
+#' taxa_names(esophagus) <- sample(c(TRUE, FALSE), ntaxa(esophagus), TRUE)
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+setGeneric("taxa_names<-", function(x, value) standardGeneric("taxa_names<-") )
+  if( anyDuplicated(value) ){ stop("You have duplicate taxa_names") } 
+# YOU ARE HERE - EXAMPLE. YOU WANT TO ADAPT THIS TO TEST FOR UNIQUENESS
+###   A non-standard generic function.  It insists that the methods
+###   return a non-empty character vector (a stronger requirement than
+###    valueClass = "character" in the call to setGeneric)
+setGeneric("authorNames",
+           function(text) {
+             value <- standardGeneric("authorNames")
+             if(!(is(value, "character") && any(nchar(value)>0)))
+               stop("authorNames methods must return non-empty strings")
+             value
+           })
+
+# Attempt to coerce value to a character vector. Remaining methods will require it.
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,ANY,ANY-method
+setMethod("taxa_names<-", c("ANY", "ANY"), function(x, value){
+  if(anyDuplicated(value))
+  taxa_names(x) <- as(value, "character")
+  return(x)
+})
+# value is now character, but no specific method for first argumet
+# return x unchanged.
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,ANY,character-method
+setMethod("taxa_names<-", c("ANY", "character"), function(x, value){
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,otu_table,character-method
+setMethod("taxa_names<-", c("otu_table", "character"), function(x, value){
+  if( taxa_are_rows(x) ){
+    rownames(x) <- value
+  } else {
+    colnames(x) <- value
+  }
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,taxonomyTable,character-method
+setMethod("taxa_names<-", c("taxonomyTable", "character"), function(x, value){
+  rownames(x) <- value
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,phylo,character-method
+setMethod("taxa_names<-", c("phylo", "character"), function(x, value){
+  x$tip.label <- value
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,XStringSet,character-method
+setMethod("taxa_names<-", c("XStringSet", "character"), function(x, value){
+  names(x) <- value
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,phyloseq,character-method
+setMethod("taxa_names<-", c("phyloseq", "character"), function(x, value){
+  # dispatch on components
+  taxa_names(x@otu_table) <- value
+  taxa_names(x@phy_tree)  <- value
+  taxa_names(x@tax_table) <- value
+  taxa_names(x@refseq)    <- value
+  return(x)
+})
+################################################################################

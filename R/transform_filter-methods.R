@@ -490,17 +490,13 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #'
 #' @rdname prune_taxa-methods
 #' @export
-#' @examples #
-#' ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' ## f1  <- filterfun_sample(topk(2))
-#' ## wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' ## wh2 <- c(T, T, T, F, F)
-#' ## prune_taxa(wh1, testOTU)
-#' ## prune_taxa(wh2, testOTU)
-#' ## 
-#' ## tax_table1 <- tax_table(matrix("abc", 5, 5))
-#' ## prune_taxa(wh1, tax_table1)
-#' ## prune_taxa(wh2, tax_table1)
+#' @examples
+#' data("esophagus")
+#' esophagus
+#' plot(sort(taxa_sums(esophagus), TRUE), type="h", ylim=c(0, 50))
+#' x1 = prune_taxa(taxa_sums(esophagus) > 10, esophagus) 
+#' x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus) 
+#' identical(x1, x2)
 setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
 ################################################################################
 #' @aliases prune_taxa,NULL,ANY-method

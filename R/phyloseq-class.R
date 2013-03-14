@@ -26,7 +26,10 @@
 #'
 #' @seealso \code{\link{merge_phyloseq}}
 #' @export
-#' @examples #
+#' @examples
+#' data(esophagus)
+#' x1 = phyloseq(otu_table(esophagus), phy_tree(esophagus))
+#' identical(x1, esophagus)
 #' # # data(GlobalPatterns)
 #' # # GP <- GlobalPatterns
 #' # # phyloseq(sample_data(GP), otu_table(GP))
@@ -49,27 +52,26 @@ phyloseq <- function(...){
 	splatlist <- sapply(arglist, splat.phyloseq.objects)
 
 	####################
-	## Fix extra quotes in phylogenetic tree.
-	# A common problem is extra quotes around OTU names, esp from tree formats
-	# Check if the intersection length is actually zero.
-	# If so, attempt to remove any quotes from tree tip names.
-	# Avoid modifying splatlist directly until good reason.
-	splatlist_taxa = splatlist
-	# Don't consider components that don't describe taxa, in this case, "sample_data".
-	not_taxa = which(sapply(splatlist, inherits, c("sample_data")))
-	if( length(not_taxa) > 0 ){
-		splatlist_taxa = splatlist[-not_taxa]
-	}
+  ## Determine intersection of OTU names
+	# First, rm any forbidden chars in OTU names (e.g. quotes - phylogenetic tree).
+	name_list = lapply(splatlist, function(x){
+	  taxa_names(x) <- gsub("\"", "", taxa_names(x), fixed=TRUE)
+	  taxa_names(x) <- gsub("\'", "", taxa_names(x), fixed=TRUE)
+	})  
+  
+	name_list = lapply(splatlist, taxa_names)
+  # rm NULL, as that implies something that doesn't describe taxa/OTUs
+  name_list = name_list[!sapply(name_list, is.null)]
+  
 	# Use Reduce to find the intersection of all taxa indices among the components.
-	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))
+	shared_taxa = Reduce("intersect", name_list)
 
-	if( length(shared_taxa) <= 0 & "phylo" %in% sapply(splatlist, class) ){
+	if( length(shared_taxa) <= 0 ){
 	  # If there are no "shared" taxa/OTU names, 
-    # AND there is a phylogenetic tree
     # try first removing any quotation marks taxa names.
 		message(
-			"phyloseq() Note: Quotes removed from tree-tip names in attempt to reconcile with OTU names.\n",
-			"If no error follows this note, than it probably worked. Check taxa_names() of your components."
+			"phyloseq(): Attempting to remove quotes from taxa_names to reconcile.\n",
+			"If no error follows this note, then it probably worked."
 		)
 		splatlist$phy_tree$tip.label = gsub("\"", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
 		splatlist$phy_tree$tip.label = gsub("\'", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
