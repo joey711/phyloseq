@@ -498,10 +498,9 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus) 
 #' identical(x1, x2)
 setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
-################################################################################
 #' @aliases prune_taxa,NULL,ANY-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("NULL"), function(taxa, x){
+setMethod("prune_taxa", signature("NULL", "ANY"), function(taxa, x){
 	return(x)
 })
 # Any prune_taxa call w/ signature starting with a logical
@@ -561,15 +560,18 @@ setMethod("prune_taxa", signature("character", "phyloseq"), function(taxa, x){
 	# All phyloseq objects have an otu_table slot, no need to test for existence.
 	x@otu_table     = prune_taxa(taxa, otu_table(x))
 	# Test if slot is present. If so, perform the component prune.
-	if( !is.null(access(x, "tax_table")) ){
+	if( !is.null(x@tax_table) ){
 		x@tax_table = prune_taxa(taxa, tax_table(x))
 	}
-	if( !is.null(access(x, "phy_tree")) ){
+	if( !is.null(x@phy_tree) ){
 		x@phy_tree  = prune_taxa(taxa, phy_tree(x))
 	}
-	if( !is.null(access(x, "refseq")) ){
+	if( !is.null(x@refseq) ){
 		x@refseq    = prune_taxa(taxa, refseq(x))
-	}		
+	}	
+	# Force index order after pruning to be the same,
+	# according to the same rules as in the constructor, phyloseq()
+	x = index_reorder(x, index_type="taxa")
 	return(x)
 })
 #' @aliases prune_taxa,character,taxonomyTable-method
@@ -599,9 +601,10 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 })
 ################################################################################
 ################################################################################
-#' Prune unwanted samples from a phyloseq object.
+#' Define a subset of samples to keep in a phyloseq object.
 #' 
-#' An S4 Generic method for removing (pruning) unwanted samples.
+#' An S4 Generic method for pruning/filtering unwanted samples
+#' by defining those you want to keep.
 #'
 #' @usage prune_samples(samples, x)
 #'
@@ -609,7 +612,7 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 #' keep -- OR alternatively -- a logical vector where the kept samples are TRUE, and length
 #' is equal to the number of samples in object x. If \code{samples} is a named
 #' logical, the samples retained is based on those names. Make sure they are
-#' compatible with the \code{taxa_names} of the object you are modifying (\code{x}). 
+#' compatible with the \code{sample_names} of the object you are modifying (\code{x}). 
 #'
 #' @param x A phyloseq object.
 #'
@@ -663,10 +666,13 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 	# Now prune each component.
 	# All phyloseq objects have an otu_table slot, no need to test for existence.
 	x@otu_table = prune_samples(samples, otu_table(x))	
-	if( !is.null(access(x, "sam_data", FALSE)) ){
+	if( !is.null(x@sam_data) ){
 		# protect missing sample_data component. Don't need to prune if empty
 		x@sam_data = prune_samples(samples, sample_data(x))
 	}
+	# Force sample index order after pruning to be the same,
+	# according to the same rules as in the constructor, phyloseq()
+	x = index_reorder(x, index_type="samples")
 	return(x)		
 })
 # A logical should specify the samples to keep, or not. Have same length as nsamples(x) 

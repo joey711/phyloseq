@@ -226,11 +226,12 @@ setMethod("phy_tree<-", c("phyloseq", "phyloseq"), function(x, value){
 	phyloseq(x@otu_table, x@sam_data, x@tax_table, phy_tree(value), x@refseq)
 })
 ################################################################################
-#' Assign a new OTU names to \code{x}
+#' Replace OTU identifier names
 #'
 #' @usage taxa_names(x) <- value
 #'
-#' @param x (Required). \code{\link{phyloseq-class}}
+#' @param x (Required). An object defined by the \code{\link{phyloseq-package}}
+#' 	that describes OTUs in some way.
 #' @param value (Required). A character vector 
 #'  to replace the current \code{\link{taxa_names}}.
 #'
@@ -250,29 +251,19 @@ setMethod("phy_tree<-", c("phyloseq", "phyloseq"), function(x, value){
 #' taxa_names(esophagus) <- 1:ntaxa(esophagus)
 #' taxa_names(esophagus)
 #' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
-#' ## CAUTION! No test for uniqueness of names
-#' taxa_names(esophagus) <- sample(c(TRUE, FALSE), ntaxa(esophagus), TRUE)
-#' taxa_names(esophagus)
-#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
-setGeneric("taxa_names<-", function(x, value) standardGeneric("taxa_names<-") )
-  if( anyDuplicated(value) ){ stop("You have duplicate taxa_names") } 
-# YOU ARE HERE - EXAMPLE. YOU WANT TO ADAPT THIS TO TEST FOR UNIQUENESS
-###   A non-standard generic function.  It insists that the methods
-###   return a non-empty character vector (a stronger requirement than
-###    valueClass = "character" in the call to setGeneric)
-setGeneric("authorNames",
-           function(text) {
-             value <- standardGeneric("authorNames")
-             if(!(is(value, "character") && any(nchar(value)>0)))
-               stop("authorNames methods must return non-empty strings")
-             value
-           })
-
+#' ## Cannot assign non-unique or differently-lengthed name vectors. Error.
+#' # taxa_names(esophagus) <- sample(c(TRUE, FALSE), ntaxa(esophagus), TRUE)
+#' # taxa_names(esophagus) <- sample(taxa_names(esophagus), ntaxa(esophagus)-5, FALSE)
+setGeneric("taxa_names<-", function(x, value){
+	if( anyDuplicated(value) ){
+		stop("taxa_names<-: You are attempting to assign duplicated taxa_names")
+	}
+	standardGeneric("taxa_names<-")
+})
 # Attempt to coerce value to a character vector. Remaining methods will require it.
 #' @rdname assign-taxa_names
 #' @aliases taxa_names<-,ANY,ANY-method
 setMethod("taxa_names<-", c("ANY", "ANY"), function(x, value){
-  if(anyDuplicated(value))
   taxa_names(x) <- as(value, "character")
   return(x)
 })
@@ -320,5 +311,79 @@ setMethod("taxa_names<-", c("phyloseq", "character"), function(x, value){
   taxa_names(x@tax_table) <- value
   taxa_names(x@refseq)    <- value
   return(x)
+})
+################################################################################
+################################################################################
+#' Replace OTU identifier names
+#'
+#' @usage sample_names(x) <- value
+#'
+#' @param x (Required). An object defined by the \code{\link{phyloseq-package}}
+#' 	that describes OTUs in some way.
+#' @param value (Required). A character vector 
+#'  to replace the current \code{\link{sample_names}}.
+#'
+#' @export
+#' @docType methods
+#' @rdname assign-sample_names
+#' @aliases assign-sample_names sample_names<-
+#'
+#' @examples
+#' data("esophagus")
+#' sample_names(esophagus)
+#' # plot_tree(esophagus, color="sample_names", ladderize="left")
+#' sample_names(esophagus) <- paste("Sa-", sample_names(esophagus), sep="")
+#' sample_names(esophagus)
+#' # plot_tree(esophagus, color="sample_names", ladderize="left") 
+#' ## non-characters are first coerced to characters.
+#' sample_names(esophagus) <- 1:nsamples(esophagus)
+#' sample_names(esophagus)
+#' # plot_tree(esophagus, color="sample_names", ladderize="left") 
+#' ## Cannot assign non-unique or differently-lengthed name vectors. Error.
+#' # sample_names(esophagus) <- sample(c(TRUE, FALSE), nsamples(esophagus), TRUE)
+#' # sample_names(esophagus) <- sample(sample_names(esophagus), nsamples(esophagus)-1, FALSE)
+setGeneric("sample_names<-", function(x, value){
+	if( anyDuplicated(value) ){
+		stop("sample_names<-: You are attempting to assign duplicated sample_names")
+	}
+	standardGeneric("sample_names<-")
+})
+# Attempt to coerce value to a character vector. Remaining methods will require it.
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,ANY,ANY-method
+setMethod("sample_names<-", c("ANY", "ANY"), function(x, value){
+	sample_names(x) <- as(value, "character")
+	return(x)
+})
+# value is now character, but no specific method for first argumet
+# return x unchanged.
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,ANY,character-method
+setMethod("sample_names<-", c("ANY", "character"), function(x, value){
+	return(x)
+})
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,otu_table,character-method
+setMethod("sample_names<-", c("otu_table", "character"), function(x, value){
+	if( taxa_are_rows(x) ){
+		colnames(x) <- value
+	} else {
+		rownames(x) <- value
+	}
+	return(x)
+})
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,sample_data,character-method
+setMethod("sample_names<-", c("sample_data", "character"), function(x, value){
+	rownames(x) <- value
+	return(x)
+})
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,phyloseq,character-method
+setMethod("sample_names<-", c("phyloseq", "character"), function(x, value){
+	# dispatch on components
+	sample_names(x@otu_table) <- value
+	sample_names(x@sam_data)  <- value
+	return(x)
 })
 ################################################################################

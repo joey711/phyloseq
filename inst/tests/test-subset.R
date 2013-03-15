@@ -1,6 +1,7 @@
 # load libraries
 library("phyloseq"); library("testthat")
 # # # # TESTS!
+set.seed(888)
 
 # Load GP dataset
 data("GlobalPatterns")
@@ -50,6 +51,8 @@ if(taxa_are_rows(GP)){
 samobs = apply(otumat, 1, function(x, m) sum(x > m), m=5L)
 # Keep only the most prevalent 50 of these
 samobs = sort(samobs, TRUE)[1:50]
+# Shuffle the names on purpose.
+samobs = sample(samobs, length(samobs), FALSE)
 
 test_that("Initial order before pruning check is different", {
 	expect_that(setequal(names(samobs), taxa_names(phy_tree(GP))[1:50]), is_false())
@@ -75,7 +78,7 @@ test_that("The set/order of taxa names after pruning should be consistent", {
 	expect_that(identical(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
 	expect_that(identical(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
 	expect_that(identical(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
-	expect_that(identical(names(samobs), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(names(samobs), taxa_names(phy_tree(pGP))), is_false())
 	# plot_tree(pGP, "sampledodge", nodeplotblank, label.tips="taxa_names", plot.margin=0.75)
 })
 
