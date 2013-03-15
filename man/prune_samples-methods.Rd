@@ -5,7 +5,7 @@
 \alias{prune_samples,character,phyloseq-method}
 \alias{prune_samples,character,sample_data-method}
 \alias{prune_samples,logical,ANY-method}
-\title{Prune unwanted samples from a phyloseq object.}
+\title{Define a subset of samples to keep in a phyloseq object.}
 \usage{
   prune_samples(samples, x)
 }
@@ -16,7 +16,7 @@
   are TRUE, and length is equal to the number of samples in
   object x. If \code{samples} is a named logical, the
   samples retained is based on those names. Make sure they
-  are compatible with the \code{taxa_names} of the object
+  are compatible with the \code{sample_names} of the object
   you are modifying (\code{x}).}
 
   \item{x}{A phyloseq object.}
@@ -26,8 +26,8 @@
   matches the class of the phyloseq object, \code{x}.
 }
 \description{
-  An S4 Generic method for removing (pruning) unwanted
-  samples.
+  An S4 Generic method for pruning/filtering unwanted
+  samples by defining those you want to keep.
 }
 \examples{
 #

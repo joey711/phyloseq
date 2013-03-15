@@ -1,0 +1,40 @@
+\docType{methods}
+\name{sample_names<-}
+\alias{assign-sample_names}
+\alias{sample_names<-}
+\alias{sample_names<-,ANY,ANY-method}
+\alias{sample_names<-,ANY,character-method}
+\alias{sample_names<-,otu_table,character-method}
+\alias{sample_names<-,phyloseq,character-method}
+\alias{sample_names<-,sample_data,character-method}
+\title{Replace OTU identifier names}
+\usage{
+  sample_names(x) <- value
+}
+\arguments{
+  \item{x}{(Required). An object defined by the
+  \code{\link{phyloseq-package}} that describes OTUs in
+  some way.}
+
+  \item{value}{(Required). A character vector to replace
+  the current \code{\link{sample_names}}.}
+}
+\description{
+  Replace OTU identifier names
+}
+\examples{
+data("esophagus")
+sample_names(esophagus)
+# plot_tree(esophagus, color="sample_names", ladderize="left")
+sample_names(esophagus) <- paste("Sa-", sample_names(esophagus), sep="")
+sample_names(esophagus)
+# plot_tree(esophagus, color="sample_names", ladderize="left")
+## non-characters are first coerced to characters.
+sample_names(esophagus) <- 1:nsamples(esophagus)
+sample_names(esophagus)
+# plot_tree(esophagus, color="sample_names", ladderize="left")
+## Cannot assign non-unique or differently-lengthed name vectors. Error.
+# sample_names(esophagus) <- sample(c(TRUE, FALSE), nsamples(esophagus), TRUE)
+# sample_names(esophagus) <- sample(sample_names(esophagus), nsamples(esophagus)-1, FALSE)
+}
+

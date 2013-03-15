@@ -33,7 +33,9 @@
   \code{\link{phylo-class}}).
 }
 \examples{
-#
+data(esophagus)
+x1 = phyloseq(otu_table(esophagus), phy_tree(esophagus))
+identical(x1, esophagus)
 # # data(GlobalPatterns)
 # # GP <- GlobalPatterns
 # # phyloseq(sample_data(GP), otu_table(GP))

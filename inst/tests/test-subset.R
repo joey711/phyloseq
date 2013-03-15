@@ -1,14 +1,19 @@
 # load libraries
 library("phyloseq"); library("testthat")
 # # # # TESTS!
+set.seed(888)
 
 # Load GP dataset
 data("GlobalPatterns")
 GP <- GlobalPatterns
-keepNames <- sample.names(GP)[5:7]
+keepNames <- sample_names(GP)[5:7]
+
+################################################################################
+# prune_
+################################################################################
 
 test_that("Classes of pruned phyloseq and its components are as expected", {
-	GP3     <- prune_samples(keepNames, GP)
+	GP3 <- prune_samples(keepNames, GP)
 	expect_that(nsamples(GP3), is_identical_to(3L))
 	expect_that(GP3, is_a("phyloseq"))
 	expect_that(access(GP3, "sam_data"),  is_a("sample_data"))
@@ -35,6 +40,56 @@ test_that("prune_samples works on sample_data-only and otu_table-only data", {
 	expect_that(dim(GPotu), is_identical_to(c(19216L, 3L)))
 	expect_that(dim(GPsd), is_identical_to(c(3L, 7L)))			
 })
+
+# Coerce orientation for apply
+if(taxa_are_rows(GP)){
+  otumat = as(otu_table(GP), "matrix")
+} else {
+  otumat = t(as(otu_table(GP), "matrix"))
+}
+# Count in how many samples each OTU was observed more than 5 times.
+samobs = apply(otumat, 1, function(x, m) sum(x > m), m=5L)
+# Keep only the most prevalent 50 of these
+samobs = sort(samobs, TRUE)[1:50]
+# Shuffle the names on purpose.
+samobs = sample(samobs, length(samobs), FALSE)
+
+test_that("Initial order before pruning check is different", {
+	expect_that(setequal(names(samobs), taxa_names(phy_tree(GP))[1:50]), is_false())
+	expect_that(setequal(names(samobs), taxa_names(GP)[1:50]), is_false())
+	expect_that(identical(names(samobs), taxa_names(GP)[1:50]), is_false())
+})
+
+# prune to just samobs OTUs
+pGP = prune_taxa(names(samobs), GP)
+
+test_that("The set of names should be the same after pruning, names(samobs)", {
+	expect_that(setequal(names(samobs), taxa_names(phy_tree(pGP))), is_true())	
+	expect_that(setequal(names(samobs), taxa_names(otu_table(pGP))), is_true())	
+	expect_that(setequal(names(samobs), taxa_names(tax_table(pGP))), is_true())	
+})
+
+test_that("The set/order of taxa names after pruning should be consistent", {
+	# set equal
+	expect_that(setequal(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(setequal(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(setequal(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	# identical
+	expect_that(identical(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_that(identical(names(samobs), taxa_names(phy_tree(pGP))), is_false())
+	# plot_tree(pGP, "sampledodge", nodeplotblank, label.tips="taxa_names", plot.margin=0.75)
+})
+
+## Add this as backup test
+#' data("esophagus")
+#' esophagus
+#' plot(sort(taxa_sums(esophagus), TRUE), type="h", ylim=c(0, 50))
+#' x1 = prune_taxa(taxa_sums(esophagus) > 10, esophagus) 
+#' x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus) 
+#' identical(x1, x2)
+
 
 ################################################################################
 # test filter_taxa and other filter methods.

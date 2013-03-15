@@ -135,16 +135,6 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 	}
 	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
 }
-#' @export
-#' @rdname assign-sample_data
-#' @aliases assign-sample_data sample_data<- sam_data<-
-#' @usage sam_data(x) <- value
-"sam_data<-" <- function(x, value){
-	if( !inherits(value, "sample_data") ){
-		value <- sample_data(value)
-	}
-	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
-}
 ################################################################################
 #' Assign a (new) Taxonomy Table to \code{x}
 #'
@@ -234,5 +224,166 @@ setMethod("phy_tree<-", c("phyloseq", "phylo"), function(x, value){
 #' @aliases phy_tree<-,phyloseq,phyloseq-method
 setMethod("phy_tree<-", c("phyloseq", "phyloseq"), function(x, value){
 	phyloseq(x@otu_table, x@sam_data, x@tax_table, phy_tree(value), x@refseq)
+})
+################################################################################
+#' Replace OTU identifier names
+#'
+#' @usage taxa_names(x) <- value
+#'
+#' @param x (Required). An object defined by the \code{\link{phyloseq-package}}
+#' 	that describes OTUs in some way.
+#' @param value (Required). A character vector 
+#'  to replace the current \code{\link{taxa_names}}.
+#'
+#' @export
+#' @docType methods
+#' @rdname assign-taxa_names
+#' @aliases assign-taxa_names taxa_names<-
+#'
+#' @examples
+#' data("esophagus")
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+#' taxa_names(esophagus) <- paste("OTU-", taxa_names(esophagus), sep="")
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+#' ## non-characters are first coerced to characters.
+#' taxa_names(esophagus) <- 1:ntaxa(esophagus)
+#' taxa_names(esophagus)
+#' # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
+#' ## Cannot assign non-unique or differently-lengthed name vectors. Error.
+#' # taxa_names(esophagus) <- sample(c(TRUE, FALSE), ntaxa(esophagus), TRUE)
+#' # taxa_names(esophagus) <- sample(taxa_names(esophagus), ntaxa(esophagus)-5, FALSE)
+setGeneric("taxa_names<-", function(x, value){
+	if( anyDuplicated(value) ){
+		stop("taxa_names<-: You are attempting to assign duplicated taxa_names")
+	}
+	standardGeneric("taxa_names<-")
+})
+# Attempt to coerce value to a character vector. Remaining methods will require it.
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,ANY,ANY-method
+setMethod("taxa_names<-", c("ANY", "ANY"), function(x, value){
+  taxa_names(x) <- as(value, "character")
+  return(x)
+})
+# value is now character, but no specific method for first argumet
+# return x unchanged.
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,ANY,character-method
+setMethod("taxa_names<-", c("ANY", "character"), function(x, value){
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,otu_table,character-method
+setMethod("taxa_names<-", c("otu_table", "character"), function(x, value){
+  if( taxa_are_rows(x) ){
+    rownames(x) <- value
+  } else {
+    colnames(x) <- value
+  }
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,taxonomyTable,character-method
+setMethod("taxa_names<-", c("taxonomyTable", "character"), function(x, value){
+  rownames(x) <- value
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,phylo,character-method
+setMethod("taxa_names<-", c("phylo", "character"), function(x, value){
+  x$tip.label <- value
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,XStringSet,character-method
+setMethod("taxa_names<-", c("XStringSet", "character"), function(x, value){
+  names(x) <- value
+  return(x)
+})
+#' @rdname assign-taxa_names
+#' @aliases taxa_names<-,phyloseq,character-method
+setMethod("taxa_names<-", c("phyloseq", "character"), function(x, value){
+  # dispatch on components
+  taxa_names(x@otu_table) <- value
+  taxa_names(x@phy_tree)  <- value
+  taxa_names(x@tax_table) <- value
+  taxa_names(x@refseq)    <- value
+  return(x)
+})
+################################################################################
+################################################################################
+#' Replace OTU identifier names
+#'
+#' @usage sample_names(x) <- value
+#'
+#' @param x (Required). An object defined by the \code{\link{phyloseq-package}}
+#' 	that describes OTUs in some way.
+#' @param value (Required). A character vector 
+#'  to replace the current \code{\link{sample_names}}.
+#'
+#' @export
+#' @docType methods
+#' @rdname assign-sample_names
+#' @aliases assign-sample_names sample_names<-
+#'
+#' @examples
+#' data("esophagus")
+#' sample_names(esophagus)
+#' # plot_tree(esophagus, color="sample_names", ladderize="left")
+#' sample_names(esophagus) <- paste("Sa-", sample_names(esophagus), sep="")
+#' sample_names(esophagus)
+#' # plot_tree(esophagus, color="sample_names", ladderize="left") 
+#' ## non-characters are first coerced to characters.
+#' sample_names(esophagus) <- 1:nsamples(esophagus)
+#' sample_names(esophagus)
+#' # plot_tree(esophagus, color="sample_names", ladderize="left") 
+#' ## Cannot assign non-unique or differently-lengthed name vectors. Error.
+#' # sample_names(esophagus) <- sample(c(TRUE, FALSE), nsamples(esophagus), TRUE)
+#' # sample_names(esophagus) <- sample(sample_names(esophagus), nsamples(esophagus)-1, FALSE)
+setGeneric("sample_names<-", function(x, value){
+	if( anyDuplicated(value) ){
+		stop("sample_names<-: You are attempting to assign duplicated sample_names")
+	}
+	standardGeneric("sample_names<-")
+})
+# Attempt to coerce value to a character vector. Remaining methods will require it.
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,ANY,ANY-method
+setMethod("sample_names<-", c("ANY", "ANY"), function(x, value){
+	sample_names(x) <- as(value, "character")
+	return(x)
+})
+# value is now character, but no specific method for first argumet
+# return x unchanged.
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,ANY,character-method
+setMethod("sample_names<-", c("ANY", "character"), function(x, value){
+	return(x)
+})
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,otu_table,character-method
+setMethod("sample_names<-", c("otu_table", "character"), function(x, value){
+	if( taxa_are_rows(x) ){
+		colnames(x) <- value
+	} else {
+		rownames(x) <- value
+	}
+	return(x)
+})
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,sample_data,character-method
+setMethod("sample_names<-", c("sample_data", "character"), function(x, value){
+	rownames(x) <- value
+	return(x)
+})
+#' @rdname assign-sample_names
+#' @aliases sample_names<-,phyloseq,character-method
+setMethod("sample_names<-", c("phyloseq", "character"), function(x, value){
+	# dispatch on components
+	sample_names(x@otu_table) <- value
+	sample_names(x@sam_data)  <- value
+	return(x)
 })
 ################################################################################
