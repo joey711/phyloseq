@@ -2,6 +2,22 @@
 # Backward compatibility aliases
 
 
+#' @rdname sample_data-methods
+#' @aliases sample_data
+#' @export
+sam_data <- sample_data
+
+#' @export
+#' @rdname assign-sample_data
+#' @aliases assign-sample_data sample_data<- sam_data<-
+#' @usage sam_data(x) <- value
+"sam_data<-" <- function(x, value){
+	if( !inherits(value, "sample_data") ){
+		value <- sample_data(value)
+	}
+	phyloseq(x@otu_table, value, x@tax_table, x@phy_tree, x@refseq)
+}
+
 
 #' @rdname plot_richness
 #' @aliases plot_richness

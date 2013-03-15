@@ -26,7 +26,10 @@
 #'
 #' @seealso \code{\link{merge_phyloseq}}
 #' @export
-#' @examples #
+#' @examples
+#' data(esophagus)
+#' x1 = phyloseq(otu_table(esophagus), phy_tree(esophagus))
+#' identical(x1, esophagus)
 #' # # data(GlobalPatterns)
 #' # # GP <- GlobalPatterns
 #' # # phyloseq(sample_data(GP), otu_table(GP))
@@ -48,44 +51,17 @@ phyloseq <- function(...){
 	# Make the name-replaced, splatted list
 	splatlist <- sapply(arglist, splat.phyloseq.objects)
 
-	####################
-	## Fix extra quotes in phylogenetic tree.
-	# A common problem is extra quotes around OTU names, esp from tree formats
-	# Check if the intersection length is actually zero.
-	# If so, attempt to remove any quotes from tree tip names.
-	# Avoid modifying splatlist directly until good reason.
-	splatlist_taxa = splatlist
-	# Don't consider components that don't describe taxa, in this case, "sample_data".
-	not_taxa = which(names(splatlist) %in% c("sam_data"))
-	if( length(not_taxa) > 0 ) splatlist_taxa = splatlist[-not_taxa] 
-	# Use Reduce to find the intersection of all taxa indices among the components.
-	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))
-	# If there are no "shared" taxa/OTU names, try first removing any quotation marks taxa names.
-	if( length(shared_taxa) <= 0 & "phylo" %in% sapply(splatlist, class) ){
-		message(
-			"phyloseq() Note: Quotes removed from tree-tip names in attempt to reconcile with OTU names.\n",
-			"If no error follows this note, than it probably worked. Check taxa_names() of your components."
-		)
-		splatlist$phy_tree$tip.label = gsub("\"", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
-		splatlist$phy_tree$tip.label = gsub("\'", "", taxa_names(splatlist$phy_tree), fixed=TRUE)		
-	}
-	# Now re-check. Do any taxa names overlap? If not, stop with error.
-	splatlist_taxa = splatlist
-	not_taxa = which(names(splatlist) %in% c("sam_data"))
-	if( length(not_taxa) > 0 ) splatlist_taxa = splatlist[-not_taxa] 
-	shared_taxa = Reduce("intersect", lapply(splatlist_taxa, taxa_names))	
-	if( length(shared_taxa) <= 0 ){
-		stop(
-			"Error in phyloseq-constructor:\n",
-			"No shared taxa names among the taxa-describing components you provided.\n",
-			"Solution: Check the taxa/OTU names of each component separately, using taxa_names()\n",
-			"Note: This does not apply to a sample_data component, because it does not describe taxa/OTUs."
-		)
-	}
+	# rm any forbidden chars in index names (e.g. quotes - phylogenetic tree).
+	# Right now, only extra quotes are forbidden.
+	splatlist = lapply(splatlist, function(x){
+		taxa_names(x) <- gsub("\"", "", taxa_names(x), fixed=TRUE)
+		taxa_names(x) <- gsub("\'", "", taxa_names(x), fixed=TRUE)
+		return(x)
+	})
 	
 	####################
 	## Need to determine whether to
-	# (A) instantiate a new phyloseq object, or
+	# (A) instantiate a new raw/uncleaned phyloseq object, or
 	# (B) return a single component, or
 	# (C) to stop with an error because of incorrect argument types.
 	if( length(splatlist) > length(get.component.classes()) ){
@@ -95,61 +71,54 @@ phyloseq <- function(...){
 		"For merging multiple objects of the same type/class, try merge_phyloseq(...)\n")
 	} else if( length(splatlist) == 1){
 		return(arglist[[1]])
-	# Instantiate the phyloseq-class object, ps.
 	} else {
+		# Instantiate the phyloseq-class object, ps.
 		ps <- do.call("new", c(list(Class="phyloseq"), splatlist) )
 	}
+
 	####################
 	## Reconcile the taxa and sample index names between components
 	## in the newly-minted phyloseq object
-	# Verify there is more than one component that describes species before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), taxa_names), is.null)) >= 2 ){	
-		ps <- prune_taxa(intersect_taxa(ps), ps)
+	shared_taxa    = intersect_taxa(ps)
+	shared_samples = intersect_samples(ps) 
+	
+	if( length(shared_taxa) < 1 ){
+		stop("Problem with OTU/taxa indices among those you provided.\n",
+			"Check using intersect() and taxa_names()\n"
+		)
+	}	
+	if( length(shared_samples) < 1 ){
+		stop("Problem with sample indices among those you provided.\n",
+				 "Check using intersect() and taxa_names()\n"
+		)
 	}
-	# Verify there is more than one component that describes samples before attempting to reconcile.
-	if( sum(!sapply(lapply(splat.phyloseq.objects(ps), sample_names), is.null)) >= 2 ){
-		ps <- prune_samples(intersect_samples(ps), ps)
-	}
-	####################	
-	## ENFORCE CONSISTENT ORDER OF TAXA INDICES.
-	if( !is.null(phy_tree(ps, FALSE)) ){
-		# If there is a phylogenetic tree included, 
-		# re-order based on that, and reorder the otu_table
-		# The new taxa order, torder, will also trickle down to
-		# the taxonomyTable or XStringSet if present.
-		torder = taxa_names(phy_tree(ps))
-		# Re-order the OTU table
-		if( taxa_are_rows(ps) ){
-			ps@otu_table = otu_table(ps)[torder, ]
-		} else {
-			ps@otu_table = otu_table(ps)[, torder]
-		}
-	} else {
-		# Else, re-order anything/everything else based on the OTU-table order
-		torder = taxa_names(otu_table(ps))
-	}
-	if( !is.null(tax_table(ps, FALSE)) ){
-		# If there is a taxonomyTable, re-order that too.
-		ps@tax_table = tax_table(ps)[torder, ]
-	}
-	if( !is.null(refseq(ps, FALSE)) ){
-		# If there is a XStringSet, re-order that too.
-		ps@refseq = refseq(ps)[torder]
-	}
-	####################
-	## ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
-	# Other errors have been detected for when sample indices do not match.
-	if( !is.null(sample_data(ps, FALSE)) ){
-		# check first that ps has sample_data
-		if( !all(sample_names(otu_table(ps)) == rownames(sample_data(ps))) ){
-			# Reorder the sample_data rows so that they match the otu_table order.
-			ps@sam_data <- sample_data(ps)[sample_names(otu_table(ps)), ]
-		}		
-	}
+		
+	# Start with OTU indices
+	ps = prune_taxa(shared_taxa, ps)
+	
+	# Verify there is more than one component 
+	# that describes samples before attempting to reconcile.
+	ps = prune_samples(shared_samples, ps)
+	
+	# Force both samples and taxa indices to be in the same order.
+	ps = index_reorder(ps, "both")
 	
 	return(ps)
 }
 ################################################################################
+# A relatively fast way to access from phyloseq object components
+# f - function name as character string
+# physeq - a phyloseq object (phyloseq-class instance)
+#' @keywords internal
+f_comp_ps = function(f, physeq){
+	sapply(names(getSlots("phyloseq")), function(i, ps){
+		eval(parse(text=paste(f, "(ps@", i, ")", sep="")))
+	}, physeq)
+}
+# f_comp_ps("taxa_names", ps)
+# f_comp_ps("ntaxa", ps)
+# Reduce("union", f_comp_ps("taxa_names", ps))
+# Reduce("intersect", f_comp_ps("taxa_names", ps))
 ################################################################################
 #' Show the component objects classes and slot names.
 #'
@@ -190,7 +159,8 @@ sample.components = function(){
 	names(component.classes) <- c("otu_table", "sam_data")
 	return(component.classes)
 }
-# Returns TRUE if x is a component class, FALSE otherwise. This shows up over and over again in data infrastructure
+# Returns TRUE if x is a component class, FALSE otherwise.
+# This shows up over and over again in data infrastructure
 #' @keywords internal
 is.component.class = function(x){
 	inherits(x, get.component.classes())
@@ -348,14 +318,78 @@ access <- function(physeq, slot, errorIfNULL=FALSE){
 #' ## data(GlobalPatterns)
 #' ## head(intersect_taxa(GlobalPatterns), 10)
 intersect_taxa <- function(x){
-	taxa_vectors = lapply(splat.phyloseq.objects(x), taxa_names)
+	taxa_vectors = f_comp_ps("taxa_names", x)
 	taxa_vectors = taxa_vectors[!sapply(taxa_vectors, is.null)]
 	return( Reduce("intersect", taxa_vectors) )
 }
 #' @keywords internal
 intersect_samples <- function(x){
-	sample_vectors = lapply(splat.phyloseq.objects(x), sample_names)
+	sample_vectors = f_comp_ps("sample_names", x)
 	sample_vectors = sample_vectors[!sapply(sample_vectors, is.null)]
 	return( Reduce("intersect", sample_vectors) )
 }
+################################################################################
+#' Force index order of phyloseq objects
+#'
+#' @usage index_reorder(ps, index_type)
+#'
+#' @param ps (Required). A \code{\link{phyloseq-class}} instance.
+#' @param index_type (Optional). A character string
+#'  specifying the indices to properly order.
+#'  Supported values are \code{c("both", "taxa", "samples")}.
+#'  Default is \code{"both"}, meaning samples and taxa indices
+#'  will be checked/re-ordered.
+#'
+#' @keywords internal
+#' @docType methods
+#'
+#' @examples
+#' ## data("GlobalPatterns")
+#' ## GP = index_reorder(GlobalPatterns)
+setGeneric("index_reorder", function(ps, index_type) standardGeneric("index_reorder") )
+#' @rdname index_reorder
+#' @aliases index_reorder,phyloseq-method
+setMethod("index_reorder", "phyloseq", function(ps, index_type="both"){
+	if( index_type %in% c("both", "taxa") ){
+		## ENFORCE CONSISTENT ORDER OF TAXA INDICES.
+		if( !is.null(phy_tree(ps, FALSE)) ){
+			# If there is a phylogenetic tree included, 
+			# re-order based on that, and reorder the otu_table
+			# The new taxa order, torder, will also trickle down to
+			# the taxonomyTable or XStringSet if present.
+			torder = taxa_names(phy_tree(ps))
+			# Re-order the OTU table
+			if( taxa_are_rows(ps) ){
+				ps@otu_table = otu_table(ps)[torder, ]
+			} else {
+				ps@otu_table = otu_table(ps)[, torder]
+			}
+		} else {
+			# Else, re-order anything/everything else based on the OTU-table order
+			torder = taxa_names(otu_table(ps))
+		}
+		if( !is.null(tax_table(ps, FALSE)) ){
+			# If there is a taxonomyTable, re-order that too.
+			ps@tax_table = tax_table(ps)[torder, ]
+		}
+		if( !is.null(refseq(ps, FALSE)) ){
+			# If there is a XStringSet, re-order that too.
+			ps@refseq = refseq(ps)[torder]
+		}		
+	}
+	
+	if( index_type %in% c("both", "samples") ){
+		## ENFORCE CONSISTENT ORDER OF SAMPLE INDICES
+		# Errors can creep when sample indices do not match.
+		if( !is.null(sample_data(ps, FALSE)) ){
+			# check first that ps has sample_data
+			if( !all(sample_names(otu_table(ps)) == rownames(sample_data(ps))) ){
+				# Reorder the sample_data rows so that they match the otu_table order.
+				ps@sam_data <- sample_data(ps)[sample_names(otu_table(ps)), ]
+			}		
+		}
+	}
+	
+	return(ps)
+})
 ################################################################################
