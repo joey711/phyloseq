@@ -835,11 +835,29 @@ setMethod("t", signature("phyloseq"), function(x){
 #' (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
 #' identical(x1, x2)
 transform_sample_counts <- function(physeq, fun){
+	# Test the user-provided function returns a vector of the same length as input.
+	if( !identical(length(fun(1:10)), 10L) ){stop("`fun` not valid function.")}
+	# Check orientation, transpose if-needed to make apply work properly.
 	if( taxa_are_rows(physeq) ){
-    # Does it always transform?
-		newphyseq <- t(apply(as(otu_table(physeq), "matrix"), 2, fun))
+		newphyseq = apply(as(otu_table(physeq), "matrix"), 2, fun)
+		if( identical(ntaxa(physeq), 1L) ){
+			# Fix the dropped index when only 1 OTU.
+			newphyseq <- matrix(newphyseq, 1L, nsamples(physeq), TRUE,
+													list(taxa_names(physeq), sample_names(physeq)))
+		}
 	} else {
-		newphyseq <- apply(as(otu_table(physeq), "matrix"), 1, fun)
+		newphyseq = apply(t(as(otu_table(physeq), "matrix")), 2, fun)
+		if( identical(ntaxa(physeq), 1L) ){
+			# Fix the dropped index when only 1 OTU.
+			newphyseq <- matrix(newphyseq, 1L, nsamples(physeq), TRUE,
+													list(taxa_names(physeq), sample_names(physeq)))
+		}
+		newphyseq = t(newphyseq)
+	}
+	# Check that original and new dimensions agree. Error if not.
+	if( !identical(dim(newphyseq), dim(otu_table(physeq))) ){
+		stop("Dimensions of OTU table change after apply-ing function. \n",
+			"       Please check both function and table")
 	}
 	otu_table(physeq) <- otu_table(newphyseq, taxa_are_rows=taxa_are_rows(physeq))
 	return(physeq)
