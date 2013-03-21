@@ -836,7 +836,8 @@ setMethod("t", signature("phyloseq"), function(x){
 #' identical(x1, x2)
 transform_sample_counts <- function(physeq, fun){
 	if( taxa_are_rows(physeq) ){
-		newphyseq <- apply(as(otu_table(physeq), "matrix"), 2, fun)
+    # Does it always transform?
+		newphyseq <- t(apply(as(otu_table(physeq), "matrix"), 2, fun))
 	} else {
 		newphyseq <- apply(as(otu_table(physeq), "matrix"), 1, fun)
 	}
