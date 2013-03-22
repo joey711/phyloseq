@@ -25,14 +25,14 @@
 t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
 rm_outlierf(0.15)(t1)
 ## Use simulated abundance matrix
-# set.seed(711)
-# testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-# taxa_sums(testOTU)
-# f1  <- filterfun_sample(rm_outlierf(0.1))
-# (wh1 <- genefilter_sample(testOTU, f1, A=1))
-# wh2 <- c(T, T, T, F, F)
-# prune_taxa(wh1, testOTU)
-# prune_taxa(wh2, testOTU)
+set.seed(711)
+testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+taxa_sums(testOTU)
+f1  <- filterfun_sample(rm_outlierf(0.1))
+(wh1 <- genefilter_sample(testOTU, f1, A=1))
+wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+prune_taxa(wh1, testOTU)
+prune_taxa(wh2, testOTU)
 }
 \seealso{
   \code{\link{topk}}, \code{\link{topf}},

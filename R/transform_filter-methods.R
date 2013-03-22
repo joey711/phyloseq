@@ -13,8 +13,9 @@
 #' with length equal to the argument to \code{sample.size},
 #' and probability according to the abundances for that sample in \code{physeq}.
 #'
-#' This is sometimes (somewhat mistakenly) called "rarefaction", 
-#' though it actually a single random subsampling procedure in this case. 
+#' This approach is sometimes (somewhat mistakenly) called "rarefaction",
+#' or "rarefying", 
+#' but it is actually a single random sample-wise subsampling procedure.
 #' The original rarefaction procedure includes many
 #' random subsampling iterations at increasing depth as a means to
 #' infer richness/alpha-diversity
@@ -490,89 +491,22 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #'
 #' @rdname prune_taxa-methods
 #' @export
-#' @examples #
-#' ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' ## f1  <- filterfun_sample(topk(2))
-#' ## wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' ## wh2 <- c(T, T, T, F, F)
-#' ## prune_taxa(wh1, testOTU)
-#' ## prune_taxa(wh2, testOTU)
-#' ## 
-#' ## tax_table1 <- tax_table(matrix("abc", 5, 5))
-#' ## prune_taxa(wh1, tax_table1)
-#' ## prune_taxa(wh2, tax_table1)
+#' @examples
+#' data("esophagus")
+#' esophagus
+#' plot(sort(taxa_sums(esophagus), TRUE), type="h", ylim=c(0, 50))
+#' x1 = prune_taxa(taxa_sums(esophagus) > 10, esophagus) 
+#' x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus) 
+#' identical(x1, x2)
 setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
-################################################################################
 #' @aliases prune_taxa,NULL,ANY-method
 #' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("NULL"), function(taxa, x){
+setMethod("prune_taxa", signature("NULL", "ANY"), function(taxa, x){
 	return(x)
 })
-# import covering ape::drop.tip
-#' @import ape
-#' @aliases prune_taxa,character,phylo-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
-	if( length(taxa) <= 1 ){
-		# Can't have a tree with 1 or fewer tips
-		warning("prune_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
-		return(NULL)
-	}
-	trimTaxa <- setdiff(x$tip.label, taxa)
-	if( length(trimTaxa) > 0 ){
-		return( drop.tip(x, trimTaxa) )
-	} else {
-		return(x)
-	}
-})
-#' @aliases prune_taxa,character,otu_table-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
-	taxa <- intersect( taxa, taxa_names(x) )
-	if( taxa_are_rows(x) ){
-		x[taxa, , drop=FALSE]
-	} else {
-		x[, taxa, drop=FALSE]
-	}	
-})
-#' @aliases prune_taxa,character,sample_data-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
-	return(x)
-})
-#' @aliases prune_taxa,character,phyloseq-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "phyloseq"), 
-		function(taxa, x){
-			
-	# Save time and return if the union of all component taxa names
-	# captured by taxa_names(x) is same as taxa. 
-	if( setequal(taxa_names(x), taxa) ){
-		return(x)
-	} else {	
-		# All phyloseq objects have an otu_table slot, no need to test.
-		x@otu_table     = prune_taxa(taxa, otu_table(x))
-		
-		# Test if slot is present. If so, perform the component prune.
-		if( !is.null(access(x, "tax_table")) ){
-			x@tax_table = prune_taxa(taxa, tax_table(x))
-		}
-		if( !is.null(access(x, "phy_tree")) ){
-			x@phy_tree  = prune_taxa(taxa, phy_tree(x))
-		}
-		if( !is.null(access(x, "refseq")) ){
-			x@refseq    = prune_taxa(taxa, refseq(x))
-		}		
-		return(x)
-	}
-})
-#' @aliases prune_taxa,character,taxonomyTable-method
-#' @rdname prune_taxa-methods
-setMethod("prune_taxa", signature("character", "taxonomyTable"), 
-		function(taxa, x){
-	taxa <- intersect( taxa, taxa_names(x) )
-	return( x[taxa, , drop=FALSE] )
-})
+# Any prune_taxa call w/ signature starting with a logical
+# converts the logical to a character vector, and then dispatches
+# to more specific method.
 #' @aliases prune_taxa,logical,ANY-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
@@ -584,37 +518,94 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
 })
+# import covering ape::drop.tip
+#' @import ape
+#' @aliases prune_taxa,character,phylo-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
+	if( length(taxa) <= 1 ){
+		# Can't have a tree with 1 or fewer tips
+		warning("prune_taxa attempted to reduce tree to 1 or fewer tips.\n tree replaced with NULL.")
+		return(NULL)
+	} else if( setequal(taxa, taxa_names(x)) ){
+		return(x)
+	} else {
+		return( drop.tip(x, setdiff(taxa_names(x), taxa)) )		
+	}
+})
+#' @aliases prune_taxa,character,otu_table-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "otu_table"), function(taxa, x){
+	if( setequal(taxa, taxa_names(x)) ){
+		return(x)
+	} else {
+		taxa = intersect( taxa, taxa_names(x) )
+		if( taxa_are_rows(x) ){
+			return(x[taxa, , drop=FALSE])
+		} else {
+			return(x[, taxa, drop=FALSE])
+		}
+	}
+})
+#' @aliases prune_taxa,character,sample_data-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "sample_data"), function(taxa, x){
+	return(x)
+})
+#' @aliases prune_taxa,character,phyloseq-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "phyloseq"), function(taxa, x){
+	# Re-define `taxa` as the intersection of OTU names for each component AND `taxa`
+	taxa = intersect(intersect_taxa(x), taxa)
+	# Now prune them all.
+	# All phyloseq objects have an otu_table slot, no need to test for existence.
+	x@otu_table     = prune_taxa(taxa, otu_table(x))
+	# Test if slot is present. If so, perform the component prune.
+	if( !is.null(x@tax_table) ){
+		x@tax_table = prune_taxa(taxa, tax_table(x))
+	}
+	if( !is.null(x@phy_tree) ){
+		x@phy_tree  = prune_taxa(taxa, phy_tree(x))
+	}
+	if( !is.null(x@refseq) ){
+		x@refseq    = prune_taxa(taxa, refseq(x))
+	}	
+	# Force index order after pruning to be the same,
+	# according to the same rules as in the constructor, phyloseq()
+	x = index_reorder(x, index_type="taxa")
+	return(x)
+})
+#' @aliases prune_taxa,character,taxonomyTable-method
+#' @rdname prune_taxa-methods
+setMethod("prune_taxa", signature("character", "taxonomyTable"), function(taxa, x){
+	if( setequal(taxa, taxa_names(x)) ){
+		return(x)
+	} else {
+		taxa = intersect( taxa, taxa_names(x) )
+		return( x[taxa, , drop=FALSE] )
+	}
+})
 #' @import Biostrings
 #' @aliases prune_taxa,character,XStringSet-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
-	# Only use the intersection.
-	keep_taxa = intersect( taxa, taxa_names(x) )
-	if( length(keep_taxa) == 0 ){
-		# Error if intersection is zero.
+	if( setequal(taxa, taxa_names(x)) ){
+		# Nothing to do, return x as-is.
+		return(x)
+	} else if( length(intersect(taxa, taxa_names(x))) == 0 ){
+		# Informative error if intersection is zero.
 		stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")		
-	}
-	if( length(keep_taxa) < length(taxa) ){
-		# Warning if some elements of the taxa argument are thrown out. They are ignored/lost
-		nlostnames = length(taxa) - length(keep_taxa)
-		warnmsg = paste(nlostnames, " taxa names provided to prune_taxa were not found among refseq names; they are ignored", sep="")
-		warning(warnmsg)
-	}
-	if( setequal(keep_taxa, taxa_names(x)) ){	
-		# If they are already the same, just return XStringSet object, unchanged.
-		return(x)	
 	} else {
-		# Pop the taxa that you don't want, without re-ordering.
-		remove_index = which( !taxa_names(x) %in% keep_taxa )
-		x = x[-remove_index]
-		return(x)		
+		# Pop the OTUs that are not in `taxa`, without reordering.
+		return(x[-which(!taxa_names(x) %in% taxa)])
 	}
 })
 ################################################################################
 ################################################################################
-#' Prune unwanted samples from a phyloseq object.
+#' Define a subset of samples to keep in a phyloseq object.
 #' 
-#' An S4 Generic method for removing (pruning) unwanted samples.
+#' An S4 Generic method for pruning/filtering unwanted samples
+#' by defining those you want to keep.
 #'
 #' @usage prune_samples(samples, x)
 #'
@@ -622,7 +613,7 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 #' keep -- OR alternatively -- a logical vector where the kept samples are TRUE, and length
 #' is equal to the number of samples in object x. If \code{samples} is a named
 #' logical, the samples retained is based on those names. Make sure they are
-#' compatible with the \code{taxa_names} of the object you are modifying (\code{x}). 
+#' compatible with the \code{sample_names} of the object you are modifying (\code{x}). 
 #'
 #' @param x A phyloseq object.
 #'
@@ -645,33 +636,45 @@ setGeneric("prune_samples", function(samples, x) standardGeneric("prune_samples"
 #' @aliases prune_samples,character,otu_table-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "otu_table"), function(samples, x){
-	if( taxa_are_rows(x) ){
-		x[, samples]
+	if( setequal(samples, sample_names(x)) ){
+		# If the sets of `samples` and sample_names are the same, return as-is.
+		return(x)
 	} else {
-		x[samples, ]
+		samples = intersect(samples, sample_names(x))
+		if( taxa_are_rows(x) ){
+			return( x[, samples] )
+		} else {
+			return( x[samples, ] )
+		}
 	}
 })
 #' @aliases prune_samples,character,sample_data-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "sample_data"), function(samples, x){
-	x[samples, ]
+	if( setequal(samples, sample_names(x)) ){
+		# If the sets of `samples` and sample_names are the same, return as-is.
+		return(x)
+	} else {
+		samples = intersect(samples, sample_names(x))	
+		return(x[samples, ])
+	}
 })
 #' @aliases prune_samples,character,phyloseq-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("character", "phyloseq"), function(samples, x){
-	# Save time and return if the union of all component sample names
-	# captured by sample_names(x) is same as `samples`. 
-	if( setequal(sample_names(x), samples) ){
-		return(x)
-	} else {
-		# Don't need to protect otu_table, it is mandatory for phyloseq-class
-		x@otu_table <- prune_samples(samples, access(x, "otu_table", FALSE) )	
-		if( !is.null(access(x, "sam_data", FALSE)) ){
-			# protect missing sample_data component. Don't need to prune if empty
-			x@sam_data  <- prune_samples(samples, sample_data(x) )
-		}
-		return(x)		
+	# Re-define `samples` as the intersection of samples names for each component AND `samples`
+	samples = intersect(intersect_samples(x), samples)
+	# Now prune each component.
+	# All phyloseq objects have an otu_table slot, no need to test for existence.
+	x@otu_table = prune_samples(samples, otu_table(x))	
+	if( !is.null(x@sam_data) ){
+		# protect missing sample_data component. Don't need to prune if empty
+		x@sam_data = prune_samples(samples, sample_data(x))
 	}
+	# Force sample index order after pruning to be the same,
+	# according to the same rules as in the constructor, phyloseq()
+	x = index_reorder(x, index_type="samples")
+	return(x)		
 })
 # A logical should specify the samples to keep, or not. Have same length as nsamples(x) 
 #' @aliases prune_samples,logical,ANY-method
@@ -744,14 +747,12 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #'  \code{\link{threshrank}}
 #' @export
 #' @examples
-#' data(GlobalPatterns)
-#' GP <- GlobalPatterns
-#' ## These three approaches result in identical otu_table
-#' (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-#' (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+#' data(esophagus)
+#' x1 = transform_sample_counts(esophagus, threshrankfun(50))
+#' otu_table(x1)
+#' x2 = transform_sample_counts(esophagus, rank)
+#' otu_table(x2)
 #' identical(x1, x2)
-#' (x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
-#' identical(x1, x3)
 threshrankfun <- function(thresh, keep0s=FALSE, ...){
 	function(x){
 		threshrank(x, thresh, keep0s=FALSE, ...)
@@ -824,19 +825,41 @@ setMethod("t", signature("phyloseq"), function(x){
 #' @export
 #'
 #' @examples #
-#' data(GlobalPatterns)
-#' GP <- GlobalPatterns
-#' ## transform_sample_counts can work on phyloseq-class, modifying otu_table only
-#' (GPr <- transform_sample_counts(GP, rank) )
-#' ## These two approaches result in identical otu_table
-#' (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-#' (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+#' data(esophagus)
+#' x1 = transform_sample_counts(esophagus, threshrankfun(50))
+#' head(otu_table(x1), 10)
+#' x2 = transform_sample_counts(esophagus, rank)
+#' head(otu_table(x2), 10)
 #' identical(x1, x2)
+#' x3 = otu_table(esophagus) + 5
+#' x3 = transform_sample_counts(x3, log)
+#' head(otu_table(x3), 10)
+#' x4 = transform_sample_counts(esophagus, function(x) round(x^2.2, 0))
+#' head(otu_table(x4), 10)
 transform_sample_counts <- function(physeq, fun){
+	# Test the user-provided function returns a vector of the same length as input.
+	if( !identical(length(fun(1:10)), 10L) ){stop("`fun` not valid function.")}
+	# Check orientation, transpose if-needed to make apply work properly.
 	if( taxa_are_rows(physeq) ){
-		newphyseq <- apply(as(otu_table(physeq), "matrix"), 2, fun)
+		newphyseq = apply(as(otu_table(physeq), "matrix"), 2, fun)
+		if( identical(ntaxa(physeq), 1L) ){
+			# Fix the dropped index when only 1 OTU.
+			newphyseq <- matrix(newphyseq, 1L, nsamples(physeq), TRUE,
+													list(taxa_names(physeq), sample_names(physeq)))
+		}
 	} else {
-		newphyseq <- apply(as(otu_table(physeq), "matrix"), 1, fun)
+		newphyseq = apply(t(as(otu_table(physeq), "matrix")), 2, fun)
+		if( identical(ntaxa(physeq), 1L) ){
+			# Fix the dropped index when only 1 OTU.
+			newphyseq <- matrix(newphyseq, 1L, nsamples(physeq), TRUE,
+													list(taxa_names(physeq), sample_names(physeq)))
+		}
+		newphyseq = t(newphyseq)
+	}
+	# Check that original and new dimensions agree. Error if not.
+	if( !identical(dim(newphyseq), dim(otu_table(physeq))) ){
+		stop("Dimensions of OTU table change after apply-ing function. \n",
+			"       Please check both function and table")
 	}
 	otu_table(physeq) <- otu_table(newphyseq, taxa_are_rows=taxa_are_rows(physeq))
 	return(physeq)
@@ -893,7 +916,7 @@ transformSampleCounts <- transform_sample_counts
 #' ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
 #' ## f1  <- filterfun_sample(topk(2))
 #' ## wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' ## wh2 <- c(T, T, T, F, F)
+#' ## wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' ## prune_taxa(wh1, testOTU)
 #' ## prune_taxa(wh2, testOTU)
 #' ## 
@@ -922,7 +945,8 @@ setMethod("genefilter_sample", signature("phyloseq"), function(X, flist, A=1){
 	genefilter_sample(otu_table(X), flist, A)
 })
 ################################################################################
-#' A sample-wise filter function builder, analogous to \code{\link[genefilter]{filterfun}}.
+#' A sample-wise filter function builder
+#' analogous to \code{\link[genefilter]{filterfun}}.
 #'
 #' See the \code{\link[genefilter]{filterfun}}, from the Bioconductor repository,
 #' for a taxa-/gene-wise filter (and further examples).
@@ -940,14 +964,14 @@ setMethod("genefilter_sample", signature("phyloseq"), function(X, flist, A=1){
 #' @export
 #' @seealso \code{\link[genefilter]{filterfun}}, \code{\link{genefilter_sample}}
 #' @examples
-#' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # f1  <- filterfun_sample(topk(2))
-#' # wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' # Use simulated abundance matrix
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' f1  <- filterfun_sample(topk(2))
+#' wh1 <- genefilter_sample(testOTU, f1, A=2)
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 filterfun_sample = function(...){
     flist <- list(...)
     if( length(flist) == 1 && is.list(flist[[1]])) { flist <- flist[[1]] }
@@ -1053,13 +1077,13 @@ filter_taxa <- function(physeq, flist, prune=FALSE){
 #' 
 #' @examples
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # f1  <- filterfun_sample(topk(2))
-#' # wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' f1  <- filterfun_sample(topk(2))
+#' wh1 <- genefilter_sample(testOTU, f1, A=2)
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 topk = function(k, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
@@ -1086,14 +1110,14 @@ topk = function(k, na.rm=TRUE){
 #'
 #' @examples
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # sample_sums(testOTU)
-#' # f1  <- filterfun_sample(topp(0.2))
-#' # (wh1 <- genefilter_sample(testOTU, f1, A=1))
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' sample_sums(testOTU)
+#' f1  <- filterfun_sample(topp(0.2))
+#' (wh1 <- genefilter_sample(testOTU, f1, A=1))
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 topp <- function(p, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
@@ -1123,16 +1147,16 @@ topp <- function(p, na.rm=TRUE){
 #' @export
 #' 
 #' @examples
-#' # t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
-#' # topf(0.6)(t1)
+#' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
+#' topf(0.6)(t1)
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # f1  <- filterfun_sample(topf(0.4))
-#' # (wh1 <- genefilter_sample(testOTU, f1, A=1))
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' f1  <- filterfun_sample(topf(0.4))
+#' (wh1 <- genefilter_sample(testOTU, f1, A=1))
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 topf <- function(f, na.rm=TRUE){
     function(x){
         if (na.rm){
@@ -1167,14 +1191,14 @@ topf <- function(f, na.rm=TRUE){
 #' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
 #' rm_outlierf(0.15)(t1)
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # taxa_sums(testOTU)
-#' # f1  <- filterfun_sample(rm_outlierf(0.1))
-#' # (wh1 <- genefilter_sample(testOTU, f1, A=1))
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU) 
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' taxa_sums(testOTU)
+#' f1  <- filterfun_sample(rm_outlierf(0.1))
+#' (wh1 <- genefilter_sample(testOTU, f1, A=1))
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU) 
 rm_outlierf <- function(f, na.rm=TRUE){
 	function(x){
 		if(na.rm){

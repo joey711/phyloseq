@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.3.20
-Date: 2013-02-11
+Version: 1.3.23
+Date: 2013-03-21
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -12,26 +12,26 @@ Author: Paul J. McMurdie <mcmurdie@stanford.edu>, Susan
     from Gregory Jordan and Scott Chamberlain
 License: AGPL-3
 Imports:
-    ape (>= 3.0),
+    ape (>= 3.0.7),
     Biostrings (>= 2.26.3),
     foreach (>= 1.4),
     ggplot2 (>= 0.9.3),
-    igraph0 (>= 0.5),
+    igraph0 (>= 0.5.6),
     multtest (>= 2.14),
     plyr (>= 1.8),
     reshape (>= 0.8.4),
-    RJSONIO (>= 1.0),
+    RJSONIO (>= 1.0.1),
     scales (>= 0.2.3),
-    vegan (>= 2.0)
+    vegan (>= 2.0.6)
 Depends:
     R (>= 2.15.2),
     methods,
-    ade4 (>= 1.4),
-    picante (>= 1.5)
+    ade4 (>= 1.4.17),
+    picante (>= 1.5.2)
 Suggests:
     genefilter (>= 1.40),
     testthat (>= 0.7)
-Enhances: doParallel (>= 1.0)
+Enhances: doParallel (>= 1.0.1)
 biocViews: Clustering, Classification, MultipleComparisons,
     QualityControl, GeneticVariability,
     HighThroughputSequencing

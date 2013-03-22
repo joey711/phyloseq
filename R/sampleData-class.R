@@ -67,10 +67,6 @@ setMethod("sample_data", "data.frame", function(object){
 	}	
 	return(SM)
 })
-#' @rdname sample_data-methods
-#' @aliases sample_data
-#' @export
-sam_data <- sample_data
 ################################################################################
 #' Cleans absent levels in sample_data/data.frame.
 #'

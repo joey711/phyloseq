@@ -28,14 +28,12 @@
   \code{\link{transform_sample_counts}}.
 }
 \examples{
-data(GlobalPatterns)
-GP <- GlobalPatterns
-## These three approaches result in identical otu_table
-(x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-(x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+data(esophagus)
+x1 = transform_sample_counts(esophagus, threshrankfun(50))
+otu_table(x1)
+x2 = transform_sample_counts(esophagus, rank)
+otu_table(x2)
 identical(x1, x2)
-(x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
-identical(x1, x3)
 }
 \seealso{
   \code{\link{transform_sample_counts}},

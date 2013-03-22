@@ -296,7 +296,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' tree if possible using either format importer. If it fails, it silently 
 #' returns \code{NULL} by default, rather than throwing a show-stopping error.
 #'
-#' read_tree(treefile, errorIfNULL=FALSE, ...)
+#' @usage read_tree(treefile, errorIfNULL=FALSE, ...)
 #'
 #' @param treefile (Required). A character string implying a file \code{\link{connection}}
 #'  (like a path or URL), or an actual \code{\link{connection}}.

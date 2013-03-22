@@ -159,26 +159,32 @@ setMethod("ntaxa", "ANY", function(physeq){ return(NULL) })
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,phyloseq-method
 setMethod("ntaxa", "phyloseq", function(physeq){
-	length(taxa_names(physeq))
+	ntaxa(otu_table(physeq))
 })
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,otu_table-method
 setMethod("ntaxa", "otu_table", function(physeq){
 	if( taxa_are_rows(physeq) ){
-		return( length(rownames(physeq)) )
+		return( nrow(physeq) )
 	} else {
-		return( length(colnames(physeq)) )
+		return( ncol(physeq) )
 	}
 })
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,taxonomyTable-method
-setMethod("ntaxa", "taxonomyTable", function(physeq){ nrow(physeq) })
+setMethod("ntaxa", "taxonomyTable", function(physeq){
+	nrow(physeq)
+})
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,phylo-method
-setMethod("ntaxa", "phylo", function(physeq) length(physeq$tip.label) )
+setMethod("ntaxa", "phylo", function(physeq){
+	length(physeq$tip.label)
+})
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,XStringSet-method
-setMethod("ntaxa", "XStringSet", function(physeq) length(physeq) )
+setMethod("ntaxa", "XStringSet", function(physeq){
+	length(physeq)
+})
 ################################################################################
 #' Get species / taxa names.
 #'
@@ -212,8 +218,7 @@ setMethod("taxa_names", "ANY", function(physeq){ return(NULL) })
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,phyloseq-method
 setMethod("taxa_names", "phyloseq", function(physeq){
-	# Return the union of all species in the components
-	unique(unlist(lapply(splat.phyloseq.objects(physeq), taxa_names)))	
+	taxa_names(otu_table(physeq))
 })
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,otu_table-method
@@ -268,15 +273,16 @@ setMethod("nsamples", "ANY", function(physeq){ return(NULL) })
 #' @rdname nsamples-methods
 #' @aliases nsamples,phyloseq-method
 setMethod("nsamples", "phyloseq", function(physeq){
-	length(sample_names(physeq))
+	# dispatch to core, required component, otu_table
+	nsamples(otu_table(physeq))
 })
 #' @rdname nsamples-methods
 #' @aliases nsamples,otu_table-method
 setMethod("nsamples", "otu_table", function(physeq){
 	if( taxa_are_rows(physeq) ){
-		return( length(colnames(physeq)) )
+		return( ncol(physeq) )
 	} else {
-		return( length(rownames(physeq)) )
+		return( nrow(physeq) )
 	}	
 })
 #' @rdname nsamples-methods
@@ -314,8 +320,8 @@ setMethod("sample_names", "ANY", function(physeq){ return(NULL) })
 #' @rdname sample_names-methods
 #' @aliases sample_names,phyloseq-method
 setMethod("sample_names", "phyloseq", function(physeq){
-	# Return the union of all samples in the components
-	unique(unlist(lapply(splat.phyloseq.objects(physeq), sample_names)))
+	# dispatch to core, required component, otu_table
+	sample_names(otu_table(physeq))
 })
 #' @rdname sample_names-methods
 #' @aliases sample_names,sample_data-method
