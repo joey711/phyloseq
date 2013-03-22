@@ -69,7 +69,34 @@ test_that("Test transform_sample_counts edge-cases", {
 	expect_is(eso1oturank, "otu_table")
 	expect_is(eso1oturankt, "otu_table")
 })
-
-test_that("Test transform_sample_counts numerical results", {
-	# Add numerical results tests here.
+test_that("Test transform_sample_counts numerical result accuracy", {
+	data("esophagus")
+  es = esophagus
+  # addition
+  es1 = transform_sample_counts(es, function(x) x + 1)
+  expect_equal(otu_table(es1), otu_table(es) + 1, tolerance=0.1, "addition fail")
+  # multiplication
+	es1 = transform_sample_counts(es, function(x) x * 2.5)
+	expect_equal(otu_table(es1), otu_table(es) * 2.5, tolerance=0.1, "multiplication fail")
+  # element-wise exponentiation
+	es1 = transform_sample_counts(es, function(x) x ^ 2.5)
+	expect_equal(otu_table(es1), otu_table(es) ^ 2.5, tolerance=0.1, "exponentiation fail")
+  # logarithm
+	es1 = transform_sample_counts(es, function(x) log(x+10) )
+	expect_equal(otu_table(es1), log(otu_table(es) + 10), tolerance=0.1, "logarithm fail")  
+  # Prune to a small subset. Need a test where "by-sample" matters. E.g. rank
+  es  = prune_taxa(taxa_names(es)[1:5], esophagus)
+	es1 = transform_sample_counts(es, rank)
+  ans = c(5, 2, 4, 2, 2, 5, 2.5, 4, 2.5, 1, 5, 1.5, 1.5, 3.5, 3.5)
+  ans = otu_table(matrix(ans, ntaxa(es), nsamples(es), FALSE,
+                         list(taxa_names(es), sample_names(es))), taxa_are_rows=TRUE)
+	expect_equal(otu_table(es1), ans, tolerance=0.1, "rank fail")
+  # test where "by-sample" matters, after transpose
+	es  = prune_taxa(taxa_names(esophagus)[1:5], t(esophagus))
+	es1 = transform_sample_counts(es, rank)
+	ans = c(5, 2, 4, 2, 2, 5, 2.5, 4, 2.5, 1, 5, 1.5, 1.5, 3.5, 3.5)
+	ans = otu_table(matrix(ans, nsamples(es), ntaxa(es), TRUE,
+	                       list(sample_names(es), taxa_names(es))), taxa_are_rows=FALSE)
+	expect_equal(otu_table(es1), ans, tolerance=0.1, "rank fail")
 })
+

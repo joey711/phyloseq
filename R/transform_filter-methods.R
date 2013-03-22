@@ -13,8 +13,9 @@
 #' with length equal to the argument to \code{sample.size},
 #' and probability according to the abundances for that sample in \code{physeq}.
 #'
-#' This is sometimes (somewhat mistakenly) called "rarefaction", 
-#' though it actually a single random subsampling procedure in this case. 
+#' This approach is sometimes (somewhat mistakenly) called "rarefaction",
+#' or "rarefying", 
+#' but it is actually a single random sample-wise subsampling procedure.
 #' The original rarefaction procedure includes many
 #' random subsampling iterations at increasing depth as a means to
 #' infer richness/alpha-diversity
@@ -746,14 +747,12 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #'  \code{\link{threshrank}}
 #' @export
 #' @examples
-#' data(GlobalPatterns)
-#' GP <- GlobalPatterns
-#' ## These three approaches result in identical otu_table
-#' (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-#' (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+#' data(esophagus)
+#' x1 = transform_sample_counts(esophagus, threshrankfun(50))
+#' otu_table(x1)
+#' x2 = transform_sample_counts(esophagus, rank)
+#' otu_table(x2)
 #' identical(x1, x2)
-#' (x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
-#' identical(x1, x3)
 threshrankfun <- function(thresh, keep0s=FALSE, ...){
 	function(x){
 		threshrank(x, thresh, keep0s=FALSE, ...)
@@ -826,14 +825,17 @@ setMethod("t", signature("phyloseq"), function(x){
 #' @export
 #'
 #' @examples #
-#' data(GlobalPatterns)
-#' GP <- GlobalPatterns
-#' ## transform_sample_counts can work on phyloseq-class, modifying otu_table only
-#' (GPr <- transform_sample_counts(GP, rank) )
-#' ## These two approaches result in identical otu_table
-#' (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-#' (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+#' data(esophagus)
+#' x1 = transform_sample_counts(esophagus, threshrankfun(50))
+#' head(otu_table(x1), 10)
+#' x2 = transform_sample_counts(esophagus, rank)
+#' head(otu_table(x2), 10)
 #' identical(x1, x2)
+#' x3 = otu_table(esophagus) + 5
+#' x3 = transform_sample_counts(x3, log)
+#' head(otu_table(x3), 10)
+#' x4 = transform_sample_counts(esophagus, function(x) round(x^2.2, 0))
+#' head(otu_table(x4), 10)
 transform_sample_counts <- function(physeq, fun){
 	# Test the user-provided function returns a vector of the same length as input.
 	if( !identical(length(fun(1:10)), 10L) ){stop("`fun` not valid function.")}
@@ -914,7 +916,7 @@ transformSampleCounts <- transform_sample_counts
 #' ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
 #' ## f1  <- filterfun_sample(topk(2))
 #' ## wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' ## wh2 <- c(T, T, T, F, F)
+#' ## wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' ## prune_taxa(wh1, testOTU)
 #' ## prune_taxa(wh2, testOTU)
 #' ## 
@@ -943,7 +945,8 @@ setMethod("genefilter_sample", signature("phyloseq"), function(X, flist, A=1){
 	genefilter_sample(otu_table(X), flist, A)
 })
 ################################################################################
-#' A sample-wise filter function builder, analogous to \code{\link[genefilter]{filterfun}}.
+#' A sample-wise filter function builder
+#' analogous to \code{\link[genefilter]{filterfun}}.
 #'
 #' See the \code{\link[genefilter]{filterfun}}, from the Bioconductor repository,
 #' for a taxa-/gene-wise filter (and further examples).
@@ -961,14 +964,14 @@ setMethod("genefilter_sample", signature("phyloseq"), function(X, flist, A=1){
 #' @export
 #' @seealso \code{\link[genefilter]{filterfun}}, \code{\link{genefilter_sample}}
 #' @examples
-#' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # f1  <- filterfun_sample(topk(2))
-#' # wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' # Use simulated abundance matrix
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' f1  <- filterfun_sample(topk(2))
+#' wh1 <- genefilter_sample(testOTU, f1, A=2)
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 filterfun_sample = function(...){
     flist <- list(...)
     if( length(flist) == 1 && is.list(flist[[1]])) { flist <- flist[[1]] }
@@ -1074,13 +1077,13 @@ filter_taxa <- function(physeq, flist, prune=FALSE){
 #' 
 #' @examples
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # f1  <- filterfun_sample(topk(2))
-#' # wh1 <- genefilter_sample(testOTU, f1, A=2)
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' f1  <- filterfun_sample(topk(2))
+#' wh1 <- genefilter_sample(testOTU, f1, A=2)
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 topk = function(k, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
@@ -1107,14 +1110,14 @@ topk = function(k, na.rm=TRUE){
 #'
 #' @examples
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # sample_sums(testOTU)
-#' # f1  <- filterfun_sample(topp(0.2))
-#' # (wh1 <- genefilter_sample(testOTU, f1, A=1))
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' sample_sums(testOTU)
+#' f1  <- filterfun_sample(topp(0.2))
+#' (wh1 <- genefilter_sample(testOTU, f1, A=1))
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 topp <- function(p, na.rm=TRUE){
     function(x){
 		if(na.rm){x = x[!is.na(x)]}
@@ -1144,16 +1147,16 @@ topp <- function(p, na.rm=TRUE){
 #' @export
 #' 
 #' @examples
-#' # t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
-#' # topf(0.6)(t1)
+#' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
+#' topf(0.6)(t1)
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # f1  <- filterfun_sample(topf(0.4))
-#' # (wh1 <- genefilter_sample(testOTU, f1, A=1))
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU)
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' f1  <- filterfun_sample(topf(0.4))
+#' (wh1 <- genefilter_sample(testOTU, f1, A=1))
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU)
 topf <- function(f, na.rm=TRUE){
     function(x){
         if (na.rm){
@@ -1188,14 +1191,14 @@ topf <- function(f, na.rm=TRUE){
 #' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
 #' rm_outlierf(0.15)(t1)
 #' ## Use simulated abundance matrix
-#' # set.seed(711)
-#' # testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
-#' # taxa_sums(testOTU)
-#' # f1  <- filterfun_sample(rm_outlierf(0.1))
-#' # (wh1 <- genefilter_sample(testOTU, f1, A=1))
-#' # wh2 <- c(T, T, T, F, F)
-#' # prune_taxa(wh1, testOTU)
-#' # prune_taxa(wh2, testOTU) 
+#' set.seed(711)
+#' testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
+#' taxa_sums(testOTU)
+#' f1  <- filterfun_sample(rm_outlierf(0.1))
+#' (wh1 <- genefilter_sample(testOTU, f1, A=1))
+#' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
+#' prune_taxa(wh1, testOTU)
+#' prune_taxa(wh2, testOTU) 
 rm_outlierf <- function(f, na.rm=TRUE){
 	function(x){
 		if(na.rm){
