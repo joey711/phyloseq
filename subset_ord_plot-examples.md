@@ -1,5 +1,5 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 
 Subset points in an ordination plot
@@ -23,7 +23,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.20"
+## [1] "1.3.23"
 ```
 
 

@@ -196,7 +196,7 @@ data(&quot;GlobalPatterns&quot;)
 <pre><code class="r">packageDescription(&quot;phyloseq&quot;)$Version
 </code></pre>
 
-<pre><code>## [1] &quot;1.3.20&quot;
+<pre><code>## [1] &quot;1.3.23&quot;
 </code></pre>
 
 <p>Since we are interested in richness estimates, it is probably not a bad idea to prune OTUs that are not present in any of the samples (for some reason there are a few in <code>&quot;GlobalPatterns&quot;</code>) &ndash; <strong>BUT DON&#39;T TRIM MORE THAN THAT!</strong> I know it is tempting to trim noise right away, but many richness estimates are modeled on singletons and doubletons in the abundance data. You need to leave them in the dataset if you want a meaningful estimate.</p>

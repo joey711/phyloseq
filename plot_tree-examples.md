@@ -4,7 +4,7 @@
 # plot_tree function -
 # Powerful tree graphics with ggplot2
 
-This page contains many already-constructed examples of trees created by the `plot_tree` function in the phyloseq package, which in turn is uses the powerful graphics framework package called [ggplot2](http://docs.ggplot2.org/current/).
+This page demos already-constructed examples of phylogenetic trees created via the `plot_tree` function in [the phyloseq package](http://joey711.github.com/phyloseq/), which in turn uses the powerful graphics package called [ggplot2](http://docs.ggplot2.org/current/).
 
 Load the package and datasets
 
@@ -24,7 +24,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.20"
+## [1] "1.3.23"
 ```
 
 

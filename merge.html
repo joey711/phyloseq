@@ -216,7 +216,7 @@ hljs.initHighlightingOnLoad();
 <pre><code class="r">packageDescription(&quot;phyloseq&quot;)$Version
 </code></pre>
 
-<pre><code>## [1] &quot;1.3.20&quot;
+<pre><code>## [1] &quot;1.3.23&quot;
 </code></pre>
 
 <pre><code class="r">data(GlobalPatterns)
@@ -297,23 +297,23 @@ print(ocean_samples)
 <pre><code>## OTU Table:          [10 taxa and 3 samples]
 ##                      taxa are rows
 ##         NP2   NP3   NP5
+## 329744   91   126   120
+## 317182 3148 12370 63084
 ## 549656 5045 10713  1784
-## 331820   24   101   105
 ## 279599  113   114   126
 ## 360229   16    83   786
-## 317182 3148 12370 63084
 ## 94166    49   128   709
-## 158660   13    39    28
-## 329744   91   126   120
 ## 550960   11    86    65
+## 158660   13    39    28
+## 331820   24   101   105
 ## 189047    4    33    29
 </code></pre>
 
 <pre><code class="r">rowSums(otu_table(GP10)[, ocean_samples])
 </code></pre>
 
-<pre><code>## 549656 331820 279599 360229 317182  94166 158660 329744 550960 189047 
-##  17542    230    353    885  78602    886     80    337    162     66
+<pre><code>## 329744 317182 549656 279599 360229  94166 550960 158660 331820 189047 
+##    337  78602  17542    353    885    886    162     80    230     66
 </code></pre>
 
 <pre><code class="r">otu_table(mGP10)[&quot;Ocean&quot;, ]
@@ -321,8 +321,8 @@ print(ocean_samples)
 
 <pre><code>## OTU Table:          [10 taxa and 1 samples]
 ##                      taxa are columns
-##       549656 331820 279599 360229 317182 94166 158660 329744 550960 189047
-## Ocean  17542    230    353    885  78602   886     80    337    162     66
+##       329744 317182 549656 279599 360229 94166 550960 158660 331820 189047
+## Ocean    337  78602  17542    353    885   886    162     80    230     66
 </code></pre>
 
 <p>Let&#39;s look at the merge graphically between two <a href="http://joey711.github.com/phyloseq/plot_richness-examples">richness estimate summary plots</a>. Note that we are ignoring our own advice and not-performing any preprocessing before this merge. Since these are richness estimates we are probably safe. </p>

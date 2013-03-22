@@ -185,7 +185,7 @@ hljs.initHighlightingOnLoad();
 
 <h1>Powerful tree graphics with ggplot2</h1>
 
-<p>This page contains many already-constructed examples of trees created by the <code>plot_tree</code> function in the phyloseq package, which in turn is uses the powerful graphics framework package called <a href="http://docs.ggplot2.org/current/">ggplot2</a>.</p>
+<p>This page demos already-constructed examples of phylogenetic trees created via the <code>plot_tree</code> function in <a href="http://joey711.github.com/phyloseq/">the phyloseq package</a>, which in turn uses the powerful graphics package called <a href="http://docs.ggplot2.org/current/">ggplot2</a>.</p>
 
 <p>Load the package and datasets</p>
 
@@ -199,7 +199,7 @@ data(&quot;GlobalPatterns&quot;)
 <pre><code class="r">packageDescription(&quot;phyloseq&quot;)$Version
 </code></pre>
 
-<pre><code>## [1] &quot;1.3.20&quot;
+<pre><code>## [1] &quot;1.3.23&quot;
 </code></pre>
 
 <p>We want to plot trees, sometimes even bootstrap values, but notice that the node labels in the <code>GlobalPatterns</code> dataset are actually a bit strange. They look like they might be bootstrap values, but they sometimes have two decimals.</p>
