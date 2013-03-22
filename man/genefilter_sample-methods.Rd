@@ -55,7 +55,7 @@
 ## testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
 ## f1  <- filterfun_sample(topk(2))
 ## wh1 <- genefilter_sample(testOTU, f1, A=2)
-## wh2 <- c(T, T, T, F, F)
+## wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 ## prune_taxa(wh1, testOTU)
 ## prune_taxa(wh2, testOTU)
 ##

@@ -2,7 +2,7 @@
 \alias{read_tree}
 \title{Somewhat flexible tree-import function}
 \usage{
-  read_tree(treefile, errorIfNULL = FALSE, ...)
+  read_tree(treefile, errorIfNULL=FALSE, ...)
 }
 \arguments{
   \item{treefile}{(Required). A character string implying a
@@ -38,9 +38,6 @@
   using either format importer. If it fails, it silently
   returns \code{NULL} by default, rather than throwing a
   show-stopping error.
-}
-\details{
-  read_tree(treefile, errorIfNULL=FALSE, ...)
 }
 \examples{
 read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
