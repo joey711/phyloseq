@@ -28,12 +28,12 @@
   abundances for that sample in \code{physeq}.
 }
 \details{
-  This is sometimes (somewhat mistakenly) called
-  "rarefaction", though it actually a single random
-  subsampling procedure in this case. The original
-  rarefaction procedure includes many random subsampling
-  iterations at increasing depth as a means to infer
-  richness/alpha-diversity
+  This approach is sometimes (somewhat mistakenly) called
+  "rarefaction", or "rarefying", but it is actually a
+  single random sample-wise subsampling procedure. The
+  original rarefaction procedure includes many random
+  subsampling iterations at increasing depth as a means to
+  infer richness/alpha-diversity
 
   Make sure to use \code{\link{set.seed}} for
   exactly-reproducible results of the random subsampling.

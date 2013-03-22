@@ -34,14 +34,17 @@
 }
 \examples{
 #
-data(GlobalPatterns)
-GP <- GlobalPatterns
-## transform_sample_counts can work on phyloseq-class, modifying otu_table only
-(GPr <- transform_sample_counts(GP, rank) )
-## These two approaches result in identical otu_table
-(x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-(x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+data(esophagus)
+x1 = transform_sample_counts(esophagus, threshrankfun(50))
+head(otu_table(x1), 10)
+x2 = transform_sample_counts(esophagus, rank)
+head(otu_table(x2), 10)
 identical(x1, x2)
+x3 = otu_table(esophagus) + 5
+x3 = transform_sample_counts(x3, log)
+head(otu_table(x3), 10)
+x4 = transform_sample_counts(esophagus, function(x) round(x^2.2, 0))
+head(otu_table(x4), 10)
 }
 \seealso{
   \code{\link{threshrankfun}}, \code{\link{rank}},
