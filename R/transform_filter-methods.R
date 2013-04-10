@@ -795,19 +795,23 @@ setMethod("t", signature("phyloseq"), function(x){
 	return(x)
 })
 ################################################################################
-#' Transform the abundance count data in an \code{otu_table}, sample-by-sample.
+#' Transform abundance data in an \code{otu_table}, sample-by-sample.
 #' 
 #' This function transforms the sample counts of a taxa
 #' abundance matrix according to a user-provided function.
 #' The counts of each sample will be transformed individually. No sample-sample 
 #' interaction/comparison is possible by this method. 
 #'
-#' @usage transform_sample_counts(physeq, fun)
+#' @usage transform_sample_counts(physeq, fun, ...)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} of \code{\link{otu_table-class}}.
 #'
 #' @param fun (Required). A single-argument function that will be applied
-#'  to the abundance counts of each sample. Can be an anonymous \code{\link[base]{function}}.
+#'  to the abundance counts of each sample. 
+#'  Can be an anonymous \code{\link[base]{function}}.
+#'  
+#' @param ... (Optional). Additional, optionally-named, arguments passed to  
+#'  \code{fun} during transformation of abundance data.
 #' 
 #' @return A transformed \code{otu_table} -- or \code{phyloseq} object with its
 #'  transformed \code{otu_table}. 
@@ -836,19 +840,19 @@ setMethod("t", signature("phyloseq"), function(x){
 #' head(otu_table(x3), 10)
 #' x4 = transform_sample_counts(esophagus, function(x) round(x^2.2, 0))
 #' head(otu_table(x4), 10)
-transform_sample_counts <- function(physeq, fun){
+transform_sample_counts <- function(physeq, fun, ...){
 	# Test the user-provided function returns a vector of the same length as input.
 	if( !identical(length(fun(1:10)), 10L) ){stop("`fun` not valid function.")}
 	# Check orientation, transpose if-needed to make apply work properly.
 	if( taxa_are_rows(physeq) ){
-		newphyseq = apply(as(otu_table(physeq), "matrix"), 2, fun)
+		newphyseq = apply(as(otu_table(physeq), "matrix"), 2, fun, ...)
 		if( identical(ntaxa(physeq), 1L) ){
 			# Fix the dropped index when only 1 OTU.
 			newphyseq <- matrix(newphyseq, 1L, nsamples(physeq), TRUE,
 													list(taxa_names(physeq), sample_names(physeq)))
 		}
 	} else {
-		newphyseq = apply(t(as(otu_table(physeq), "matrix")), 2, fun)
+		newphyseq = apply(t(as(otu_table(physeq), "matrix")), 2, fun, ...)
 		if( identical(ntaxa(physeq), 1L) ){
 			# Fix the dropped index when only 1 OTU.
 			newphyseq <- matrix(newphyseq, 1L, nsamples(physeq), TRUE,

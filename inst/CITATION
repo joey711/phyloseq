@@ -2,7 +2,7 @@ citHeader("To cite phyloseq in publications, please use:")
 
 citEntry(entry = "article",
   author = "{{Paul J. McMurdie} and {Susan Holmes}}",
-  Organization = "{PLoS ONE}",
+  journal = "{PLoS ONE}",
   Pages = "TBD",
   title = "{{An R package for reproducible interactive analysis and graphics of microbiome census data}}",
   Volume = "TBD",
