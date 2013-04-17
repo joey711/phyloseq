@@ -18,10 +18,15 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.4 - Add taxonomic classification data to mt() output, if available
+===========
+This completes a feature request in [Issue 179](https://github.com/joey711/phyloseq/issues/179)
+
 phyloseq 1.5.3 - bug fix in plot_heatmap labels derived from ggplot2 change
 ===========
+This solves a bug described in [Issue 192](https://github.com/joey711/phyloseq/issues/192)
 
-phyloseq 1.5.2 - bug fix pass extra args to transform_sample_counts
+phyloseq 1.5.2 - bug fix pass extra args to `transform_sample_counts`
 ===========
 
 phyloseq 1.5.0 - Level up to R version 3.0.0
@@ -33,6 +38,8 @@ Only appears to affect OTU tables in the "taxa are columns" orientation.
 It is the result of a surprising behavior of the apply() function,
 which in this circumstance transposes the table.
 
+This solves a bug described in [Issue 186](https://github.com/joey711/phyloseq/issues/186)
+
 phyloseq 1.3.22 - additional tests for prun_*() and phyloseq() functions
 ===========
 Before releasing v1.3.21 on GitHub:master some gaps in re-order checking were noticed. 
@@ -42,8 +49,7 @@ phyloseq 1.3.21 - accessor efficiency
 ===========
 For instance, ntaxa() and taxa_names() are very slow on large dataset
 Some of the highly inefficient approaches are now replaced. 
-The strategy is described further in the related GitHub issue:
-https://github.com/joey711/phyloseq/issues/183
+The strategy is described further in [Issue 183](https://github.com/joey711/phyloseq/issues/183)
 
 
 phyloseq 1.3.20 - reference sequence class update.
