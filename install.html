@@ -131,7 +131,6 @@ hr {
       page-break-after: avoid; 
    }
 }
-
 </style>
 
 <!-- Styles for R syntax highlighter -->
@@ -172,7 +171,9 @@ var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/<
 hljs.initHighlightingOnLoad();
 </script>
 
-
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 
 </head>
@@ -197,7 +198,7 @@ hljs.initHighlightingOnLoad();
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
 </code></pre>
 
-<pre><code>## Bioconductor version 2.11 (BiocInstaller 1.8.3), ?biocLite for help
+<pre><code>## Bioconductor version 2.13 (BiocInstaller 1.11.0), ?biocLite for help
 </code></pre>
 
 <pre><code class="r">biocLite(&quot;phyloseq&quot;)
@@ -255,7 +256,7 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 <pre><code>## BioC_mirror: http://bioconductor.org
 </code></pre>
 
-<pre><code>## Using Bioconductor version 2.11 (BiocInstaller 1.8.3), R version 2.15.
+<pre><code>## Using Bioconductor version 2.13 (BiocInstaller 1.11.0), R version 3.0.0.
 </code></pre>
 
 <pre><code>## Installing package(s) &#39;phyloseq&#39;
@@ -263,7 +264,7 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 
 <pre><code>## 
 ## The downloaded source packages are in
-##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmp4X4g5o/downloaded_packages&#39;
+##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmpteu6zp/downloaded_packages&#39;
 </code></pre>
 
 <hr/>
@@ -382,12 +383,21 @@ install.packages(temp, repos = NULL, type = &quot;mac.binary.leopard&quot;)
 <pre><code class="r">temp &lt;- tempfile()
 sourceURL = &quot;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz&quot;
 download.file(sourceURL, temp)
-install.packages(temp, repos = NULL, type = &quot;source&quot;)
 </code></pre>
 
-<pre><code>## Installing package(s) into
-## &#39;/Applications/RStudio.app/Contents/Resources/R/library&#39; (as &#39;lib&#39; is
-## unspecified)
+<pre><code>## Warning: cannot open: HTTP status was &#39;404 Not Found&#39;
+</code></pre>
+
+<pre><code>## Error: cannot open URL
+## &#39;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz&#39;
+</code></pre>
+
+<pre><code class="r">install.packages(temp, repos = NULL, type = &quot;source&quot;)
+</code></pre>
+
+<pre><code>## Warning: installation of package
+## &#39;/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T//Rtmpteu6zp/filea9084f08fcb5&#39;
+## had non-zero exit status
 </code></pre>
 
 <h2>Manual <a href="https://github.com/joey711/phyloseq/tarball/master">Download from GitHub</a></h2>
@@ -464,7 +474,18 @@ Otherwise, you can follow the instructions above for using the <code>install_git
 
 <p>For my own development tasks, I&#39;m going to re-install the latest devel version from GitHub.</p>
 
+<pre><code>## Warning: could not find superclass &quot;vectorORfactor&quot; to clean up when
+## removing subclass references to class &quot;otu_table&quot;
+</code></pre>
+
+<pre><code>## Warning: could not find superclass &quot;data.frameOrNULL&quot; to clean up when
+## removing subclass references to class &quot;sample_data&quot;
+</code></pre>
+
+<pre><code>## Warning: could not find superclass &quot;vectorORfactor&quot; to clean up when
+## removing subclass references to class &quot;taxonomyTable&quot;
+</code></pre>
+
 </body>
 
 </html>
-

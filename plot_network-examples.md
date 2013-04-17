@@ -20,7 +20,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.23"
+## [1] "1.5.3"
 ```
 
 ```r
@@ -28,7 +28,7 @@ packageDescription("ggplot2")$Version
 ```
 
 ```
-## [1] "0.9.3"
+## [1] "0.9.3.1"
 ```
 
 

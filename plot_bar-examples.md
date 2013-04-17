@@ -23,7 +23,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.3.12"
+## [1] "1.5.3"
 ```
 
 ```r

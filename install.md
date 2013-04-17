@@ -20,7 +20,7 @@ source("http://bioconductor.org/biocLite.R")
 ```
 
 ```
-## Bioconductor version 2.11 (BiocInstaller 1.8.3), ?biocLite for help
+## Bioconductor version 2.13 (BiocInstaller 1.11.0), ?biocLite for help
 ```
 
 
@@ -91,7 +91,7 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 
 ```
-## Using Bioconductor version 2.11 (BiocInstaller 1.8.3), R version 2.15.
+## Using Bioconductor version 2.13 (BiocInstaller 1.11.0), R version 3.0.0.
 ```
 
 ```
@@ -101,7 +101,7 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 ## 
 ## The downloaded source packages are in
-## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmp4X4g5o/downloaded_packages'
+## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmpteu6zp/downloaded_packages'
 ```
 
 
@@ -234,13 +234,25 @@ For installing from source
 temp <- tempfile()
 sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz"
 download.file(sourceURL, temp)
+```
+
+```
+## Warning: cannot open: HTTP status was '404 Not Found'
+```
+
+```
+## Error: cannot open URL
+## 'http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz'
+```
+
+```r
 install.packages(temp, repos = NULL, type = "source")
 ```
 
 ```
-## Installing package(s) into
-## '/Applications/RStudio.app/Contents/Resources/R/library' (as 'lib' is
-## unspecified)
+## Warning: installation of package
+## '/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T//Rtmpteu6zp/filea9084f08fcb5'
+## had non-zero exit status
 ```
 
 
@@ -321,4 +333,18 @@ Otherwise, you can follow the instructions above for using the `install_github` 
 --- 
 For my own development tasks, I'm going to re-install the latest devel version from GitHub.
 
+```
+## Warning: could not find superclass "vectorORfactor" to clean up when
+## removing subclass references to class "otu_table"
+```
+
+```
+## Warning: could not find superclass "data.frameOrNULL" to clean up when
+## removing subclass references to class "sample_data"
+```
+
+```
+## Warning: could not find superclass "vectorORfactor" to clean up when
+## removing subclass references to class "taxonomyTable"
+```
 

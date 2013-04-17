@@ -1,3 +1,8 @@
 .DS_Store
 .Rhistory
 .Rapp.history
+*.Rproj
+
+.Rproj.user/5BCB408B/sdb/prop/INDEX
+
+.Rbuildignore
