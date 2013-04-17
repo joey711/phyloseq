@@ -3,9 +3,9 @@
 \title{Create an ecologically-organized heatmap using ggplot2 graphics}
 \usage{
   plot_heatmap(physeq, method="NMDS", distance="bray",
-  sample.label=NULL, species.label=NULL, low="#000033",
+  sample.label=NULL, taxa.label=NULL, low="#000033",
   high="#66CCFF", na.value="black", trans=log_trans(4),
-  max.label=250, title=NULL, ...)
+  max.label=250, title=NULL, species.label=taxa.label, ...)
 }
 \arguments{
   \item{physeq}{(Required). The data, in the form of an
@@ -33,12 +33,14 @@
   sample variable by which you want to re-label the sample
   (horizontal) axis.}
 
-  \item{species.label}{(Optional). A character string. The
-  taxonomic rank by which you want to re-label the
-  species/OTU (vertical) axis.}
+  \item{taxa.label}{(Optional). A character string. The
+  name of the taxonomic rank by which you want to re-label
+  the taxa/species/OTU (vertical) axis. You can see
+  available options in your data using
+  \code{\link{rank_names}(physeq)}.}
 
   \item{low}{(Optional). A character string. An R color.
-  See \code{\link{colors}} for options support in R (there
+  See \code{?\link{colors}} for options support in R (there
   are lots). The color that represents the lowest non-zero
   value in the heatmap. Default is a dark blue color,
   \code{"#000033"}.}
@@ -66,7 +68,7 @@
   transformer-definition object. A numerical transformer to
   use in the continuous color scale. See
   \code{\link[scales]{trans_new}} for details. The default
-  is \code{log_trans(4)}.}
+  is \code{\link{log_trans}(4)}.}
 
   \item{max.label}{(Optional). Integer. Default is 250. The
   maximum number of labeles to fit on a given axis (either
@@ -74,18 +76,24 @@
   the corresponding axis will be stripped of any labels.
 
   This supercedes any arguments provided to
-  \code{sample.label} or \code{species.label}. Make sure to
+  \code{sample.label} or \code{taxa.label}. Make sure to
   increase this value if, for example, you want a special
   label for an axis that has 300 indices.}
 
   \item{title}{(Optional). Default \code{NULL}. Character
   string. The main title for the graphic.}
 
+  \item{species.label}{(Deprecated). Equivalent to and
+  over-ridden by \code{taxa.label}, but for the same
+  purpose. Old nomenclature that will be removed in the
+  next release of phyloseq. Included here for backward
+  compatibility.}
+
   \item{...}{(Optional). Additional parameters passed to
   \code{\link{ordinate}}.}
 }
 \value{
-  A heatmap plot, in the form of a \code{\link{ggplot}}
+  A heatmap plot, in the form of a \code{\link{ggplot}2}
   plot object, which can be further saved and modified.
 }
 \description{
@@ -116,8 +124,8 @@
   taxonomic name and/or sample variable, respectively, in
   the hope that this might hasten your interpretation of
   the patterns (See the \code{sample.label} and
-  \code{species.label} documentation, below). Note that
-  this function makes no attempt to overlay hierarchical
+  \code{taxa.label} documentation, below). Note that this
+  function makes no attempt to overlay hierarchical
   clustering trees on the axes, as hierarchical clustering
   is not used to organize the plot. Also note that each
   re-ordered axis repeats at the edge, and so apparent
