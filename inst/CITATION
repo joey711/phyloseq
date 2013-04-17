@@ -1,12 +1,12 @@
 citHeader("To cite phyloseq in publications, please use:")
 
-citEntry(entry = "proceedings",
+citEntry(entry = "article",
   author = "{{Paul J. McMurdie} and {Susan Holmes}}",
-  Organization = "{Pacific Symposium on Biocomputing}",
-  Pages = "235-246",
-  title = "{{phyloseq: A Bioconductor Package for Handling and Analysis of High-Throughput Phylogenetic Sequence Data}}",
-  Volume = "17",
-  year = "2011",
+  journal = "{PLoS ONE}",
+  Pages = "TBD",
+  title = "{{An R package for reproducible interactive analysis and graphics of microbiome census data}}",
+  Volume = "TBD",
+  year = "2013",
   Url = "{http://psb.stanford.edu/psb-online/proceedings/psb12/mcmurdie.pdf}",
-  textVersion = "phyloseq: A Bioconductor Package for Handling and Analysis of High-Throughput Phylogenetic Sequence Data. Paul J. McMurdie and Susan Holmes; Pacific Symposium on Biocomputing 17:235-246 (2012)."
+  textVersion = "An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes; PLoS ONE in press (2013)."
 )

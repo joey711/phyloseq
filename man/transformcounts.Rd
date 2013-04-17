@@ -2,11 +2,11 @@
 \name{transform_sample_counts}
 \alias{transform_sample_counts}
 \alias{transformSampleCounts}
-\title{Transform the abundance count data in an \code{otu_table}, sample-by-sample.}
+\title{Transform abundance data in an \code{otu_table}, sample-by-sample.}
 \usage{
-  transform_sample_counts(physeq, fun)
+  transform_sample_counts(physeq, fun, ...)
 
-  transformSampleCounts(physeq, fun)
+  transformSampleCounts(physeq, fun, ...)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} of
@@ -15,6 +15,10 @@
   \item{fun}{(Required). A single-argument function that
   will be applied to the abundance counts of each sample.
   Can be an anonymous \code{\link[base]{function}}.}
+
+  \item{...}{(Optional). Additional, optionally-named,
+  arguments passed to \code{fun} during transformation of
+  abundance data.}
 }
 \value{
   A transformed \code{otu_table} -- or \code{phyloseq}

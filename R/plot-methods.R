@@ -1620,13 +1620,13 @@ tree.layout <- function(
 ################################################################################
 # Define an internal function for determining what the text-size should be
 #' @keywords internal
-treetextsize <- function(n){
-	# empirically chosen size-value calculator.
-	s <- 6 * exp(-n/100)
+manytextsize <- function(n, mins=0.5, maxs=4, B=6, D=100){
+	# empirically selected size-value calculator.
+	s <- B * exp(-n/D)
 	# enforce a floor.
-	s <- ifelse(s > 0.5, s, 0.5)
+	s <- ifelse(s > mins, s, mins)
 	# enforce a max
-	s <- ifelse(s < 4, s, 4)
+	s <- ifelse(s < maxs, s, maxs)
 	return(s)
 }
 ################################################################################
@@ -1813,7 +1813,7 @@ nodesnotlabeled = function(physeq){
 #' @keywords internal
 howtolabnodes = function(physeq){
 	if(!nodesnotlabeled(physeq)){
-		return(nodeplotdefault(treetextsize(ntaxa(physeq))))
+		return(nodeplotdefault(manytextsize(ntaxa(physeq))))
 	} else {
 		return(nodeplotblank)
 	}
@@ -2172,7 +2172,7 @@ plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
 	# If no text.size given, calculate it from number of tips ("species", aka taxa)
 	# This is very fast. No need to worry about whether text is printed or not. DRY.
 	if( is.null(text.size) ){
-		text.size <- treetextsize(ntaxa(physeq))
+		text.size <- manytextsize(ntaxa(physeq))
 	}
 
 	# Tip annotation section.
@@ -2236,23 +2236,16 @@ plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
 ################################################################################
 ################################################################################
 ################################################################################
-# Borrowed shamelessly from NeatMap-package.
+# Adapted from NeatMap-package.
+# Vectorized for speed and simplicity, also only calculates theta and not r.
 #' @keywords internal
-RadialCoords <- function(pos)
-{
-    pos <- as.matrix(pos)
-    n.points = dim(pos)[1]
-    radial <- matrix(nrow = n.points, ncol = 2)
-    xc <- mean(pos[, 1])
-    yc <- mean(pos[, 2])
-    for (i in 1:n.points) {
-        radial[i, 1] <- sqrt((pos[i, 2] - yc)^2 + (pos[i, 1] - 
-            xc)^2)
-        radial[i, 2] <- atan2(pos[i, 2] - yc, pos[i, 1] - xc)
-    }
-    rownames(radial) <- rownames(pos)
-    colnames(radial) <- c("r", "theta")
-    radial
+RadialTheta <- function(pos){
+    pos = as(pos, "matrix")
+    xc  = mean(pos[, 1])
+    yc  = mean(pos[, 2])
+    theta = atan2((pos[, 2] - yc), (pos[, 1] - xc))
+    names(theta) <- rownames(pos)
+    return(theta)
 }
 ################################################################################
 #' Create an ecologically-organized heatmap using ggplot2 graphics
@@ -2277,7 +2270,7 @@ RadialCoords <- function(pos)
 #' This function also provides the options to re-label the OTU and sample 
 #' axis-ticks with a taxonomic name and/or sample variable, respectively, 
 #' in the hope that this might hasten your interpretation of the patterns
-#' (See the \code{sample.label} and \code{species.label} documentation, below). 
+#' (See the \code{sample.label} and \code{taxa.label} documentation, below). 
 #' Note that this function makes no attempt to overlay hierarchical 
 #' clustering trees on the axes, as hierarchical clustering is not used to 
 #' organize the plot. Also note that each re-ordered axis repeats at the edge,
@@ -2298,9 +2291,9 @@ RadialCoords <- function(pos)
 #' both NeatMap and rgl!).
 #' 
 #' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
-#'  sample.label=NULL, species.label=NULL,
+#'  sample.label=NULL, taxa.label=NULL,
 #'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4),
-#'  max.label=250, title=NULL, ...)
+#'  max.label=250, title=NULL, species.label=taxa.label, ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
@@ -2324,11 +2317,14 @@ RadialCoords <- function(pos)
 #' @param sample.label (Optional). A character string.
 #'  The sample variable by which you want to re-label the sample (horizontal) axis.
 #'
-#' @param species.label (Optional). A character string.
-#'  The taxonomic rank by which you want to re-label the species/OTU (vertical) axis.
+#' @param taxa.label (Optional). A character string.
+#'  The name of the taxonomic rank by which you want to
+#'  re-label the taxa/species/OTU (vertical) axis.
+#'  You can see available options in your data using
+#'  \code{\link{rank_names}(physeq)}.
 #'
 #' @param low (Optional). A character string. An R color.
-#'  See \code{\link{colors}} for options support in R (there are lots).
+#'  See \code{?\link{colors}} for options support in R (there are lots).
 #'  The color that represents the lowest non-zero value
 #'  in the heatmap. Default is a dark blue color, \code{"#000033"}.
 #' 
@@ -2351,24 +2347,31 @@ RadialCoords <- function(pos)
 #' @param trans (Optional). \code{"trans"}-class transformer-definition object.
 #'  A numerical transformer to use in 
 #'  the continuous color scale. See \code{\link[scales]{trans_new}} for details.
-#'  The default is \code{log_trans(4)}.
+#'  The default is \code{\link{log_trans}(4)}.
 #'
 #' @param max.label (Optional). Integer. Default is 250.
 #'  The maximum number of labeles to fit on a given axis (either x or y). 
 #'  If number of taxa or samples exceeds this value, 
 #'  the corresponding axis will be stripped of any labels. 
 #'
-#'  This supercedes any arguments provided to \code{sample.label} or \code{species.label}.
-#'  Make sure to increase this value if, for example, you want a special label
+#'  This supercedes any arguments provided to
+#'  \code{sample.label} or \code{taxa.label}.
+#'  Make sure to increase this value if, for example,
+#'  you want a special label
 #'  for an axis that has 300 indices.
 #'
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
+#'  
+#' @param species.label (Deprecated). Equivalent to and over-ridden by
+#'  \code{taxa.label}, but for the same purpose. Old nomenclature that
+#'  will be removed in the next release of phyloseq. Included here for
+#'  backward compatibility.
 #'
 #' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
 #' 
 #' @return
-#'  A heatmap plot, in the form of a \code{\link{ggplot}} plot object,
+#'  A heatmap plot, in the form of a \code{\link{ggplot}2} plot object,
 #'  which can be further saved and modified.
 #'
 #' @references
@@ -2376,7 +2379,8 @@ RadialCoords <- function(pos)
 #'  functionality in NeatMap, please site their article if you use this function
 #'  in your work.
 #' 
-#'  Rajaram, S., & Oono, Y. (2010). NeatMap--non-clustering heat map alternatives in R. BMC Bioinformatics, 11, 45.
+#'  Rajaram, S., & Oono, Y. (2010).
+#'  NeatMap--non-clustering heat map alternatives in R. BMC Bioinformatics, 11, 45.
 #'
 #' Please see further examples in the 
 #' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
@@ -2397,100 +2401,128 @@ RadialCoords <- function(pos)
 #' # Now repeat the plot, but change the color scheme in various ways.
 #' # See the online tutorial for many other examples.
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
-	sample.label=NULL, species.label=NULL, 
+	sample.label=NULL, taxa.label=NULL, 
 	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 
-	max.label=250, title=NULL, ...){
+	max.label=250, title=NULL, species.label=taxa.label, ...){
 	
-	# Enforce orientation
-	if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
-	# convert orientation-enforced abundance table into matrix class
-	mot <- as(otu_table(physeq), "matrix")
-
+	if( is.null(taxa.label) & !is.null(species.label) ){
+		# If species.label was provided, but not taxa.label, assign it to taxa.label
+		taxa.label = species.label
+	}
+	
 	# Initialize sample and species order vectors as NULL
-	species.order <- sample.order <- NULL
+	OTUorder <- sample.order <- NULL
 	
 	# Copy the approach from NeatMap by doing ordination on samples, but use 
 	# phyloseq-wrapped distance/ordination procedures.
 	# Reorder by the angle in radial coordinates on the 2-axis plane.
 	if( !is.null(method) ){
 		# Capture the NMDS iterations cat() output with capture.output
-		# junk <- capture.output( ps.ord <- ordinate(physeq, method, distance), file=NULL)
-		junk <- capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
-		reduction.result <- scores(ps.ord, choices=c(1, 2), display="sites")
-		sample.order <- sample_names(physeq)[order(RadialCoords(reduction.result)[, "theta"])]
-		# re-ordered matrix
-		mot <- mot[, sample.order]
+		#junk = capture.output( ps.ord <- ordinate(physeq, method, distance), file=NULL)
+		junk = capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
+		reduction.result = scores(ps.ord, choices=c(1, 2), display="sites")
+		sample.order = sample_names(physeq)[order(RadialTheta(reduction.result))]
 
 		# Also want to re-order species, if possible
 		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
 		if( class(test) != "try-error" & !is.null(test) ){			
-			species.reduct <- scores(ps.ord, choices=c(1, 2), display="species")
-			species.order  <- taxa_names(physeq)[order(RadialCoords(species.reduct)[, "theta"])]
-			# re-ordered matrix
-			mot <- mot[species.order, ]	
+			OTUreduct = scores(ps.ord, choices=c(1, 2), display="species")
+			OTUorder  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
 		}
 	}
 
-	# Alternative to melt that won't re-order your carefully-re-ordered stuff...
-	adf <- data.frame(expand.grid(y=rownames(mot), x=colnames(mot)), value=as(mot, "vector"))
+	# melt physeq with the standard user-accessible data melting function
+	# for creating plot-ready data.frames, psmelt.
+	# This is also used inside some of the other plot_* functions.
+	adf = psmelt(physeq)	
+	# Coerce the main axis variables to character. 
+	# Will reset them to factor if re-ordering is needed.
+	adf$OTU = as(adf$OTU, "character")
+	adf$Sample = as(adf$Sample, "character")
+	if( !is.null(sample.order) ){
+		# If sample-order is available, coerce to factor with special level-order
+		adf$Sample = factor(adf$Sample, levels=sample.order)
+	} else {
+		# Make sure it is a factor, but with default order/levels
+		adf$Sample = factor(adf$Sample)
+	}
+	if( !is.null(OTUorder) ){
+		# If OTU-order is available, coerce to factor with special level-order
+		adf$OTU = factor(adf$OTU, levels=OTUorder)
+	} else {
+		# Make sure it is a factor, but with default order/levels
+		adf$OTU = factor(adf$OTU)
+	}
 
-	# Now the plotting part
-	p <- ggplot(adf, aes(x=as.factor(x), y=as.factor(y), fill=value))
-	p <- p + geom_tile()
-	p <- update_labels(p, list(fill = "Abundance", y="OTU", x="Samples"))
-
+	## Now the plotting part
+	# Initialize p.
+	p = ggplot(adf, aes(Sample, OTU, fill=Abundance)) + geom_tile()
 
 	# # Don't render labels if more than max.label
 	# Samples
 	if( nsamples(physeq) <= max.label ){
-		p <- p + theme(axis.text.x = element_text(size=treetextsize(0.10*nsamples(physeq)), angle = -90, hjust = 0))		
+		# Add resize layer for samples if there are fewer than max.label
+		p <- p + theme(
+			axis.text.x = element_text(
+				size=manytextsize(nsamples(physeq), 4, 30, 12),
+				angle=-90, vjust=0.5, hjust=0
+			)
+		)		
 	} else {
-		# p <- p + scale_x_discrete("Samples", labels=NULL)
-		p <- p + scale_x_discrete("Samples", labels="")
+		p = p + scale_x_discrete("Sample", labels="")
 	}
-	# species
+	# OTUs
 	if( ntaxa(physeq) <= max.label ){
-		p <- p + theme(axis.text.y = element_text(size=treetextsize(0.10*ntaxa(physeq))))	
+		# Add resize layer for OTUs if there are fewer than max.label
+		p <- p + theme(
+			axis.text.y = element_text(
+				size=manytextsize(ntaxa(physeq), 4, 30, 12)
+			)
+		)
 	} else {
-		# p <- p + scale_y_discrete("OTU", labels=NULL)
-		p <- p + scale_y_discrete("OTU", labels="")
+		# Remove the labels from any rendering.
+		p = p + scale_y_discrete("OTU", labels="")
 	}
 	
 	# # Axis Relabeling (Skipped if more than max.label):
 	# Re-write sample-labels to some sample variable...
 	if( !is.null(sample.label) & nsamples(physeq) <= max.label){
-		# Make a sample-named vector of the values for sample.label
-		labvec <- as(get_variable(physeq, sample.label), "vector")
+		# Make a sample-named char-vector of the values for sample.label
+		labvec = as(get_variable(physeq, sample.label), "character")
 		names(labvec) <- sample_names(physeq)
 		if( !is.null(sample.order) ){
 			# Re-order according to sample.order
-			labvec <- labvec[sample.order]			
+			labvec = labvec[sample.order]			
 		}
+		# Replace any NA (missing) values with "" instead. Avoid recycling labels.
+		labvec[is.na(labvec)] <- ""
 		# Add the sample.label re-labeling layer
-		p <- p + scale_x_discrete(sample.label, labels=labvec)
+		p = p + scale_x_discrete(sample.label, labels=labvec)
 	}
-	if( !is.null(species.label) & ntaxa(physeq) <= max.label){
-		# Make a species-named vector of the values for species.label
-		labvec <- as(tax_table(physeq)[, species.label], "vector")
+	if( !is.null(taxa.label) & ntaxa(physeq) <= max.label){
+		# Make a OTU-named vector of the values for taxa.label
+		labvec <- as(tax_table(physeq)[, taxa.label], "character")
 		names(labvec) <- taxa_names(physeq)
-		if( !is.null(species.order) ){		
-			# Re-order according to species.order
-			labvec <- labvec[species.order]
+		if( !is.null(OTUorder) ){		
+			# Re-order according to OTUorder
+			labvec <- labvec[OTUorder]
 		}
-		# Add the species.label re-labeling layer
-		p <- p + scale_y_discrete(species.label, labels=labvec)
+		# Replace any NA (missing) values with "" instead. Avoid recycling labels.
+		labvec[is.na(labvec)] <- ""		
+		# Add the taxa.label re-labeling layer
+		p = p + scale_y_discrete(taxa.label, labels=labvec)
 	}
 	
 	# Color scale transformations
 	if( !is.null(trans) ){
-		p <- p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
+		p = p + scale_fill_gradient(low=low, high=high, trans=trans, na.value=na.value)
 	} else {
-		p <- p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
+		p = p + scale_fill_gradient(low=low, high=high, na.value=na.value)	
 	}
 	
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
-		p <- p + ggtitle(title)
+		p = p + ggtitle(title)
 	}
 			
 	return(p)
