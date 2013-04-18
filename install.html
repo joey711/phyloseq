@@ -242,14 +242,16 @@ install_github(&quot;phyloseq&quot;, &quot;joey711&quot;)
 <pre><code>Update all/some/none? [a/s/n]:
 </code></pre>
 
-<p>If these two commands result in a request to update old packages, you should probably choose option <code>a</code>, to update all packages.</p>
+<p>If these two commands result in a request to update old packages, you should probably choose option <strong>a</strong>, to update all packages.</p>
 
 <ul>
-<li>(2) <em>Use special arguments to biocLite</em>. By investigating the <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">phyloseq/BioC development version home page</a> I was able to determine that the BioC devel branch version is <code>2.12</code>, and that the repo URL for BioC devel right now is <a href="http://bioconductor.org/packages/2.12/bioc">http://bioconductor.org/packages/2.12/bioc</a> . We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
+<li>(2) <em>Use special arguments to biocLite</em>.
+By investigating the <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">phyloseq/BioC development version home page</a>
+I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Thu Apr 18 09:37:50 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
 </ul>
 
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
-devel = &quot;http://bioconductor.org/packages/2.12/bioc&quot;
+devel = &quot;http://bioconductor.org/packages/2.13/bioc&quot;
 biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type = &quot;source&quot;)
 </code></pre>
 
@@ -264,7 +266,7 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 
 <pre><code>## 
 ## The downloaded source packages are in
-##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmpteu6zp/downloaded_packages&#39;
+##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/RtmpVLjOYi/downloaded_packages&#39;
 </code></pre>
 
 <hr/>
@@ -277,10 +279,10 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 ERROR: dependency &#39;multtest&#39; is not available for package &#39;phyloseq&#39;
 -----------------------------------
 In addition: Warning message:
-package &#39;multtest&#39; is not available (for R version 2.*.*)
+package &#39;multtest&#39; is not available (for R version 3.*.*)
 </code></pre>
 
-<p>This recurring problem arises when a new version of core R is released &ndash; for example <a href="http://cran.r-project.org/">version 2.15.2 was released</a> on 2012-10-26 &ndash; and any dependencies (see below) have not yet been built under that new version. This will typically create warnings or errors when you attempt to install phyloseq. In most cases this is not the result of the latest R version &ldquo;breaking&rdquo; a particular package (that kind of problem is rare); rather, it is most likely an overly cautious versioning check to ensure that the discrepancy does not go unnoticed (or so we guess). Most importantly, it is a <em>transient</em> problem that will fix itself as new &ldquo;pre-built&rdquo; versions of the packages are re-built with the latest release version of your core R installation. However, if you do not or cannot wait for that to happen, you will need to install those dependencies from source. Not to fear, it is hopefully not as scary as it sounds, and has the exact same challenges as those discussed in the following sections for installing the phyloseq package from source.</p>
+<p>This recurring problem arises when a new version of core R is released &ndash; for example <a href="http://cran.r-project.org/">version 3.0.0 was released</a> on 2013-04-03 &ndash; and any dependencies (see below) have not yet been built under that new version. This will typically create warnings or errors when you attempt to install phyloseq. In most cases this is not the result of the latest R version &ldquo;breaking&rdquo; a particular package (that kind of problem is rare); rather, it is most likely an overly cautious versioning check to ensure that the discrepancy does not go unnoticed (or so we guess). Most importantly, it is a <em>transient</em> problem that will fix itself as new &ldquo;pre-built&rdquo; versions of the packages are re-built with the latest release version of your core R installation. However, if you do not or cannot wait for that to happen, you will need to install those dependencies from source. Not to fear, it is hopefully not as scary as it sounds, and has the exact same challenges as those discussed in the following sections for installing the phyloseq package from source.</p>
 
 <p>For example, the above warning/error is probably solved by first installing the multtest package from source with the following code (note: it is a Bioconductor package, and you must have an active internet connection)</p>
 
@@ -354,7 +356,7 @@ install.packages(&quot;vegan&quot;)
 
 <h2>BioC devel from within R only</h2>
 
-<p>In this particular approach to installing the BioC-devel version of phyloseq, we need a specific URL for downloading the package file. We have provided example URLs below, but they may change slight as package version numbers change. To check the links, go to <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">the phyloseq page for Bioconductor devel branch</a>. In this example, the phyloseq-devel version on Bioconductor was <code>1.3.11</code>.</p>
+<p>In this particular approach to installing the BioC-devel version of phyloseq, we need a specific URL for downloading the package file. We have provided example URLs below, but they may change slightly as package version numbers change. To check the links, go to <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">the phyloseq page for Bioconductor devel branch</a>. </p>
 
 <p>The URLs below are for installing from source (any properly configured system), from a Mac binary (Mac only), or from a Windows binary (Windows only).</p>
 
@@ -365,7 +367,7 @@ install.packages(&quot;vegan&quot;)
 <p>For Windows binary install</p>
 
 <pre><code class="r">temp &lt;- tempfile()
-windowsURL = &quot;http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/2.16/phyloseq_1.3.0.zip&quot;
+windowsURL = &quot;http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/3.0/phyloseq_1.5.0.zip&quot;
 download.file(windowsURL, temp)
 install.packages(temp, repos = NULL, type = &quot;win.binary&quot;)
 </code></pre>
@@ -373,7 +375,7 @@ install.packages(temp, repos = NULL, type = &quot;win.binary&quot;)
 <p>For Mac binary install</p>
 
 <pre><code class="r">temp &lt;- tempfile()
-macURL = &quot;http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/2.16/phyloseq_1.3.11.tgz&quot;
+macURL = &quot;http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/3.0/phyloseq_1.5.0.tgz&quot;
 download.file(macURL, temp)
 install.packages(temp, repos = NULL, type = &quot;mac.binary.leopard&quot;)
 </code></pre>
@@ -381,23 +383,9 @@ install.packages(temp, repos = NULL, type = &quot;mac.binary.leopard&quot;)
 <p>For installing from source</p>
 
 <pre><code class="r">temp &lt;- tempfile()
-sourceURL = &quot;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz&quot;
+sourceURL = &quot;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz&quot;
 download.file(sourceURL, temp)
-</code></pre>
-
-<pre><code>## Warning: cannot open: HTTP status was &#39;404 Not Found&#39;
-</code></pre>
-
-<pre><code>## Error: cannot open URL
-## &#39;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.3.11.tar.gz&#39;
-</code></pre>
-
-<pre><code class="r">install.packages(temp, repos = NULL, type = &quot;source&quot;)
-</code></pre>
-
-<pre><code>## Warning: installation of package
-## &#39;/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T//Rtmpteu6zp/filea9084f08fcb5&#39;
-## had non-zero exit status
+install.packages(temp, repos = NULL, type = &quot;source&quot;)
 </code></pre>
 
 <h2>Manual <a href="https://github.com/joey711/phyloseq/tarball/master">Download from GitHub</a></h2>
@@ -473,18 +461,6 @@ Otherwise, you can follow the instructions above for using the <code>install_git
 <hr/>
 
 <p>For my own development tasks, I&#39;m going to re-install the latest devel version from GitHub.</p>
-
-<pre><code>## Warning: could not find superclass &quot;vectorORfactor&quot; to clean up when
-## removing subclass references to class &quot;otu_table&quot;
-</code></pre>
-
-<pre><code>## Warning: could not find superclass &quot;data.frameOrNULL&quot; to clean up when
-## removing subclass references to class &quot;sample_data&quot;
-</code></pre>
-
-<pre><code>## Warning: could not find superclass &quot;vectorORfactor&quot; to clean up when
-## removing subclass references to class &quot;taxonomyTable&quot;
-</code></pre>
 
 </body>
 
