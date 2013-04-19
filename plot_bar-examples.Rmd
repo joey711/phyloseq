@@ -1,4 +1,4 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
+`r opts_chunk$set(cache=TRUE, fig.width=10)`
 <link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
 
 plot_bar function: Powerful, flexible phyloseq bar plots
@@ -9,14 +9,19 @@ The following are examples to help get you started using the `plot_bar` function
 
 Load the dataset, and trim to just the *Chlamydiae* phylum.
 
-```{r, message=FALSE}
-library("phyloseq")
+```{r, message=FALSE, warning=FALSE}
+library("phyloseq"); packageVersion("phyloseq")
+library("ggplot2"); packageVersion("ggplot2")
 ```
 
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
 
+```{r ggplot2-theme-set}
+theme_set(theme_bw())
+```
+
+Load dataset
 ```{r}
-packageDescription("phyloseq")$Version
 data("GlobalPatterns")
 gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
 ```

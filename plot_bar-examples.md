@@ -12,19 +12,32 @@ Load the dataset, and trim to just the *Chlamydiae* phylum.
 
 ```r
 library("phyloseq")
+packageVersion("phyloseq")
+```
+
+```
+## [1] '1.5.4'
+```
+
+```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
 ```
 
 
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
 
 
 ```r
-packageDescription("phyloseq")$Version
+theme_set(theme_bw())
 ```
 
-```
-## [1] "1.5.3"
-```
+
+Load dataset
 
 ```r
 data("GlobalPatterns")

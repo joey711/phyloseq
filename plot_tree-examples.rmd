@@ -1,4 +1,4 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8, warning=FALSE)`
+`r opts_chunk$set(cache=TRUE, fig.width=10, warning=FALSE)`
 <link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
 
 # plot_tree function -
