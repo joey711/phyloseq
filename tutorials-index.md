@@ -4,7 +4,7 @@
 The phyloseq Tutorials Index
 ========================================================
 
-This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Tue Apr 16 17:53:21 2013.
+This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Fri Apr 19 16:28:14 2013.
 
 Don't forget to checkout [the phyloseq demo repository](https://github.com/joey711/phyloseq-demo) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
 
@@ -20,7 +20,11 @@ Don't forget to checkout [the phyloseq demo repository](https://github.com/joey7
 
 ### [import-data](import-data.html)
 
+### [install](install.html)
+
 ### [merge](merge.html)
+
+### [plot_bar-examples](plot_bar-examples.html)
 
 ### [plot_heatmap-examples](plot_heatmap-examples.html)
 
@@ -44,27 +48,31 @@ Don't forget to checkout [the phyloseq demo repository](https://github.com/joey7
 ## The R Markdown Source Code
 For more advanced users interested in seeing and/or modifying the [R markdown](http://www.rstudio.com/ide/docs/r_markdown) source code from which these reproducible, web browser-friendly tutorials were created.
 
-### [distance](distance.rmd)
+### [distance.rmd](distance.rmd)
 
-### [future-devel](future-devel.rmd)
+### [future-devel.rmd](future-devel.rmd)
 
-### [import-data](import-data.rmd)
+### [import-data.rmd](import-data.rmd)
 
-### [merge](merge.rmd)
+### [install.Rmd](install.Rmd)
 
-### [plot_heatmap-examples](plot_heatmap-examples.rmd)
+### [merge.rmd](merge.rmd)
 
-### [plot_network-examples](plot_network-examples.rmd)
+### [plot_bar-examples.Rmd](plot_bar-examples.Rmd)
 
-### [plot_ordination-examples](plot_ordination-examples.rmd)
+### [plot_heatmap-examples.rmd](plot_heatmap-examples.rmd)
 
-### [plot_richness-examples](plot_richness-examples.rmd)
+### [plot_network-examples.rmd](plot_network-examples.rmd)
 
-### [plot_tree-examples](plot_tree-examples.rmd)
+### [plot_ordination-examples.rmd](plot_ordination-examples.rmd)
 
-### [preprocess](preprocess.rmd)
+### [plot_richness-examples.rmd](plot_richness-examples.rmd)
 
-### [subset_ord_plot-examples](subset_ord_plot-examples.rmd)
+### [plot_tree-examples.rmd](plot_tree-examples.rmd)
 
-### [tutorials-index](tutorials-index.rmd)
+### [preprocess.rmd](preprocess.rmd)
+
+### [subset_ord_plot-examples.rmd](subset_ord_plot-examples.rmd)
+
+### [tutorials-index.rmd](tutorials-index.rmd)
 

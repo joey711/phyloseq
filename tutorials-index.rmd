@@ -12,11 +12,11 @@ Don't forget to checkout [the phyloseq demo repository](https://github.com/joey7
 ## Available tutorials
 
 ```{r find-parse-tutorials, echo=FALSE, include=FALSE}
-files = list.files(pattern=".rmd")
+files = list.files(pattern=".[Rr]md")
 length(files)
-names(files) = unlist(strsplit(files, ".rmd", TRUE))
-links = paste(names(files), ".html", sep="")
-mdlines = paste("### [", names(files), "](", links, ")", sep="")
+stems = gsub(".[Rr]md", "", files)
+links = paste(stems, ".html", sep="")
+mdlines = paste("### [", stems, "](", links, ")", sep="")
 ```
 
 ```{r write-links, results='asis', echo=FALSE}
@@ -29,6 +29,6 @@ cat(mdlines, sep="\n\n")
 For more advanced users interested in seeing and/or modifying the [R markdown](http://www.rstudio.com/ide/docs/r_markdown) source code from which these reproducible, web browser-friendly tutorials were created.
 
 ```{r rmd-links, results='asis', echo=FALSE}
-rmdlines = paste("### [", names(files), "](", files, ")", sep="")
+rmdlines = paste("### [", files, "](", files, ")", sep="")
 cat(rmdlines, sep="\n\n")
 ```
