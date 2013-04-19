@@ -14,7 +14,7 @@ See the in-package documentation of `distance` for further details:
 ## Usage
 
 ```{r eval=FALSE}
-# distance(physeq, method="unifrac", type="samples", ...)
+distance(physeq, method="unifrac", type="samples", ...)
 ```
 
 ## Example: "Enterotypes" dataset using many different methods
@@ -25,16 +25,22 @@ Note that we have omitted the options that require a phylogenetic tree because t
 Note that this may take a little while to run, depending on the size of your data set, but you may not be interested in all supported distances...
 
 
-```{r message=FALSE, warning=FALSE}
-library(phyloseq)
-library(ggplot2)
+---
+
+# Load phyloseq
+Of course we need to start this tutorial by loading [the phyloseq package](http://joey711.github.com/phyloseq/). This assumes you have already [installed phyloseq](https://github.com/joey711/phyloseq/wiki/Installation).
+
+```{r loadpkg, warning=FALSE, message=FALSE}
+library("phyloseq"); packageVersion("phyloseq")
+library("ggplot2"); packageVersion("ggplot2")
+library("plyr"); packageVersion("plyr")
 ```
 
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
-
-```{r}
-packageDescription("phyloseq")$Version
+ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
+```{r ggplot2-theme-set}
+theme_set(theme_bw())
 ```
+
 
 Load the enterotype data
 ```{r}
@@ -86,6 +92,32 @@ for( i in dist_methods ){
 	plist[[i]] = p
 }
 ```
+
+
+## Combine all results
+
+Shade according to **sequencing technology**
+```{r distance-summary-plot, warning=FALSE, fig.width=20, fig.height=16}
+df = ldply(plist, function(x) x$data)
+names(df)[1] <- "distance"
+p = ggplot(df, aes(Axis.1, Axis.2, color=SeqTech, shape=Enterotype))
+p = p + geom_point(size=3, alpha=0.5)
+p = p + facet_wrap(~distance, scales="free")
+p = p + ggtitle("MDS on various distance metrics for Enterotype dataset")
+p
+```
+
+Shade according to assigned **enterotype**
+```{r distance-summary-plot-enterotype, warning=FALSE, fig.width=20, fig.height=16}
+df = ldply(plist, function(x) x$data)
+names(df)[1] <- "distance"
+p = ggplot(df, aes(Axis.1, Axis.2, color=Enterotype, shape=SeqTech))
+p = p + geom_point(size=3, alpha=0.5)
+p = p + facet_wrap(~distance, scales="free")
+p = p + ggtitle("MDS on various distance metrics for Enterotype dataset")
+p
+```
+
 
 ## Selected Results
 

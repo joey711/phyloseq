@@ -17,7 +17,7 @@ data("GlobalPatterns")
 For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
 
 ```{r}
-packageDescription("phyloseq")$Version
+packageVersion("phyloseq")
 ```
 
 We want to plot trees, sometimes even bootstrap values, but notice that the node labels in the `GlobalPatterns` dataset are actually a bit strange. They look like they might be bootstrap values, but they sometimes have two decimals.

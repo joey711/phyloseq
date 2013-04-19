@@ -17,7 +17,7 @@ See the in-package documentation of `distance` for further details:
 
 
 ```r
-# distance(physeq, method='unifrac', type='samples', ...)
+distance(physeq, method = "unifrac", type = "samples", ...)
 ```
 
 
@@ -29,23 +29,46 @@ Note that we have omitted the options that require a phylogenetic tree because t
 Note that this may take a little while to run, depending on the size of your data set, but you may not be interested in all supported distances...
 
 
+---
 
-```r
-library(phyloseq)
-library(ggplot2)
-```
-
-
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
+# Load phyloseq
+Of course we need to start this tutorial by loading [the phyloseq package](http://joey711.github.com/phyloseq/). This assumes you have already [installed phyloseq](https://github.com/joey711/phyloseq/wiki/Installation).
 
 
 ```r
-packageDescription("phyloseq")$Version
+library("phyloseq")
+packageVersion("phyloseq")
 ```
 
 ```
-## [1] "1.5.3"
+## [1] '1.5.4'
 ```
+
+```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
+```
+
+```r
+library("plyr")
+packageVersion("plyr")
+```
+
+```
+## [1] '1.8'
+```
+
+
+ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
+
+```r
+theme_set(theme_bw())
+```
+
 
 
 Load the enterotype data
@@ -147,6 +170,40 @@ for (i in dist_methods) {
 ```
 
 
+
+## Combine all results
+
+Shade according to **sequencing technology**
+
+```r
+df = ldply(plist, function(x) x$data)
+names(df)[1] <- "distance"
+p = ggplot(df, aes(Axis.1, Axis.2, color = SeqTech, shape = Enterotype))
+p = p + geom_point(size = 3, alpha = 0.5)
+p = p + facet_wrap(~distance, scales = "free")
+p = p + ggtitle("MDS on various distance metrics for Enterotype dataset")
+p
+```
+
+![plot of chunk distance-summary-plot](figure/distance-summary-plot.png) 
+
+
+Shade according to assigned **enterotype**
+
+```r
+df = ldply(plist, function(x) x$data)
+names(df)[1] <- "distance"
+p = ggplot(df, aes(Axis.1, Axis.2, color = Enterotype, shape = SeqTech))
+p = p + geom_point(size = 3, alpha = 0.5)
+p = p + facet_wrap(~distance, scales = "free")
+p = p + ggtitle("MDS on various distance metrics for Enterotype dataset")
+p
+```
+
+![plot of chunk distance-summary-plot-enterotype](figure/distance-summary-plot-enterotype.png) 
+
+
+
 ## Selected Results
 
 The following are some selected examples among the created plots.
@@ -157,7 +214,7 @@ Jensen-Shannon Divergence
 print(plist[["jsd"]])
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 
 Jaccard
@@ -166,7 +223,7 @@ Jaccard
 print(plist[["jaccard"]])
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
 Bray-Curtis
@@ -175,7 +232,7 @@ Bray-Curtis
 print(plist[["bray"]])
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 Gower
@@ -184,7 +241,7 @@ Gower
 print(plist[["gower"]])
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 
 w
@@ -193,5 +250,5 @@ w
 print(plist[["w"]])
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
 
