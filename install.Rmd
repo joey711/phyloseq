@@ -281,3 +281,16 @@ For my own development tasks, I'm going to re-install the latest devel version f
 library("devtools")
 install_github("phyloseq", "joey711")
 ```
+
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern=".html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```

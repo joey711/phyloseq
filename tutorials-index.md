@@ -4,7 +4,7 @@
 The phyloseq Tutorials Index
 ========================================================
 
-This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Fri Apr 19 16:28:14 2013.
+This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Fri Apr 19 17:11:15 2013.
 
 Don't forget to checkout [the phyloseq demo repository](https://github.com/joey711/phyloseq-demo) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
 

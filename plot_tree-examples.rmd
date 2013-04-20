@@ -1,4 +1,4 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10, warning=FALSE)`
+`r opts_chunk$set(cache=TRUE, fig.width=9, fig.height=10, warning=FALSE)`
 <link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
 
 # plot_tree function -
@@ -217,16 +217,13 @@ plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="
 ```			
 			
 
-## Other key graphics functions in the phyloseq package:
+---
 
-### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
+### Other tutorial pages for the phyloseq package:
 
-### [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
-
-### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
-
-### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
-
-### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
-
-### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern=".html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```

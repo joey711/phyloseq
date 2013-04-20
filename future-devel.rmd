@@ -36,3 +36,16 @@ Some candidate packages are:
 - [the hdf5 package](http://cran.r-project.org/web/packages/hdf5/index.html)
 
 - [the ff package](http://cran.r-project.org/web/packages/ff/index.html)
+
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern=".html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```

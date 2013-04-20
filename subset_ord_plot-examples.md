@@ -23,7 +23,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.3"
+## [1] "1.5.4"
 ```
 
 
@@ -123,5 +123,44 @@ head(subset_ord_plot(p1, 0.7, "radial"))
 ## 139513 Sphingobacteriales Balneolaceae Balneola                <NA>
 ## 330672 Sphingobacteriales Balneolaceae     <NA>                <NA>
 ```
+
+
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+#### [distance](distance.html)
+
+#### [future-devel](future-devel.html)
+
+#### [import-data](import-data.html)
+
+#### [index](index.html)
+
+#### [install](install.html)
+
+#### [merge](merge.html)
+
+#### [plot_bar-examples](plot_bar-examples.html)
+
+#### [plot_heatmap-examples](plot_heatmap-examples.html)
+
+#### [plot_network-examples](plot_network-examples.html)
+
+#### [plot_ordination-examples](plot_ordination-examples.html)
+
+#### [plot_richness-examples](plot_richness-examples.html)
+
+#### [plot_tree-examples](plot_tree-examples.html)
+
+#### [preprocess](preprocess.html)
+
+#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
+
+#### [subset_ord_plot-examples](subset_ord_plot-examples.html)
+
+#### [tutorials-index](tutorials-index.html)
 
 

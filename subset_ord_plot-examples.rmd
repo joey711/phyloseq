@@ -67,3 +67,16 @@ Here is what the data retreived by `subset_ord_plot` actually looks like
 head(subset_ord_plot(p1, 0.7, "radial"))
 ```
 
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern=".html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```
+

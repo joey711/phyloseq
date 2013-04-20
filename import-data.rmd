@@ -176,3 +176,15 @@ The `data` command in the R language loads pre-imported datasets that are includ
 data(GlobalPatterns)
 ```
 
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern=".html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```

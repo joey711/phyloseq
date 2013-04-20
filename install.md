@@ -81,7 +81,7 @@ If these two commands result in a request to update old packages, you should pro
 
 - (2) *Use special arguments to biocLite*.
 By investigating the [phyloseq/BioC development version home page](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html)
-I was able to determine that the BioC devel branch version (was `2.13` as of Thu Apr 18 09:37:50 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
+I was able to determine that the BioC devel branch version (was `2.13` as of Fri Apr 19 17:02:41 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
 
 
 ```r
@@ -105,7 +105,7 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 ## 
 ## The downloaded source packages are in
-## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/RtmpVLjOYi/downloaded_packages'
+## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/RtmpYVlwod/downloaded_packages'
 ```
 
 
@@ -249,7 +249,25 @@ For installing from source
 temp <- tempfile()
 sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz"
 download.file(sourceURL, temp)
+```
+
+```
+## Warning: cannot open: HTTP status was '404 Not Found'
+```
+
+```
+## Error: cannot open URL
+## 'http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz'
+```
+
+```r
 install.packages(temp, repos = NULL, type = "source")
+```
+
+```
+## Warning: installation of package
+## '/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T//RtmpYVlwod/file112833a8fc2d8'
+## had non-zero exit status
 ```
 
 
@@ -334,4 +352,57 @@ Otherwise, you can follow the instructions above for using the `install_github` 
 
 For my own development tasks, I'm going to re-install the latest devel version from GitHub.
 
+```
+## Warning: could not find superclass "vectorORfactor" to clean up when
+## removing subclass references to class "otu_table"
+```
+
+```
+## Warning: could not find superclass "data.frameOrNULL" to clean up when
+## removing subclass references to class "sample_data"
+```
+
+```
+## Warning: could not find superclass "vectorORfactor" to clean up when
+## removing subclass references to class "taxonomyTable"
+```
+
+
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+#### [distance](distance.html)
+
+#### [future-devel](future-devel.html)
+
+#### [import-data](import-data.html)
+
+#### [index](index.html)
+
+#### [install](install.html)
+
+#### [merge](merge.html)
+
+#### [plot_bar-examples](plot_bar-examples.html)
+
+#### [plot_heatmap-examples](plot_heatmap-examples.html)
+
+#### [plot_network-examples](plot_network-examples.html)
+
+#### [plot_ordination-examples](plot_ordination-examples.html)
+
+#### [plot_richness-examples](plot_richness-examples.html)
+
+#### [plot_tree-examples](plot_tree-examples.html)
+
+#### [preprocess](preprocess.html)
+
+#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
+
+#### [subset_ord_plot-examples](subset_ord_plot-examples.html)
+
+#### [tutorials-index](tutorials-index.html)
 

@@ -18,7 +18,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.3"
+## [1] "1.5.4"
 ```
 
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
@@ -258,5 +258,44 @@ plot_bar(gpsfb, "Family", "Abundance", "Family", title = title, facet_grid = "Sa
 ```
 
 ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+
+
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+#### [distance](distance.html)
+
+#### [future-devel](future-devel.html)
+
+#### [import-data](import-data.html)
+
+#### [index](index.html)
+
+#### [install](install.html)
+
+#### [merge](merge.html)
+
+#### [plot_bar-examples](plot_bar-examples.html)
+
+#### [plot_heatmap-examples](plot_heatmap-examples.html)
+
+#### [plot_network-examples](plot_network-examples.html)
+
+#### [plot_ordination-examples](plot_ordination-examples.html)
+
+#### [plot_richness-examples](plot_richness-examples.html)
+
+#### [plot_tree-examples](plot_tree-examples.html)
+
+#### [preprocess](preprocess.html)
+
+#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
+
+#### [subset_ord_plot-examples](subset_ord_plot-examples.html)
+
+#### [tutorials-index](tutorials-index.html)
 
 

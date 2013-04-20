@@ -57,18 +57,15 @@ plot_richness(GP, "human", "SampleType")
 		
 			
 
-## Other key graphics functions in the phyloseq package:
 
-### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
+---
 
-### [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
+### Other tutorial pages for the phyloseq package:
 
-### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
-
-### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
-
-### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
-
-### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
-
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern=".html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```
 

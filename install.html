@@ -247,7 +247,7 @@ install_github(&quot;phyloseq&quot;, &quot;joey711&quot;)
 <ul>
 <li>(2) <em>Use special arguments to biocLite</em>.
 By investigating the <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">phyloseq/BioC development version home page</a>
-I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Thu Apr 18 09:37:50 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
+I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Fri Apr 19 17:02:41 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
 </ul>
 
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
@@ -266,7 +266,7 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 
 <pre><code>## 
 ## The downloaded source packages are in
-##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/RtmpVLjOYi/downloaded_packages&#39;
+##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/RtmpYVlwod/downloaded_packages&#39;
 </code></pre>
 
 <hr/>
@@ -385,7 +385,21 @@ install.packages(temp, repos = NULL, type = &quot;mac.binary.leopard&quot;)
 <pre><code class="r">temp &lt;- tempfile()
 sourceURL = &quot;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz&quot;
 download.file(sourceURL, temp)
-install.packages(temp, repos = NULL, type = &quot;source&quot;)
+</code></pre>
+
+<pre><code>## Warning: cannot open: HTTP status was &#39;404 Not Found&#39;
+</code></pre>
+
+<pre><code>## Error: cannot open URL
+## &#39;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz&#39;
+</code></pre>
+
+<pre><code class="r">install.packages(temp, repos = NULL, type = &quot;source&quot;)
+</code></pre>
+
+<pre><code>## Warning: installation of package
+## &#39;/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T//RtmpYVlwod/file112833a8fc2d8&#39;
+## had non-zero exit status
 </code></pre>
 
 <h2>Manual <a href="https://github.com/joey711/phyloseq/tarball/master">Download from GitHub</a></h2>
@@ -461,6 +475,54 @@ Otherwise, you can follow the instructions above for using the <code>install_git
 <hr/>
 
 <p>For my own development tasks, I&#39;m going to re-install the latest devel version from GitHub.</p>
+
+<pre><code>## Warning: could not find superclass &quot;vectorORfactor&quot; to clean up when
+## removing subclass references to class &quot;otu_table&quot;
+</code></pre>
+
+<pre><code>## Warning: could not find superclass &quot;data.frameOrNULL&quot; to clean up when
+## removing subclass references to class &quot;sample_data&quot;
+</code></pre>
+
+<pre><code>## Warning: could not find superclass &quot;vectorORfactor&quot; to clean up when
+## removing subclass references to class &quot;taxonomyTable&quot;
+</code></pre>
+
+<hr/>
+
+<h3>Other tutorial pages for the phyloseq package:</h3>
+
+<h4><a href="distance.html">distance</a></h4>
+
+<h4><a href="future-devel.html">future-devel</a></h4>
+
+<h4><a href="import-data.html">import-data</a></h4>
+
+<h4><a href="index.html">index</a></h4>
+
+<h4><a href="install.html">install</a></h4>
+
+<h4><a href="merge.html">merge</a></h4>
+
+<h4><a href="plot_bar-examples.html">plot_bar-examples</a></h4>
+
+<h4><a href="plot_heatmap-examples.html">plot_heatmap-examples</a></h4>
+
+<h4><a href="plot_network-examples.html">plot_network-examples</a></h4>
+
+<h4><a href="plot_ordination-examples.html">plot_ordination-examples</a></h4>
+
+<h4><a href="plot_richness-examples.html">plot_richness-examples</a></h4>
+
+<h4><a href="plot_tree-examples.html">plot_tree-examples</a></h4>
+
+<h4><a href="preprocess.html">preprocess</a></h4>
+
+<h4><a href="rebuild-all-html-from-Rmarkdown.R">rebuild-all-from-Rmarkdown.R</a></h4>
+
+<h4><a href="subset_ord_plot-examples.html">subset_ord_plot-examples</a></h4>
+
+<h4><a href="tutorials-index.html">tutorials-index</a></h4>
 
 </body>
 

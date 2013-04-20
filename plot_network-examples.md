@@ -20,7 +20,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.3"
+## [1] "1.5.4"
 ```
 
 ```r
@@ -94,16 +94,41 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
 
 			
 
-## Other key graphics functions in the phyloseq package:
 
-### [plot_ordination](http://joey711.github.com/phyloseq/plot_ordination-examples)
+---
 
-### [plot_heatmap](http://joey711.github.com/phyloseq/plot_heatmap-examples)
+### Other tutorial pages for the phyloseq package:
 
-### [plot_network](http://joey711.github.com/phyloseq/plot_network-examples)
+#### [distance](distance.html)
 
-### [plot_tree](http://joey711.github.com/phyloseq/plot_tree-examples)
+#### [future-devel](future-devel.html)
 
-### [plot_bar](http://joey711.github.com/phyloseq/plot_bar-examples)
+#### [import-data](import-data.html)
 
-### [plot_richness](http://joey711.github.com/phyloseq/plot_richness-examples)
+#### [index](index.html)
+
+#### [install](install.html)
+
+#### [merge](merge.html)
+
+#### [plot_bar-examples](plot_bar-examples.html)
+
+#### [plot_heatmap-examples](plot_heatmap-examples.html)
+
+#### [plot_network-examples](plot_network-examples.html)
+
+#### [plot_ordination-examples](plot_ordination-examples.html)
+
+#### [plot_richness-examples](plot_richness-examples.html)
+
+#### [plot_tree-examples](plot_tree-examples.html)
+
+#### [preprocess](preprocess.html)
+
+#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
+
+#### [subset_ord_plot-examples](subset_ord_plot-examples.html)
+
+#### [tutorials-index](tutorials-index.html)
+
+
