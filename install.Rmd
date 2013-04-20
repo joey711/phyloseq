@@ -180,7 +180,7 @@ In all three examples, we first have to define a fresh new temporary file where 
 For Windows binary install
 ```{r, eval=FALSE}
 temp <- tempfile()
-windowsURL = "http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/3.0/phyloseq_1.5.0.zip"
+windowsURL = "http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/3.0/phyloseq_1.5.3.zip"
 download.file(windowsURL, temp)
 install.packages(temp, repos=NULL, type="win.binary")
 ```
@@ -188,7 +188,7 @@ install.packages(temp, repos=NULL, type="win.binary")
 For Mac binary install
 ```{r, eval=FALSE}
 temp <- tempfile()
-macURL = "http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/3.0/phyloseq_1.5.0.tgz"
+macURL = "http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/3.0/phyloseq_1.5.3.tgz"
 download.file(macURL, temp)
 install.packages(temp, repos=NULL, type="mac.binary.leopard")
 ```
@@ -196,7 +196,7 @@ install.packages(temp, repos=NULL, type="mac.binary.leopard")
 For installing from source
 ```{r}
 temp <- tempfile()
-sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz"
+sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.3.tar.gz"
 download.file(sourceURL, temp)
 install.packages(temp, repos=NULL, type="source")
 ```
@@ -277,7 +277,7 @@ Otherwise, you can follow the instructions above for using the `install_github` 
 --- 
 
 For my own development tasks, I'm going to re-install the latest devel version from GitHub.
-```{r final-install, message=FALSE, echo=FALSE}
+```{r final-install, warning=FALSE, message=FALSE, echo=FALSE}
 library("devtools")
 install_github("phyloseq", "joey711")
 ```

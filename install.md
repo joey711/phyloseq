@@ -81,7 +81,7 @@ If these two commands result in a request to update old packages, you should pro
 
 - (2) *Use special arguments to biocLite*.
 By investigating the [phyloseq/BioC development version home page](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html)
-I was able to determine that the BioC devel branch version (was `2.13` as of Fri Apr 19 17:02:41 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
+I was able to determine that the BioC devel branch version (was `2.13` as of Fri Apr 19 21:41:53 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
 
 
 ```r
@@ -103,9 +103,13 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 
 ```
+## also installing the dependency 'igraph0'
+```
+
+```
 ## 
 ## The downloaded source packages are in
-## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/RtmpYVlwod/downloaded_packages'
+## 	'/private/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T/RtmpfN47Qu/downloaded_packages'
 ```
 
 
@@ -227,7 +231,7 @@ For Windows binary install
 
 ```r
 temp <- tempfile()
-windowsURL = "http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/3.0/phyloseq_1.5.0.zip"
+windowsURL = "http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/3.0/phyloseq_1.5.3.zip"
 download.file(windowsURL, temp)
 install.packages(temp, repos = NULL, type = "win.binary")
 ```
@@ -237,7 +241,7 @@ For Mac binary install
 
 ```r
 temp <- tempfile()
-macURL = "http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/3.0/phyloseq_1.5.0.tgz"
+macURL = "http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/3.0/phyloseq_1.5.3.tgz"
 download.file(macURL, temp)
 install.packages(temp, repos = NULL, type = "mac.binary.leopard")
 ```
@@ -247,27 +251,9 @@ For installing from source
 
 ```r
 temp <- tempfile()
-sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz"
+sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.3.tar.gz"
 download.file(sourceURL, temp)
-```
-
-```
-## Warning: cannot open: HTTP status was '404 Not Found'
-```
-
-```
-## Error: cannot open URL
-## 'http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.0.tar.gz'
-```
-
-```r
 install.packages(temp, repos = NULL, type = "source")
-```
-
-```
-## Warning: installation of package
-## '/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T//RtmpYVlwod/file112833a8fc2d8'
-## had non-zero exit status
 ```
 
 
@@ -352,20 +338,6 @@ Otherwise, you can follow the instructions above for using the `install_github` 
 
 For my own development tasks, I'm going to re-install the latest devel version from GitHub.
 
-```
-## Warning: could not find superclass "vectorORfactor" to clean up when
-## removing subclass references to class "otu_table"
-```
-
-```
-## Warning: could not find superclass "data.frameOrNULL" to clean up when
-## removing subclass references to class "sample_data"
-```
-
-```
-## Warning: could not find superclass "vectorORfactor" to clean up when
-## removing subclass references to class "taxonomyTable"
-```
 
 
 
