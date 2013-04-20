@@ -277,7 +277,7 @@ Otherwise, you can follow the instructions above for using the `install_github` 
 --- 
 
 For my own development tasks, I'm going to re-install the latest devel version from GitHub.
-```{r final-install, warning=FALSE, message=FALSE, echo=FALSE}
+```{r final-install, warning=FALSE, message=FALSE, echo=TRUE, include=TRUE}
 library("devtools")
 install_github("phyloseq", "joey711")
 ```

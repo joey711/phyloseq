@@ -21,10 +21,6 @@ This will not necessarily have the very latest features and fixes, but the insta
 source("http://bioconductor.org/biocLite.R")
 ```
 
-```
-## Bioconductor version 2.13 (BiocInstaller 1.11.0), ?biocLite for help
-```
-
 
 ```r
 biocLite("phyloseq")
@@ -81,7 +77,7 @@ If these two commands result in a request to update old packages, you should pro
 
 - (2) *Use special arguments to biocLite*.
 By investigating the [phyloseq/BioC development version home page](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html)
-I was able to determine that the BioC devel branch version (was `2.13` as of Fri Apr 19 21:41:53 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
+I was able to determine that the BioC devel branch version (was `2.13` as of Fri Apr 19 22:21:08 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
 
 
 ```r
@@ -100,10 +96,6 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 
 ```
 ## Installing package(s) 'phyloseq'
-```
-
-```
-## also installing the dependency 'igraph0'
 ```
 
 ```
@@ -338,6 +330,10 @@ Otherwise, you can follow the instructions above for using the `install_github` 
 
 For my own development tasks, I'm going to re-install the latest devel version from GitHub.
 
+```r
+library("devtools")
+install_github("phyloseq", "joey711")
+```
 
 
 

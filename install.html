@@ -198,9 +198,6 @@ hljs.initHighlightingOnLoad();
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
 </code></pre>
 
-<pre><code>## Bioconductor version 2.13 (BiocInstaller 1.11.0), ?biocLite for help
-</code></pre>
-
 <pre><code class="r">biocLite(&quot;phyloseq&quot;)
 </code></pre>
 
@@ -247,7 +244,7 @@ install_github(&quot;phyloseq&quot;, &quot;joey711&quot;)
 <ul>
 <li>(2) <em>Use special arguments to biocLite</em>.
 By investigating the <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">phyloseq/BioC development version home page</a>
-I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Fri Apr 19 21:41:53 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
+I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Fri Apr 19 22:21:08 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
 </ul>
 
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
@@ -262,9 +259,6 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 </code></pre>
 
 <pre><code>## Installing package(s) &#39;phyloseq&#39;
-</code></pre>
-
-<pre><code>## also installing the dependency &#39;igraph0&#39;
 </code></pre>
 
 <pre><code>## 
@@ -464,6 +458,10 @@ Otherwise, you can follow the instructions above for using the <code>install_git
 <hr/>
 
 <p>For my own development tasks, I&#39;m going to re-install the latest devel version from GitHub.</p>
+
+<pre><code class="r">library(&quot;devtools&quot;)
+install_github(&quot;phyloseq&quot;, &quot;joey711&quot;)
+</code></pre>
 
 <hr/>
 
