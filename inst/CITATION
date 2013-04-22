@@ -8,5 +8,5 @@ citEntry(entry = "article",
   Volume = "8",
   year = "2013",
   Url = "{http://dx.plos.org/10.1371/journal.pone.0061217}",
-  textVersion = "An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217."
+  textVersion = "phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217."
 )
