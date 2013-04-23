@@ -58,16 +58,30 @@ setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", ...) standardGene
 #' @aliases mt,phyloseq,ANY-method
 #' @rdname mt-methods
 setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", ...){
-	# If sample_data slot is non-empty, and the classlabel is a character-class
-	# length(classlabel) == 1
-	if( !is.null(sample_data(physeq, FALSE)) & class(classlabel)=="character" & length(classlabel)==1 ){
-		rawFactor  <- as(sample_data(physeq), "data.frame")[, classlabel[1]]
-		if( class(rawFactor) != "factor" ){
-			rawFactor <- factor(rawFactor)
+	# Extract the class information from the sample_data
+	# if sample_data slot is non-empty,
+	# and the classlabel is a character-class
+	# and its length is 1.
+	if( !is.null(sample_data(physeq, FALSE)) & 
+			inherits(classlabel, "character") &
+			identical(length(classlabel), 1L) ){
+		# Define a raw factor based on the data available in a sample variable
+		rawFactor = get_variable(physeq, classlabel[1])
+		if( !inherits(rawFactor, "factor") ){
+			# coerce to a factor if it is not already one.
+			rawFactor = factor(rawFactor)
 		}
-		classlabel <- rawFactor
-	} # Either way, dispatch on otu_table(physeq)
-	mt(otu_table(physeq), classlabel, minPmaxT, ...)
+		# Either way, replace `classlabel` with `rawFactor`
+		classlabel = rawFactor
+	}
+	# Either way, dispatch `mt` on otu_table(physeq)
+	MT = mt(otu_table(physeq), classlabel, minPmaxT, ...)
+	if( !is.null(tax_table(physeq, FALSE)) ){
+		# If there is tax_table data present,
+		# add/cbind it to the results.		
+		MT = cbind(MT, as(tax_table(physeq), "matrix")[rownames(MT), ])
+	}
+	return(MT)
 })
 ################################################################################
 # All valid mt() calls eventually funnel dispatch to this method.

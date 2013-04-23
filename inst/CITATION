@@ -1,12 +1,13 @@
-citHeader("To cite phyloseq in publications, please use:")
+citHeader("To cite phyloseq in publications, or otherwise credit, please use:")
 
 citEntry(entry = "article",
-  author = "{{Paul J. McMurdie} and {Susan Holmes}}",
-  journal = "{PLoS ONE}",
-  Pages = "TBD",
-  title = "{{An R package for reproducible interactive analysis and graphics of microbiome census data}}",
-  Volume = "TBD",
+  author = "Paul J. McMurdie and Susan Holmes",
+  journal = "PLoS ONE",
+  Pages = "e61217",
+  title = "phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data",
+  Volume = "8",
+  Number = "4",
   year = "2013",
-  Url = "{http://psb.stanford.edu/psb-online/proceedings/psb12/mcmurdie.pdf}",
-  textVersion = "An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes; PLoS ONE in press (2013)."
+  Url = "http://dx.plos.org/10.1371/journal.pone.0061217",
+  textVersion = "phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217."
 )
