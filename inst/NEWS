@@ -18,6 +18,15 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.6 - plot_ordination()
+===========
+plot_ordination() now includes percent variability on axis labels, if possible
+
+
+phyloseq 1.5.5 - Update citation info for latest per-reviewed phyloseq article
+===========
+http://dx.plos.org/10.1371/journal.pone.0061217
+
 phyloseq 1.5.4 - Add taxonomic classification data to mt() output, if available
 ===========
 This completes a feature request in [Issue 179](https://github.com/joey711/phyloseq/issues/179)
