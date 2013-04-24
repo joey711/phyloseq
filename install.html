@@ -179,7 +179,7 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
-<p><link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link></p>
+<p><link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link></p>
 
 <h1>Installing the phyloseq package</h1>
 
@@ -196,6 +196,9 @@ hljs.initHighlightingOnLoad();
 <p>This will not necessarily have the very latest features and fixes, but the installation should work easily using the <code>biocLite</code> tool. It should install all the necessary dependencies automatically, so these two lines should be all you need to enter in your R session to install the phyloseq package.</p>
 
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
+</code></pre>
+
+<pre><code>## Bioconductor version 2.13 (BiocInstaller 1.11.0), ?biocLite for help
 </code></pre>
 
 <pre><code class="r">biocLite(&quot;phyloseq&quot;)
@@ -244,7 +247,7 @@ install_github(&quot;phyloseq&quot;, &quot;joey711&quot;)
 <ul>
 <li>(2) <em>Use special arguments to biocLite</em>.
 By investigating the <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">phyloseq/BioC development version home page</a>
-I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Fri Apr 19 22:21:08 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
+I was able to determine that the BioC devel branch version (was <code>2.13</code> as of Tue Apr 23 15:57:36 2013), and that the repository URL for BioC-devel is therefore <a href="http://bioconductor.org/packages/2.13/bioc">http://bioconductor.org/packages/2.13/bioc</a> . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the <code>biocLite</code> command, shown here.</li>
 </ul>
 
 <pre><code class="r">source(&quot;http://bioconductor.org/biocLite.R&quot;)
@@ -263,7 +266,7 @@ biocLite(&quot;phyloseq&quot;, siteRepos = devel, suppressUpdates = TRUE, type =
 
 <pre><code>## 
 ## The downloaded source packages are in
-##  &#39;/private/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T/RtmpfN47Qu/downloaded_packages&#39;
+##  &#39;/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmp4ndcS8/downloaded_packages&#39;
 </code></pre>
 
 <hr/>
@@ -468,6 +471,8 @@ install_github(&quot;phyloseq&quot;, &quot;joey711&quot;)
 <h3>Other tutorial pages for the phyloseq package:</h3>
 
 <h4><a href="distance.html">distance</a></h4>
+
+<h4><a href="Example-Data.html">Example-Data</a></h4>
 
 <h4><a href="future-devel.html">future-devel</a></h4>
 

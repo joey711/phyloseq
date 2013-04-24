@@ -1,17 +1,48 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+
+# plot_ordination examples
+
+---
+## Load requisite packages
 
 
-# plot_ordination
+```r
+library("phyloseq")
+packageVersion("phyloseq")
+```
 
-## see also...
+```
+## [1] '1.5.5'
+```
+
+```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
+```
+
+
+Define a default theme for ggplot graphics.
+
+```r
+theme_set(theme_bw())
+```
+
+
+
+## plot_ordination
+
 The operation of this function also depends a lot on the 
 
-[distance](https://github.com/joey711/phyloseq/wiki/distance)
+## [distance](http://joey711.github.io/phyloseq/distance)
 
 and
 
-[ordinate](https://github.com/joey711/phyloseq/wiki/ordinate)
+## [ordinate](http://joey711.github.io/phyloseq/ordinate)
 
 functions. See their tutorials for further details and examples.
 
@@ -20,35 +51,14 @@ Also, the phyloseq package includes a "convenience function" for subsetting from
 
 ## Examples
 
-Load the necessary packages and data.
-
-```r
-library("phyloseq")
-library("ggplot2")
-data(GlobalPatterns)
-```
-
-
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
-
-
-```r
-packageDescription("phyloseq")$Version
-```
-
-```
-## [1] "1.5.4"
-```
-
-
 "Trim" data. This is useful for plotting, and in this case, also useful for making examples that run in a short amount of time. Your reasoning and decisions in trimming are extremely important, and up to you. I am using several different methods of trimming here, for illustration and because the extent of data reduction is useful for my purposes. However, I make no assertion that these are the "right" approach(es) for your data, but rather, I highly recommend that you think hard about any trimming you do, and only commit to including it in your final analysis pipeline if you can defend the choices and have checked that they are robust. 
 
 Need to clean the zeros from GlobalPatterns. While we're at it, let's remove any OTUs observed less than 5 times, cumulative for all samples
 
 
 ```r
-GP <- prune_taxa(speciesSums(GlobalPatterns) > 5, GlobalPatterns)
-nspecies(GP)
+GP <- prune_taxa(taxa_sums(GlobalPatterns) > 5, GlobalPatterns)
+ntaxa(GP)
 ```
 
 ```
@@ -56,11 +66,11 @@ nspecies(GP)
 ```
 
 
-Still more than $13000$ OTUs. Let's filter taxa that don't show up at least 5 times in 5 or more samples.
+Still 13711 OTUs left. Let's filter taxa that don't show up at least 5 times in 5 or more samples.
 
 
 ```r
-wh0 <- genefilterSample(GP, filterfunSample(function(x) {
+wh0 <- genefilterSample(GP, filterfun_sample(function(x) {
     x > 5
 }), A = 5)
 GP <- prune_taxa(wh0, GP)
@@ -71,7 +81,7 @@ Do an additional trimming by cumulative abundance of phyla, take only the top 5
 
 
 ```r
-phylum.sum <- tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE)
+phylum.sum <- tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE)
 top5phyla <- names(sort(phylum.sum, TRUE))[1:5]
 GP1 <- subset_taxa(GP, Phylum %in% top5phyla)
 ```
@@ -81,8 +91,8 @@ We will want to investigate a major prior among the samples, which is that some 
 
 
 ```r
-human <- getVariable(GP1, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
-sampleData(GP1)$human <- factor(human)
+human <- get_variable(GP1, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
+sample_data(GP1)$human <- factor(human)
 ```
 
 
@@ -99,7 +109,7 @@ p1 = plot_ordination(GP1, GP.ord, type = "taxa", color = "Phylum", title = "taxa
 print(p1)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 
 
@@ -110,7 +120,7 @@ This is a complicated looking plot, but that's not necessarily good. There is ac
 p1 + facet_wrap(~Phylum, 3)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 
@@ -122,7 +132,7 @@ p2 = plot_ordination(GP1, GP.ord, type = "samples", color = "SampleType", shape 
 p2 + geom_line() + geom_point(size = 5) + ggtitle("samples")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 
@@ -140,7 +150,7 @@ GP1.shape["samples"] <- 16
 p3 + scale_shape_manual(values = GP1.shape)
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 
 
@@ -163,7 +173,7 @@ p4cols["samples"] <- "black"
 p4 + scale_color_manual(values = p4cols)
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 			
 
@@ -173,6 +183,8 @@ p4 + scale_color_manual(values = p4cols)
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

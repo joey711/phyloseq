@@ -18,7 +18,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.4"
+## [1] "1.5.5"
 ```
 
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
@@ -267,6 +267,8 @@ plot_bar(gpsfb, "Family", "Abundance", "Family", title = title, facet_grid = "Sa
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

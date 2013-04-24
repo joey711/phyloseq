@@ -45,6 +45,8 @@ Some candidate packages are:
 
 #### [distance](distance.html)
 
+#### [Example-Data](Example-Data.html)
+
 #### [future-devel](future-devel.html)
 
 #### [import-data](import-data.html)

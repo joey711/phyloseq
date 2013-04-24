@@ -1,5 +1,5 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 Installing the phyloseq package
 ========================================================
@@ -19,6 +19,10 @@ This will not necessarily have the very latest features and fixes, but the insta
 
 ```r
 source("http://bioconductor.org/biocLite.R")
+```
+
+```
+## Bioconductor version 2.13 (BiocInstaller 1.11.0), ?biocLite for help
 ```
 
 
@@ -77,7 +81,7 @@ If these two commands result in a request to update old packages, you should pro
 
 - (2) *Use special arguments to biocLite*.
 By investigating the [phyloseq/BioC development version home page](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html)
-I was able to determine that the BioC devel branch version (was `2.13` as of Fri Apr 19 22:21:08 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
+I was able to determine that the BioC devel branch version (was `2.13` as of Tue Apr 23 15:57:36 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
 
 
 ```r
@@ -101,7 +105,7 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 ## 
 ## The downloaded source packages are in
-## 	'/private/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T/RtmpfN47Qu/downloaded_packages'
+## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmp4ndcS8/downloaded_packages'
 ```
 
 
@@ -343,6 +347,8 @@ install_github("phyloseq", "joey711")
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

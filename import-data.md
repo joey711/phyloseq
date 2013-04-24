@@ -1,30 +1,30 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-Importing phyloseq Data
-========================================================
+# Importing phyloseq Data
 
-The custom functions that read external data files and return an instance of the phyloseq-class are called "importers". Validity and coherency between data components are checked by the phyloseq-class constructor,
-	phyloseq()
-which is invoked internally by the importers, and is also the suggested function for creating a phyloseq object from "manually" imported data. The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-`NULL`) component data describe exactly the same OTUs and samples, in the same order. 
+---
+## Load requisite packages
 
 
 ```r
-library(phyloseq)
+library("phyloseq")
+packageVersion("phyloseq")
+```
+
+```
+## [1] '1.5.6'
 ```
 
 
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line. If your version is lower than the one shown here AND you are having trouble with the import examples, try updating your phyloseq version to the latest development version available from GitHub, using [the phyloseq installation tutorial](http://joey711.github.com/phyloseq/install).
-
+Define a default theme for ggplot graphics.
 
 ```r
-packageDescription("phyloseq")$Version
+theme_set(theme_bw())
 ```
 
-```
-## [1] "1.5.4"
-```
 
+The custom functions that read external data files and return an instance of the phyloseq-class are called "importers". Validity and coherency between data components are checked by the phyloseq-class constructor, `phyloseq()` which is invoked internally by the importers, and is also the suggested function for creating a phyloseq object from "manually" imported data. The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-) component data describe exactly the same OTUs and samples, in the same order. 
 
 ## Currently available import functions
 
@@ -123,19 +123,19 @@ myData = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunctio
 plot_tree(myData, color = "Genus", shape = "BODY_SITE", size = "abundance")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-51.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-31.png) 
 
 ```r
 plot_richness(myData, x = "BODY_SITE", color = "Description")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-52.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-32.png) 
 
 ```r
 plot_bar(myData, fill = "Genus")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-53.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-33.png) 
 
 ```r
 refseq(myData)
@@ -247,7 +247,7 @@ x
 plot_tree(x, color = "samples")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-61.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-41.png) 
 
 ```r
 SDF = data.frame(samples = sample_names(x), row.names = sample_names(x))
@@ -255,7 +255,7 @@ sample_data(x) = sample_data(SDF)
 plot_richness(x)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-62.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-42.png) 
 
 
 The class and data in the object returned by `import_mothur` depends on the  arguments. If the first three arguments are provided, then a phyloseq object should be returned containing both a tree and its associated OTU table. If only a list and group file are provided, then an "otu_table" object is returned. Similarly, if only a list and tree file are provided, then only a tree is returned ("phylo" class).
@@ -268,7 +268,7 @@ x2 = import_mothur(mothlist, mothur_tree_file = mothtree, cutoff = "0.08")
 plot(x1)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 Returns just an OTU table
 
@@ -368,7 +368,7 @@ import_pyrotagger_tab(pyrotagger_tab_file)
 ---
 ## Loading included data
 
-See [the wiki page on included example data in phyloseq](https://github.com/joey711/phyloseq/wiki/Example-Data) for more details.
+See [the tutorial on included example data in phyloseq](http://joey711.github.io/phyloseq/Example-Data) for more details.
 
 The `data` command in the R language loads pre-imported datasets that are included in packages. For example, the "Global Patterns" dataset can be loaded into the R workspace with the following command.
 
@@ -385,6 +385,8 @@ data(GlobalPatterns)
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

@@ -1,15 +1,43 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # plot_heatmap
-# Description and Examples
+A tutorial with Examples
+
+
+```r
+library("phyloseq")
+packageVersion("phyloseq")
+```
+
+```
+## [1] '1.5.5'
+```
+
+```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
+```
+
+
+ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
+
+
+```r
+theme_set(theme_bw())
+```
+
 
 
 The following demonstrates some uses of the `plot_heatmap` function in [the phyloseq package](http://joey711.github.com/phyloseq/) for R and Bioconductor.
 
 ## Introduction - Create an ecologically-organized heatmap 
  
-In a [2010 article in BMC Genomics](http://www.biomedcentral.com/1471-2105/11/45), Rajaram and Oono describe an approach to creating a heatmap using ordination methods (namely, NMDS and PCA) to organize the rows and columns instead of (hierarchical) cluster analysis. In many cases the ordination-based ordering does a much better job than h-clustering at providing an order of elements that is easily interpretable. The authors provided an immediately useful example of their approach as [the NeatMap package for R](http://cran.r-project.org/web/packages/NeatMap/index.html). The NeatMap package can be used directly on the abundance table (`"otuTable"`-class) of phylogenetic-sequencing data, but the NMDS or PCA ordination options that it supports are not based on ecological distances. To fill this void, and because phyloseq already provides support for a large number of [ecological distances](https://github.com/joey711/phyloseq/wiki/distance) and [ordination methods](https://github.com/joey711/phyloseq/wiki/ordinate), phyloseq now includes the `plot_heatmap()` function: an ecology-oriented variant of the NeatMap approach to organizing a heatmap and build it using ggplot2 graphics tools. The [distance](https://github.com/joey711/phyloseq/wiki/distance) and [method](https://github.com/joey711/phyloseq/wiki/ordinate) arguments are the same as for the [plot_ordination](https://github.com/joey711/phyloseq/wiki/plot_ordination) function, and support large number of distances and ordination methods, respectively, with a strong leaning toward ecology. This function also provides the options to re-label the OTU and sample axis-ticks with a taxonomic name and/or sample variable, respectively, in the hope that this might hasten your interpretation of the patterns (See the documentation for the `sample.label` and `species.label` arguments, and the examples below). Note that this function makes no attempt to overlay dendrograms from hierarchical clustering next to the axes, as hierarchical clustering is not used to organize these plots. Also note that each re-ordered axis repeats at the edge, and so apparent clusters at the far right/left or top/bottom of the heat-map may actually be the same. For now, the placement of this edge can be considered arbitrary, so beware of this artifact of the graphic and visually check if there are two "mergeable" clusters at the edges of a particular axis. If you benefit from this phyloseq-specific implementation of [the NeatMap approach](http://cran.r-project.org/web/packages/NeatMap/index.html), please cite [the NeatMap article](http://www.biomedcentral.com/1471-2105/11/45), as well as phyloseq.
+In a [2010 article in BMC Genomics](http://www.biomedcentral.com/1471-2105/11/45), Rajaram and Oono describe an approach to creating a heatmap using ordination methods (namely, NMDS and PCA) to organize the rows and columns instead of (hierarchical) cluster analysis. In many cases the ordination-based ordering does a much better job than h-clustering at providing an order of elements that is easily interpretable. The authors provided an immediately useful example of their approach as [the NeatMap package for R](http://cran.r-project.org/web/packages/NeatMap/index.html). The NeatMap package can be used directly on the abundance table (`"otuTable"`-class) of phylogenetic-sequencing data, but the NMDS or PCA ordination options that it supports are not based on ecological distances. To fill this void, and because phyloseq already provides support for a large number of [ecological distances](http://joey711.github.io/phyloseq/distance) and [ordination methods](http://joey711.github.io/phyloseq/ordinate), phyloseq now includes the `plot_heatmap()` function: an ecology-oriented variant of the NeatMap approach to organizing a heatmap and build it using ggplot2 graphics tools. The [distance](http://joey711.github.io/phyloseq/distance) and [method](http://joey711.github.io/phyloseq/ordinate) arguments are the same as for the [plot_ordination](http://joey711.github.io/phyloseq/plot_ordination) function, and support large number of distances and ordination methods, respectively, with a strong leaning toward ecology. This function also provides the options to re-label the OTU and sample axis-ticks with a taxonomic name and/or sample variable, respectively, in the hope that this might hasten your interpretation of the patterns (See the documentation for the `sample.label` and `taxa.label` arguments, and the examples below). Note that this function makes no attempt to overlay dendrograms from hierarchical clustering next to the axes, as hierarchical clustering is not used to organize these plots. Also note that each re-ordered axis repeats at the edge, and so apparent clusters at the far right/left or top/bottom of the heat-map may actually be the same. For now, the placement of this edge can be considered arbitrary, so beware of this artifact of the graphic and visually check if there are two "mergeable" clusters at the edges of a particular axis. If you benefit from this phyloseq-specific implementation of [the NeatMap approach](http://cran.r-project.org/web/packages/NeatMap/index.html), please cite [the NeatMap article](http://www.biomedcentral.com/1471-2105/11/45), as well as phyloseq.
 
 ## Heatmap colors don't have to be so hot
 
@@ -23,42 +51,19 @@ I also got some useful ideas and suggestions at the following [WordPress page re
 
 ## Adjust color scale of your `plot_heatmap`
 
-By default, the color mapping of `plot_heatmap` is transformed to a log-scale of base 4, using `log_trans(4)` from the `scales` package. This is an arbitrary choice that you might need to adjust based on your needs and data. If specifying an alternative transformation object to the `trans` argument, you probably need to load the `scales` package first. Since `scales` is a required package for `phyloseq`, you should already have it installed if you are at this point. Any transformation object that is valid to `scales` should work here, but the relative contrast and the way it represents your data could change dramatically based on this choice, so make this selection carefully; or better yet, try several different transformations if you think data is being "left in the background" or too much information is being "pushed to the foreground", for example.
-
-## Load phyloseq, and example data
-Load the phyloseq package, and the GlobalPatterns example dataset
-
-
-```r
-library("phyloseq")
-data("GlobalPatterns")
-```
-
-
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
-
-
-```r
-packageDescription("phyloseq")$Version
-```
-
-```
-## [1] "1.5.4"
-```
-
-
+By default, the color mapping of `plot_heatmap` is transformed to a log-scale of base 4, using `log_trans(4)` from [the scales package](http://cran.r-project.org/web/packages/scales/index.html). This is an arbitrary choice that you might need to adjust based on your needs and data. If specifying an alternative transformation object to the `trans` argument, you probably need to load the scales package first. Since [scales](http://cran.r-project.org/web/packages/scales/index.html) is a required package for `phyloseq`, you should already have it installed if you are at this point. Any transformation object that is valid for the scales package should work here, but the relative contrast and the way it represents your data could change dramatically based on this choice, so make this selection carefully; or better yet, try several different transformations if you think data is being "left in the background" or too much information is being "pushed to the foreground", for example.
 
 ## Plot a 300-taxa dataset
 The following two lines subset the dataset to just the top 300 most abundant Bacteria taxa across all samples (in this case, with no prior preprocessing. Not recommended, but quick).
 
 
 ```r
-gpt <- subset_species(GlobalPatterns, Kingdom == "Bacteria")
-gpt <- prune_species(names(sort(speciesSums(gpt), TRUE)[1:300]), gpt)
+gpt <- subset_taxa(GlobalPatterns, Kingdom == "Bacteria")
+gpt <- prune_taxa(names(sort(taxa_sums(gpt), TRUE)[1:300]), gpt)
 plot_heatmap(gpt, sample.label = "SampleType")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
 
 
 ## Subset a smaller dataset based on an Archaeal phylum
@@ -68,7 +73,7 @@ represented in one plot. In the following examples, the Crenarchaeota phylum.
 
 
 ```r
-gpac <- subset_species(GlobalPatterns, Phylum == "Crenarchaeota")
+gpac <- subset_taxa(GlobalPatterns, Phylum == "Crenarchaeota")
 ```
 
 
@@ -81,7 +86,7 @@ Now let's see how our `plot_heatmap` function works with all default settings.
 plot_heatmap(gpac)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
 
 
@@ -94,7 +99,7 @@ Here is an example re-labelling based on the "SampleType" sample variable and th
 plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 
 
@@ -109,7 +114,7 @@ plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#000033",
     high = "#CCFF66")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 
@@ -121,7 +126,7 @@ plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#000033",
     high = "#FF3300")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 
@@ -133,7 +138,7 @@ plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#000033",
     high = "#66CCFF")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 
 
@@ -146,7 +151,7 @@ plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#66CCFF",
     high = "#000033", na.value = "white")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
 
@@ -160,7 +165,7 @@ plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#FFFFCC",
     high = "#000033", na.value = "white")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 
@@ -174,7 +179,7 @@ For example, NMDS ordination on the jaccard distance.
 plot_heatmap(gpac, "NMDS", "jaccard")
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 
 
@@ -185,7 +190,7 @@ Detrended correspondence analysis.
 plot_heatmap(gpac, "DCA", "none", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
 
 
 
@@ -196,7 +201,7 @@ Unconstrained redundancy analysis (Principle Components Analysis, PCA)
 plot_heatmap(gpac, "RDA", "none", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
 
 
@@ -207,7 +212,7 @@ PCoA/MDS ordination on the (default) bray-curtis distance.
 plot_heatmap(gpac, "PCoA", "bray", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 
 
 
@@ -218,7 +223,7 @@ MDS/PCoA ordination on the Unweighted-UniFrac distance.
 plot_heatmap(gpac, "PCoA", "unifrac", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
 
 
 
@@ -229,7 +234,7 @@ Now try weighted-UniFrac distance and MDS/PCoA ordination.
 plot_heatmap(gpac, "MDS", "unifrac", "SampleType", "Family", weighted = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
 
 
 
@@ -242,7 +247,7 @@ organization, in case you want to compare with `plot_heatmap`, for example.
 heatmap(otuTable(gpac))
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17.png) 
 
 			
 
@@ -252,6 +257,8 @@ heatmap(otuTable(gpac))
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

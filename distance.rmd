@@ -1,8 +1,8 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10, fig.height=8)`
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+`r opts_chunk$set(cache=TRUE, fig.width=10)`
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-The distance function
-========================================================
+# The distance function in phyloseq
+
 The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distance("list")` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
 
 See the in-package documentation of `distance` for further details:
@@ -28,7 +28,7 @@ Note that this may take a little while to run, depending on the size of your dat
 ---
 
 # Load phyloseq
-Of course we need to start this tutorial by loading [the phyloseq package](http://joey711.github.com/phyloseq/). This assumes you have already [installed phyloseq](https://github.com/joey711/phyloseq/wiki/Installation).
+Of course we need to start this tutorial by loading [the phyloseq package](http://joey711.github.com/phyloseq/). This assumes you have already [installed phyloseq](http://joey711.github.io/phyloseq/install).
 
 ```{r loadpkg, warning=FALSE, message=FALSE}
 library("phyloseq"); packageVersion("phyloseq")

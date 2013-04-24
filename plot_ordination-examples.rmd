@@ -1,17 +1,33 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+`r opts_chunk$set(cache=TRUE, fig.width=10)`
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+
+# plot_ordination examples
+
+---
+## Load requisite packages
+
+```{r package-load, warning=FALSE, message=FALSE}
+library("phyloseq")
+packageVersion("phyloseq")
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+Define a default theme for ggplot graphics.
+```{r gplot-theme}
+theme_set(theme_bw())
+```
 
 
-# plot_ordination
+## plot_ordination
 
-## see also...
 The operation of this function also depends a lot on the 
 
-[distance](https://github.com/joey711/phyloseq/wiki/distance)
+## [distance](http://joey711.github.io/phyloseq/distance)
 
 and
 
-[ordinate](https://github.com/joey711/phyloseq/wiki/ordinate)
+## [ordinate](http://joey711.github.io/phyloseq/ordinate)
 
 functions. See their tutorials for further details and examples.
 
@@ -20,38 +36,26 @@ Also, the phyloseq package includes a "convenience function" for subsetting from
 
 ## Examples
 
-Load the necessary packages and data.
-```{r message=FALSE}
-library("phyloseq"); library("ggplot2")
-data(GlobalPatterns)
-```
-
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
-
-```{r}
-packageDescription("phyloseq")$Version
-```
-
 "Trim" data. This is useful for plotting, and in this case, also useful for making examples that run in a short amount of time. Your reasoning and decisions in trimming are extremely important, and up to you. I am using several different methods of trimming here, for illustration and because the extent of data reduction is useful for my purposes. However, I make no assertion that these are the "right" approach(es) for your data, but rather, I highly recommend that you think hard about any trimming you do, and only commit to including it in your final analysis pipeline if you can defend the choices and have checked that they are robust. 
 
 Need to clean the zeros from GlobalPatterns. While we're at it, let's remove any OTUs observed less than 5 times, cumulative for all samples
 
 ```{r}
-GP <- prune_taxa(speciesSums(GlobalPatterns)>5, GlobalPatterns)
-nspecies(GP)
+GP <- prune_taxa(taxa_sums(GlobalPatterns)>5, GlobalPatterns)
+ntaxa(GP)
 ```
 
-Still more than $13000$ OTUs. Let's filter taxa that don't show up at least 5 times in 5 or more samples.
+Still `r ntaxa(GP)` OTUs left. Let's filter taxa that don't show up at least 5 times in 5 or more samples.
 
 ```{r}
-wh0 <- genefilterSample(GP, filterfunSample(function(x){x > 5}), A=5)
+wh0 <- genefilterSample(GP, filterfun_sample(function(x){x > 5}), A=5)
 GP  <- prune_taxa(wh0, GP)
 ```
 
 Do an additional trimming by cumulative abundance of phyla, take only the top 5
 
 ```{r cache=FALSE}
-phylum.sum <- tapply(speciesSums(GP), taxTab(GP)[, "Phylum"], sum, na.rm = TRUE)
+phylum.sum <- tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE)
 top5phyla <- names(sort(phylum.sum, TRUE))[1:5]
 GP1 <- subset_taxa(GP, Phylum %in% top5phyla)
 ```
@@ -59,8 +63,8 @@ GP1 <- subset_taxa(GP, Phylum %in% top5phyla)
 We will want to investigate a major prior among the samples, which is that some are human-associated microbiomes, and some are not. Define a human-associated versus non-human categorical variable:
 
 ```{r}
-human <- getVariable(GP1, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
-sampleData(GP1)$human <- factor(human)
+human <- get_variable(GP1, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
+sample_data(GP1)$human <- factor(human)
 ```
 
 

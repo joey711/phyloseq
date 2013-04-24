@@ -1,5 +1,5 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 plot_bar function: Powerful, flexible phyloseq bar plots
 ========================================================
@@ -16,7 +16,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.4'
+## [1] '1.5.5'
 ```
 
 ```r
@@ -117,7 +117,7 @@ ent10 <- prune_species(TopNOTUs, enterotype)
 ```
 
 
-The parameters to `plot_bar` in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of `sample_data`, the `plot_bar` function recognizes the names of taxonomic ranks, if present. See the help documentation and further details in the examples and on the wiki page. In this example we have also elected to organize data by "facets" (separate, adjacent sub-plots) according to the genus of each OTU. Within each genus facet, the data is further separated by sequencing technology, and the enterotype label for the sample from which each OTU originated is indicated by fill color. Abundance values from different samples and OTUs but having the same variables mapped to the horizontal (`x`) axis are sorted and stacked, with thin horizontal lines designating the boundaries. With this display it is very clear that the choice of sequencing technology had a large effect on which genera were detected, as well as the fraction of OTUs that were assigned to a Genus.
+The parameters to `plot_bar` in the following code-chunk were chosen after various trials. We suggest that you also try different parameter settings while you're exploring different features of the data. In addition to the variables names of `sample_data`, the `plot_bar` function recognizes the names of taxonomic ranks, if present. In this example we have also elected to organize data by "facets" (separate, adjacent sub-plots) according to the genus of each OTU. Within each genus facet, the data is further separated by sequencing technology, and the enterotype label for the sample from which each OTU originated is indicated by fill color. Abundance values from different samples and OTUs but having the same variables mapped to the horizontal (`x`) axis are sorted and stacked, with thin horizontal lines designating the boundaries. With this display it is very clear that the choice of sequencing technology had a large effect on which genera were detected, as well as the fraction of OTUs that were assigned to a Genus.
 
 
 ```r
@@ -166,6 +166,8 @@ p + geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "st
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

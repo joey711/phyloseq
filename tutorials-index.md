@@ -4,9 +4,9 @@
 The phyloseq Tutorials Index
 ========================================================
 
-This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Fri Apr 19 17:11:15 2013.
+This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Tue Apr 23 16:06:32 2013.
 
-Don't forget to checkout [the phyloseq demo repository](https://github.com/joey711/phyloseq-demo) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
+Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io/phyloseq-demo/) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
 
 ---
 ## Available tutorials
@@ -15,6 +15,8 @@ Don't forget to checkout [the phyloseq demo repository](https://github.com/joey7
 
 
 ### [distance](distance.html)
+
+### [Example-Data](Example-Data.html)
 
 ### [future-devel](future-devel.html)
 
@@ -49,6 +51,8 @@ Don't forget to checkout [the phyloseq demo repository](https://github.com/joey7
 For more advanced users interested in seeing and/or modifying the [R markdown](http://www.rstudio.com/ide/docs/r_markdown) source code from which these reproducible, web browser-friendly tutorials were created.
 
 ### [distance.rmd](distance.rmd)
+
+### [Example-Data.rmd](Example-Data.rmd)
 
 ### [future-devel.rmd](future-devel.rmd)
 

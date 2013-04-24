@@ -1,22 +1,22 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+`r opts_chunk$set(cache=TRUE, fig.width=10)`
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-Importing phyloseq Data
-========================================================
+# Importing phyloseq Data
 
-The custom functions that read external data files and return an instance of the phyloseq-class are called "importers". Validity and coherency between data components are checked by the phyloseq-class constructor,
-	phyloseq()
-which is invoked internally by the importers, and is also the suggested function for creating a phyloseq object from "manually" imported data. The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-`NULL`) component data describe exactly the same OTUs and samples, in the same order. 
+---
+## Load requisite packages
 
-```{r message=FALSE, warning=FALSE}
-library(phyloseq)
+```{r package-load, warning=FALSE, message=FALSE}
+library("phyloseq")
+packageVersion("phyloseq")
 ```
 
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line. If your version is lower than the one shown here AND you are having trouble with the import examples, try updating your phyloseq version to the latest development version available from GitHub, using [the phyloseq installation tutorial](http://joey711.github.com/phyloseq/install).
-
-```{r}
-packageDescription("phyloseq")$Version
+Define a default theme for ggplot graphics.
+```{r gplot-theme}
+theme_set(theme_bw())
 ```
+
+The custom functions that read external data files and return an instance of the phyloseq-class are called "importers". Validity and coherency between data components are checked by the phyloseq-class constructor, `phyloseq()` which is invoked internally by the importers, and is also the suggested function for creating a phyloseq object from "manually" imported data. The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-`r NULL`) component data describe exactly the same OTUs and samples, in the same order. 
 
 ## Currently available import functions
 
@@ -168,7 +168,7 @@ import_pyrotagger_tab(pyrotagger_tab_file)
 ---
 ## Loading included data
 
-See [the wiki page on included example data in phyloseq](https://github.com/joey711/phyloseq/wiki/Example-Data) for more details.
+See [the tutorial on included example data in phyloseq](http://joey711.github.io/phyloseq/Example-Data) for more details.
 
 The `data` command in the R language loads pre-imported datasets that are included in packages. For example, the "Global Patterns" dataset can be loaded into the R workspace with the following command.
 

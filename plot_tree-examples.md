@@ -24,7 +24,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.4'
+## [1] '1.5.5'
 ```
 
 
@@ -386,6 +386,8 @@ plot_tree(GP.chl, color = "SampleType", shape = "Family", label.tips = "Genus",
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 
