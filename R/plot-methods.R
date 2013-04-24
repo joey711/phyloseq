@@ -559,8 +559,8 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		warning("type argument not supported. type set to \"samples\".")
 		type = "sites"
 	}
-	# Stop early by passing to plot_scree() if "scree" was chosen as a type
 	if( type %in% c("scree") ){
+		# Stop early by passing to plot_scree() if "scree" was chosen as a type
 		return( plot_scree(ordination, title=title) )
 	}
 
@@ -669,14 +669,34 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	# Add the text labels
 	if( !is.null(label) ){
 		label_map <- aes_string(x=x, y=y, label=label, na.rm=TRUE)
-		p <- p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
+		p = p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
 					size=2, vjust=1.5, na.rm=TRUE)
 	}
 
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
-		p <- p + ggtitle(title)
+		p = p + ggtitle(title)
 	}
+
+	# Add fraction variability to axis labels, if available
+	if( all(!is.null(extract_eigenvalue(ordination)[axes])) &
+				all(!is.na(extract_eigenvalue(ordination)[axes])) ){
+		# Only attempt to add fraction variability
+		# if extract_eigenvalue returns something
+		
+		# Fraction variability, fracvar
+		fracvar = extract_eigenvalue(ordination)[axes]
+		# Percent variability, percvar
+		percvar = round(100*fracvar, 1)
+		# The string to add to each axis label, strivar
+		# Start with the curent axis labels in the plot
+		strivar = as(c(p$label$x, p$label$y), "character")
+		# paste the percent variability string at the end
+		strivar = paste0(strivar, "   [", percvar, "%]")
+		# Update the x-label and y-label
+		p = p + xlab(strivar[1])
+		p = p + ylab(strivar[2])
+	}	
 	
 	# Return the ggplot object
 	return(p)
