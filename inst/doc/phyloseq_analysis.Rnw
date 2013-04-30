@@ -509,7 +509,7 @@ ggsave("phyloseq_analysis-GPCAspecplotTopo.pdf", p3, width=10, height=7)
 Figs~\ref{fig:GPCAspecplot} and \ref{fig:GPCAspecplotTopo} reveal some useful patterns and interesting outliers, but what if we want a complete summary of how each phylum is represented along each axis? The following code is a way to show this using boxplots, while still avoiding the occlusion problem (points layered on top of each other), and also conveying some useful information about the pattern of taxa that contribute to the separation of human-associated samples from the other sample types. It re-uses the data that was stored in the \code{ggplot2} plot object created in the previous figure, \code{p}, and creates a new boxlot graphical summary of the positions of each phylum (Fig~\ref{fig:GPCAjitter}).
 
 <<GPCAjitter0, include=FALSE, fig=FALSE>>=
-library("reshape")
+library("reshape2")
 # Melt the species-data.frame, DF, to facet each CA axis separately
 mdf <- melt(p1$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")], 
             id=c("Phylum", "Family", "Genus") )

@@ -18,6 +18,9 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.8 - update reshape dependency to reshape2
+===========
+This satisfies [issue 134](https://github.com/joey711/phyloseq/issues/134)
 
 phyloseq 1.5.6-.7 - plot_ordination()
 ===========

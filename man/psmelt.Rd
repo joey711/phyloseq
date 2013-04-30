@@ -18,7 +18,7 @@
   melting phyloseq objects (instances of the phyloseq
   class), usually for the purpose of graphics production in
   ggplot2-based phyloseq-generated graphics. It relies
-  heavily on the \code{\link[reshape]{melt}} and
+  heavily on the \code{\link[reshape2]{melt}} and
   \code{\link{merge}} functions. Note that ``melted''
   phyloseq data is stored much less efficiently, and so RAM
   storage issues could arise with a smaller dataset
@@ -50,7 +50,7 @@ print(p)
 \seealso{
   \code{\link{plot_bar}}
 
-  \code{\link[reshape]{melt}}
+  \code{\link[reshape2]{melt}}
 
   \code{\link{merge}}
 }
