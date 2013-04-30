@@ -40,22 +40,23 @@ In this case preprocessing is especially useful for showing graphically the high
 
 To quickly demonstrate and compare the results of different ordination methods, I will first further filter/preprocess the OTUs in `GP1`. I want to include some phylogenetic tree-based ordinations, which can be slow to calculate. Since the goal of this exercise is to demonstrate the `plot_ordination` capability, and not necessarily reveal any new knowledge about the Global Patterns dataset, the emphasis on this preprocessing will be on limiting the number of OTUs, not protecting intrinsic patterns in the data.
 
+Remove OTUs that do not show appear more than 5 times in more than half the samples
 ```{r preproc-2}
 GP = GlobalPatterns
-# Remove OTUs that do not show appear more 
-# than 5 times in more than half the samples
 wh0 = genefilter_sample(GP, filterfun_sample(function(x) x > 5), A=0.5*nsamples(GP))
 GP1 = prune_taxa(wh0, GP)
-# Transform to even sampling depth
+```
+
+Transform to even sampling depth.
+```{r preprocess-transform}
 GP1 = transform_sample_counts(GP1, function(x) 1E6 * x/sum(x))
 ```
 
-Do an additional trimming by cumulative abundance of phyla, take only the top 5
-
+Keep only the most abundant five phyla.
 ```{r preprocess-phylum-trim}
-phylum.sum = tapply(taxa_sums(GP1), tax_table(GP1)[, "Phylum"], sum, na.rm = TRUE)
+phylum.sum = tapply(taxa_sums(GP1), tax_table(GP1)[, "Phylum"], sum, na.rm=TRUE)
 top5phyla = names(sort(phylum.sum, TRUE))[1:5]
-GP1 = subset_taxa(GP1, Phylum %in% top5phyla)
+GP1 = prune_taxa((tax_table(GP1)[, "Phylum"] %in% top5phyla), GP1)
 ```
 
 That still leaves `r ntaxa(GP1)` OTUs in the dataset, `GP1`.
@@ -173,15 +174,20 @@ p = p + scale_colour_brewer(type="qual", palette="Set1")
 p
 ```
 
-If you want to replot a larger version of an individual plot, you can do by printing from the original `plist` from which `pdataframe` was made. Each element of `plist` is already a ggplot2 graphic. For example, we can replot the detrended correspondence analysis (DCA) by printing the second element of the list (with and without extra layers to make it look nicer).
+If you want to replot a larger version of an individual plot, you can do by printing from the original `plist` from which `pdataframe` was made. Each element of `plist` is already a ggplot2 graphic. For example, we can replot the detrended correspondence analysis (DCA) by printing the second element of the list.
 
-```{r bigger-DCA-example-plot}
+```{r bigger-DCA-example-plot-01}
 plist[[2]] 
+```
+
+Now add some extra layers to make it look nicer.
+```{r bigger-DCA-plot-02}
 p = plist[[2]] + scale_colour_brewer(type="qual", palette="Set1")
 p = p + scale_fill_brewer(type="qual", palette="Set1")
 p = p + geom_point(size=5) + geom_polygon(aes(fill=SampleType))
 p
 ```
+
 
 ---
 

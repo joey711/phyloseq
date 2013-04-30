@@ -28,7 +28,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.6'
+## [1] '1.5.7'
 ```
 
 ```r
@@ -65,25 +65,28 @@ In this case preprocessing is especially useful for showing graphically the high
 
 To quickly demonstrate and compare the results of different ordination methods, I will first further filter/preprocess the OTUs in `GP1`. I want to include some phylogenetic tree-based ordinations, which can be slow to calculate. Since the goal of this exercise is to demonstrate the `plot_ordination` capability, and not necessarily reveal any new knowledge about the Global Patterns dataset, the emphasis on this preprocessing will be on limiting the number of OTUs, not protecting intrinsic patterns in the data.
 
+Remove OTUs that do not show appear more than 5 times in more than half the samples
 
 ```r
 GP = GlobalPatterns
-# Remove OTUs that do not show appear more than 5 times in more than half
-# the samples
 wh0 = genefilter_sample(GP, filterfun_sample(function(x) x > 5), A = 0.5 * nsamples(GP))
 GP1 = prune_taxa(wh0, GP)
-# Transform to even sampling depth
+```
+
+
+Transform to even sampling depth.
+
+```r
 GP1 = transform_sample_counts(GP1, function(x) 1e+06 * x/sum(x))
 ```
 
 
-Do an additional trimming by cumulative abundance of phyla, take only the top 5
-
+Keep only the most abundant five phyla.
 
 ```r
 phylum.sum = tapply(taxa_sums(GP1), tax_table(GP1)[, "Phylum"], sum, na.rm = TRUE)
 top5phyla = names(sort(phylum.sum, TRUE))[1:5]
-GP1 = subset_taxa(GP1, Phylum %in% top5phyla)
+GP1 = prune_taxa((tax_table(GP1)[, "Phylum"] %in% top5phyla), GP1)
 ```
 
 
@@ -110,13 +113,6 @@ Let's start by plotting just the OTUs, and shading the points by Phylum. Note th
 ```r
 GP.ord <- ordinate(GP1, "NMDS", "bray")
 p1 = plot_ordination(GP1, GP.ord, type = "taxa", color = "Phylum", title = "taxa")
-```
-
-```
-## Warning: is.na() applied to non-(list or vector) of type 'NULL'
-```
-
-```r
 print(p1)
 ```
 
@@ -141,13 +137,6 @@ Next, let's plot only the samples, and shade the points by "SampleType" while al
 
 ```r
 p2 = plot_ordination(GP1, GP.ord, type = "samples", color = "SampleType", shape = "human")
-```
-
-```
-## Warning: is.na() applied to non-(list or vector) of type 'NULL'
-```
-
-```r
 p2 + geom_polygon(aes(fill = SampleType)) + geom_point(size = 5) + ggtitle("samples")
 ```
 
@@ -163,13 +152,6 @@ The `plot_ordination` function can also automatically create two different graph
 ```r
 p3 = plot_ordination(GP1, GP.ord, type = "biplot", color = "SampleType", shape = "Phylum", 
     title = "biplot")
-```
-
-```
-## Warning: is.na() applied to non-(list or vector) of type 'NULL'
-```
-
-```r
 # Some stuff to modify the automatic shape scale
 GP1.shape.names = get_taxa_unique(GP1, "Phylum")
 GP1.shape <- 15:(15 + length(GP1.shape.names) - 1)
@@ -189,13 +171,6 @@ Hmmm. In the previous graphic the occlusion problem is pretty strong. In this ca
 ```r
 p4 = plot_ordination(GP1, GP.ord, type = "split", color = "Phylum", shape = "human", 
     label = "SampleType", title = "split")
-```
-
-```
-## Warning: is.na() applied to non-(list or vector) of type 'NULL'
-```
-
-```r
 p4
 ```
 
@@ -241,12 +216,9 @@ plist = llply(as.list(ord_meths), function(i, physeq, dist) {
 ## Wisconsin double standardization
 ## Run 0 stress 0.1333 
 ## Run 1 stress 0.1333 
-## ... procrustes: rmse 4.396e-06  max resid 1.147e-05 
+## ... New best solution
+## ... procrustes: rmse 4.237e-06  max resid 1.102e-05 
 ## *** Solution reached
-```
-
-```
-## Warning: is.na() applied to non-(list or vector) of type 'NULL'
 ```
 
 ```r
@@ -283,14 +255,17 @@ p
 ![plot of chunk ord-combine-facet-plot](figure/ord-combine-facet-plot.png) 
 
 
-If you want to replot a larger version of an individual plot, you can do by printing from the original `plist` from which `pdataframe` was made. Each element of `plist` is already a ggplot2 graphic. For example, we can replot the detrended correspondence analysis (DCA) by printing the second element of the list (with and without extra layers to make it look nicer).
+If you want to replot a larger version of an individual plot, you can do by printing from the original `plist` from which `pdataframe` was made. Each element of `plist` is already a ggplot2 graphic. For example, we can replot the detrended correspondence analysis (DCA) by printing the second element of the list.
 
 
 ```r
 plist[[2]]
 ```
 
-![plot of chunk bigger-DCA-example-plot](figure/bigger-DCA-example-plot1.png) 
+![plot of chunk bigger-DCA-example-plot-01](figure/bigger-DCA-example-plot-01.png) 
+
+
+Now add some extra layers to make it look nicer.
 
 ```r
 p = plist[[2]] + scale_colour_brewer(type = "qual", palette = "Set1")
@@ -299,7 +274,8 @@ p = p + geom_point(size = 5) + geom_polygon(aes(fill = SampleType))
 p
 ```
 
-![plot of chunk bigger-DCA-example-plot](figure/bigger-DCA-example-plot2.png) 
+![plot of chunk bigger-DCA-plot-02](figure/bigger-DCA-plot-02.png) 
+
 
 
 ---
@@ -361,8 +337,6 @@ p + ggtitle("MDS/PCoA on weighted-UniFrac distance, GlobalPatterns")
 #### [plot_tree-examples](plot_tree-examples.html)
 
 #### [preprocess](preprocess.html)
-
-#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
 
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 
