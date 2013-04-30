@@ -41,7 +41,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.6'
+## [1] '1.5.8'
 ```
 
 ```r
@@ -260,6 +260,8 @@ print(plist[["w"]])
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
 

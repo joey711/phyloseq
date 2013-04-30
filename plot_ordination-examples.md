@@ -217,7 +217,7 @@ plist = llply(as.list(ord_meths), function(i, physeq, dist) {
 ## Run 0 stress 0.1333 
 ## Run 1 stress 0.1333 
 ## ... New best solution
-## ... procrustes: rmse 4.237e-06  max resid 1.102e-05 
+## ... procrustes: rmse 9.434e-07  max resid 2.779e-06 
 ## *** Solution reached
 ```
 

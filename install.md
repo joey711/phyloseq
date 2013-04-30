@@ -81,7 +81,7 @@ If these two commands result in a request to update old packages, you should pro
 
 - (2) *Use special arguments to biocLite*.
 By investigating the [phyloseq/BioC development version home page](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html)
-I was able to determine that the BioC devel branch version (was `2.13` as of Tue Apr 23 15:57:36 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
+I was able to determine that the BioC devel branch version (was `2.13` as of Tue Apr 30 13:18:08 2013), and that the repository URL for BioC-devel is therefore http://bioconductor.org/packages/2.13/bioc . Keep in mind you will need to double-check that this has not recently been updated, as is regularly done. We can now install the Bioconductor development version of phyloseq with just a few extra tweaks to the `biocLite` command, shown here.
 
 
 ```r
@@ -91,11 +91,25 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 
 ```
+## 
+## The downloaded binary packages are in
+## 	/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T//RtmpP3l0ix/downloaded_packages
+```
+
+```
+## Bioconductor version 2.13 (BiocInstaller 1.11.1), ?biocLite for help
+```
+
+```
+## 'BiocInstaller' updated to version 1.11.1
+```
+
+```
 ## BioC_mirror: http://bioconductor.org
 ```
 
 ```
-## Using Bioconductor version 2.13 (BiocInstaller 1.11.0), R version 3.0.0.
+## Using Bioconductor version 2.13 (BiocInstaller 1.11.1), R version 3.0.0.
 ```
 
 ```
@@ -105,7 +119,7 @@ biocLite("phyloseq", siteRepos = devel, suppressUpdates = TRUE, type = "source")
 ```
 ## 
 ## The downloaded source packages are in
-## 	'/private/var/folders/pc/j6k8xlt13kdg_y8755vzgprw0000gn/T/Rtmp4ndcS8/downloaded_packages'
+## 	'/private/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T/RtmpP3l0ix/downloaded_packages'
 ```
 
 
@@ -249,7 +263,25 @@ For installing from source
 temp <- tempfile()
 sourceURL = "http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.3.tar.gz"
 download.file(sourceURL, temp)
+```
+
+```
+## Warning: cannot open: HTTP status was '404 Not Found'
+```
+
+```
+## Error: cannot open URL
+## 'http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.3.tar.gz'
+```
+
+```r
 install.packages(temp, repos = NULL, type = "source")
+```
+
+```
+## Warning: installation of package
+## '/var/folders/w4/9v9h12z91jzfxhdk3s2fdyf00000gn/T//RtmpP3l0ix/file153936c7d1624'
+## had non-zero exit status
 ```
 
 

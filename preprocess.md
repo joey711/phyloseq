@@ -18,7 +18,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.5"
+## [1] "1.5.7"
 ```
 
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
