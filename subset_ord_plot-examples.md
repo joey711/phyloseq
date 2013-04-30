@@ -7,36 +7,61 @@ Subset points in an ordination plot
 
 The `subset_ord_plot` function is a "convenience function" intended to make it easier to retrieve a plot-derived `data.frame` with a subset of points according to a `threshold` and `method`. The meaning of the `threshold` depends upon the `method`.
 
-Load the phyloseq package, and the GlobalPatterns example dataset
-
+Load the necessary packages and data.
 
 ```r
 library("phyloseq")
-data("GlobalPatterns")
+packageVersion("phyloseq")
 ```
 
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial – and also how you can check your own current version from the command line.
+```
+## [1] '1.5.6'
+```
+
+```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
+```
+
+```r
+data(GlobalPatterns)
+```
+
+
+ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
 
 
 ```r
-packageDescription("phyloseq")$Version
+theme_set(theme_bw())
 ```
 
-```
-## [1] "1.5.5"
-```
 
 
 Some subsetting and light massaging of the `GlobalPatterns` dataset.
 
+Clean zeros.
+
 ```r
-# Need to clean the zeros from GlobalPatterns:
 GP <- GlobalPatterns
 GP <- prune_species(taxa_sums(GP) > 0, GP)
-# Add 'human' variable to GP
+```
+
+
+Add `"human"` variable to `GP` to indicate human-associated samples.
+
+```r
 sample_data(GP)$human <- get_variable(GP, "SampleType") %in% c("Feces", "Mock", 
     "Skin", "Tongue")
-# Subset to just Bacteroidetes
+```
+
+
+Subset to just Bacteroidetes phylum. 
+
+```r
 GP <- subset_taxa(GP, Phylum == "Bacteroidetes")
 ```
 
@@ -56,18 +81,17 @@ p1 = plot_ordination(GP, gpca, "species", color = "Class")
 p1
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 Re-draw this as topo without points, and facet
 
 ```r
-library("ggplot2")
 p0 = ggplot(p1$data, p1$mapping) + geom_density2d() + facet_wrap(~Class)
 p0
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 Re-draw this but include points
@@ -77,7 +101,7 @@ p1 = p1 + geom_density2d() + facet_wrap(~Class)
 p1
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 
 Add a layer of a subset of species-points that are furthest from origin.
@@ -86,19 +110,19 @@ Add a layer of a subset of species-points that are furthest from origin.
 p0 + geom_point(data = subset_ord_plot(p1, 0.7, "square"), size = 1)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-81.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-91.png) 
 
 ```r
 p0 + geom_point(data = subset_ord_plot(p1, 0.7, "farthest"), size = 1)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-82.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-92.png) 
 
 ```r
 p0 + geom_point(data = subset_ord_plot(p1, 0.7, "radial"), size = 1)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-83.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-93.png) 
 
 
 Here is what the data retreived by `subset_ord_plot` actually looks like
