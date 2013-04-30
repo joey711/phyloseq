@@ -126,3 +126,41 @@ example(enterotype, ask = FALSE)
 ```
 
 
+
+
+---
+
+### Other tutorial pages for the phyloseq package:
+
+#### [distance](distance.html)
+
+#### [Example-Data](Example-Data.html)
+
+#### [future-devel](future-devel.html)
+
+#### [import-data](import-data.html)
+
+#### [index](index.html)
+
+#### [install](install.html)
+
+#### [merge](merge.html)
+
+#### [plot_bar-examples](plot_bar-examples.html)
+
+#### [plot_heatmap-examples](plot_heatmap-examples.html)
+
+#### [plot_network-examples](plot_network-examples.html)
+
+#### [plot_ordination-examples](plot_ordination-examples.html)
+
+#### [plot_richness-examples](plot_richness-examples.html)
+
+#### [plot_tree-examples](plot_tree-examples.html)
+
+#### [preprocess](preprocess.html)
+
+#### [subset_ord_plot-examples](subset_ord_plot-examples.html)
+
+#### [tutorials-index](tutorials-index.html)
+

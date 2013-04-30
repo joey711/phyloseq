@@ -23,7 +23,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.7"
+## [1] "1.5.8"
 ```
 
 
@@ -123,8 +123,6 @@ plot_richness(GP, "human", "SampleType")
 #### [plot_tree-examples](plot_tree-examples.html)
 
 #### [preprocess](preprocess.html)
-
-#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
 
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 

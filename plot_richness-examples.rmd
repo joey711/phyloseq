@@ -1,4 +1,4 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8, warning=FALSE)`
+`r opts_chunk$set(cache=TRUE, fig.width=9, warning=FALSE)`
 <link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
 
 plot_richness examples
@@ -38,7 +38,7 @@ plot_richness(GP, "SampleType")
 plot_richness(GP, x = "SampleType", color="SampleType")
 ```
 We can also add the Shannon and Simpson alpha diversity indices by setting the `shsi` argument to `TRUE`. Naturally, the scales of these indices are very different from estimates for numbers of OTUs, and so the axes limits are allowed to differ in each panel when this option is `TRUE`.
-```{r}
+```{r shsi-true, fig.width=11}
 plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
 ```
 

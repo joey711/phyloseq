@@ -16,7 +16,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.7'
+## [1] '1.5.8'
 ```
 
 ```r
@@ -192,8 +192,6 @@ p + geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "st
 #### [plot_tree-examples](plot_tree-examples.html)
 
 #### [preprocess](preprocess.html)
-
-#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
 
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 

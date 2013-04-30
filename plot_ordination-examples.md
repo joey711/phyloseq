@@ -28,7 +28,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.7'
+## [1] '1.5.8'
 ```
 
 ```r
@@ -215,9 +215,15 @@ plist = llply(as.list(ord_meths), function(i, physeq, dist) {
 ## Square root transformation
 ## Wisconsin double standardization
 ## Run 0 stress 0.1333 
-## Run 1 stress 0.1333 
-## ... New best solution
-## ... procrustes: rmse 9.434e-07  max resid 2.779e-06 
+## Run 1 stress 0.1673 
+## Run 2 stress 0.1522 
+## Run 3 stress 0.1392 
+## Run 4 stress 0.2531 
+## Run 5 stress 0.1832 
+## Run 6 stress 0.1499 
+## Run 7 stress 0.3075 
+## Run 8 stress 0.1333 
+## ... procrustes: rmse 4.946e-06  max resid 1.263e-05 
 ## *** Solution reached
 ```
 

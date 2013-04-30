@@ -412,8 +412,6 @@ data(GlobalPatterns)
 
 #### [preprocess](preprocess.html)
 
-#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
-
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 
 #### [tutorials-index](tutorials-index.html)

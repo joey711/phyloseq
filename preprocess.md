@@ -18,7 +18,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.7"
+## [1] "1.5.8"
 ```
 
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
@@ -293,8 +293,6 @@ plot_bar(gpsfb, "Family", "Abundance", "Family", title = title, facet_grid = "Sa
 #### [plot_tree-examples](plot_tree-examples.html)
 
 #### [preprocess](preprocess.html)
-
-#### [rebuild-all-from-Rmarkdown.R](rebuild-all-html-from-Rmarkdown.R)
 
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 
