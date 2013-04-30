@@ -18,10 +18,10 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
-phyloseq 1.5.6 - plot_ordination()
+
+phyloseq 1.5.6-.7 - plot_ordination()
 ===========
 plot_ordination() now includes percent variability on axis labels, if possible
-
 
 phyloseq 1.5.5 - Update citation info for latest per-reviewed phyloseq article
 ===========

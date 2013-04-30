@@ -679,13 +679,12 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	}
 
 	# Add fraction variability to axis labels, if available
-	if( all(!is.null(extract_eigenvalue(ordination)[axes])) &
-				all(!is.na(extract_eigenvalue(ordination)[axes])) ){
+	if( length(extract_eigenvalue(ordination)[axes]) > 0 ){
 		# Only attempt to add fraction variability
 		# if extract_eigenvalue returns something
-		
+    eigvec = extract_eigenvalue(ordination)    
 		# Fraction variability, fracvar
-		fracvar = extract_eigenvalue(ordination)[axes]
+		fracvar = eigvec / sum(eigvec)
 		# Percent variability, percvar
 		percvar = round(100*fracvar, 1)
 		# The string to add to each axis label, strivar
