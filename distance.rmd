@@ -155,7 +155,7 @@ print(plist[["w"]])
 ### Other tutorial pages for the phyloseq package:
 
 ```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern=".html")
+htmlfiles = list.files(pattern="\\.html")
 htmlstems = gsub(".html", "", htmlfiles)
 mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
 cat(mdlines, sep="\n\n")

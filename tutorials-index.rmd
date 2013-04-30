@@ -12,9 +12,9 @@ Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io
 ## Available tutorials
 
 ```{r find-parse-tutorials, echo=FALSE, include=FALSE}
-files = list.files(pattern=".[Rr]md")
+files = list.files(pattern="\\.[Rr]md")
 length(files)
-stems = gsub(".[Rr]md", "", files)
+stems = gsub("\\.[Rr]md", "", files)
 links = paste(stems, ".html", sep="")
 mdlines = paste("### [", stems, "](", links, ")", sep="")
 ```
