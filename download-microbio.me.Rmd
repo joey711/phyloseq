@@ -14,19 +14,19 @@ There are datasets posted on [microbio.me/qiime](http://www.microbio.me/qiime/in
 
 First, [create an account and login](http://www.microbio.me/qiime/index.psp). Here is what the frontpage should look like:
 
-<img src="microbio-me-login.png" width="750px" />
+<img src="http://joey711.github.io/phyloseq/microbio-me-login.png" width="750px" />
 
 Once you have logged-in, you will see a different screen. Click on "Get Study Summary and Raw Data", which will be a link near the top of the page (highlighted at the bottom of the following clipped page):
 
-<img src="microbio-me-download-data.png" width="400px" />
+<img src="http://joey711.github.io/phyloseq/microbio-me-download-data.png" width="400px" />
 
 And once you're at this "raw data" page, you will see a box below "Available Studies". The box is a large scrollable list, and the page below it will start off blank:
 
-<img src="microbio-me-data-databox.png" width="250px" />
+<img src="http://joey711.github.io/phyloseq/microbio-me-data-databox.png" width="250px" />
 
 But once you click on something, details and additional links for that particular study will pop up. For example, I clicked on a version of the "Global Patterns" dataset in the box, which exposed a page below with further details about the study and links for data. If available, there is an FTP link called "Sequences, Mapping and OTU Table", which can be accessed directly from within R using the code provided farther down this page. The link itself is highlighted on this screenshot:
 
-<img src="microbio-me-gpdata.png" width="250px" />
+<img src="http://joey711.github.io/phyloseq/microbio-me-gpdata.png" width="250px" />
 
 
 ---

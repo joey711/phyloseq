@@ -1,0 +1,107 @@
+
+<h1>Download microbio.me/qiime datasets</h1>
+
+<p><a href="http://joey711.github.io/phyloseq/download-microbio.me.html">Originally hosted here</a></p>
+
+<p>Here is an example accessing microbiome datasets from a public repository, using entirely R code. I haven&#39;t yet figured out how to list the available studies at <code>microbio.me/qiime</code> from within R, but I have provided illustrate instructions for finding details about studies you might want to download and explore, and some example FTP addresses that I used after doing just that. Note that you likely need to create an account at <code>microbio.me/qiime</code> in order to explore the studies they have available for download.</p>
+
+<h2>Explore microbio.me/qiime</h2>
+
+<p>There are datasets posted on <a href="http://www.microbio.me/qiime/index.psp">microbio.me/qiime</a>, and these usually have the &ldquo;raw&rdquo; OTU clustered data hosted at an FTP address. I&#39;m not sure of a &ldquo;nice&rdquo; way to explor the details of the different studies using the FTP address directly, but I can post a few hand-picked datasets and import them all.</p>
+
+<p>First, <a href="http://www.microbio.me/qiime/index.psp">create an account and login</a>. Here is what the frontpage should look like:</p>
+
+<img src="http://joey711.github.io/phyloseq/microbio-me-login.png" width="750px" />
+
+<p>Once you have logged-in, you will see a different screen. Click on &ldquo;Get Study Summary and Raw Data&rdquo;, which will be a link near the top of the page (highlighted at the bottom of the following clipped page):</p>
+
+<img src="http://joey711.github.io/phyloseq/microbio-me-download-data.png" width="400px" />
+
+<p>And once you&#39;re at this &ldquo;raw data&rdquo; page, you will see a box below &ldquo;Available Studies&rdquo;. The box is a large scrollable list, and the page below it will start off blank:</p>
+
+<img src="http://joey711.github.io/phyloseq/microbio-me-data-databox.png" width="250px" />
+
+<p>But once you click on something, details and additional links for that particular study will pop up. For example, I clicked on a version of the &ldquo;Global Patterns&rdquo; dataset in the box, which exposed a page below with further details about the study and links for data. If available, there is an FTP link called &ldquo;Sequences, Mapping and OTU Table&rdquo;, which can be accessed directly from within R using the code provided farther down this page. The link itself is highlighted on this screenshot:</p>
+
+<img src="http://joey711.github.io/phyloseq/microbio-me-gpdata.png" width="250px" />
+
+
+<h1>Download, parse datasets</h1>
+
+<p>Load phyloseq package&hellip; and ggplot2 for plotting at the end&hellip;</p>
+
+<pre><code class="r">library(&quot;phyloseq&quot;)
+packageVersion(&quot;phyloseq&quot;)
+</code></pre>
+
+<pre><code>## [1] &#39;1.5.8&#39;
+</code></pre>
+
+<pre><code class="r">library(&quot;ggplot2&quot;)
+packageVersion(&quot;ggplot2&quot;)
+</code></pre>
+
+<pre><code>## [1] &#39;0.9.3.1&#39;
+</code></pre>
+
+<pre><code class="r">theme_set(theme_bw())
+</code></pre>
+
+<p>Here I define a function to download and parse data from the FTP server for <code>microbio.me</code>. This uses some useful standard R code for downloading, unzipping, creating temporary files and directories, manipulating filenames and so forth. It also includes a few lines for importing and parsing the microbiome data using <a href="http://joey711.github.io/phyloseq/">the phyloseq package</a>.</p>
+
+<pre><code class="r">microbio.me.ftp = function(zipftp) {
+    require(&quot;phyloseq&quot;)
+    zipfile = tempfile()
+    download.file(zipftp, zipfile)
+    import_dir = tempdir()
+    unzip(zipfile, exdir = import_dir)
+    studyname = gsub(&quot;_split_library_seqs_and_mapping.zip&quot;, &quot;&quot;, basename(zipftp), 
+        fixed = TRUE)
+    biomfile = paste0(import_dir, &quot;/&quot;, studyname, &quot;_closed_reference_otu_table.biom&quot;)
+    biom = import_biom(biomfile, parseFunction = parse_taxonomy_greengenes)
+    sdfile = paste0(import_dir, &quot;/&quot;, studyname, &quot;_mapping_file.txt&quot;)
+    sample_metadata = import_qiime_sample_data(sdfile)
+    return(merge_phyloseq(biom, sample_metadata))
+}
+</code></pre>
+
+<p>Here are several hand-picked FTP addresses of datasets I wanted to include in subsequent analysis.</p>
+
+<pre><code class="r"># Restroom Surfaces - Flores_restroom_surface_biogeography
+restroomftp = &quot;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_1335_split_library_seqs_and_mapping.zip&quot;
+restroom = microbio.me.ftp(restroomftp)
+# # Global Patterns - CaporasoIlluminaPNAS2011_3prime gpftp =
+# &#39;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_721_split_library_seqs_and_mapping.tgz&#39;
+# gp = microbio.me.ftp(gpftp) smokers - Charlson_cigarette_smokers
+smokeftp = &quot;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip&quot;
+smokers = microbio.me.ftp(smokeftp)
+# rs - resistant starches - Martinez_Resistant_starches
+rsftp = &quot;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_495_split_library_seqs_and_mapping.zip&quot;
+rs = microbio.me.ftp(rsftp)
+# abt - antibiotic timecourse - Relman_antibiotic_timeseries
+abtftp = &quot;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip&quot;
+abt = microbio.me.ftp(abtftp)
+# vagina - vaginal microbiome - Ravel_reproductive_women_vagina
+vaginaftp = &quot;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_509_split_library_seqs_and_mapping.zip&quot;
+vagina = microbio.me.ftp(vaginaftp)
+# palms - Fierer_undergraduate_palms
+palmsftp = &quot;ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_317_split_library_seqs_and_mapping.zip&quot;
+palms = microbio.me.ftp(palmsftp)
+</code></pre>
+
+<h2>Plots</h2>
+
+<p>And some plots, because humans like images and it also helps demonstrate that the data is now directly available for analysis.</p>
+
+<pre><code class="r">dlist = list(restroom, smokers, rs, abt, vagina, palms)
+# Remove &#39;empty&#39; OTUs and samples from each dataset.  Note that I&#39;ve
+# chosen to keep only samples that have more than 100 total reads
+dlist = lapply(dlist, function(physeq) {
+    physeq = prune_taxa(taxa_sums(physeq) &gt; 0, physeq)
+    physeq = prune_samples(sample_sums(physeq) &gt; 100, physeq)
+})
+# lapply(dlist, plot_richness)
+plot_richness(smokers, x = &quot;AGE&quot;, color = &quot;SEX&quot;, shape = &quot;BODY_PRODUCT&quot;)
+</code></pre>
+
+<h1><a href="http://joey711.github.io/phyloseq/download-microbio.me.html">READ MORE</a></h1>
