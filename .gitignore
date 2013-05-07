@@ -2,7 +2,8 @@
 .Rhistory
 .Rapp.history
 *.Rproj
-
+cache/*
+figure/*
 .Rproj.user/5BCB408B/sdb/prop/INDEX
 
 .Rbuildignore
