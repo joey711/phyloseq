@@ -4,7 +4,7 @@
 The phyloseq Tutorials Index
 ========================================================
 
-This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Tue Apr 30 14:00:59 2013.
+This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Wed May  8 16:16:51 2013.
 
 Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io/phyloseq-demo/) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
 
@@ -15,6 +15,8 @@ Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io
 
 
 ### [distance](distance.html)
+
+### [download-microbio.me](download-microbio.me.html)
 
 ### [Example-Data](Example-Data.html)
 
@@ -51,6 +53,8 @@ Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io
 For more advanced users interested in seeing and/or modifying the [R markdown](http://www.rstudio.com/ide/docs/r_markdown) source code from which these reproducible, web browser-friendly tutorials were created.
 
 ### [distance.rmd](distance.rmd)
+
+### [download-microbio.me.Rmd](download-microbio.me.Rmd)
 
 ### [Example-Data.rmd](Example-Data.rmd)
 
