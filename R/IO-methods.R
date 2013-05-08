@@ -1984,6 +1984,7 @@ microbio_me_qiime = function(zipftp, ext=".zip", ...){
 	# zipftp = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_721_split_library_seqs_and_mapping.tgz"
 	# zipftp = "~/Downloads/study_721_split_library_seqs_and_mapping.tgz"
 	# zipftp = "~/Downloads/study_721_split_library_seqs_and_mapping.zip"
+	# zipftp = "study_721_split_library_seqs_and_mapping.zip"
 	# Define naming convention
 	front = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_"	
 	if( inherits(zipftp, "numeric") ){
@@ -2022,6 +2023,9 @@ microbio_me_qiime = function(zipftp, ext=".zip", ...){
 		#mapfile = filelist[grep("mapping_file.txt", filelist, fixed=TRUE)]
 		#biomfile = filelist[grep(".biom", filelist, fixed=TRUE)]
 		untar(zipfile, exdir=import_dir)
+		# `untar` appears to create a new dir, rather than just unpack to `exdir`.
+		# This differs from `unzip` default. Add new directory name to `import_dir`
+		import_dir = file.path(import_dir, gsub("\\.[[:alnum:]]+$", "", basename(zipftp)))
 	} else {
 		# The compression format was not recognized. Provide informative error msg.
 		stop("Could not determine the compression type. Expected extensions are (mostly) .zip or .tgz")
