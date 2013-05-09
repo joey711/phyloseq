@@ -59,6 +59,16 @@ setMethod("tax_table", "matrix", function(object){
 	if(is.null(colnames(TT))){
 		colnames(TT) <- paste("ta", 1:ncol(TT), sep="")
 	}	
+  
+	# Further verify at least one value is non-NA
+	test = apply(apply(TT, 2, is.na), 2, all)
+	if( any(test) ){
+	  text = "\n The following columns were empty (all NA).\n"
+	  text = paste0(text, " They were removed:")
+	  text = paste(text, paste(names(which(test)), collapse="\n"), sep="\n")
+	  warning(text)
+	}
+  
 	return(TT)
 })
 # Constructor; coerce to matrix, then pass on for creating taxonomyTable.

@@ -73,14 +73,6 @@ validTaxonomyTable <- function(object){
     text = paste0(text, "Taxonomy is expected to be characters.")
 		return(text)
 	}
-	# Further verify at least one value is non-NA
-	test = apply(apply(object, 2, is.na), 2, all)
-	if( any(test) ){
-    text = "\n The following columns were empty (all NA).\n"
-    text = paste0(text, " They must be removed for valid taxonomyTable:")
-    text = paste(text, paste(names(which(test)), collapse="\n"), sep="\n")
-		return(text)
-	}
 	return(TRUE)
 }
 ## assign the function as the validity method for the sample_data class
