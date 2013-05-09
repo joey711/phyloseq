@@ -6,6 +6,8 @@ inst/.DS_Store
 .DS_Store
 >>>>>>> DS_Store
 
+cache/*
+
 .DS_Store
 
 tests/.Rapp.history
