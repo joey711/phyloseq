@@ -22,10 +22,11 @@
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
 #'
-#' @return A taxonomyTable object. It is either grabbed from the relevant slot
+#' @return A \code{\link{taxonomyTable-class}} object.
+#' It is either grabbed from the relevant slot
 #' if \code{object} is complex, or built anew if \code{object} is a 
-#' character matrix representing the taxonomic classification of species in the
-#' experiment.
+#' character matrix representing the taxonomic classification of 
+#' species in the experiment.
 #'
 #' @seealso \code{\link{phy_tree}}, \code{\link{sample_data}}, \code{\link{otu_table}}
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
@@ -48,30 +49,31 @@ setMethod("tax_table",  "ANY", function(object, errorIfNULL=TRUE){
 #' @rdname tax_table-methods
 #' @aliases tax_table,matrix-method
 setMethod("tax_table", "matrix", function(object){
-	# instantiate first to check validity
-	TT <- new("taxonomyTable", object)
-		
-	# Want dummy species/taxa index names if missing
-	if(is.null(rownames(TT))){
-		rownames(TT) <- paste("sp", 1:nrow(TT), sep="")
-	}
-	if(is.null(colnames(TT))){
-		colnames(TT) <- paste("ta", 1:ncol(TT), sep="")
-	}	
-	return(TT)
+  # Want dummy species/taxa index names if missing
+  if(is.null(rownames(object))){
+    rownames(object) <- paste("sp", 1:nrow(object), sep="")
+  }
+  if(is.null(colnames(object))){
+    colnames(object) <- paste("ta", 1:ncol(object), sep="")
+  }	
+	# instantiate as taxonomyTable
+	return(new("taxonomyTable", object))
 })
 # Constructor; coerce to matrix, then pass on for creating taxonomyTable.
 #' @rdname tax_table-methods
 #' @aliases tax_table,data.frame-method
 setMethod("tax_table", "data.frame", function(object){
 	# Warn first
-	warning(
-		"Coercing from data.frame class to character matrix prior to building taxonomyTable.",
-		"\n",
-		"This could introduce artifacts. Check your taxonomyTable, or coerce to matrix manually."
-	)
+  text = "Coercing from data.frame class to character matrix \n"
+  text = paste0(text, "prior to building taxonomyTable. \n")
+  text = paste0(text, "This could introduce artifacts. \n")
+  text = paste0(text, "Check your taxonomyTable, or coerce to matrix manually.")
+	warning(text)
 	# Coerce everything to a matrix, then char-vector, then back to matrix.
-	TT <- matrix(as(as(object, "matrix"), "character"), nrow=nrow(object), ncol=ncol(object))
+	TT <- matrix(as(as(object, "matrix"), "character"),
+               nrow=nrow(object),
+               ncol=ncol(object)
+        )
 	# Pass on to matrix-method.
 	tax_table(TT)
 })

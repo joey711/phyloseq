@@ -1,0 +1,29 @@
+#SampleID	Primer	Final_Barcode	Barcode_truncated_plus_T	Barcode_full_length	SampleType	Description
+CL3	ILBC_01	AACGCA	TGCGTT	CTAGCGTGCGT	Soil	"Calhoun South Carolina Pine soil, pH 4.9"
+CC1	ILBC_02	AACTCG	CGAGTT	CATCGACGAGT	Soil	"Cedar Creek Minnesota, grassland, pH 6.1"
+SV1	ILBC_03	AACTGT	ACAGTT	GTACGCACAGT	Soil	"Sevilleta new Mexico, desert scrub, pH 8.3"
+M31Fcsw	ILBC_04	AAGAGA	TCTCTT	TCGACATCTCT	Feces	"M3, Day 1, fecal swab, whole body study"
+M11Fcsw	ILBC_05	AAGCTG	CAGCTT	CGACTGCAGCT	Feces	"M1, Day 1, fecal swab, whole body study "
+F11Fcsw	ILBC_06	AATCAG	CTGATT	ACGAGACTGAT	Feces	"F1, Day 1,  fecal swab, whole body study "
+M31Plmr	ILBC_07	AATCGT	ACGATT	CGAGTCACGAT	Skin	"M3, Day 1, right palm, whole body study"
+M11Plmr	ILBC_08	ACACAC	GTGTGT	GCCATAGTGTG	Skin	"M1, Day 1, right palm, whole body study "
+F21Plmr	ILBC_09	ACACAT	ATGTGT	GTAGACATGTG	Skin	"F1, Day 1,  right palm, whole body study "
+M31Tong	ILBC_10	ACACGA	TCGTGT	TGTGGCTCGTG	Tongue	"M3, Day 1, tongue, whole body study "
+M11Tong	ILBC_11	ACACGG	CCGTGT	TAGACACCGTG	Tongue	"M1, Day 1, tongue, whole body study "
+F11Tong	ILBC_12	ACACTA	TAGTGT	CGGATCTAGTG	Tongue	"F1, Day 1, tongue, whole body study "
+LMEpi24M	ILBC_13	ACACTG	CAGTGT	CATGAACAGTG	Freshwater	"Lake Mendota Minnesota, 24 meter epilimnion "
+SLEpi20M	ILBC_15	ACAGAG	CTCTGT	AGCCGACTCTG	Freshwater	"Sparkling Lake Wisconsin, 20 meter eplimnion"
+AQC1cm	ILBC_16	ACAGCA	TGCTGT	GACCACTGCTG	Freshwater (creek)	"Allequash Creek, 0-1cm depth"
+AQC4cm	ILBC_17	ACAGCT	AGCTGT	CAAGCTAGCTG	Freshwater (creek)	"Allequash Creek, 3-4 cm depth"
+AQC7cm	ILBC_18	ACAGTG	CACTGT	ATGAAGCACTG	Freshwater (creek)	"Allequash Creek, 6-7 cm depth"
+NP2	ILBC_19	ACAGTT	AACTGT	TCGCGCAACTG	Ocean	"Newport Pier, CA surface water, Time 1"
+NP3	ILBC_20	ACATCA	TGATGT	GCTAAGTGATG	Ocean	"Newport Pier, CA surface water, Time 2"
+NP5	ILBC_21	ACATGA	TCATGT	GAACGATCATG	Ocean	"Newport Pier, CA surface water, Time 3"
+TRRsed1	ILBC_22	ACATGT	ACATGT	CACGTGACATG	Sediment (estuary)	"Tijuana River Reserve, depth 1"
+TRRsed2	ILBC_23	ACATTC	GAATGT	TGCGCTGAATG	Sediment (estuary)	"Tijuana River Reserve, depth 2"
+TRRsed3	ILBC_24	ACCACA	TGTGGT	GATGTATGTGG	Sediment (estuary)	"Tijuana River Reserve, depth 2"
+TS28	ILBC_25	ACCAGA	TCTGGT	GCATCGTCTGG	Feces	Twin #1
+TS29	ILBC_26	ACCAGC	GCTGGT	CTAGTCGCTGG	Feces	Twin #2
+Even1	ILBC_27	ACCGCA	TGCGGT	TGACTCTGCGG	Mock	Even1
+Even2	ILBC_28	ACCTCG	CGAGGT	TCTGATCGAGG	Mock	Even2
+Even3	ILBC_29	ACCTGT	ACAGGT	AGAGAGACAGG	Mock	Even3
