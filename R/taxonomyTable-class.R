@@ -49,27 +49,15 @@ setMethod("tax_table",  "ANY", function(object, errorIfNULL=TRUE){
 #' @rdname tax_table-methods
 #' @aliases tax_table,matrix-method
 setMethod("tax_table", "matrix", function(object){
-	# instantiate first to check validity
-	TT <- new("taxonomyTable", object)
-		
-	# Want dummy species/taxa index names if missing
-	if(is.null(rownames(TT))){
-		rownames(TT) <- paste("sp", 1:nrow(TT), sep="")
-	}
-	if(is.null(colnames(TT))){
-		colnames(TT) <- paste("ta", 1:ncol(TT), sep="")
-	}	
-  
-	# Further verify at least one value is non-NA
-	test = apply(apply(TT, 2, is.na), 2, all)
-	if( any(test) ){
-	  text = "\n The following columns were empty (all NA).\n"
-	  text = paste0(text, " They were removed:")
-	  text = paste(text, paste(names(which(test)), collapse="\n"), sep="\n")
-	  warning(text)
-	}
-  
-	return(TT)
+  # Want dummy species/taxa index names if missing
+  if(is.null(rownames(object))){
+    rownames(object) <- paste("sp", 1:nrow(object), sep="")
+  }
+  if(is.null(colnames(object))){
+    colnames(object) <- paste("ta", 1:ncol(object), sep="")
+  }	
+	# instantiate as taxonomyTable
+	return(new("taxonomyTable", object))
 })
 # Constructor; coerce to matrix, then pass on for creating taxonomyTable.
 #' @rdname tax_table-methods
