@@ -1044,7 +1044,11 @@ psmelt = function(physeq){
 
 	# Next merge taxonomy data
 	if( !is.null(tax_table(physeq, FALSE)) ){
-		tdf = data.frame(tax_table(physeq), OTU=taxa_names(physeq))
+	  TT = tax_table(physeq)
+	  # First, remove any empty columns (all NA)
+	  TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
+    # Now add to the "psmelt" data.frame
+		tdf = data.frame(TT, OTU=taxa_names(physeq))
 		mdf = merge(mdf, tdf, by.x="OTU")	
 	}
 	
