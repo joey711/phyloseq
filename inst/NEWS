@@ -20,7 +20,7 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
-phyloseq 1.5.11 - major feature: interface to microbio.me/qiime data repo
+phyloseq 1.5.11-12 - major feature: interface to microbio.me/qiime data repo
 ===========
 Now possible to directly download, unpack, import multi-component data
 into standard phyloseq form in R using a single command using the new

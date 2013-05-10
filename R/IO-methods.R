@@ -1984,6 +1984,16 @@ build_tax_table = function(taxlist){
 #' # and a standard R installation. Indicates whether this is likely to
 #' # work on your system for a URL or local file, respectively.
 #' capabilities("http/ftp"); capabilities("fifo")
+#' # A working example with a local example file included in phyloseq
+#' zipfile = "study_816_split_library_seqs_and_mapping.zip"
+#' zipfile = system.file("extdata", zipfile, package="phyloseq")
+#' tarfile = "study_816_split_library_seqs_and_mapping.tar.gz"
+#' tarfile = system.file("extdata", tarfile, package="phyloseq")
+#' tarps = microbio_me_qiime(tarfile)
+#' zipps = microbio_me_qiime(zipfile) 
+#' identical(tarps, zipps)
+#' tarps; zipps
+#' plot_heatmap(tarps)
 #' # A real example 
 #' # # Smokers dataset
 #' # smokezip = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip"
@@ -1992,10 +2002,6 @@ build_tax_table = function(taxlist){
 #' # smokers2 = microbio_me_qiime(524)
 #' # identical(smokers1, smokers2)
 microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengenes, ...){
-	# zipftp = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_721_split_library_seqs_and_mapping.tgz"
-	# zipftp = "~/Downloads/study_721_split_library_seqs_and_mapping.tgz"
-	# zipftp = "~/Downloads/study_721_split_library_seqs_and_mapping.zip"
-	# zipftp = "study_721_split_library_seqs_and_mapping.zip"
 	# Define naming convention
 	front = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_"	
 	if( inherits(zipftp, "numeric") ){
