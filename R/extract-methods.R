@@ -26,10 +26,7 @@ setMethod("[", "sample_data", function(x, i, j, ...){
 #' @rdname extract-methods
 setMethod("[", "taxonomyTable", function(x, i, j, ...){
   # Coerce to matrix, apply std extraction, reconstruct.
-  x = as(x, "matrix")
-  # Omit columns that are now empty (all NA)
-  x = x[, apply(!apply(x, 2, is.na), 2, any), drop=FALSE]
-	return( tax_table(x[i, j, drop=FALSE]) )
+	return( tax_table(as(x, "matrix")[i, j, drop=FALSE]) )
 })
 # A numeric extraction method is already defined in Biostrings for XStringSet
 #' Add name-character-based extraction method for XStringSet
