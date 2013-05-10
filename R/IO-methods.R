@@ -1637,7 +1637,9 @@ import_biom <- function(BIOMfilename,
 	# Check if sparse. Must parse differently than dense
 	if( x$matrix_type == "sparse" ){
 		otumat = matrix(0, nrow=x$shape[1], ncol=x$shape[2])
-		dummy  = sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
+		dummy  = sapply(x$data, function(i){
+      otumat[(i[1]+1), (i[2]+1)] <<- i[3]
+		})
 	}
 	# parse the dense matrix instead.
 	if( x$matrix_type == "dense" ){
@@ -1940,6 +1942,15 @@ build_tax_table = function(taxlist){
 #'   if \code{zipftp} is a study number instead of the full path. 
 #'   Note that this argument has no effect if \code{zipftp} is the full path,
 #'   in which case the file extension is read directly from the downloaded file.
+#'   
+#'  @param parsef (Optional). The type of taxonomic parsing to use for the
+#'   OTU taxonomic classification, in the \code{.biom} file, if present.
+#'   This is passed on to \code{\link{import_biom}}, but unlike that function
+#'   the default parsing function is \code{\link{parse_taxonomy_greengenes}},
+#'   rather than \code{\link{parse_taxonomy_default}}, because we know
+#'   ahead of time that most (or all?) of the taxonomic classifications
+#'   in the \code{microbio.me/qiime} repository will be based on 
+#'   GreenGenes.
 #'  
 #'  @param ... (Optional, for advanced users). Additional arguments passed to 
 #'   \code{\link{download.file}}. This is mainly for non-standard links to
@@ -1980,7 +1991,7 @@ build_tax_table = function(taxlist){
 #' # # Alternatively, just use the study number
 #' # smokers2 = microbio_me_qiime(524)
 #' # identical(smokers1, smokers2)
-microbio_me_qiime = function(zipftp, ext=".zip", ...){
+microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengenes, ...){
 	# zipftp = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_721_split_library_seqs_and_mapping.tgz"
 	# zipftp = "~/Downloads/study_721_split_library_seqs_and_mapping.tgz"
 	# zipftp = "~/Downloads/study_721_split_library_seqs_and_mapping.zip"
@@ -2008,43 +2019,54 @@ microbio_me_qiime = function(zipftp, ext=".zip", ...){
 		# Else it is a local zipfile
 		zipfile = zipftp
 	}
-	import_dir = tempdir()
+	# Use the apparent file naming convention for microbio.me/qiime
+	# as the de facto guide for this API. In particular,
+  # the expectation o fthe study name (already used above)
+	studyname = gsub("\\_split\\_.+$", "", basename(zipftp))
+  # The output of tempdir() is always the same in the same R session
+  # To avoid conflict with multiple microbio.me/qiime unpacks 
+  # in the same session, pre-pend the study name and datestamp
+  unpackdir = paste0(studyname, "_", gsub("[[:blank:][:punct:]]", "", date()))
+  # Add the temp path
+	unpackdir = file.path(tempdir(), unpackdir)
+  # Create the unpack directory if needed (most likely).
+  if( !file.exists(unpackdir) ){dir.create(unpackdir)}
 	# Unpack to the temporary directory using unzip or untar
-	if( ext == ".zip" ){
-		filelist = unzip(zipfile, list=TRUE)
-		#mapfile = filelist[grep("mapping_file.txt", filelist, fixed=TRUE)]
-		#biomfile = filelist[grep(".biom", filelist, fixed=TRUE)]		
-		# Unzip the zipfile to the new temp dir
-		#unzip(zipfile, files=c(mapfile, biomfile), exdir=import_dir)	
-		unzip(zipfile, exdir=import_dir)	
+	if( ext == ".zip" ){	
+		unzip(zipfile, exdir=unpackdir, overwrite=TRUE)
 	} else if( ext %in% c("tar.gz", ".tgz", ".gz", ".gzip", ".bzip2", ".xz") ){
 		# untar the tarfile to the new temp dir
-		filelist = untar(zipfile, list=TRUE)
-		#mapfile = filelist[grep("mapping_file.txt", filelist, fixed=TRUE)]
-		#biomfile = filelist[grep(".biom", filelist, fixed=TRUE)]
-		untar(zipfile, exdir=import_dir)
-		# `untar` appears to create a new dir, rather than just unpack to `exdir`.
-		# This differs from `unzip` default. Add new directory name to `import_dir`
-		import_dir = file.path(import_dir, gsub("\\.[[:alnum:]]+$", "", basename(zipftp)))
+		untar(zipfile, exdir=unpackdir)
 	} else {
 		# The compression format was not recognized. Provide informative error msg.
-		stop("Could not determine the compression type. Expected extensions are (mostly) .zip or .tgz")
-	}
-	# Use the apparent file naming convention for microbio.me/qiime
-	# as the de facto guide for this API
-	studyname = gsub(back, "", basename(zipftp), fixed=TRUE)
-	# Check if biom file present, and parse if it is.
-	biomfile = paste0(import_dir, "/", studyname, "_closed_reference_otu_table.biom")
+    msg = paste("Could not determine the compression type.",
+                "Expected extensions are (mostly):",
+                ".zip, .tgz, .tar.gz", sep="\n")
+		stop(msg)
+	}  
+  # Define a list of imported objects that might grow 
+  # if the right file types are present and imported correctly.
 	imported_objects = vector("list")
-	if( file.exists(biomfile) ){
+	# Search recursively in the unpacked directory for the .biom file
+  # and parse if it is.
+	# There should be only one. Throw warning if more than one, take the first.
+	biomfile = list.files(unpackdir, "\\.biom", full.names=TRUE, recursive=TRUE)
+  if( length(biomfile) > 1 ){
+    warning("more than one .biom file found in compressed archive. Importing first only.")
+    biomfile = biomfile[1]
+  } else if( length(biomfile) == 1 ){
 		cat("Found biom-format file, now parsing it... \n")
-		biom = import_biom(biomfile, parseFunction = parse_taxonomy_greengenes)
+		biom = import_biom(biomfile, parseFunction=parsef)
 		cat("Done parsing biom... \n")
 		imported_objects = c(imported_objects, list(biom))
 	}
 	# Check if sample_data (qiime mapping) file present, and parse if it is.
-	sdfile = paste0(import_dir, "/", studyname, "_mapping_file.txt")
-	if( file.exists(sdfile) ){
+	sdfile = list.files(unpackdir, "\\_mapping\\_file\\.txt", full.names=TRUE, recursive=TRUE)
+	if( length(sdfile) > 1 ){
+	  warning("more than one mapping file found in compressed archive. Importing first only.")
+	  sdfile = sdfile[1]
+	} else if( length(sdfile)==1 ){
+    cat("Importing Sample Metdadata from mapping file...", fill=TRUE)
 		sample_metadata = import_qiime_sample_data(sdfile)
 		imported_objects = c(imported_objects, list(sample_metadata))
 	}
