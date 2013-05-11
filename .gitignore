@@ -4,6 +4,6 @@
 *.Rproj
 cache/*
 figure/*
-.Rproj.user/5BCB408B/sdb/prop/INDEX
+.Rproj*
 
 .Rbuildignore
