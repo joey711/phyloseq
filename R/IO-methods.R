@@ -1601,14 +1601,23 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' \code{\link{import_qiime}}
 #'
 #' \code{\link{read_tree}}
+#' 
+#' \code{\link[biom]{read_biom}}
+#'
+#' \code{\link[biom]{biom_data}}
+#'
+#' \code{\link[biom]{sample_metadata}}
+#' 
+#' \code{\link[biom]{observation_metadata}}
 #'
 #' \code{\link[Biostrings]{XStringSet-io}}
 #'
 #' @references \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
-#' @importFrom RJSONIO fromJSON
-#' @importFrom plyr ldply
-#' @importFrom plyr laply
+#' @importFrom biom read_biom
+#' @importFrom biom sample_metadata
+#' @importFrom biom biom_data
+#' @importFrom biom observation_metadata
 #' @export
 #' @examples
 #' # An included example of a rich dense biom file
@@ -1629,66 +1638,49 @@ import_biom <- function(BIOMfilename,
 	argumentlist <- list()
 	
 	# Read the data
-	x = fromJSON(BIOMfilename)
+	x = read_biom(biom_file=BIOMfilename)
 	
 	########################################
 	# OTU table:
 	########################################
-	# Check if sparse. Must parse differently than dense
-	if( x$matrix_type == "sparse" ){
-		otumat = matrix(0, nrow=x$shape[1], ncol=x$shape[2])
-		dummy  = sapply(x$data, function(i){
-      otumat[(i[1]+1), (i[2]+1)] <<- i[3]
-		})
-	}
-	# parse the dense matrix instead.
-	if( x$matrix_type == "dense" ){
-		# each row will be complete data values, should use laply
-		otumat = laply(x$data, function(i){i}, .parallel=parallel)
-	}
-	
-	# Get row (OTU) and col (sample) names
-	rownames(otumat) = sapply(x$rows, function(i){i$id})
-	colnames(otumat) = sapply(x$columns, function(i){i$id})
-	
-	otutab = otu_table(otumat, TRUE)
-	
+	otutab = otu_table(as(biom_data(x), "matrix"), taxa_are_rows=TRUE)
 	argumentlist <- c(argumentlist, list(otutab))
 	
 	########################################
 	# Taxonomy Table
 	########################################
 	# Need to check if taxonomy information is empty (minimal BIOM file)
-	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
-		tax_table <- NULL
+	if( is.null(observation_metadata(x)) ){
+		taxtab <- NULL
 	} else {
-		# parse once each character vector, save as a list
-		taxlist = lapply(x$rows, function(i){
-			parseFunction(i$metadata$taxonomy)
-		})
-		names(taxlist) = sapply(x$rows, function(i){i$id})
-		tax_table = build_tax_table(taxlist)
+    taxdf = observation_metadata(x)
+    if( any(grep("taxonomy", colnames(taxdf))) ){
+      # Expectation is that for biom files, taxonomy data
+      # will be labeled as such. The format leaves open 
+      # the possibility of other forms of OTU metadata
+      # that are not really supported... although might
+      # still work fine. Just character matrix, after all.
+      taxtab = tax_table(t(apply(taxdf, 1, parseFunction)))
+    }
+    # 		# parse once each character vector, save as a list
+    # 		taxlist = lapply(x$rows, function(i){
+    # 			parseFunction(i$metadata$taxonomy)
+    # 		})
+    # 		names(taxlist) = sapply(x$rows, function(i){i$id})
+    # 		tax_table = build_tax_table(taxlist)
 	}
-	argumentlist <- c(argumentlist, list(tax_table))
+	argumentlist <- c(argumentlist, list(taxtab))
 	
 	########################################
 	# Sample Data ("columns" in QIIME/BIOM)
 	########################################
 	# If there is no metadata (all NULL), then set sam_data <- NULL
-	if(  all( sapply(sapply(x$columns, function(i){i$metadata}), is.null) )  ){
-		sam_data <- NULL
+	if( is.null(sample_metadata(x)) ){
+		samdata <- NULL
 	} else {
-		sam_data <- ldply(x$columns, function(i){
-			if( class(i$metadata) == "list"){
-				return(i$metadata[[1]])
-			} else {
-				return(i$metadata)				
-			}
-		}, .parallel=parallel)
-		rownames(sam_data) <- sapply(x$columns, function(i){i$id})
-		sam_data <- sample_data(sam_data)
+		samdata = sample_data(sample_metadata(x))
 	}
-	argumentlist <- c(argumentlist, list(sam_data))
+	argumentlist <- c(argumentlist, list(samdata))
 
 	########################################
 	# Tree data
