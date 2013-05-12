@@ -215,7 +215,8 @@ import <- function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
+#' @importFrom Biostrings readDNAStringSet
 #' @export
 #' @examples
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
@@ -1614,6 +1615,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'
 #' @references \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
+#' @importFrom Biostrings readDNAStringSet
 #' @importFrom biom read_biom
 #' @importFrom biom sample_metadata
 #' @importFrom biom biom_data
