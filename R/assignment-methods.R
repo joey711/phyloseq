@@ -4,7 +4,10 @@
 #' @usage otu_table(x) <- value
 #'
 #' @param x (Required). \code{\link{phyloseq-class}}
-#' @param value (Required). \code{\link{otu_table-class}} or \code{\link{phyloseq-class}}.
+#' @param value (Required).
+#'  \code{\link{otu_table-class}}
+#'  or
+#'  \code{\link{phyloseq-class}}.
 #'
 #' @export
 #' @docType methods

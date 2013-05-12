@@ -8,6 +8,7 @@ inst/.DS_Store
 
 cache/*
 figure/*
+*.Rapp.history
 
 .DS_Store
 
