@@ -215,7 +215,8 @@ import <- function(pipelineName, ...){
 #' Peter J Turnbaugh, William A Walters, Jeremy Widmann, Tanya Yatsunenko, Jesse Zaneveld and Rob Knight;
 #' Nature Methods, 2010; doi:10.1038/nmeth.f.303
 #'
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
+#' @importFrom Biostrings readDNAStringSet
 #' @export
 #' @examples
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
@@ -1601,14 +1602,24 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' \code{\link{import_qiime}}
 #'
 #' \code{\link{read_tree}}
+#' 
+#' \code{\link[biom]{read_biom}}
+#'
+#' \code{\link[biom]{biom_data}}
+#'
+#' \code{\link[biom]{sample_metadata}}
+#' 
+#' \code{\link[biom]{observation_metadata}}
 #'
 #' \code{\link[Biostrings]{XStringSet-io}}
 #'
 #' @references \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
-#' @importFrom RJSONIO fromJSON
-#' @importFrom plyr ldply
-#' @importFrom plyr laply
+#' @importFrom Biostrings readDNAStringSet
+#' @importFrom biom read_biom
+#' @importFrom biom sample_metadata
+#' @importFrom biom biom_data
+#' @importFrom biom observation_metadata
 #' @export
 #' @examples
 #' # An included example of a rich dense biom file
@@ -1629,64 +1640,49 @@ import_biom <- function(BIOMfilename,
 	argumentlist <- list()
 	
 	# Read the data
-	x = fromJSON(BIOMfilename)
+	x = read_biom(biom_file=BIOMfilename)
 	
 	########################################
 	# OTU table:
 	########################################
-	# Check if sparse. Must parse differently than dense
-	if( x$matrix_type == "sparse" ){
-		otumat = matrix(0, nrow=x$shape[1], ncol=x$shape[2])
-		dummy  = sapply(x$data, function(i){otumat[(i[1]+1), (i[2]+1)] <<- i[3]})
-	}
-	# parse the dense matrix instead.
-	if( x$matrix_type == "dense" ){
-		# each row will be complete data values, should use laply
-		otumat = laply(x$data, function(i){i}, .parallel=parallel)
-	}
-	
-	# Get row (OTU) and col (sample) names
-	rownames(otumat) = sapply(x$rows, function(i){i$id})
-	colnames(otumat) = sapply(x$columns, function(i){i$id})
-	
-	otutab = otu_table(otumat, TRUE)
-	
+	otutab = otu_table(as(biom_data(x), "matrix"), taxa_are_rows=TRUE)
 	argumentlist <- c(argumentlist, list(otutab))
 	
 	########################################
 	# Taxonomy Table
 	########################################
 	# Need to check if taxonomy information is empty (minimal BIOM file)
-	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
-		tax_table <- NULL
+	if( is.null(observation_metadata(x)) ){
+		taxtab <- NULL
 	} else {
-		# parse once each character vector, save as a list
-		taxlist = lapply(x$rows, function(i){
-			parseFunction(i$metadata$taxonomy)
-		})
-		names(taxlist) = sapply(x$rows, function(i){i$id})
-		tax_table = build_tax_table(taxlist)
+    taxdf = observation_metadata(x)
+    if( any(grep("taxonomy", colnames(taxdf))) ){
+      # Expectation is that for biom files, taxonomy data
+      # will be labeled as such. The format leaves open 
+      # the possibility of other forms of OTU metadata
+      # that are not really supported... although might
+      # still work fine. Just character matrix, after all.
+      taxtab = tax_table(t(apply(taxdf, 1, parseFunction)))
+    }
+    # 		# parse once each character vector, save as a list
+    # 		taxlist = lapply(x$rows, function(i){
+    # 			parseFunction(i$metadata$taxonomy)
+    # 		})
+    # 		names(taxlist) = sapply(x$rows, function(i){i$id})
+    # 		tax_table = build_tax_table(taxlist)
 	}
-	argumentlist <- c(argumentlist, list(tax_table))
+	argumentlist <- c(argumentlist, list(taxtab))
 	
 	########################################
 	# Sample Data ("columns" in QIIME/BIOM)
 	########################################
 	# If there is no metadata (all NULL), then set sam_data <- NULL
-	if(  all( sapply(sapply(x$columns, function(i){i$metadata}), is.null) )  ){
-		sam_data <- NULL
+	if( is.null(sample_metadata(x)) ){
+		samdata <- NULL
 	} else {
-		sam_data <- ldply(x$columns, function(i){
-			if( class(i$metadata) == "list"){
-				return(i$metadata[[1]])
-			} else {
-				return(i$metadata)				
-			}
-		}, .parallel=parallel)
-		rownames(sam_data) <- sapply(x$columns, function(i){i$id})
-		sam_data <- sample_data(sam_data)
+		samdata = sample_data(sample_metadata(x))
 	}
-	argumentlist <- c(argumentlist, list(sam_data))
+	argumentlist <- c(argumentlist, list(samdata))
 
 	########################################
 	# Tree data
@@ -1897,6 +1893,206 @@ build_tax_table = function(taxlist){
 	rownames(taxmat) = names(taxlist)
 	return( tax_table(taxmat) )
 }
+################################################################################
+################################################################################
+################################################################################
+#' Download and import directly from microbio.me/qiime
+#' 
+#' This function is for accessing microbiome datasets from the
+#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
+#' public repository from within R.
+#' I haven't yet figured out how to list the available studies at
+#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
+#' from within R
+#' (and I don't know if they have made this possible),
+#' but I have provided illustrated instructions for finding 
+#' details about studies you might want to download and explore,
+#' as well as the FTP address that you will need. 
+#' Note that you likely need to create an account at
+#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
+#' in order to explore the studies they have available for download.
+#' Please see a detailed tutorial for further help finding the FTP address 
+#' of the data that you want. Also note that this function will work
+#' on the full address to any \code{.zip} zipped file with microbiome
+#' data organized with the same naming conventions and file types as
+#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+#' Please also see the 
+#' \href{http://joey711.github.io/phyloseq/download-microbio.me.html}{microbio_me_qiime tutorial}
+#' 
+#' @param zipftp (Required). A character string that is the full URL
+#'  path to a zipped file that follows the file naming conventions used by 
+#'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+#'  Alternatively, you can simply provide the study number,
+#'  as a single-length \code{\link{numeric}},
+#'  and this function will complete the remainder of the ftp URL hosted at
+#'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+#'  For example, instead of the full URL string, 
+#'  \code{"ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip"}, you could simply provide \code{494} as the `zipftp` argument.
+#'  Note that this is internally dispatching based on the class,
+#'  so \code{"494"} will not work (just leave off the quotes for study number-only).
+#'  
+#'  @param ext (Optional). A \code{\link{character}} string of the expected
+#'   file extension, which also indicates the compression type,
+#'   if \code{zipftp} is a study number instead of the full path. 
+#'   Note that this argument has no effect if \code{zipftp} is the full path,
+#'   in which case the file extension is read directly from the downloaded file.
+#'   
+#'  @param parsef (Optional). The type of taxonomic parsing to use for the
+#'   OTU taxonomic classification, in the \code{.biom} file, if present.
+#'   This is passed on to \code{\link{import_biom}}, but unlike that function
+#'   the default parsing function is \code{\link{parse_taxonomy_greengenes}},
+#'   rather than \code{\link{parse_taxonomy_default}}, because we know
+#'   ahead of time that most (or all?) of the taxonomic classifications
+#'   in the \code{microbio.me/qiime} repository will be based on 
+#'   GreenGenes.
+#'  
+#'  @param ... (Optional, for advanced users). Additional arguments passed to 
+#'   \code{\link{download.file}}. This is mainly for non-standard links to
+#'   resources (in this case, a zipped file) that are not being hosted by
+#'   \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+#'   If you are using a FTP address or study number from their servers,
+#'   then you shouldn't need to provide any additional arguments.
+#' 
+#' @return
+#'  A \code{\link{phyloseq-class}} object if possible, a component if only a 
+#'  component could be imported, or \code{NULL} if nothing could be imported
+#'  after unzipping the file. Keep in mind there is a specific naming-convention
+#'  that is expected based on the current state of the
+#'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
+#'  servers. Several helpful messages are \code{\link{cat}}ted to standard out
+#'  to help let you know the ongoing status of the current 
+#'  download and import process.
+#'
+#' @seealso
+#'  See \code{\link{download.file}} and \code{\link{url}}
+#'  for details about URL formats --
+#'  including local file addresses -- that might work here.
+#'  
+#'  \code{\link{import_biom}}
+#'  
+#'  \code{\link{import_qiime}}
+#'  
+#' @export
+#' @examples
+#' # This should return TRUE on your system if you have internet turned on
+#' # and a standard R installation. Indicates whether this is likely to
+#' # work on your system for a URL or local file, respectively.
+#' capabilities("http/ftp"); capabilities("fifo")
+#' # A working example with a local example file included in phyloseq
+#' zipfile = "study_816_split_library_seqs_and_mapping.zip"
+#' zipfile = system.file("extdata", zipfile, package="phyloseq")
+#' tarfile = "study_816_split_library_seqs_and_mapping.tar.gz"
+#' tarfile = system.file("extdata", tarfile, package="phyloseq")
+#' tarps = microbio_me_qiime(tarfile)
+#' zipps = microbio_me_qiime(zipfile) 
+#' identical(tarps, zipps)
+#' tarps; zipps
+#' plot_heatmap(tarps)
+#' # A real example 
+#' # # Smokers dataset
+#' # smokezip = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip"
+#' # smokers1 = microbio_me_qiime(smokezip)
+#' # # Alternatively, just use the study number
+#' # smokers2 = microbio_me_qiime(524)
+#' # identical(smokers1, smokers2)
+microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengenes, ...){
+	# Define naming convention
+	front = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_"	
+	if( inherits(zipftp, "numeric") ){
+		# If study number instead of string,
+		# create the ftp URL using ext and convention
+		back  = paste0("_split_library_seqs_and_mapping", ext)
+		zipftp = paste0(front, zipftp, back)
+	} else {
+		# Determine file extension from the file path itself
+		ext = substring(zipftp, regexpr("\\.([[:alnum:]]+)$", zipftp)[1])
+		back  = paste0("_split_library_seqs_and_mapping", ext)
+	}
+	# Check if zipftp is clearly an externally located file, ftp, http, etc.
+	externprefixes = c("http://", "https://", "ftp://")
+	prefix = regexpr("^([[:alnum:]]+)\\://", zipftp)
+	if( substr(zipftp, 1, attr(prefix, "match.length")[1]) %in% externprefixes ){
+		# If external, then create temporary file and download
+		zipfile = tempfile()
+		download.file(zipftp, zipfile, ...)
+	} else {
+		# Else it is a local zipfile
+		zipfile = zipftp
+	}
+	# Use the apparent file naming convention for microbio.me/qiime
+	# as the de facto guide for this API. In particular,
+  # the expectation o fthe study name (already used above)
+	studyname = gsub("\\_split\\_.+$", "", basename(zipftp))
+  # The output of tempdir() is always the same in the same R session
+  # To avoid conflict with multiple microbio.me/qiime unpacks 
+  # in the same session, pre-pend the study name and datestamp
+  unpackdir = paste0(studyname, "_", gsub("[[:blank:][:punct:]]", "", date()))
+  # Add the temp path
+	unpackdir = file.path(tempdir(), unpackdir)
+  # Create the unpack directory if needed (most likely).
+  if( !file.exists(unpackdir) ){dir.create(unpackdir)}
+	# Unpack to the temporary directory using unzip or untar
+	if( ext == ".zip" ){	
+		unzip(zipfile, exdir=unpackdir, overwrite=TRUE)
+	} else if( ext %in% c("tar.gz", ".tgz", ".gz", ".gzip", ".bzip2", ".xz") ){
+		# untar the tarfile to the new temp dir
+		untar(zipfile, exdir=unpackdir)
+	} else {
+		# The compression format was not recognized. Provide informative error msg.
+    msg = paste("Could not determine the compression type.",
+                "Expected extensions are (mostly):",
+                ".zip, .tgz, .tar.gz", sep="\n")
+		stop(msg)
+	}  
+  # Define a list of imported objects that might grow 
+  # if the right file types are present and imported correctly.
+	imported_objects = vector("list")
+	# Search recursively in the unpacked directory for the .biom file
+  # and parse if it is.
+	# There should be only one. Throw warning if more than one, take the first.
+	biomfile = list.files(unpackdir, "\\.biom", full.names=TRUE, recursive=TRUE)
+  if( length(biomfile) > 1 ){
+    warning("more than one .biom file found in compressed archive. Importing first only.")
+    biomfile = biomfile[1]
+  } else if( length(biomfile) == 1 ){
+		cat("Found biom-format file, now parsing it... \n")
+		biom = import_biom(biomfile, parseFunction=parsef)
+		cat("Done parsing biom... \n")
+		imported_objects = c(imported_objects, list(biom))
+	}
+	# Check if sample_data (qiime mapping) file present, and parse if it is.
+	sdfile = list.files(unpackdir, "\\_mapping\\_file\\.txt", full.names=TRUE, recursive=TRUE)
+	if( length(sdfile) > 1 ){
+	  warning("more than one mapping file found in compressed archive. Importing first only.")
+	  sdfile = sdfile[1]
+	} else if( length(sdfile)==1 ){
+    cat("Importing Sample Metdadata from mapping file...", fill=TRUE)
+		sample_metadata = import_qiime_sample_data(sdfile)
+		imported_objects = c(imported_objects, list(sample_metadata))
+	}
+	# Check success, notify user, and return.
+	if( length(imported_objects) > 1 ){
+		# If there are more than one imported objects, merge them and return
+		cat("Merging the imported objects... \n")
+		physeq = do.call("merge_phyloseq", imported_objects)
+		if( inherits(physeq, "phyloseq") ){
+			cat("Successfully merged, phyloseq-class created. \n Returning... \n")	
+		}
+		return(physeq)
+	} else if( length(imported_objects) == 1 ){
+		cat("Note: only on object in the zip file was imported. \n")
+		cat("It was ", class(imported_objects[[1]]), " class. \n")
+		return(imported_objects[[1]])
+	} else {
+		cat("PLEASE NOTE: No objects were imported. \n", 
+				"You chould check the zip file, \n",
+				"as well as the naming conventions in the zipfile \n",
+				"to make sure that they match microbio.me/qiime. \n",
+				"Instead returning NULL... \n")
+		return(NULL)
+	}
+}
+################################################################################
 ################################################################################
 ################################################################################
 ################################################################################

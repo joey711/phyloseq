@@ -269,4 +269,42 @@ test_that("The read_tree function works as expected:", {
 	expect_that(read_tree(not_tree, TRUE), throws_error()) # file not a tree, check turned on/TRUE
 })
 ################################################################################
-# Next import function's test...
+# microbio_me_qiime tests
+# This tests different features and expected behavior for
+# the functioning of an interface function to the 
+# microbio.me/qiime data repository.
+#
+zipfile = "study_816_split_library_seqs_and_mapping.zip"
+zipfile = system.file("extdata", zipfile, package="phyloseq")
+tarfile = "study_816_split_library_seqs_and_mapping.tar.gz"
+tarfile = system.file("extdata", tarfile, package="phyloseq")
+tarps = microbio_me_qiime(tarfile)
+zipps = microbio_me_qiime(zipfile)
+# This function is intended to interface with an external server,
+# as described in the documentation.
+# However, I don't want successful testing of this package to 
+# rely on the presence or form of particular files on an 
+# external server, so these tests will be done exclusively on 
+# compressed file(s) representing what is exposed by the data server
+# It is up to the user to provide valid a URL in practice,
+# and the function attempts to provide informative status
+# and error messages if things go awry.
+test_that("The microbio_me_qiime imports as expected: .tar.gz", {
+  expect_is(tarps, "phyloseq")
+  expect_is(sample_data(tarps, errorIfNULL=FALSE), "sample_data")
+  expect_is(otu_table(tarps, errorIfNULL=FALSE), "otu_table")
+  expect_identical(nrow(otu_table(tarps)), 50L)
+  expect_identical(nrow(sample_data(tarps)), 15L)
+})
+test_that("The microbio_me_qiime imports as expected: .zip", {  
+  expect_is(zipps, "phyloseq")
+  expect_is(sample_data(zipps, errorIfNULL=FALSE), "sample_data")
+  expect_is(otu_table(zipps, errorIfNULL=FALSE), "otu_table")
+  expect_identical(nrow(otu_table(zipps)), 50L)
+  expect_identical(nrow(sample_data(zipps)), 15L)
+})
+test_that("Results of .tar.gz and .zip should be identical", {  
+  expect_identical(tarps, zipps)
+  expect_identical(sample_data(tarps), sample_data(zipps))
+  expect_identical(otu_table(tarps), otu_table(zipps))
+})

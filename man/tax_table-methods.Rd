@@ -23,10 +23,11 @@
   (\code{NULL})? Default \code{TRUE}.}
 }
 \value{
-  A taxonomyTable object. It is either grabbed from the
-  relevant slot if \code{object} is complex, or built anew
-  if \code{object} is a character matrix representing the
-  taxonomic classification of species in the experiment.
+  A \code{\link{taxonomyTable-class}} object. It is either
+  grabbed from the relevant slot if \code{object} is
+  complex, or built anew if \code{object} is a character
+  matrix representing the taxonomic classification of
+  species in the experiment.
 }
 \description{
   This is the suggested method for both constructing and

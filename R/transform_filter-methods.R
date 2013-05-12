@@ -585,7 +585,7 @@ setMethod("prune_taxa", signature("character", "taxonomyTable"), function(taxa, 
 		return( x[taxa, , drop=FALSE] )
 	}
 })
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
 #' @aliases prune_taxa,character,XStringSet-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){

@@ -156,7 +156,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
 #' 
 #' @import ggplot2
-#' @import reshape
+#' @import reshape2
 #' @importFrom igraph0 layout.fruchterman.reingold
 #' @importFrom igraph0 get.edgelist
 #' @export
@@ -325,7 +325,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 #'
 #' @import ggplot2
-#' @import reshape
+#' @import reshape2
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
@@ -559,8 +559,8 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 		warning("type argument not supported. type set to \"samples\".")
 		type = "sites"
 	}
-	# Stop early by passing to plot_scree() if "scree" was chosen as a type
 	if( type %in% c("scree") ){
+		# Stop early by passing to plot_scree() if "scree" was chosen as a type
 		return( plot_scree(ordination, title=title) )
 	}
 
@@ -669,14 +669,33 @@ plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	# Add the text labels
 	if( !is.null(label) ){
 		label_map <- aes_string(x=x, y=y, label=label, na.rm=TRUE)
-		p <- p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
+		p = p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
 					size=2, vjust=1.5, na.rm=TRUE)
 	}
 
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
-		p <- p + ggtitle(title)
+		p = p + ggtitle(title)
 	}
+
+	# Add fraction variability to axis labels, if available
+	if( length(extract_eigenvalue(ordination)[axes]) > 0 ){
+		# Only attempt to add fraction variability
+		# if extract_eigenvalue returns something
+    eigvec = extract_eigenvalue(ordination)    
+		# Fraction variability, fracvar
+		fracvar = eigvec / sum(eigvec)
+		# Percent variability, percvar
+		percvar = round(100*fracvar, 1)
+		# The string to add to each axis label, strivar
+		# Start with the curent axis labels in the plot
+		strivar = as(c(p$label$x, p$label$y), "character")
+		# paste the percent variability string at the end
+		strivar = paste0(strivar, "   [", percvar, "%]")
+		# Update the x-label and y-label
+		p = p + xlab(strivar[1])
+		p = p + ylab(strivar[2])
+	}	
 	
 	# Return the ggplot object
 	return(p)
@@ -961,7 +980,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' The psmelt function is a specialized melt function for melting phyloseq objects
 #' (instances of the phyloseq class), usually for the purpose of graphics production
 #' in ggplot2-based phyloseq-generated graphics. It relies heavily on the 
-#' \code{\link[reshape]{melt}} and \code{\link{merge}} functions. Note that
+#' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions. Note that
 #' ``melted'' phyloseq data is stored much less efficiently, and so RAM storage
 #' issues could arise with a smaller dataset
 #' (smaller number of samples/OTUs/variables) than one might otherwise expect.
@@ -983,11 +1002,11 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' @seealso
 #'  \code{\link{plot_bar}}
 #' 
-#'  \code{\link[reshape]{melt}}
+#'  \code{\link[reshape2]{melt}}
 #'
 #'  \code{\link{merge}}
 #' 
-#' @import reshape
+#' @import reshape2
 #' @export
 #'
 #' @examples
@@ -1025,7 +1044,11 @@ psmelt = function(physeq){
 
 	# Next merge taxonomy data
 	if( !is.null(tax_table(physeq, FALSE)) ){
-		tdf = data.frame(tax_table(physeq), OTU=taxa_names(physeq))
+	  TT = tax_table(physeq)
+	  # First, remove any empty columns (all NA)
+	  TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
+    # Now add to the "psmelt" data.frame
+		tdf = data.frame(TT, OTU=taxa_names(physeq))
 		mdf = merge(mdf, tdf, by.x="OTU")	
 	}
 	
@@ -1662,7 +1685,7 @@ plot_tree_only <- function(tdf){
 # Assumes the tree data.frame, tdf, has already been built and is third argument.
 #' @keywords internal
 #' @import ggplot2
-#' @import reshape 
+#' @import reshape2 
 #' @import scales
 #' @importFrom plyr aaply
 #' @importFrom plyr ddply
@@ -1688,7 +1711,7 @@ plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abunda
 	speciesDF 	<- cbind(speciesDF, OTU)
 	
 	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt.data.frame(speciesDF, id.vars=c("x", "y", "taxa_names"))
+	melted.tip <- melt(speciesDF, id.vars=c("x", "y", "taxa_names"))
 	
 	# Determine the horizontal adjustment index for each point
 	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
@@ -2137,7 +2160,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' @author Paul McMurdie, relying on supporting code from
 #'  Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
-#' @import reshape
+#' @import reshape2
 #' @import scales
 #' @import ggplot2
 #' @export

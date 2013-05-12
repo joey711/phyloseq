@@ -34,11 +34,9 @@ validotu_table <- function(object){
 	}
 	# Verify that it is numeric matrix
 	if( !is.numeric(object@.Data[, 1]) ){
-		return("\n Non-numeric matrix provided as OTU abundance table.\n Abundance must be numeric (usually integer).")
-	}
-	# Further verify all values are positive
-	if( any(object@.Data < 0) ){
-		return("\n At least one abundance value in otu_table less than zero.\n Abundance must be greater than zero.")
+    text = "\n Non-numeric matrix provided as OTU table.\n" 
+    text = paste0(text, "Abundance is expected to be numeric.")
+		return(text)
 	}
 	return(TRUE)
 }
@@ -71,12 +69,10 @@ validTaxonomyTable <- function(object){
 	}
 	# Verify that it is character matrix
 	if( !is.character(object@.Data[, 1]) ){
-		return("\n Non-character matrix provided as Taxonomy Table.\n Taxonomy must be characters.")
+    text = "\n Non-character matrix provided as Taxonomy Table.\n"
+    text = paste0(text, "Taxonomy is expected to be characters.")
+		return(text)
 	}
-	# Further verify at least one value is non-NA
-	if( all(is.na(object@.Data)) ){
-		return("\n All values in Taxonomy Table are NA.\n Must have at least one informative value.")
-	}	
 	return(TRUE)
 }
 ## assign the function as the validity method for the sample_data class

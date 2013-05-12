@@ -1,5 +1,7 @@
 phyloseq
 ===========
+* Supports direct import from microbio.me/qiime data repository
+  http://joey711.github.io/phyloseq/download-microbio.me.html
 * Supports reference sequences - biological sequences representing each OTU
 * plot_ordination() powerful, flexible ordination plots built with ggplot2
 * plot_bar() powerful, flexible quantitative summary plots built with ggplot2
@@ -17,6 +19,36 @@ phyloseq
 * Bioconductor development release updates.
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
+
+phyloseq 1.5.11-12 - major feature: interface to microbio.me/qiime data repo
+===========
+Now possible to directly download, unpack, import multi-component data
+into standard phyloseq form in R using a single command using the new
+microbio_me_qiime()
+command. Supports the following input styles:
+- full URL to the precise study on the server,
+- a local path to the same compressed raw data file on your system if you 
+  already downloaded
+- Just the study number on the microbio.me/qiime repo. For example:
+  microbio_me_qiime(524) will download and import the "smokers" dataset.
+- See the following tutorial for more details:
+http://joey711.github.io/phyloseq/download-microbio.me.html
+
+phyloseq 1.5.9 - minor bugfix
+===========
+Bugfix for psmelt()/plotting when entire columns in tax_table are empty
+
+phyloseq 1.5.8 - update reshape dependency to reshape2
+===========
+This satisfies [issue 134](https://github.com/joey711/phyloseq/issues/134)
+
+phyloseq 1.5.6-.7 - plot_ordination()
+===========
+plot_ordination() now includes percent variability on axis labels, if possible
+
+phyloseq 1.5.5 - Update citation info for latest per-reviewed phyloseq article
+===========
+http://dx.plos.org/10.1371/journal.pone.0061217
 
 phyloseq 1.5.4 - Add taxonomic classification data to mt() output, if available
 ===========
