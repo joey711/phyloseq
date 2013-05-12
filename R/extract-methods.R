@@ -51,7 +51,7 @@ setMethod("[", "taxonomyTable", function(x, i, j, ...){
 # A numeric extraction method is already defined in Biostrings for XStringSet
 # Add name-character-based extraction method for XStringSet
 #
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
 #' @export
 #' @aliases [,XStringSet,character,ANY,ANY-method
 #' @rdname extract-methods

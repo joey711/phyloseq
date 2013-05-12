@@ -404,7 +404,7 @@ setMethod("merge_taxa", "phylo", function(x, eqtaxa, archetype=1L){
 	}
 })
 ###############################################################################
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
 #' @aliases merge_taxa,XStringSet-method
 #' @rdname merge_taxa-methods
 setMethod("merge_taxa", "XStringSet", function(x, eqtaxa, archetype=1L){
