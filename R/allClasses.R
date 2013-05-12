@@ -83,7 +83,7 @@ setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
 #' @import ape
 #' @keywords internal
 setClassUnion("phyloOrNULL", c("phylo", "NULL"))
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
 #' @keywords internal
 setClassUnion("XStringSetOrNULL", c("XStringSet", "NULL"))
 ################################################################################
@@ -131,7 +131,7 @@ setClassUnion("XStringSetOrNULL", c("XStringSet", "NULL"))
 #'  \code{\link{tax_table}}, \code{\link{phy_tree}}, and \code{\link{refseq}}.
 #' 
 #' @import ape
-#' @import Biostrings
+#' @importClassesFrom Biostrings XStringSet
 #' @name phyloseq-class
 #' @rdname phyloseq-class
 #' @exportClass phyloseq

@@ -31,7 +31,6 @@
 #'  \code{\link{phy_tree}},
 #'  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 #' 
-#' @import Biostrings
 #' @export
 #' @rdname refseq-methods
 #' @docType methods
@@ -46,6 +45,7 @@ setMethod("refseq", "ANY", function(physeq, errorIfNULL=TRUE){
 	access(physeq, "refseq", errorIfNULL)
 })
 # Return as-is if already a "XStringSet" object
+#' @importClassesFrom Biostrings XStringSet
 #' @rdname refseq-methods
 #' @aliases refseq,XStringSet-method
 setMethod("refseq", "XStringSet", function(physeq){ return(physeq) })
