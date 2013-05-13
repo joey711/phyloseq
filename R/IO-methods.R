@@ -1652,24 +1652,15 @@ import_biom <- function(BIOMfilename,
 	# Taxonomy Table
 	########################################
 	# Need to check if taxonomy information is empty (minimal BIOM file)
-	if( is.null(observation_metadata(x)) ){
-		taxtab <- NULL
-	} else {
-    taxdf = observation_metadata(x)
-    if( any(grep("taxonomy", colnames(taxdf))) ){
-      # Expectation is that for biom files, taxonomy data
-      # will be labeled as such. The format leaves open 
-      # the possibility of other forms of OTU metadata
-      # that are not really supported... although might
-      # still work fine. Just character matrix, after all.
-      taxtab = tax_table(t(apply(taxdf, 1, parseFunction)))
-    }
-    # 		# parse once each character vector, save as a list
-    # 		taxlist = lapply(x$rows, function(i){
-    # 			parseFunction(i$metadata$taxonomy)
-    # 		})
-    # 		names(taxlist) = sapply(x$rows, function(i){i$id})
-    # 		tax_table = build_tax_table(taxlist)
+	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
+	  tax_table <- NULL
+  } else {
+    # parse once each character vector, save as a list
+    taxlist = lapply(x$rows, function(i){
+      parseFunction(i$metadata$taxonomy)
+    })
+    names(taxlist) = sapply(x$rows, function(i){i$id})
+    taxtab = build_tax_table(taxlist)
 	}
 	argumentlist <- c(argumentlist, list(taxtab))
 	
