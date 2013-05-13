@@ -20,6 +20,10 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.13-15 - build improvements, changed dependencies
+===========
+
+
 phyloseq 1.5.11-12 - major feature: interface to microbio.me/qiime data repo
 ===========
 Now possible to directly download, unpack, import multi-component data
