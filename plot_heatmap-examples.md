@@ -11,7 +11,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.8'
+## [1] '1.5.15'
 ```
 
 ```r
@@ -257,6 +257,10 @@ heatmap(otuTable(gpac))
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [download-microbio.me-frag](download-microbio.me-frag.html)
+
+#### [download-microbio.me](download-microbio.me.html)
 
 #### [Example-Data](Example-Data.html)
 

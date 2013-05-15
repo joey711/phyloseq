@@ -131,7 +131,6 @@ hr {
       page-break-after: avoid; 
    }
 }
-
 </style>
 
 <!-- Styles for R syntax highlighter -->
@@ -172,7 +171,9 @@ var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/<
 hljs.initHighlightingOnLoad();
 </script>
 
-
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 
 </head>
@@ -218,7 +219,7 @@ hljs.initHighlightingOnLoad();
 packageVersion(&quot;phyloseq&quot;)
 </code></pre>
 
-<pre><code>## [1] &#39;1.5.12&#39;
+<pre><code>## [1] &#39;1.5.15&#39;
 </code></pre>
 
 <pre><code class="r">library(&quot;ggplot2&quot;)
@@ -364,4 +365,3 @@ dlist = lapply(dlist, function(physeq) {
 </body>
 
 </html>
-

@@ -23,7 +23,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.8"
+## [1] "1.5.15"
 ```
 
 
@@ -66,7 +66,7 @@ We can also add the Shannon and Simpson alpha diversity indices by setting the `
 plot_richness(GP, x = "SampleType", color = "SampleType", shsi = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk shsi-true](figure/shsi-true.png) 
 
 
 Now suppose we wanted to use an external variable in the plot that isn't in the `GP` dataset already -- for example, a logical that indicated whether or not the samples are human-associated. First, define this new variable, `human`, as a factor (other vectors could also work).
@@ -86,7 +86,7 @@ Now tell `plot_richness` to map the new `human` variable on the horizontal axis,
 plot_richness(GP, "human", "SampleType")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 		
 			
@@ -97,6 +97,10 @@ plot_richness(GP, "human", "SampleType")
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [download-microbio.me-frag](download-microbio.me-frag.html)
+
+#### [download-microbio.me](download-microbio.me.html)
 
 #### [Example-Data](Example-Data.html)
 

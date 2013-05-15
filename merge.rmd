@@ -25,19 +25,16 @@ Merging separate data objects is especially useful for manually-imported data ob
 Let's first remove unobserved OTUs (sum 0 across all samples), and add a human-associated variable with which to organize data later in the plots.
 
 ```{r, warning=FALSE, message=FALSE}
-library("phyloseq")
-```
-For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
-```{r}
-packageDescription("phyloseq")$Version
+library("phyloseq"); packageVersion("phyloseq")
 ```
 
+Load data, remove empty samples, add a new `sample_data` variable to the dataset.
 ```{r}
 data(GlobalPatterns)
 GP = GlobalPatterns
-GP = prune_species(speciesSums(GlobalPatterns) > 0, GlobalPatterns)
+GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
 humantypes = c("Feces", "Mock", "Skin", "Tongue")
-sampleData(GP)$human = getVariable(GP, "SampleType") %in% humantypes
+sample_data(GP)$human <- get_variable(GP, "SampleType") %in% humantypes
 ```
 
 Now on to the merging examples

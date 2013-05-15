@@ -20,7 +20,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.8"
+## [1] "1.5.15"
 ```
 
 ```r
@@ -100,6 +100,10 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
 ### Other tutorial pages for the phyloseq package:
 
 #### [distance](distance.html)
+
+#### [download-microbio.me-frag](download-microbio.me-frag.html)
+
+#### [download-microbio.me](download-microbio.me.html)
 
 #### [Example-Data](Example-Data.html)
 
