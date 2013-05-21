@@ -61,14 +61,39 @@
 #' # Try ordination of GP.chl and GP.chl.r (default distance is unweighted UniFrac)
 #' plot_ordination(GP.chl, ordinate(GP.chl, "MDS"), color="SampleType") #+ geom_point(size=5)
 #' plot_ordination(GP.chl.r, ordinate(GP.chl.r, "MDS"), color="SampleType") #+ geom_point(size=5)
-rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq))){
-	sample.size <- sample.size[1]
+rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
+															rngseed=711){
+	
+	# Store the original seed arrived at before calling this function
+	orig_seed <- .Random.seed
+	# Now call the set.seed using the value expected in phyloseq
+	set.seed(rngseed)
+	# Print to screen this value
+	cat("`set.seed(", rngseed, 
+			")` was used to initialize repeatable random subsampling",
+			sep="", fill=TRUE)
+	cat("Please record this for your records so others can reproduce.", fill=TRUE)
+	cat("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="", fill=TRUE)
+	
+	# Make sure sample.size is of length 1.
+	if( length(sample.size) > 1 ){
+		warning("`sample.size` had more than one value. Using only the first.")
+		sample.size <- sample.size[1]	
+	}
 	
 	if( sample.size <= 0 ){
 		stop("sample.size less than or equal to zero. Need positive sample size to work.")
 	}
+	
+	# Instead of warning, expected behavior now is to prune samples
+	# that have fewer reads than `sample.size`
 	if( min(sample_sums(physeq)) < sample.size ){
-		warning("Strange behavior expected for samples with fewer observations than sample.size")
+		rmsamples = sample_names(physeq)[sample_sums(physeq) < sample.size]
+		cat("Removing the following samples,", 
+				"because they contained fewer reads than `sample.size`:", fill=TRUE)
+		cat(rmsamples, sep="\t", fill=TRUE)
+		# Now done with notifying user of pruning, actually prune.
+		physeq = prune_samples(sample_sums(physeq) >= sample.size, physeq)
 	}
 	# initialize the subsamples phyloseq instance, newsub
 	newsub <- physeq
@@ -80,6 +105,13 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq))){
 	rownames(newotu) <- taxa_names(physeq)
 	# replace the otu_table.
 	otu_table(newsub) <- otu_table(newotu, TRUE)
+	# Check for and remove empty OTUs
+	#CODE HERE. 1. notify user of empty OTUs being cut. 2. cut empty OTUs
+	#newsub = prune_taxa()
+	# Reset set.seed to unitialized state
+	set.seed(NULL)
+	cat("Finished. `set.seed(NULL)` called, resetting seed to unitialized state.", fill=TRUE)
+	# return subsampled phyloseq object
 	return(newsub)
 }
 ################################################################################
