@@ -93,7 +93,7 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 				"because they contained fewer reads than `sample.size`:", fill=TRUE)
 		cat(rmsamples, sep="\t", fill=TRUE)
 		# Now done with notifying user of pruning, actually prune.
-		physeq = prune_samples(sample_sums(physeq) >= sample.size, physeq)
+		physeq = prune_samples(setdiff(sample_names(physeq), rmsamples), physeq)
 	}
 	# initialize the subsamples phyloseq instance, newsub
 	newsub <- physeq
@@ -106,8 +106,15 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	# replace the otu_table.
 	otu_table(newsub) <- otu_table(newotu, TRUE)
 	# Check for and remove empty OTUs
-	#CODE HERE. 1. notify user of empty OTUs being cut. 2. cut empty OTUs
-	#newsub = prune_taxa()
+	# 1. Notify user of empty OTUs being cut.
+  # 2. Cut empty OTUs
+	rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
+  if( length(rmtaxa) > 0 ){
+    cat("The following OTUs are being removed because they are no longer \n",
+        "present in any sample after subsampling:\n")
+    cat(rmtaxa, sep="\t", fill=TRUE)
+    newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
+  }
 	# Reset set.seed to unitialized state
 	set.seed(NULL)
 	cat("Finished. `set.seed(NULL)` called, resetting seed to unitialized state.", fill=TRUE)
