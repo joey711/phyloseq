@@ -18,12 +18,10 @@
 #' but it is actually a single random sample-wise subsampling procedure.
 #' The original rarefaction procedure includes many
 #' random subsampling iterations at increasing depth as a means to
-#' infer richness/alpha-diversity
+#' infer richness/alpha-diversity based on apparent convergence.
 #'
 #' Make sure to use \code{\link{set.seed}} for exactly-reproducible results
 #' of the random subsampling. 
-#'
-#' @usage rarefy_even_depth(physeq, sample.size=min(sample_sums(physeq)))
 #'
 #' @param physeq (Required). A \code{\link{phyloseq-class}} object that you
 #'  want to trim/filter.
@@ -32,6 +30,14 @@
 #'  of reads being simulated, also known as the depth,
 #'  and also equal to each value returned by \code{\link{sample_sums}}
 #'  on the output. 
+#'  
+#' @param rngseed (Optional). A single integer value passed to 
+#'  \code{\link{set.seed}}, which is used to fix a seed for reproducibly
+#'  random number generation (in this case, reproducibly random subsampling).
+#'  The default value is \code{711}. 
+#'  If set to \code{FALSE}, then no fiddling with the RNG seed is performed,
+#'  and it is up to the user to appropriately call \code{\link{set.seed}}
+#'  beforehand to achieve reproducible results.
 #'
 #' @return An object of class \code{phyloseq}. 
 #' Only the \code{otu_table} component is modified.
@@ -44,31 +50,65 @@
 #' @export
 #'
 #' @examples
-#' set.seed(711)
 #' # Test with esophagus dataset
 #' data("esophagus")
-#' eso <- rarefy_even_depth(esophagus)
-#' plot(as(otu_table(eso), "vector"), as(otu_table(esophagus), "vector"))
-#' UniFrac(eso); UniFrac(esophagus)
+#' eso  = rarefy_even_depth(esophagus)
+#' eso0 = prune_taxa(taxa_names(eso), esophagus) 
+#' plot(as(otu_table(eso), "vector"), as(otu_table(eso0), "vector"))
+#' UniFrac(eso); UniFrac(eso0); UniFrac(esophagus)
 #' # Test with GlobalPatterns dataset
 #' data("GlobalPatterns")
 #' GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
 #' # remove the samples that have less than 20 total reads from Chlamydiae
 #' GP.chl <- prune_samples(names(which(sample_sums(GP.chl)>=20)), GP.chl)
 #' # # (p <- plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance"))
-#' GP.chl.r <- rarefy_even_depth(GP.chl)
+#' GP.chl.r = rarefy_even_depth(GP.chl)
+#' GP.chl = prune_taxa(taxa_names(GP.chl.r), GP.chl)
 #' plot(as(otu_table(GP.chl.r), "vector"), as(otu_table(GP.chl), "vector"))
 #' # Try ordination of GP.chl and GP.chl.r (default distance is unweighted UniFrac)
 #' plot_ordination(GP.chl, ordinate(GP.chl, "MDS"), color="SampleType") #+ geom_point(size=5)
 #' plot_ordination(GP.chl.r, ordinate(GP.chl.r, "MDS"), color="SampleType") #+ geom_point(size=5)
-rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq))){
-	sample.size <- sample.size[1]
+rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
+															rngseed=711){
+	
+	if( as(rngseed, "logical") ){
+		# Now call the set.seed using the value expected in phyloseq
+		set.seed(rngseed)
+		# Print to screen this value
+		cat("`set.seed(", rngseed, 
+				")` was used to initialize repeatable random subsampling.",
+				sep="", fill=TRUE)
+		cat("Please record this for your records so others can reproduce.", fill=TRUE)
+		cat("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="", fill=TRUE)		
+		cat("...", fill=TRUE)
+	} else {
+		cat("You set `rngseed` to FALSE. Make sure you've set & recorded",
+				" the random seed of your session for reproducibility.",
+				"See `set.seed()`", fill=TRUE)
+		cat("...", fill=TRUE)
+	}
+	
+	# Make sure sample.size is of length 1.
+	if( length(sample.size) > 1 ){
+		warning("`sample.size` had more than one value. Using only the first. \n ... \n")
+		sample.size <- sample.size[1]	
+	}
 	
 	if( sample.size <= 0 ){
 		stop("sample.size less than or equal to zero. Need positive sample size to work.")
 	}
+	
+	# Instead of warning, expected behavior now is to prune samples
+	# that have fewer reads than `sample.size`
 	if( min(sample_sums(physeq)) < sample.size ){
-		warning("Strange behavior expected for samples with fewer observations than sample.size")
+		rmsamples = sample_names(physeq)[sample_sums(physeq) < sample.size]
+		cat(length(rmsamples), " samples removed",
+				"because they contained fewer reads than `sample.size`.", fill=TRUE)
+		cat("Up to first five removed samples are: \n")
+		cat(rmsamples[1:min(5, length(rmsamples))], sep="\t", fill=TRUE)
+		cat("...", fill=TRUE)
+		# Now done with notifying user of pruning, actually prune.
+		physeq = prune_samples(setdiff(sample_names(physeq), rmsamples), physeq)
 	}
 	# initialize the subsamples phyloseq instance, newsub
 	newsub <- physeq
@@ -80,6 +120,24 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq))){
 	rownames(newotu) <- taxa_names(physeq)
 	# replace the otu_table.
 	otu_table(newsub) <- otu_table(newotu, TRUE)
+	# Check for and remove empty OTUs
+	# 1. Notify user of empty OTUs being cut.
+  # 2. Cut empty OTUs
+	rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
+  if( length(rmtaxa) > 0 ){
+    cat(length(rmtaxa), "OTUs were removed because they are no longer \n",
+        "present in any sample after random subsampling\n")
+    cat("...", fill=TRUE)
+    #cat(rmtaxa[1:min(5, length(rmtaxa))], sep="\t", fill=TRUE)
+    newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
+  }
+	if( as(rngseed, "logical") ){
+		# Reset set.seed to unitialized state
+		set.seed(NULL)
+		cat("Finished. `set.seed(NULL)` called, ", 
+				"resetting RNG seed to unitialized state.", fill=TRUE)
+	}
+	# return subsampled phyloseq object
 	return(newsub)
 }
 ################################################################################
