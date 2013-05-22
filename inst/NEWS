@@ -21,6 +21,10 @@ phyloseq
 * Lots and lots of fixes and improvements.
 
 
+phyloseq 1.5.17 - replace URL with new phyloseq article
+===========
+http://dx.plos.org/10.1371/journal.pone.0061217
+
 phyloseq 1.5.16 - rarefy_even_depth improvements
 ===========
 User-side convenience upgrades to rarefy_even_depth() behavior.
