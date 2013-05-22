@@ -20,9 +20,24 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+
+phyloseq 1.5.17 - replace URL with new phyloseq article
+===========
+http://dx.plos.org/10.1371/journal.pone.0061217
+
+phyloseq 1.5.16 - rarefy_even_depth improvements
+===========
+User-side convenience upgrades to rarefy_even_depth() behavior.
+
+- More user feedback about process.
+- New argument for setting RNG seed, with a default value (reproducible by default).
+- Reports the RNG seed being used for random subsampling, encouraging users to record this for reproducibility.
+- Trims empty samples/OTUs automatically, and reports this to standard out.
+
+
 phyloseq 1.5.13-15 - build improvements, changed dependencies
 ===========
-
+Shifted RJSONIO dependency to the new "biom" package in CRAN
 
 phyloseq 1.5.11-12 - major feature: interface to microbio.me/qiime data repo
 ===========

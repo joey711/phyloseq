@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.5.15
-Date: 2013-05-13
+Version: 1.5.17
+Date: 2013-05-22
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -35,7 +35,7 @@ Enhances: doParallel (>= 1.0.1)
 biocViews: Clustering, Classification, MultipleComparisons,
     QualityControl, GeneticVariability,
     HighThroughputSequencing
-URL: http://joey711.github.io/phyloseq/
+URL: http://dx.plos.org/10.1371/journal.pone.0061217
 BugReports: https://github.com/joey711/phyloseq/issues
 Collate:
     'allClasses.R'
