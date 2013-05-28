@@ -35,10 +35,20 @@ packageVersion("cluster")
 ```
 
 ```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
+```
+
+```r
+theme_set(theme_bw())
 # Load data
 data(enterotype)
 # ordination
-exord = ordinate(enterotype, method = "MDS", distance = "bray")
+exord = ordinate(enterotype, method = "MDS", distance = "jsd")
 ```
 
 
@@ -50,28 +60,23 @@ exord = ordinate(enterotype, method = "MDS", distance = "bray")
 pam1 = function(x, k) {
     list(cluster = pam(x, k, cluster.only = TRUE))
 }
-x = phyloseq:::scores(exord, display = "sites")
-```
-
-```
-## Error: object 'scores' not found
-```
-
-```r
+x = phyloseq:::scores.pcoa(exord, display = "sites")
 # gskmn = clusGap(x[, 1:2], FUN=kmeans, nstart=20, K.max = 6, B = 500)
 gskmn = clusGap(x[, 1:2], FUN = pam1, K.max = 6, B = 50)
-```
-
-```
-## Error: object 'x' not found
-```
-
-```r
 gskmn
 ```
 
 ```
-## Error: object 'gskmn' not found
+## Clustering Gap statistic ["clusGap"].
+## B=50 simulated reference sets, k = 1..6
+##  --> Number of clusters (method 'firstSEmax', SE.factor=1): 4
+##       logW E.logW    gap  SE.sim
+## [1,] 2.996  3.117 0.1210 0.02110
+## [2,] 2.210  2.771 0.5609 0.02413
+## [3,] 1.922  2.587 0.6649 0.02467
+## [4,] 1.686  2.412 0.7266 0.02602
+## [5,] 1.601  2.283 0.6822 0.02622
+## [6,] 1.481  2.178 0.6972 0.02884
 ```
 
 
@@ -87,7 +92,7 @@ gap_statistic_ordination = function(ord, FUNcluster, type = "sites", K.max = 6,
         FUNcluster = function(x, k) list(cluster = pam(x, k, cluster.only = TRUE))
     }
     # Use the scores function to get the ordination coordinates
-    x = phyloseq:::scores(ord, display = type)
+    x = phyloseq:::scores.pcoa(ord, display = type)
     # If axes not explicitly defined (NULL), then use all of them
     if (is.null(axes)) {
         axes = 1:ncol(x)
@@ -101,6 +106,7 @@ gap_statistic_ordination = function(ord, FUNcluster, type = "sites", K.max = 6,
 
 
 Define a plot method for results
+
 
 ```r
 plot_clusgap = function(clusgap, title = "Gap Statistic calculation results") {
@@ -119,31 +125,27 @@ Now try out this function. Should work on ordination classes recognized by `scor
 
 ```r
 gs = gap_statistic_ordination(exord, "pam1", B = 50, verbose = FALSE)
-```
-
-```
-## Error: object 'scores' not found
-```
-
-```r
 print(gs, method = "Tibs2001SEmax")
 ```
 
 ```
-## Error: object 'gs' not found
+## Clustering Gap statistic ["clusGap"].
+## B=50 simulated reference sets, k = 1..6
+##  --> Number of clusters (method 'Tibs2001SEmax', SE.factor=1): 4
+##       logW E.logW    gap  SE.sim
+## [1,] 2.996  3.111 0.1151 0.02088
+## [2,] 2.210  2.770 0.5597 0.02211
+## [3,] 1.922  2.581 0.6587 0.02575
+## [4,] 1.686  2.415 0.7287 0.03023
+## [5,] 1.601  2.284 0.6834 0.02097
+## [6,] 1.481  2.181 0.7002 0.02161
 ```
 
 ```r
 plot_clusgap(gs)
 ```
 
-```
-## Loading required package: ggplot2
-```
-
-```
-## Error: object 'gs' not found
-```
+![plot of chunk gapstat-inphyloseq-example](figure/gapstat-inphyloseq-example.png) 
 
 
 Base graphics plotting, for comparison.
@@ -151,19 +153,10 @@ Base graphics plotting, for comparison.
 
 ```r
 plot(gs, main = "Gap statistic for the 'Enterotypes' data")
+mtext("Looks like 4 clusters is best, with 3 and 5 close runners up.")
 ```
 
-```
-## Error: object 'gs' not found
-```
-
-```r
-mtext("k = 2 is best ... but  k = 3  pretty close")
-```
-
-```
-## Error: plot.new has not been called yet
-```
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 
 
 

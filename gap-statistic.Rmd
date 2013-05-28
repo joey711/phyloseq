@@ -18,10 +18,12 @@ In this case, MDS on the Bray-Curtis distance.
 ```{r rerun-ent-ord-gap, warning=FALSE, message=FALSE}
 library("phyloseq"); packageVersion("phyloseq")
 library("cluster"); packageVersion("cluster")
+library("ggplot2"); packageVersion("ggplot2")
+theme_set(theme_bw())
 # Load data
 data(enterotype)
 # ordination
-exord = ordinate(enterotype, method="MDS", distance="bray")
+exord = ordinate(enterotype, method="MDS", distance="jsd")
 ```
 
 
@@ -29,7 +31,7 @@ exord = ordinate(enterotype, method="MDS", distance="bray")
 
 ```{r gapstat-regular}
 pam1 = function(x, k){list(cluster = pam(x,k, cluster.only=TRUE))}
-x = phyloseq:::scores(exord, display="sites")
+x = phyloseq:::scores.pcoa(exord, display="sites")
 # gskmn = clusGap(x[, 1:2], FUN=kmeans, nstart=20, K.max = 6, B = 500)
 gskmn = clusGap(x[, 1:2], FUN=pam1, K.max = 6, B = 50)
 gskmn
@@ -45,7 +47,7 @@ gap_statistic_ordination = function(ord, FUNcluster, type="sites", K.max=6, axes
 		FUNcluster = function(x,k) list(cluster = pam(x, k, cluster.only=TRUE))		
 	}
 	# Use the scores function to get the ordination coordinates
-	x = phyloseq:::scores(ord, display=type)
+	x = phyloseq:::scores.pcoa(ord, display=type)
 	#	If axes not explicitly defined (NULL), then use all of them
 	if(is.null(axes)){axes = 1:ncol(x)}
 	#	Finally, perform, and return, the gap statistic calculation using cluster::clusGap	
@@ -54,6 +56,7 @@ gap_statistic_ordination = function(ord, FUNcluster, type="sites", K.max=6, axes
 ```
 
 Define a plot method for results
+
 ```{r plot-clusgap}
 plot_clusgap = function(clusgap, title="Gap Statistic calculation results"){
 	require("ggplot2")
@@ -77,7 +80,7 @@ Base graphics plotting, for comparison.
 
 ```{r}
 plot(gs, main = "Gap statistic for the 'Enterotypes' data")
-mtext("k = 2 is best ... but  k = 3  pretty close")	
+mtext("Looks like 4 clusters is best, with 3 and 5 close runners up.")	
 ```
 
 
