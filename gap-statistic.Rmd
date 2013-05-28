@@ -1,0 +1,102 @@
+`r opts_chunk$set(cache=TRUE, fig.width=10)`
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+
+
+# Gap Statistic
+## How many clusters are there?
+
+From [the clusGap documentation](http://stat.ethz.ch/R-manual/R-devel/library/cluster/html/clusGap.html): 
+The `clusGap` function from [the cluster package](http://cran.r-project.org/web/packages/cluster/index.html) calculates a goodness of clustering measure, called [the “gap” statistic](www.stanford.edu/~hastie/Papers/gap.pdf). For each number of clusters `k`, it compares \log(W(k)) with E^*[\log(W(k))] where the latter is defined via bootstrapping, i.e. simulating from a reference distribution.
+
+The following is an example performing the gap statistic on ordination results calculated using phyloseq tools, followed by an example of how a [ggplot](http://had.co.nz/ggplot2/)-based wrapper for this example might be included in [the phyloseq package](http://joey711.github.com/phyloseq/). 
+
+
+### First perform an ordination
+
+In this case, MDS on the Bray-Curtis distance.
+
+```{r rerun-ent-ord-gap, warning=FALSE, message=FALSE}
+library("phyloseq"); packageVersion("phyloseq")
+library("cluster"); packageVersion("cluster")
+# Load data
+data(enterotype)
+# ordination
+exord = ordinate(enterotype, method="MDS", distance="bray")
+```
+
+
+### Gap Statistic code
+
+```{r gapstat-regular}
+pam1 = function(x, k){list(cluster = pam(x,k, cluster.only=TRUE))}
+x = phyloseq:::scores(exord, display="sites")
+# gskmn = clusGap(x[, 1:2], FUN=kmeans, nstart=20, K.max = 6, B = 500)
+gskmn = clusGap(x[, 1:2], FUN=pam1, K.max = 6, B = 50)
+gskmn
+```
+
+Pretty straightforward. In case it is useful to see, this is what a wrapper-function might look like to "add-on" code to phyloseq.
+
+```{r gapstat_inclusion_function}
+gap_statistic_ordination = function(ord, FUNcluster, type="sites", K.max=6, axes=c(1:2), B=500, verbose=interactive(), ...){
+	require("cluster")
+	#	If "pam1" was chosen, use this internally defined call to pam
+	if(FUNcluster == "pam1"){
+		FUNcluster = function(x,k) list(cluster = pam(x, k, cluster.only=TRUE))		
+	}
+	# Use the scores function to get the ordination coordinates
+	x = phyloseq:::scores(ord, display=type)
+	#	If axes not explicitly defined (NULL), then use all of them
+	if(is.null(axes)){axes = 1:ncol(x)}
+	#	Finally, perform, and return, the gap statistic calculation using cluster::clusGap	
+	clusGap(x[, axes], FUN=FUNcluster, K.max=K.max, B=B, verbose=verbose, ...)
+}
+```
+
+Define a plot method for results
+```{r plot-clusgap}
+plot_clusgap = function(clusgap, title="Gap Statistic calculation results"){
+	require("ggplot2")
+	gstab = data.frame(clusgap$Tab, k=1:nrow(clusgap$Tab))
+	p = ggplot(gstab, aes(k, gap)) + geom_line() + geom_point(size=5)
+	p = p + geom_errorbar(aes(ymax=gap+SE.sim, ymin=gap-SE.sim))
+	p = p + ggtitle(title)
+	return(p)
+}
+```
+
+Now try out this function. Should work on ordination classes recognized by `scores` function, and provide a [ggplot](http://had.co.nz/ggplot2/) graphic instead of a base graphic. (Special Note: the phyloseq-defined `scores` extensions are not exported as regular functions to avoid conflict, so phyloseq-defined `scores` extensions can only be accessed with the `phyloseq:::` namespace prefix in front.)
+
+```{r gapstat-inphyloseq-example}
+gs = gap_statistic_ordination(exord, "pam1", B=50, verbose=FALSE)
+print(gs, method="Tibs2001SEmax")
+plot_clusgap(gs)
+```
+
+Base graphics plotting, for comparison.
+
+```{r}
+plot(gs, main = "Gap statistic for the 'Enterotypes' data")
+mtext("k = 2 is best ... but  k = 3  pretty close")	
+```
+
+
+---
+
+## Other tutorial pages for the phyloseq package:
+
+```{r other-graphics-links, results='asis', echo=FALSE}
+htmlfiles = list.files(pattern="\\.html")
+htmlstems = gsub(".html", "", htmlfiles)
+mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
+cat(mdlines, sep="\n\n")
+```
+
+
+---
+
+## Suggestions from Users/Developers
+
+Don't be afraid to post feedback / needs on [the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues):
+
+https://github.com/joey711/phyloseq/issues
