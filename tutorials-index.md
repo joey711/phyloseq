@@ -4,7 +4,7 @@
 The phyloseq Tutorials Index
 ========================================================
 
-This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Tue May 14 16:22:01 2013.
+This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is Tue May 28 15:34:24 2013.
 
 Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io/phyloseq-demo/) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
 
@@ -21,6 +21,8 @@ Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io
 ### [Example-Data](Example-Data.html)
 
 ### [future-devel](future-devel.html)
+
+### [gap-statistic](gap-statistic.html)
 
 ### [import-data](import-data.html)
 
@@ -59,6 +61,8 @@ For more advanced users interested in seeing and/or modifying the [R markdown](h
 ### [Example-Data.rmd](Example-Data.rmd)
 
 ### [future-devel.rmd](future-devel.rmd)
+
+### [gap-statistic.Rmd](gap-statistic.Rmd)
 
 ### [import-data.rmd](import-data.rmd)
 
