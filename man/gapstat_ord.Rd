@@ -1,0 +1,84 @@
+\name{gapstat_ord}
+\alias{gapstat_ord}
+\title{Estimate the gap statistic on an ordination result}
+\usage{
+  gapstat_ord(ord, axes = c(1:2), type = "sites",
+  FUNcluster = function(x, k) { list(cluster = pam(x, k,
+  cluster.only = TRUE)) }, K.max = 8, ...)
+}
+\arguments{
+  \item{ord}{(Required). An ordination object. The precise
+  class can vary. Any ordination classes supported
+  internally by the phyloseq package should work,
+  ultimately by passing to the \code{\link[vegan]{scores}}
+  function or its internal extensions in phyloseq.}
+
+  \item{axes}{(Optional). The ordination axes that you want
+  to include.}
+
+  \item{type}{(Optional). One of \code{"sites"} (the vegan
+  package label for samples) or \code{"species"} (the vegan
+  package label for OTUs/taxa). Default is \code{"sites"}.}
+
+  \item{FUNcluster}{(Optional). This is passed to
+  \code{\link[cluster]{clusGap}}. The documentation is
+  copied here for convenience: a function which accepts as
+  first argument a (data) matrix like \code{x}, second
+  argument, say (the number of desired clusters) \code{k},
+  where \code{k >= 2}, and returns a list with a component
+  named (or shortened to) cluster which is a vector of
+  length \code{n = nrow(x)} of integers in \code{1:k}
+  determining the clustering or grouping of the \code{n}
+  observations. The default value is the following
+  function, which wraps partitioning around medoids,
+  \code{\link[cluster]{pam}}:
+
+  \code{function(x, k){list(cluster = pam(x, k,
+  cluster.only=TRUE))}}
+
+  Any function that has these input/output properties
+  (performing a clustering) will suffice. The more
+  appropriate the clustering method, the better chance your
+  gap statistic results will be useful.}
+
+  \item{K.max}{(Optional). A single positive integer value.
+  It indicates the maximum number of clusters that will be
+  considered. Value must be at least two. This is passed to
+  \code{\link[cluster]{clusGap}}.}
+
+  \item{...}{(Optional). Additional named parameters passed
+  on to \code{\link[cluster]{clusGap}}. For example, the
+  \code{method} argument provides for extensive options
+  regarding the method by which the ``optimal'' number of
+  clusters is computed from the gap statistics (and their
+  standard deviations). See the
+  \code{\link[cluster]{clusGap}} documentation for more
+  details.}
+}
+\value{
+  An object of S3 class \code{"clusGap"}, basically a list
+  with components. See the \code{\link[cluster]{clusGap}}
+  documentation for more details.
+}
+\description{
+  This is a wrapper for the \code{\link[cluster]{clusGap}}
+  function, expecting an ordination result as the main data
+  argument.
+}
+\examples{
+# Load and process data
+data("soilrep")
+soilr = rarefy_even_depth(soilrep, rngseed=888)
+print(soilr)
+sample_variables(soilr)
+# Ordination
+sord  = ordinate(soilr, "DCA")
+# Gap Statistic
+gs = gapstat_ord(sord, axes=1:4, verbose=FALSE)
+# Evaluate results with plots, etc.
+plot_scree(sord)
+plot_ordination(soilr, sord,  color="Treatment")
+plot_clusgap(gs)
+print(gs, method="Tibs2001SEmax")
+}
+
