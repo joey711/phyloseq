@@ -21,6 +21,14 @@ phyloseq
 * Lots and lots of fixes and improvements.
 
 
+phyloseq 1.5.19 - add gap statistic support for ordination results
+===========
+- gapstat_ord() - wrapper function for cluster::clusGap for ordination methods
+- plot_clusgap() - wrapper function for plotting gap statistic results from clusGap()
+- Full examples on the soilrep dataset for gap statistic.
+- Fix bug in eigenvalue proportions for axes other 
+  than the first two in ordination plots.
+
 phyloseq 1.5.17 - replace URL with new phyloseq article
 ===========
 http://dx.plos.org/10.1371/journal.pone.0061217
