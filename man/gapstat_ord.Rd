@@ -3,7 +3,7 @@
 \title{Estimate the gap statistic on an ordination result}
 \usage{
   gapstat_ord(ord, axes = c(1:2), type = "sites",
-  FUNcluster = function(x, k) { list(cluster <- pam(x, k,
+  FUNcluster = function(x, k) { list(cluster = pam(x, k,
   cluster.only = TRUE)) }, K.max = 8, ...)
 }
 \arguments{
@@ -33,7 +33,7 @@
   function, which wraps partitioning around medoids,
   \code{\link[cluster]{pam}}:
 
-  \code{function(x, k){list(cluster <- pam(x, k,
+  \code{function(x, k){list(cluster = pam(x, k,
   cluster.only=TRUE))}}
 
   Any function that has these input/output properties
@@ -66,12 +66,19 @@
   argument.
 }
 \examples{
-# Load data
-data(enterotype)
-# ordination
-exord = ordinate(enterotype, method = "MDS", distance = "bray")
-gs = gapstat_ord(exord, verbose=FALSE, method="Tibs2001SEmax")
-print(gs, method="Tibs2001SEmax")
+# Load and process data
+data("soilrep")
+soilr = rarefy_even_depth(soilrep, rngseed=888)
+print(soilr)
+sample_variables(soilr)
+# Ordination
+sord  = ordinate(soilr, "DCA")
+# Gap Statistic
+gs = gapstat_ord(sord, axes=1:4, verbose=FALSE)
+# Evaluate results with plots, etc.
+plot_scree(sord)
+plot_ordination(soilr, sord,  color="Treatment")
 plot_clusgap(gs)
+print(gs, method="Tibs2001SEmax")
 }
 

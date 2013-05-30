@@ -26,15 +26,24 @@
   Create a ggplot summary of gap statistic results
 }
 \examples{
-# Load data
-data(enterotype)
-# ordination
-exord = ordinate(enterotype, method = "MDS", distance = "bray")
-gs = gapstat_ord(exord, verbose=FALSE, method="Tibs2001SEmax")
-print(gs, method="Tibs2001SEmax")
+# Load and process data
+data("soilrep")
+soilr = rarefy_even_depth(soilrep, rngseed=888)
+print(soilr)
+sample_variables(soilr)
+# Ordination
+sord  = ordinate(soilr, "DCA")
+# Gap Statistic
+gs = gapstat_ord(sord, axes=1:4, verbose=FALSE)
+# Evaluate results with plots, etc.
+plot_scree(sord)
+plot_ordination(soilr, sord,  color="Treatment")
 plot_clusgap(gs)
-# Non-ordination example
-gs.pam.RU <- clusGap(ruspini, FUN = pam1, K.max = 8, B = 60)
+print(gs, method="Tibs2001SEmax")
+# Non-ordination example, use cluster::clusGap function directly
+library("cluster")
+pam1 = function(x, k){list(cluster = pam(x, k, cluster.only=TRUE))}
+gs.pam.RU = clusGap(ruspini, FUN = pam1, K.max = 8, B = 60)
 gs.pam.RU
 plot(gs.pam.RU, main = "Gap statistic for the 'ruspini' data")
 mtext("k = 4 is best .. and  k = 5  pretty close")

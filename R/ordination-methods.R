@@ -520,7 +520,7 @@ setMethod("rda.phyloseq", "phyloseq", function(X){
 #'  The default value is the following function, which wraps
 #'  partitioning around medoids, \code{\link[cluster]{pam}}:
 #'  
-#'  \code{function(x, k){list(cluster <- pam(x, k, cluster.only=TRUE))}}
+#'  \code{function(x, k){list(cluster = pam(x, k, cluster.only=TRUE))}}
 #'  
 #'  Any function that has these input/output properties (performing a clustering)
 #'  will suffice. The more appropriate the clustering method, the better chance
@@ -544,15 +544,22 @@ setMethod("rda.phyloseq", "phyloseq", function(X){
 #' @importFrom cluster pam
 #' @export
 #' @examples
-#' # Load data
-#' data(enterotype)
-#' # ordination
-#' exord = ordinate(enterotype, method = "MDS", distance = "bray")
-#' gs = gapstat_ord(exord, verbose=FALSE, method="Tibs2001SEmax")
-#' print(gs, method="Tibs2001SEmax")
+#' # Load and process data
+#' data("soilrep")
+#' soilr = rarefy_even_depth(soilrep, rngseed=888)
+#' print(soilr)
+#' sample_variables(soilr)
+#' # Ordination
+#' sord  = ordinate(soilr, "DCA")
+#' # Gap Statistic
+#' gs = gapstat_ord(sord, axes=1:4, verbose=FALSE)
+#' # Evaluate results with plots, etc.
+#' plot_scree(sord)
+#' plot_ordination(soilr, sord,  color="Treatment")
 #' plot_clusgap(gs)
+#' print(gs, method="Tibs2001SEmax")
 gapstat_ord = function(ord, axes=c(1:2), type="sites", 
-	FUNcluster=function(x, k){list(cluster <- pam(x, k, cluster.only=TRUE))},
+	FUNcluster=function(x, k){list(cluster = pam(x, k, cluster.only=TRUE))},
 	K.max=8, ...){
 	#
 	# Use the scores function to get the ordination coordinates
