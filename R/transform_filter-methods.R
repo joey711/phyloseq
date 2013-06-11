@@ -15,7 +15,8 @@
 #'
 #' This approach is sometimes (somewhat mistakenly) called "rarefaction",
 #' or "rarefying", 
-#' but it is actually a single random sample-wise subsampling procedure.
+#' but it is actually a single random 
+#' sample-wise subsampling procedure, usually without replacement (jack knife).
 #' The original rarefaction procedure includes many
 #' random subsampling iterations at increasing depth as a means to
 #' infer richness/alpha-diversity based on apparent convergence.
@@ -90,12 +91,14 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	
 	# Make sure sample.size is of length 1.
 	if( length(sample.size) > 1 ){
-		warning("`sample.size` had more than one value. Using only the first. \n ... \n")
+		warning("`sample.size` had more than one value. ", 
+            "Using only the first. \n ... \n")
 		sample.size <- sample.size[1]	
 	}
 	
 	if( sample.size <= 0 ){
-		stop("sample.size less than or equal to zero. Need positive sample size to work.")
+		stop("sample.size less than or equal to zero. ", 
+         "Need positive sample size to work.")
 	}
 	
 	# Instead of warning, expected behavior now is to prune samples
@@ -144,18 +147,43 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 # rarefaction subsample function, one sample
 ################################################################################
 #' @keywords internal
-rarefaction_subsample <- function(x, sample.size){
+rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 	# Create replacement species vector
 	rarvec <- numeric(length(x))	
 	# Perform the subsampling. Suppress warnings due to old R compat issue.
-	# Also, make sure to avoid errors from x summing to zero, and there are no observations to sample.
+	# Also, make sure to avoid errors from x summing to zero, 
+  # and there are no observations to sample.
 	# The initialization of rarvec above is already sufficient.
 	if(sum(x) > 0){
-		suppressWarnings(subsample <- sample(1:length(x), sample.size, TRUE, prob=x))
-		# Tabulate the results
-		sstab <- table(subsample)
-		# Assign the tabulated random subsample values to the species vector
-		rarvec[as(names(sstab), "integer")] <- sstab
+    if(replace){
+      # This can be faster, more memory-efficient when the 
+      # number of reads is large, but is not a jack-knife procedure.
+      # This should be clear in the documentation.
+      suppressWarnings(subsample <- sample(1:length(x), sample.size, replace=TRUE, prob=x))
+      # Tabulate the results
+      sstab <- table(subsample)
+      # Assign the tabulated random subsample values to the species vector
+      rarvec[as(names(sstab), "integer")] <- sstab
+    } else {
+      # This is a test
+      # x = 1:26^2
+      #names(x) <- unlist(lapply(LETTERS, function(i, j){paste0(i, j)}, j=LETTERS))
+      #system.time(obsvec <- foreach(iname=names(x), times=x, .combine=c) %do% {rep(iname, times)})
+      # data("GlobalPatterns")
+      # sample.size = sample_sums(GlobalPatterns)[which.min(sample_sums(GlobalPatterns))]
+      x = get_taxa(GlobalPatterns, which.max(sample_sums(GlobalPatterns)))
+      # Create a vector of names of OTUs
+      obsvec <- apply(data.frame(OTUs=names(x), times=x), 1, function(x){
+        rep(x["OTUs"], x["times"])
+      })
+      obsvec <- unlist(obsvec, use.names=FALSE)
+      # Subsampling
+      suppressWarnings(subsample <- sample(obsvec, sample.size, replace=FALSE))
+      # Tabulate the results (these are already named)
+      sstab <- table(subsample)
+      # Assign the tabulated random subsample values to the species vector
+      rarvec[as(names(sstab), "integer")] <- sstab
+    }
 	}
 	# Return abundance vector. Let replacement happen elsewhere.
 	return(rarvec)
