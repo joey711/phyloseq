@@ -4,22 +4,30 @@
 # Note that the subsampling is random, so some noise is introduced making the
 # relative abundances slightly different
 ################################################################################
-#' Perform a random subsampling of an OTU table to a level of even depth.
+#' Resample an OTU table to a level of even sequencing depth.
 #' 
-#' This function uses the \code{\link{sample}} function to randomly subset from the 
-#' abundance values in each sample of the \code{otu_table} component in the
-#' \code{physeq} argument.
-#' Sampling is performed with replacement from a vector of taxa indices,
-#' with length equal to the argument to \code{sample.size},
-#' and probability according to the abundances for that sample in \code{physeq}.
+#' This function uses the \code{\link{sample}} function to 
+#' resample from the abundance values 
+#' in the \code{otu_table} component of the first argument,
+#' \code{physeq}.
+#' Often one of the major goals of this procedure is to achieve parity in 
+#' total number of counts between samples, as an alternative to other formal
+#' normalization procedures, which is why a single value for the 
+#' \code{sample.size} is expected.
+#' Subsampling can be performed with and without replacement.
+#' The default behavior is the jackknife (without replacement). 
+#' See the \code{replace} parameter documentation for more details.
+#' It is recommended that you explicitly select a random number generator seed 
+#' by providing a single positive integer argument as \code{rngseed}.
 #'
 #' This approach is sometimes (somewhat mistakenly) called "rarefaction",
 #' or "rarefying", 
-#' but it is actually a single random 
-#' sample-wise subsampling procedure, usually without replacement (jack knife).
-#' The original rarefaction procedure includes many
-#' random subsampling iterations at increasing depth as a means to
-#' infer richness/alpha-diversity based on apparent convergence.
+#' but it is actually a single instance of a resampling procedure.
+#' The original rarefaction procedure included many
+#' resampling iterations at increasing depth as a means to
+#' infer richness/alpha-diversity based on the apparent 
+#' convergence of the diversity index as the number of
+#' observations in each resampling was increased.
 #'
 #' Make sure to use \code{\link{set.seed}} for exactly-reproducible results
 #' of the random subsampling. 
@@ -39,6 +47,23 @@
 #'  If set to \code{FALSE}, then no fiddling with the RNG seed is performed,
 #'  and it is up to the user to appropriately call \code{\link{set.seed}}
 #'  beforehand to achieve reproducible results.
+#'  
+#' @param replace (Optional). Logical. Whether to sample with replacement
+#'  (\code{TRUE}) or without replacement (\code{FALSE}).
+#'  The default is with replacement (\code{replace=TRUE}).
+#'  Two implications to consider are that
+#'  (1) sampling with replacement is faster and more memory efficient
+#'  as currently implemented; and
+#'  (2), sampling with replacement means that there is a chance that the
+#'  number of reads for a given OTU in a given sample could be larger
+#'  than the original count value, as opposed to sampling without replacement
+#'  where the original count value is the maximum possible.
+#'  Prior to phyloseq package version number \code{1.5.20},
+#'  this parameter did not exist and sampling with replacement was the only
+#'  random subsampling implemented in the \code{rarefy_even_depth} function.
+#'  This previous default behavior was selected for computational efficiency, but
+#'  differs from analogous functions in related packages
+#'  (e.g. subsampling in QIIME).
 #'
 #' @return An object of class \code{phyloseq}. 
 #' Only the \code{otu_table} component is modified.
@@ -53,24 +78,13 @@
 #' @examples
 #' # Test with esophagus dataset
 #' data("esophagus")
-#' eso  = rarefy_even_depth(esophagus)
-#' eso0 = prune_taxa(taxa_names(eso), esophagus) 
-#' plot(as(otu_table(eso), "vector"), as(otu_table(eso0), "vector"))
-#' UniFrac(eso); UniFrac(eso0); UniFrac(esophagus)
-#' # Test with GlobalPatterns dataset
+#' esorepT = rarefy_even_depth(esophagus, replace=TRUE)
+#' esorepF = rarefy_even_depth(esophagus, replace=FALSE)
 #' data("GlobalPatterns")
-#' GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
-#' # remove the samples that have less than 20 total reads from Chlamydiae
-#' GP.chl <- prune_samples(names(which(sample_sums(GP.chl)>=20)), GP.chl)
-#' # # (p <- plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance"))
-#' GP.chl.r = rarefy_even_depth(GP.chl)
-#' GP.chl = prune_taxa(taxa_names(GP.chl.r), GP.chl)
-#' plot(as(otu_table(GP.chl.r), "vector"), as(otu_table(GP.chl), "vector"))
-#' # Try ordination of GP.chl and GP.chl.r (default distance is unweighted UniFrac)
-#' plot_ordination(GP.chl, ordinate(GP.chl, "MDS"), color="SampleType") #+ geom_point(size=5)
-#' plot_ordination(GP.chl.r, ordinate(GP.chl.r, "MDS"), color="SampleType") #+ geom_point(size=5)
+#' GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
+#' GPrepF = rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE)
 rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
-															rngseed=711){
+															rngseed=711, replace=TRUE){
 	
 	if( as(rngseed, "logical") ){
 		# Now call the set.seed using the value expected in phyloseq
@@ -118,7 +132,8 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	# enforce orientation as species-are-rows, for assignment
 	if(!taxa_are_rows(newsub)){newsub <- t(newsub)}
 	# apply through each sample, and replace
-	newotu <- apply(otu_table(newsub), 2, rarefaction_subsample, sample.size)
+	newotu <- apply(otu_table(newsub), 2, rarefaction_subsample,
+									sample.size=sample.size, replace=replace)
 	# Add species names to the row indices
 	rownames(newotu) <- taxa_names(physeq)
 	# replace the otu_table.
@@ -148,43 +163,41 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 ################################################################################
 #' @keywords internal
 rarefaction_subsample <- function(x, sample.size, replace=FALSE){
+	# This is a test
+	# x = sample(10, 10)
+	# x = 1:10
+	# sample.size = 50
+	#system.time(obsvec <- foreach(OTUi=1:length(x), times=x, .combine=c) %do% {rep(OTUi, times)})
+	# data("GlobalPatterns")
+	# sample.size = sample_sums(GlobalPatterns)[which.min(sample_sums(GlobalPatterns))]
+	# x = get_taxa(GlobalPatterns, which.max(sample_sums(GlobalPatterns)))
 	# Create replacement species vector
 	rarvec <- numeric(length(x))	
-	# Perform the subsampling. Suppress warnings due to old R compat issue.
+	# Perform the sub-sampling. Suppress warnings due to old R compat issue.
 	# Also, make sure to avoid errors from x summing to zero, 
   # and there are no observations to sample.
 	# The initialization of rarvec above is already sufficient.
-	if(sum(x) > 0){
-    if(replace){
-      # This can be faster, more memory-efficient when the 
-      # number of reads is large, but is not a jack-knife procedure.
-      # This should be clear in the documentation.
-      suppressWarnings(subsample <- sample(1:length(x), sample.size, replace=TRUE, prob=x))
-      # Tabulate the results
-      sstab <- table(subsample)
-      # Assign the tabulated random subsample values to the species vector
-      rarvec[as(names(sstab), "integer")] <- sstab
-    } else {
-      # This is a test
-      # x = 1:26^2
-      #names(x) <- unlist(lapply(LETTERS, function(i, j){paste0(i, j)}, j=LETTERS))
-      #system.time(obsvec <- foreach(iname=names(x), times=x, .combine=c) %do% {rep(iname, times)})
-      # data("GlobalPatterns")
-      # sample.size = sample_sums(GlobalPatterns)[which.min(sample_sums(GlobalPatterns))]
-      x = get_taxa(GlobalPatterns, which.max(sample_sums(GlobalPatterns)))
-      # Create a vector of names of OTUs
-      obsvec <- apply(data.frame(OTUs=names(x), times=x), 1, function(x){
-        rep(x["OTUs"], x["times"])
-      })
-      obsvec <- unlist(obsvec, use.names=FALSE)
-      # Subsampling
-      suppressWarnings(subsample <- sample(obsvec, sample.size, replace=FALSE))
-      # Tabulate the results (these are already named)
-      sstab <- table(subsample)
-      # Assign the tabulated random subsample values to the species vector
-      rarvec[as(names(sstab), "integer")] <- sstab
-    }
+	if(sum(x) <= 0){
+		# Protect against, and quickly return an empty vector, 
+		# if x is already an empty count vector
+		return(rarvec)
 	}
+	if(replace){
+		# resample with replacement
+		suppressWarnings(subsample <- sample(1:length(x), sample.size, replace=TRUE, prob=x))
+	} else {
+		# resample without replacement
+		obsvec <- apply(data.frame(OTUi=1:length(x), times=x), 1, function(x){
+			rep_len(x["OTUi"], x["times"])
+		})
+		obsvec <- unlist(obsvec, use.names=FALSE)
+		# use `sample` for subsampling. Hope that obsvec doesn't overflow.
+		suppressWarnings(subsample <- sample(obsvec, sample.size, replace=FALSE))
+	}
+	# Tabulate the results (these are already named by the order in `x`)
+	sstab <- table(subsample)
+	# Assign the tabulated random subsample values to the species vector
+	rarvec[as(names(sstab), "integer")] <- sstab
 	# Return abundance vector. Let replacement happen elsewhere.
 	return(rarvec)
 }

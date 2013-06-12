@@ -20,6 +20,23 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.20 - add `replace` optional parameter to rarefy_even_depth()
+===========
+This supplants prior default behavior, in which random subsampling
+*with* replacement was the only supported option.
+Two implications to consider are that (1),
+sampling with replacement is faster and more memory efficient
+as currently implemented; and (2),
+sampling with replacement means that there is a chance that the
+number of reads for a given OTU in a given sample could be larger
+than the original count value, as opposed to sampling without replacement
+where the original count value is the maximum possible.
+Prior to this phyloseq version,
+this `replace` parameter did not exist and sampling with replacement was the only
+random subsampling implemented in the `rarefy_even_depth` function.
+This prior behavior was selected for computational efficiency, but
+differs from the behavior of analogous functions in related packages
+(e.g. ``jack knife'' subsampling in QIIME).
 
 phyloseq 1.5.19 - add gap statistic support for ordination results
 ===========
