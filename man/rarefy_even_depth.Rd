@@ -1,9 +1,10 @@
 \name{rarefy_even_depth}
 \alias{rarefy_even_depth}
-\title{Resample an OTU table to a level of even sequencing depth.}
+\title{Resample an OTU table such that all samples have the same library size.}
 \usage{
   rarefy_even_depth(physeq, sample.size =
-  min(sample_sums(physeq)), rngseed = 711, replace = TRUE)
+  min(sample_sums(physeq)), rngseed = FALSE, replace =
+  TRUE, trimOTUs = TRUE)
 }
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}}
@@ -37,40 +38,56 @@
   phyloseq package version number \code{1.5.20}, this
   parameter did not exist and sampling with replacement was
   the only random subsampling implemented in the
-  \code{rarefy_even_depth} function. This previous default
+  \code{rarefy_even_depth} function. Note that this default
   behavior was selected for computational efficiency, but
   differs from analogous functions in related packages
   (e.g. subsampling in QIIME).}
+
+  \item{trimOTUs}{(Optional). Logical. Whether to trim OTUs
+  from the dataset that are no longer observed in any
+  sample (have a count of zero in every sample). The number
+  of OTUs trimmed, if any, is printed to standard out as a
+  reminder.}
 }
 \value{
   An object of class \code{phyloseq}. Only the
   \code{otu_table} component is modified.
 }
 \description{
-  This function uses the \code{\link{sample}} function to
-  resample from the abundance values in the
+  This function uses the standard R \code{\link{sample}}
+  function to resample from the abundance values in the
   \code{otu_table} component of the first argument,
   \code{physeq}. Often one of the major goals of this
   procedure is to achieve parity in total number of counts
   between samples, as an alternative to other formal
   normalization procedures, which is why a single value for
-  the \code{sample.size} is expected. Subsampling can be
-  performed with and without replacement. The default
-  behavior is the jackknife (without replacement). See the
+  the \code{sample.size} is expected. This kind of
+  resampling can be performed with and without replacement,
+  with replacement being the more
+  computationally-efficient, default setting. See the
   \code{replace} parameter documentation for more details.
-  It is recommended that you explicitly select a random
-  number generator seed by providing a single positive
-  integer argument as \code{rngseed}.
+  We recommended that you explicitly select a random number
+  generator seed before invoking this function, or,
+  alternatively, that you explicitly provide a single
+  positive integer argument as \code{rngseed}.
 }
 \details{
-  This approach is sometimes (somewhat mistakenly) called
-  "rarefaction", or "rarefying", but it is actually a
-  single instance of a resampling procedure. The original
-  rarefaction procedure included many resampling iterations
-  at increasing depth as a means to infer
-  richness/alpha-diversity based on the apparent
-  convergence of the diversity index as the number of
-  observations in each resampling was increased.
+  This approach is sometimes mistakenly called
+  "rarefaction", which
+  \href{http://en.wikipedia.org/wiki/Rarefaction}{in
+  physics refers to a form of wave decompression;} but in
+  this context, ecology, the term refers to a
+  \href{http://en.wikipedia.org/wiki/Rarefaction_(ecology)}{repeated
+  sampling procedure to assess species richness}, first
+  proposed in 1968 by Howard Sanders. In contrast, this
+  procedure is not typically repeated (though maybe it
+  should be to ensure robust inference), but instead used
+  as an \emph{ad hoc} means to normalize microbiome counts
+  that have resulted from libraries of widely-differing
+  sizes. Here we have intentionally adopted an alternative
+  name, \code{rarefy}, that has also been used recently to
+  describe this process and, to our knowledge, not
+  previously used in ecology.
 
   Make sure to use \code{\link{set.seed}} for
   exactly-reproducible results of the random subsampling.
