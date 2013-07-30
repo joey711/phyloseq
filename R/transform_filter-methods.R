@@ -547,7 +547,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	}
 
 	# Concatenate data up to the taxrank column, use this for agglomeration
-	tax <- as(access(physeq, "tax_table"), "matrix")[, 1:CN]
+	tax <- as(access(physeq, "tax_table"), "matrix")[, 1:CN, drop=FALSE]
 	tax <- apply(tax, 1, function(i){paste(i, sep=";_;", collapse=";_;")})
 	
 	# Remove NAs and useless from the vector/factor for looping.

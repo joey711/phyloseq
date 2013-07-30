@@ -37,6 +37,12 @@ phyloseq 1.5.20 - Bugfixes, `read_tree_greengenes`, and a `replace` optional par
    https://github.com/joey711/phyloseq/issues/224
 
 -- Fixed a bug in which the highest taxonomic rank fails in `tax_glom`
+  This was a bug resulting from the automatic coercion of single-column
+  matrix subsetting to a vector. Simply changing the relevant line
+  of code in `tax_glom` such that [, , drop=FALSE],
+  solve this issue, Issue 223
+  https://github.com/joey711/phyloseq/issues/223
+  Unit tests have been added that should catch this in the future.
 
 -- rarefy_even_depth() new option to sample without replacement.
   Two implications to consider are that
