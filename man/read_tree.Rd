@@ -15,10 +15,10 @@
   connection? Default is \code{FALSE}, indicating that
   \code{NULL} will be SILENTLY returned, rather than an
   error. Be cautious about this behavior. Useful for
-  phyloseq internals, but might be hard to track in
-  treefileyour own code if you're not aware of this ``no
-  error by default'' setting. If this is a problem, change
-  this value to \code{TRUE}, and you can still use the
+  phyloseq internals, but might be hard to track in your
+  own code if you're not aware of this ``no error by
+  default'' setting. If this is a problem, change this
+  value to \code{TRUE}, and you can still use the
   function.}
 
   \item{...}{(Optional). Additional parameter(s) passed to
@@ -44,7 +44,12 @@ read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
 read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
 }
 \seealso{
-  \code{\link{phylo}}, \code{\link[ape]{read.tree}},
+  \code{\link{read_tree_greengenes}}
+
+  \code{\link{phylo}}
+
+  \code{\link[ape]{read.tree}}
+
   \code{\link[ape]{read.nexus}}
 }
 

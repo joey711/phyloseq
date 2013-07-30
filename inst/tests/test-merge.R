@@ -1,6 +1,5 @@
 # testthat tests don't do anything when successful.
-library("phyloseq")
-library("testthat")
+library("phyloseq"); library("testthat")
 
 
 # # # Tests!
@@ -81,7 +80,7 @@ test_that("merge_phyloseq: Break apart GP based on human-association, then merge
 # tax_glom
 # Load data
 data("GlobalPatterns")
-GP.chl <- subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
+GP.chl = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 test_that("the tax_table slot is identical whether tax_glom()ed by itself or as component", {
 	expect_that(tax_glom(tax_table(GP.chl), "Family"), is_a("taxonomyTable"))
 	expect_that(n1<-tax_glom(GP.chl, "Family"), is_a("phyloseq"))
@@ -101,6 +100,13 @@ test_that("tax_glom() handles clearly agglomeration to one taxa", {
 	expect_that(n1, is_a("phyloseq"))
 	expect_that(ntaxa(n1), equals(1L))
 	expect_that(access(n1, "phy_tree"), is_a("NULL"))
+})
+test_that("tax_glom() can handle even the highest rank glom", {
+  expect_warning(tax_glom(GP.chl, "Kingdom"))
+  gpk = tax_glom(GlobalPatterns, "Kingdom")
+  expect_is(gpk, "phyloseq")
+  expect_equivalent(ntaxa(gpk), 2)
+  expect_equivalent(taxa_sums(gpk), c(195598, 28021080))
 })
 ################################################################################
 # prune_taxa

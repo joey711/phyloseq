@@ -77,9 +77,16 @@ otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phy
 import_qiime_otu_tax(otufile)
 }
 \seealso{
-  \code{\link{import}}, \code{\link{merge_phyloseq}},
-  \code{\link{phyloseq}}, \code{\link{import_qiime}}
+  \code{\link{import}}
+
+  \code{\link{merge_phyloseq}}
+
+  \code{\link{phyloseq}}
+
+  \code{\link{import_qiime}}
+
   \code{\link{import_qiime_otu_tax}}
+
   \code{\link{import_env_file}}
 }
 

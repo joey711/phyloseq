@@ -28,20 +28,27 @@
   general-purpose data merging function called
   \code{\link{merge_phyloseq}}.}
 
-  \item{treefilename}{(Optional). A file representing a
-  phylogenetic tree or a \code{\link{phylo}} object. Files
-  can be NEXUS or Newick format. See
-  \code{\link{read_tree}} for more details. If provided,
-  the tree should have the same OTUs/tip-labels as the OTUs
-  in the other files. Any taxa or samples missing in one of
-  the files is removed from all. For the QIIME pipeline
-  this tree is typically a tree of the representative 16S
-  rRNA sequences from each OTU cluster, with the number of
-  leaves/tips equal to the number of taxa/species/OTUs.
-  Default value is \code{NULL}. Note that this argument can
-  be a tree object (\code{\link[ape]{phylo}}-class) for
-  cases where the tree has been --- or needs to be ---
-  imported separately.}
+  \item{treefilename}{(Optional). Default value is
+  \code{NULL}. A file representing a phylogenetic tree or a
+  \code{\link{phylo}} object. Files can be NEXUS or Newick
+  format. See \code{\link{read_tree}} for more details.
+  Also, if using a recent release of the GreenGenes
+  database tree, try the \code{\link{read_tree_greengenes}}
+  function -- this should solve some issues specific to
+  importing that tree. If provided, the tree should have
+  the same OTUs/tip-labels as the OTUs in the other files.
+  Any taxa or samples missing in one of the files is
+  removed from all. As an example from the QIIME pipeline,
+  this tree would be a tree of the representative 16S rRNA
+  sequences from each OTU cluster, with the number of
+  leaves/tips equal to the number of taxa/species/OTUs, or
+  the complete reference database tree that contains the
+  OTU identifiers of every OTU in your abundance table.
+  Note that this argument can be a tree object
+  (\code{\link[ape]{phylo}}-class) for cases where the tree
+  has been --- or needs to be --- imported separately, as
+  in the case of the GreenGenes tree mentioned earlier
+  (code{\link{read_tree_greengenes}}).}
 
   \item{refseqfilename}{(Optional). Default \code{NULL}.
   The file path of the biological sequence file that
@@ -123,9 +130,10 @@
 
   \item{version}{(Optional). Numeric. The expected version
   number of the file. As the BIOM format evolves,
-  version-specific importers will be available by adjusting
-  the version value. Default is \code{0.9}. Not
-  implemented. Has no effect (yet).}
+  version-specific importers may be available by adjusting
+  the version value. Default is \code{1.0}. Not yet
+  implemented. Parsing of the biom-format is done mostly by
+  the biom package now available in CRAN.}
 
   \item{...}{Additional parameters passed on to
   \code{\link{read_tree}}.}
@@ -169,6 +177,10 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
   \code{\link{import_qiime}}
 
   \code{\link{read_tree}}
+
+  \code{\link{read_tree_greengenes}}
+
+  \code{\link[biom]{biom-package}}
 
   \code{\link[biom]{read_biom}}
 
