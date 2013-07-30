@@ -39,7 +39,10 @@
   \url{http://bmf2.colorado.edu/unifrac/}
 }
 \seealso{
-  \code{\link{import_env_file}}, \code{\link{tip_glom}},
+  \code{\link{import_env_file}}
+
+  \code{\link{tip_glom}}
+
   \code{\link{otu_table}}
 }
 \keyword{internal}

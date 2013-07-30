@@ -390,8 +390,11 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #' @return A tree, represented as a \code{\link{phylo}} object.
 #' 
 #' @import ape
-#' @example  
-#' treefile = system.file("extdata", "gg_13_5-73_otus.tree.gz", package="phyloseq")
+#' @export
+#' @examples
+#' # Read the May 2013, 73% similarity official tree,
+#' # included as extra data in phyloseq.
+#' treefile = system.file("extdata", "gg13-5-73.tree.gz", package="phyloseq")
 #' x = read_tree_greengenes(treefile)
 #' x
 #' class(x)
@@ -402,12 +405,24 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #' # library("ape")
 #' # read.tree(treefile)
 read_tree_greengenes = function(treefile){
-  # Clean the newick file of extra annotations between single quotes.
-  # Strings containing open or closed parenthesis are not removed,
-  # since these are special characters in newick format.
-  clines = gsub("\\)\'[^()]{0,}\'", "", readLines(treefile, warn=FALSE))
-  # Convert the cleaned newick character string/vector to "phylo" class; return
-  return(read.tree("", text=clines))
+  alines = readLines(treefile, warn=FALSE)
+  # Collapse to one line, in case it isn't already.
+  alines = paste0(alines, collapse="")
+  # replace all semicolons with something weird
+  # that isn't already a special newick character.
+  newdelim = "><-><"
+  clines = gsub("\\;", newdelim, alines)
+  # reinstate the final character as a semicolon
+  clines = gsub(paste0(newdelim, "$"), ";", clines)
+  # Convert your newick string into a phylo-class tree.
+  tree = read.tree("", text=clines)
+  # Now that it is phylo-class, reinstate semicolon
+  # as the delimiter in the node labels
+  gsub(newdelim, ";", tree$node.label)
+  # Also get rid of those extra quotes
+  gsub("'", "", tree$node.label)
+  # Return the cleaned-up tree
+  return(tree)
 }
 ################################################################################
 #' Import a QIIME-formatted otu-tax file into a list of two matrices.

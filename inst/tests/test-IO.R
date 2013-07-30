@@ -272,7 +272,7 @@ test_that("The read_tree function works as expected:", {
 test_that("The specialized read_tree_greengenes function works:", {
   # The included, gzipped version of the the 13_5 73% similarity greengenes tree.
   # It causes ape::read.tree to fail with an error, but read_tree_greengenes should be fine.
-  treefile = system.file("extdata", "gg_13_5-73_otus.tree.gz", package="phyloseq")
+  treefile = system.file("extdata", "gg13-5-73.tree.gz", package="phyloseq")
   x = read_tree_greengenes(treefile)
   expect_is(x, "phylo")
   # Happen to know that all OTU names should be numbers.
