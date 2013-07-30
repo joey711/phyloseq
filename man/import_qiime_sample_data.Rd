@@ -39,9 +39,16 @@ mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
 import_qiime_sample_data(mapfile)
 }
 \seealso{
-  \code{\link{import}}, \code{\link{merge_phyloseq}},
-  \code{\link{phyloseq}}, \code{\link{import_qiime}}
+  \code{\link{import}}
+
+  \code{\link{merge_phyloseq}}
+
+  \code{\link{phyloseq}}
+
+  \code{\link{import_qiime}}
+
   \code{\link{import_qiime_otu_tax}}
+
   \code{\link{import_env_file}}
 }
 

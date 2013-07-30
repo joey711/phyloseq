@@ -268,6 +268,20 @@ test_that("The read_tree function works as expected:", {
 	expect_that(read_tree(not_tree), is_a("NULL")) # file not a tree, gives NULL
 	expect_that(read_tree(not_tree, TRUE), throws_error()) # file not a tree, check turned on/TRUE
 })
+# read_tree_greengenes
+test_that("The specialized read_tree_greengenes function works:", {
+  # The included, gzipped version of the the 13_5 73% similarity greengenes tree.
+  # It causes ape::read.tree to fail with an error, but read_tree_greengenes should be fine.
+  treefile = system.file("extdata", "gg13-5-73.tree.gz", package="phyloseq")
+  x = read_tree_greengenes(treefile)
+  expect_is(x, "phylo")
+  # Happen to know that all OTU names should be numbers.
+  expect_match(x$tip.label, "[[:digit:]]+")
+  # All tip/OTU names should be unique
+  expect_false(any(duplicated(taxa_names(x))))
+  # The more general read_tree function should fail to read and return NULL
+  expect_is(read_tree(treefile), "NULL")
+})
 ################################################################################
 # microbio_me_qiime tests
 # This tests different features and expected behavior for

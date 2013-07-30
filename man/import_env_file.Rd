@@ -39,6 +39,8 @@
   \url{http://bmf2.colorado.edu/unifrac/}
 }
 \seealso{
-  \code{\link{import}}, \code{\link{tip_glom}}
+  \code{\link{import}}
+
+  \code{\link{tip_glom}}
 }
 

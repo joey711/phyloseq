@@ -22,20 +22,27 @@
   formatting specification should be followed for correct
   parsing by this function. Default value is \code{NULL}.}
 
-  \item{treefilename}{(Optional). A file representing a
-  phylogenetic tree or a \code{\link{phylo}} object. Files
-  can be NEXUS or Newick format. See
-  \code{\link{read_tree}} for more details. If provided,
-  the tree should have the same OTUs/tip-labels as the OTUs
-  in the other files. Any taxa or samples missing in one of
-  the files is removed from all. For the QIIME pipeline
-  this tree is typically a tree of the representative 16S
-  rRNA sequences from each OTU cluster, with the number of
-  leaves/tips equal to the number of taxa/species/OTUs.
-  Default value is \code{NULL}. Note that this argument can
-  be a tree object (\code{\link[ape]{phylo}}-class) for
-  cases where the tree has been --- or needs to be ---
-  imported separately.}
+  \item{treefilename}{(Optional). Default value is
+  \code{NULL}. A file representing a phylogenetic tree or a
+  \code{\link{phylo}} object. Files can be NEXUS or Newick
+  format. See \code{\link{read_tree}} for more details.
+  Also, if using a recent release of the GreenGenes
+  database tree, try the \code{\link{read_tree_greengenes}}
+  function -- this should solve some issues specific to
+  importing that tree. If provided, the tree should have
+  the same OTUs/tip-labels as the OTUs in the other files.
+  Any taxa or samples missing in one of the files is
+  removed from all. As an example from the QIIME pipeline,
+  this tree would be a tree of the representative 16S rRNA
+  sequences from each OTU cluster, with the number of
+  leaves/tips equal to the number of taxa/species/OTUs, or
+  the complete reference database tree that contains the
+  OTU identifiers of every OTU in your abundance table.
+  Note that this argument can be a tree object
+  (\code{\link[ape]{phylo}}-class) for cases where the tree
+  has been --- or needs to be --- imported separately, as
+  in the case of the GreenGenes tree mentioned earlier
+  (code{\link{read_tree_greengenes}}).}
 
   \item{refseqfilename}{(Optional). Default \code{NULL}.
   The file path of the biological sequence file that
