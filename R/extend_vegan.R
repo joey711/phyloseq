@@ -104,11 +104,13 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @return A \code{data.frame} of the richness estimates, and their standard error.
 #' 
 #' @seealso 
-#'  Check out the custom plotting function, \code{\link{plot_richness_estimates}},
-#'  for easily showing the results of different estimates, with method-specific
-#'  error-bars. Also check out the internal functions borrowed from the \code{vegan}
-#'  package:
-#'  \code{\link[vegan]{estimateR}},
+#'  Check out the custom plotting function, \code{\link{plot_richness}},
+#'  for easily showing the results of different estimates, 
+#'  with method-specific error-bars.
+#'  Also check out the internal functions borrowed from the \code{vegan} package:
+#'  
+#'  \code{\link[vegan]{estimateR}}
+#'  
 #'  \code{\link[vegan]{diversity}}
 #'
 #' @import vegan
