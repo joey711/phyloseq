@@ -273,7 +273,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  the richness.
 #'
 #' @param x (Optional). A variable to map to the horizontal axis. The vertical
-#'  axis will be mapped to richness estimates and have units of total taxa.
+#'  axis will be mapped to the alpha diversity index/estimate
+#'  and have units of total taxa, and/or index value (dimensionless).
 #'  This parameter (\code{x}) can be either a character string indicating a
 #'  variable in \code{sample_data} 
 #'  (among the set returned by \code{sample_variables(physeq)} );
@@ -282,6 +283,13 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #'  The default value is \code{"samples"}, which will map each sample's name
 #'  to a separate horizontal position in the plot.
+#'  
+#' @param measures (Optional). Default is \code{NULL}, meaning that
+#' all available alpha-diversity measures will be included in plot panels.
+#' Alternatively, you can specify one or more measures
+#' as a character vector of measure names.
+#' Values must be among those supported:
+#' \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
 #' @param color (Optional). Default \code{NULL}. The sample variable to map
 #'  to different colors. Like \code{x}, this can be a single character string 
@@ -309,9 +317,24 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
 #'
-#' @param shsi (Optional). Default \code{FALSE}. Logical.
-#'  Whether or not to include Shannon and Simpson indices
-#'  in the graphic as well.
+#' @param scales (Optional). Default \code{"free_y"}.
+#'  Whether to let vertical axis have free scale that adjusts to
+#'  the data in each panel.
+#'  This argument is passed to \code{\link[ggplot2]{facet_wrap}}.
+#'  If set to \code{"fixed"}, a single vertical scale will
+#'  be used in all panels. This can obscure values if the
+#'  \code{measures} argument includes both 
+#'  richness estimates and diversity indices, for example.
+#'  
+#' @param nrow (Optional). Default is \code{1},
+#'  meaning that all plot panels will be placed in a single row,
+#'  side-by-side. 
+#'  This argument is passed to \code{\link[ggplot2]{facet_wrap}}.
+#'  If \code{NULL}, the number of rows and columns will be 
+#'  chosen automatically (wrapped) based on the number of panels
+#'  and the size of the graphics device.
+#'
+#' @param shsi (Deprecated). No longer supported.
 #'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
@@ -334,67 +357,105 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
 #' plot_richness(GP, x = "SampleType", color="SampleType")
 #' plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
-plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE){
+plot_richness <- function(physeq, x="samples", measures=NULL,
+                          color=NULL, shape=NULL, title=NULL,
+                          scales="free_y", nrow=1, shsi=NULL){
 
-	# Make the plotting data.frame 
-	DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
+	# Make the plotting data.frame
+  if( !is.null(sample_data(physeq, errorIfNULL=FALSE)) ){
+    # Include the sample data, if it is there.
+	  DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
+  } else {
+    # If no sample data, leave it out.
+    DF <- data.frame(estimate_richness(physeq))
+  }
 	
-	# If there is no "samples" variable in DF, add it
-	if( !"samples" %in% names(DF) ){
-		DF$samples = sample_names(physeq)
+	if( !"samples" %in% colnames(DF) ){
+	  # If there is no "samples" variable in DF, add it
+		DF$samples <- sample_names(physeq)
 	}
 	
 	# sample_names used to be default, and should also work.
 	# #backwardcompatibility
 	if( !is.null(x) ){
 		if( x %in% c("sample", "samples", "sample_names") ){
-			x = "samples"
+			x <- "samples"
 		}
+	} else {
+    # If x was NULL for some reason, set it to "samples"
+	  x <- "samples"
 	}
 
-	# Define "measure" variables and s.e. labels (ses).
-	measures = c("S.obs", "S.chao1", "S.ACE", "shannon", "simpson")
-	ses = c("se.obs", "se.chao1", "se.ACE", "se.shannon", "se.simpson")
+  # Rename for better plots
+  colnames(DF)[colnames(DF)=="S.obs"] <- "Observed" 
+  colnames(DF)[colnames(DF)=="S.chao1"] <- "Chao1" 
+  colnames(DF)[colnames(DF)=="S.ACE"] <- "ACE" 
+  colnames(DF)[colnames(DF)=="shannon"] <- "Shannon" 
+  colnames(DF)[colnames(DF)=="simpson"] <- "Simpson" 
+  colnames(DF)[colnames(DF)=="invsimpson"] <- "InvSimpson" 
+  colnames(DF)[colnames(DF)=="fisher"] <- "Fisher" 
 
+	# Define "measure" variables and s.e. labels, for melting.
+  secols = grep("se\\.", colnames(DF))
+	ses = colnames(DF)[secols]
+  measvars = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")
+  
 	# melt, for different richnesses...
-	mdf = melt(DF, measure.vars=measures)
-
-	# Merge s.e. into one "se" column
-	mdf$se = NA_integer_
-	mdf$wse = paste("se.", substr(mdf$variable, 3, 10), sep="")
+	mdf = melt(DF, measure.vars=measvars)  
+  
+	## Merge s.e. into one "se" column
+  # Define conversion vector
+  selabs = rep(NA_integer_, times=length(measvars))
+  names(selabs) <- measvars
+  selabs[c("Chao1", "ACE", "Fisher")] <- c("se.chao1", "se.ACE", "se.fisher")
+  # Initialize the se column
+	mdf$se <- NA_integer_
+  mdf$wse <- sapply(as.character(mdf$variable), function(i,selabs){selabs[i]}, selabs)
 	for( i in 1:nrow(mdf) ){
-		if( mdf[i, "wse"] %in% c("se.chao1", "se.ACE") ){
-			mdf[i, "se"] = mdf[i, (mdf[i, "wse"])]
+		if( !is.na(mdf[i, "wse"]) ){
+			mdf[i, "se"] <- mdf[i, (mdf[i, "wse"])]
 		}
 	}
-	
-	# Rm shannon/simpson if !shsi
-	if( !shsi ){
-		mdf = subset(mdf, variable %in% measures[1:3])
+  # Rm the redundant columns
+  mdf <- mdf[, -which(colnames(mdf) %in% c("se.chao1", "se.ACE", "se.fisher", "wse"))]
+
+  ## Interpret measures
+  # If not provided (default), keep all 
+  if( !is.null(measures) ){
+    if( any(measures %in% as.character(mdf$variable)) ){
+      # If any measures were in mdf, then subset to just those.
+      mdf <- mdf[as.character(mdf$variable) %in% measures, ]
+    } else {
+      # Else, print warning about bad option choice for measures, keeping all.
+      warning("Argument to `measures` no supported. All alpha-diversity measures included in plot.")
+    }
+  }
+  
+	if( !is.null(shsi) ){
+    # Deprecated:
+    # If shsi is anything but NULL, print a warning about its being deprecated
+		warning("shsi no longer supported option in plot_richness. Please use `measures` instead")
 	}
 	
 	# map variables
 	richness_map <- aes_string(x=x, y="value", color=color, shape=shape)		
 	
 	# Make the ggplot.
-	p <- ggplot(mdf, richness_map) + 
-		geom_point(na.rm=TRUE) + 
-		geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) +	
-		theme(axis.text.x = element_text(angle = -90, hjust = 0))
+	p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE) 
+  
+  # Add error bars if mdf$se is not all NA
+  if( any(!is.na(mdf$se)) ){
+    p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) 
+  }
+
+  # Rotate horizontal axis labels, and adjust
+	p = p + theme(axis.text.x=element_text(angle=-90, vjust=0.5, hjust=0))
 	
-	# Add label according to whether or not shannon/simpson indices are included
-	if(shsi){
-		p = p + ylab('Alpha Diversity Measure') 				
-	} else {
-		p = p + ylab('Richness [number of taxa]') 		
-	}
+	# Add y-label 
+	p = p + ylab('Alpha Diversity Measure') 
 		
-	# Facet differently, depending on whether shannon or simpson indices included
-	if(shsi){
-		p = p + facet_wrap(~variable, nrow=1, scales="free") 				
-	} else {
-		p = p + facet_grid(~variable) 		
-	}
+  # Facet wrap using user-options
+	p = p + facet_wrap(~variable, nrow=nrow, scales=scales)
 		
 	# Optionally add a title to the plot
 	if( !is.null(title) ){

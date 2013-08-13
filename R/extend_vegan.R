@@ -77,10 +77,13 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 # @importFrom vegan estimateR
 # @importFrom vegan diversity
 ################################################################################
-#' Summarize richness estimates
+#' Summarize alpha diversity
 #'
-#' Performs a number of standard richness estimates, and returns the results
-#' as a \code{data.frame}. Can operate on the cumulative population of all
+#' Performs a number of standard alpha diversity estimates, 
+#' and returns the results as a \code{data.frame}.
+#' Strictly speaking, this function is not only estimating richness,
+#' despite its name. 
+#' It can operate on the cumulative population of all
 #' samples in the dataset, or by repeating the richness estimates for each
 #' sample individually.
 #' NOTE: You must use untrimmed datasets
@@ -139,12 +142,16 @@ estimate_richness <- function(physeq, split=TRUE){
 		if( taxa_are_rows(physeq) ){ OTU <- t(OTU) }
 	}
 	
-	# Some standard richness parameters
-	richness <- round(estimateR(OTU))
-	shannon	 <- round(diversity( OTU ), 2)
-	simpson  <- round(diversity( OTU, index="simpson"), 2)
-	# # fisher   <- round(fisher.alpha( OTU))
-	
-	return( t(rbind(richness, shannon, simpson)) )
+	# Some standard diversity indices
+	richness = estimateR(OTU)
+	shannon	 = diversity(OTU, index="shannon")
+	simpson  = diversity(OTU, index="simpson")
+	invsimpson  = diversity(OTU, index="invsimpson")
+  out = cbind(t(data.frame(richness)),
+              data.frame(shannon, simpson, invsimpson))
+	fisher = round(fisher.alpha(OTU, se=TRUE), 2)[, c("alpha", "se"), ]
+  colnames(fisher) <- c("fisher", "se.fisher")
+	out = cbind(out, fisher)
+	return(out)
 }
 ################################################################################
