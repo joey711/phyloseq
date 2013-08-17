@@ -2,7 +2,7 @@
 \alias{estimate_richness}
 \title{Summarize alpha diversity}
 \usage{
-  estimate_richness(physeq, split=TRUE)
+  estimate_richness(physeq, split = TRUE, measures = NULL)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
@@ -13,6 +13,14 @@
   of richness estimates be performed for each sample? Or
   alternatively, pool all samples and estimate richness of
   the entire set.}
+
+  \item{measures}{(Optional). Default is \code{NULL},
+  meaning that all available alpha-diversity measures will
+  be included. Alternatively, you can specify one or more
+  measures as a character vector of measure names. Values
+  must be among those supported: \code{c("Observed",
+  "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson",
+  "Fisher")}.}
 }
 \value{
   A \code{data.frame} of the richness estimates, and their
@@ -32,12 +40,9 @@
   needed, just not before using this function.
 }
 \examples{
-data(GlobalPatterns)
-( S.GP <- estimate_richness(GlobalPatterns) )
-# # Make the plots
-# plot_richness_estimates(GlobalPatterns, "SampleType")
-# plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
-# For more plotting examples, see plot_richness_estimates()
+data("GlobalPatterns")
+estimate_richness(GP, measures=c("Chao1", "ACE", "InvSimpson", "Observed"))
+estimate_richness(GP, measures=c("Shannon", "Observed"))
 }
 \seealso{
   Check out the custom plotting function,

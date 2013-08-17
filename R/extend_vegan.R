@@ -90,8 +90,6 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' for meaningful results, as these estimates (and even the ``observed'' richness)
 #' are highly dependent on the number of singletons. You can always trim the data
 #' later on if needed, just not before using this function.
-#'
-#' @usage estimate_richness(physeq, split=TRUE)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate
@@ -100,6 +98,13 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @param split (Optional). Logical. Should a separate set of richness estimates
 #'  be performed for each sample? Or alternatively, pool all samples and 
 #'  estimate richness of the entire set.
+#'  
+#' @param measures (Optional). Default is \code{NULL}, meaning that
+#'  all available alpha-diversity measures will be included.
+#'  Alternatively, you can specify one or more measures
+#'  as a character vector of measure names.
+#'  Values must be among those supported:
+#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
 #' @return A \code{data.frame} of the richness estimates, and their standard error.
 #' 
@@ -116,23 +121,20 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @import vegan
 #' @export
 #' @examples 
-#'  data(GlobalPatterns)
-#'  ( S.GP <- estimate_richness(GlobalPatterns) )
-#'  # # Make the plots
-#'  # plot_richness_estimates(GlobalPatterns, "SampleType")
-#'  # plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
-#'  # For more plotting examples, see plot_richness_estimates()
-estimate_richness <- function(physeq, split=TRUE){
+#'  data("GlobalPatterns")
+#'  estimate_richness(GP, measures=c("Chao1", "ACE", "InvSimpson", "Observed"))
+#'  estimate_richness(GP, measures=c("Shannon", "Observed"))
+estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	# Check for singletons, and then warning if they are missing.
 	# These metrics only really meaningful if singletons are included.
 	if( !any(otu_table(physeq)==1) ){
 		warning(
-			"The experiment object you have provided does not have\n",
+			"The data you have provided does not have\n",
 			"any singletons. This is highly suspicious. Results of richness\n",
-			"estimates are probably unreliable, or wrong, if you have already\n",
+			"estimates (for example) are probably unreliable, or wrong, if you have already\n",
 			"trimmed low-abundance taxa from the data.\n",
 			"\n",
-			"It is recommended that you find the un-trimmed data and retry."
+			"We recommended that you find the un-trimmed data and retry."
 		)
 	}
 	
@@ -144,16 +146,51 @@ estimate_richness <- function(physeq, split=TRUE){
 		if( taxa_are_rows(physeq) ){ OTU <- t(OTU) }
 	}
 	
+	# Define renaming vector:
+	renamevec = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")
+	names(renamevec) <- c("S.obs", "S.chao1", "S.ACE", "shannon", "simpson", "invsimpson", "fisher")
+	# If measures was not explicitly provided (is NULL), set to all supported methods
+	if( is.null(measures) ){
+	  measures = as.character(renamevec)
+	}
+  # Rename measures if they are in the old-style
+  if( any(measures %in% names(renamevec)) ){
+    measures[measures %in% names(renamevec)] <- renamevec[names(renamevec) %in% measures]
+  }
+  
+  # Stop with error if no measures are supported
+  if( !any(measures %in% renamevec) ){
+    stop("None of the `measures` you provided are supported. Try default `NULL` instead.")
+  }
+  
+  # Initialize to NULL
+  outlist = vector("list")
 	# Some standard diversity indices
-	richness = estimateR(OTU)
-	shannon	 = diversity(OTU, index="shannon")
-	simpson  = diversity(OTU, index="simpson")
-	invsimpson  = diversity(OTU, index="invsimpson")
-  out = cbind(t(data.frame(richness)),
-              data.frame(shannon, simpson, invsimpson))
-	fisher = round(fisher.alpha(OTU, se=TRUE), 2)[, c("alpha", "se"), ]
-  colnames(fisher) <- c("fisher", "se.fisher")
-	out = cbind(out, fisher)
+  estimRmeas = c("Chao1", "Observed", "ACE")
+	if( any(estimRmeas %in% measures) ){ 
+    outlist <- c(outlist, list(t(data.frame(estimateR(OTU)))))
+	}
+	if( "Shannon" %in% measures ){
+    outlist <- c(outlist, list(shannon = diversity(OTU, index="shannon")))
+	}
+	if( "Simpson" %in% measures ){
+	  outlist <- c(outlist, list(simpson = diversity(OTU, index="simpson")))
+	}
+	if( "InvSimpson" %in% measures ){
+	  outlist <- c(outlist, list(invsimpson = diversity(OTU, index="invsimpson")))
+	}
+	if( "Fisher" %in% measures ){
+	  fisher = round(fisher.alpha(OTU, se=TRUE), 2)[, c("alpha", "se"), ]
+	  colnames(fisher) <- c("Fisher", "se.fisher")
+	  outlist <- c(outlist, list(fisher))
+	}
+  out = do.call("cbind", outlist)
+  # Rename columns per renamevec
+  namechange = intersect(colnames(out), names(renamevec))
+  colnames(out)[colnames(out) %in% namechange] <- renamevec[namechange]
+  # Final prune to just those columns related to "measures". Use grep.
+  colkeep = sapply(paste0("(se\\.){0,}", measures), grep, colnames(out), ignore.case=TRUE)
+  out = out[, sort(unique(unlist(colkeep))), drop=FALSE]
 	return(out)
 }
 ################################################################################

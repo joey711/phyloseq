@@ -117,14 +117,17 @@
 \examples{
 ## There are many more interesting examples at the phyloseq online tutorials.
 ## http://joey711.github.com/phyloseq/plot_richness-examples
-data(GlobalPatterns)
+data("GlobalPatterns")
 GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
-plot_richness(GP, x = "SampleType", color="SampleType")
-plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
+plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"))
+plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
+plot_richness(GP, x="SampleType", color="SampleType", measures=c("InvSimpson"))
 }
 \seealso{
-  \code{\link{estimate_richness}},
-  \code{\link[vegan]{estimateR}},
+  \code{\link{estimate_richness}}
+
+  \code{\link[vegan]{estimateR}}
+
   \code{\link[vegan]{diversity}}
 
   There are many more interesting examples at the

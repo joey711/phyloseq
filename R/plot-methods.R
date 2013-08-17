@@ -341,8 +341,10 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  the richness estimates, and their standard error.
 #' 
 #' @seealso 
-#'  \code{\link{estimate_richness}},
-#'  \code{\link[vegan]{estimateR}},
+#'  \code{\link{estimate_richness}}
+#'  
+#'  \code{\link[vegan]{estimateR}}
+#'  
 #'  \code{\link[vegan]{diversity}}
 #'
 #' There are many more interesting examples at the
@@ -354,21 +356,28 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
 #' ## http://joey711.github.com/phyloseq/plot_richness-examples
-#' data(GlobalPatterns)
+#' data("GlobalPatterns")
 #' GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
-#' plot_richness(GP, x = "SampleType", color="SampleType")
-#' plot_richness(GP, x = "SampleType", color="SampleType", shsi=TRUE)
+#' plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"))
+#' plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
+#' plot_richness(GP, x="SampleType", color="SampleType", measures=c("InvSimpson"))
 plot_richness <- function(physeq, x="samples", measures=NULL,
                           color=NULL, shape=NULL, title=NULL,
                           scales="free_y", nrow=1, shsi=NULL){
 
+  # Calculate the relevant alpha-diversity measures
+  erDF = estimate_richness(physeq, split=TRUE, measures=measures)
+  # Measures may have been renamed in `erDF`. Replace it with the name from erDF
+  measures = colnames(erDF)
+  measures = measures[-grep("se\\.", measures)]
+  
 	# Make the plotting data.frame
   if( !is.null(sample_data(physeq, errorIfNULL=FALSE)) ){
     # Include the sample data, if it is there.
-	  DF <- data.frame(estimate_richness(physeq), sample_data(physeq))
+	  DF <- data.frame(erDF, sample_data(physeq))
   } else {
     # If no sample data, leave it out.
-    DF <- data.frame(estimate_richness(physeq))
+    DF <- data.frame(erDF)
   }
 	
 	if( !"samples" %in% colnames(DF) ){
@@ -387,27 +396,16 @@ plot_richness <- function(physeq, x="samples", measures=NULL,
 	  x <- "samples"
 	}
 
-  # Rename for better plots
-  colnames(DF)[colnames(DF)=="S.obs"] <- "Observed" 
-  colnames(DF)[colnames(DF)=="S.chao1"] <- "Chao1" 
-  colnames(DF)[colnames(DF)=="S.ACE"] <- "ACE" 
-  colnames(DF)[colnames(DF)=="shannon"] <- "Shannon" 
-  colnames(DF)[colnames(DF)=="simpson"] <- "Simpson" 
-  colnames(DF)[colnames(DF)=="invsimpson"] <- "InvSimpson" 
-  colnames(DF)[colnames(DF)=="fisher"] <- "Fisher" 
-
 	# Define "measure" variables and s.e. labels, for melting.
-  secols = grep("se\\.", colnames(DF))
-	ses = colnames(DF)[secols]
-  measvars = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")
+	ses = colnames(DF)[grep("se\\.", colnames(DF))]
   
-	# melt, for different richnesses...
-	mdf = melt(DF, measure.vars=measvars)  
+	# melt to display different alpha-measures separately
+	mdf = melt(DF, measure.vars=measures)
   
 	## Merge s.e. into one "se" column
   # Define conversion vector
-  selabs = rep(NA_integer_, times=length(measvars))
-  names(selabs) <- measvars
+  selabs = rep(NA_integer_, times=length(measures))
+  names(selabs) <- measures
   selabs[c("Chao1", "ACE", "Fisher")] <- c("se.chao1", "se.ACE", "se.fisher")
   # Initialize the se column
 	mdf$se <- NA_integer_
@@ -417,7 +415,7 @@ plot_richness <- function(physeq, x="samples", measures=NULL,
 			mdf[i, "se"] <- mdf[i, (mdf[i, "wse"])]
 		}
 	}
-  # Rm the redundant columns
+  # prune the redundant columns
   mdf <- mdf[, -which(colnames(mdf) %in% c("se.chao1", "se.ACE", "se.fisher", "wse"))]
 
   ## Interpret measures
@@ -428,7 +426,7 @@ plot_richness <- function(physeq, x="samples", measures=NULL,
       mdf <- mdf[as.character(mdf$variable) %in% measures, ]
     } else {
       # Else, print warning about bad option choice for measures, keeping all.
-      warning("Argument to `measures` no supported. All alpha-diversity measures included in plot.")
+      warning("Argument to `measures` not supported. All alpha-diversity measures included in plot.")
     }
   }
   
