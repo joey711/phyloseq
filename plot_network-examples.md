@@ -20,7 +20,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.15"
+## [1] "1.5.21"
 ```
 
 ```r
@@ -108,6 +108,8 @@ plot_network(ig, enterotype, color = "SeqTech", shape = "Enterotype", line_weigh
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

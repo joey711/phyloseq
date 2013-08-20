@@ -31,7 +31,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.15'
+## [1] '1.5.21'
 ```
 
 
@@ -173,6 +173,11 @@ Let's look at the merge graphically between two [richness estimate summary plots
 plot_richness(GP, "human", "SampleType", title = "unmerged")
 ```
 
+```
+## Warning: phyloseq::estimate_richness: Warning in fisher.alpha(). See
+## `?fisher.fit` or ?`fisher.alpha`. Treat fisher results with caution
+```
+
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 
@@ -183,6 +188,11 @@ The merge can do some weird things to sample variables. Let's re-add these varia
 sample_data(mergedGP)$SampleType = sample_names(mergedGP)
 sample_data(mergedGP)$human = sample_names(mergedGP) %in% humantypes
 plot_richness(mergedGP, "human", "SampleType", title = "merged")
+```
+
+```
+## Warning: phyloseq::estimate_richness: Warning in fisher.alpha(). See
+## `?fisher.fit` or ?`fisher.alpha`. Treat fisher results with caution
 ```
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
@@ -335,6 +345,8 @@ identical(GP4, GlobalPatterns)
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

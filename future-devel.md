@@ -53,6 +53,8 @@ Some candidate packages are:
 
 #### [future-devel](future-devel.html)
 
+#### [gap-statistic](gap-statistic.html)
+
 #### [import-data](import-data.html)
 
 #### [index](index.html)

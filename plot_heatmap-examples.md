@@ -11,7 +11,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.15'
+## [1] '1.5.21'
 ```
 
 ```r
@@ -265,6 +265,8 @@ heatmap(otuTable(gpac))
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

@@ -15,7 +15,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.15'
+## [1] '1.5.21'
 ```
 
 ```r
@@ -164,6 +164,8 @@ head(subset_ord_plot(p1, 0.7, "radial"))
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

@@ -28,7 +28,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.15'
+## [1] '1.5.21'
 ```
 
 ```r
@@ -215,10 +215,15 @@ plist = llply(as.list(ord_meths), function(i, physeq, dist) {
 ## Square root transformation
 ## Wisconsin double standardization
 ## Run 0 stress 0.1333 
-## Run 1 stress 0.1471 
-## Run 2 stress 0.1453 
-## Run 3 stress 0.1333 
-## ... procrustes: rmse 9.037e-06  max resid 2.273e-05 
+## Run 1 stress 0.1571 
+## Run 2 stress 0.1493 
+## Run 3 stress 0.176 
+## Run 4 stress 0.1449 
+## Run 5 stress 0.1645 
+## Run 6 stress 0.1652 
+## Run 7 stress 0.1333 
+## ... New best solution
+## ... procrustes: rmse 4.832e-06  max resid 1.44e-05 
 ## *** Solution reached
 ```
 
@@ -320,6 +325,8 @@ p + ggtitle("MDS/PCoA on weighted-UniFrac distance, GlobalPatterns")
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

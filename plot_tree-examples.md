@@ -1,5 +1,5 @@
 
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # plot_tree function -
 # Powerful tree graphics with ggplot2
@@ -24,7 +24,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.15'
+## [1] '1.5.21'
 ```
 
 
@@ -394,6 +394,8 @@ plot_tree(GP.chl, color = "SampleType", shape = "Family", label.tips = "Genus",
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

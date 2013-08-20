@@ -13,7 +13,7 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.15'
+## [1] '1.5.21'
 ```
 
 
@@ -268,7 +268,7 @@ x2 = import_mothur(mothlist, mothur_tree_file = mothtree, cutoff = "0.08")
 plot(x1)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-51.png) ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-52.png) 
 
 Returns just an OTU table
 
@@ -393,6 +393,8 @@ data(GlobalPatterns)
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 

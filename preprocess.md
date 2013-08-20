@@ -18,7 +18,7 @@ packageDescription("phyloseq")$Version
 ```
 
 ```
-## [1] "1.5.15"
+## [1] "1.5.21"
 ```
 
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
@@ -146,7 +146,7 @@ myTaxa = taxa_names(GlobalPatterns)[1:10]
 plot(phy_tree(prune_taxa(myTaxa, GlobalPatterns)))
 ```
 
-![plot of chunk gp-sample-names](figure/gp-sample-names.png) 
+![plot of chunk gp-sample-names](figure/gp-sample-names1.png) ![plot of chunk gp-sample-names](figure/gp-sample-names2.png) 
 
 
 ## Preprocessing
@@ -275,6 +275,8 @@ plot_bar(gpsfb, "Family", "Abundance", "Family", title = title, facet_grid = "Sa
 #### [Example-Data](Example-Data.html)
 
 #### [future-devel](future-devel.html)
+
+#### [gap-statistic](gap-statistic.html)
 
 #### [import-data](import-data.html)
 
