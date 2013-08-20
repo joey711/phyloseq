@@ -267,8 +267,6 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  The following are the names you will want to avoid using in \code{x} or \code{color}:
 #'
 #'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
-#'
-#' @usage plot_richness(physeq, x="samples", color=NULL, shape=NULL, title=NULL, shsi=FALSE)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate.
@@ -284,13 +282,6 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #'  The default value is \code{"samples"}, which will map each sample's name
 #'  to a separate horizontal position in the plot.
-#'  
-#' @param measures (Optional). Default is \code{NULL}, meaning that
-#' all available alpha-diversity measures will be included in plot panels.
-#' Alternatively, you can specify one or more measures
-#' as a character vector of measure names.
-#' Values must be among those supported:
-#' \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
 #' @param color (Optional). Default \code{NULL}. 
 #'  The sample variable to map to different colors.
@@ -335,7 +326,14 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  chosen automatically (wrapped) based on the number of panels
 #'  and the size of the graphics device.
 #'
-#' @param shsi (Deprecated). No longer supported.
+#' @param shsi (Deprecated). No longer supported. Instead see `measures` below.
+#' 
+#' @param measures (Optional). Default is \code{NULL}, meaning that
+#'  all available alpha-diversity measures will be included in plot panels.
+#'  Alternatively, you can specify one or more measures
+#'  as a character vector of measure names.
+#'  Values must be among those supported:
+#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
@@ -356,22 +354,26 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
 #' ## http://joey711.github.com/phyloseq/plot_richness-examples
+#' data("soilrep")
+#' plot_richness(soilrep, measures=c("InvSimpson", "Fisher"))
+#' plot_richness(soilrep, "Treatment", "warmed",, measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 #' data("GlobalPatterns")
-#' GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
-#' plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"))
-#' plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
-#' plot_richness(GP, x="SampleType", color="SampleType", measures=c("InvSimpson"))
-plot_richness <- function(physeq, x="samples", measures=NULL,
-                          color=NULL, shape=NULL, title=NULL,
-                          scales="free_y", nrow=1, shsi=NULL){
-
+#' plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
+#' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
+plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
+                          scales="free_y", nrow=1, shsi=NULL, measures=NULL){
+  
   # Calculate the relevant alpha-diversity measures
   erDF = estimate_richness(physeq, split=TRUE, measures=measures)
   # Measures may have been renamed in `erDF`. Replace it with the name from erDF
   measures = colnames(erDF)
-  measures = measures[-grep("se\\.", measures)]
+  # Define "measure" variables and s.e. labels, for melting.
+  ses = colnames(erDF)[grep("^se\\.", colnames(erDF))]
+  # Remove any S.E. from `measures`
+  measures = measures[!measures %in% ses]
   
-	# Make the plotting data.frame
+	# Make the plotting data.frame.
+  # This coerces to data.frame, required for reliable output from reshape2::melt()
   if( !is.null(sample_data(physeq, errorIfNULL=FALSE)) ){
     # Include the sample data, if it is there.
 	  DF <- data.frame(erDF, sample_data(physeq))
@@ -395,28 +397,26 @@ plot_richness <- function(physeq, x="samples", measures=NULL,
     # If x was NULL for some reason, set it to "samples"
 	  x <- "samples"
 	}
-
-	# Define "measure" variables and s.e. labels, for melting.
-	ses = colnames(DF)[grep("se\\.", colnames(DF))]
   
 	# melt to display different alpha-measures separately
 	mdf = melt(DF, measure.vars=measures)
+  # Initialize the se column. Helpful even if not used.
+  mdf$se <- NA_integer_
   
-	## Merge s.e. into one "se" column
-  # Define conversion vector
-  selabs = rep(NA_integer_, times=length(measures))
-  names(selabs) <- measures
-  selabs[c("Chao1", "ACE", "Fisher")] <- c("se.chao1", "se.ACE", "se.fisher")
-  # Initialize the se column
-	mdf$se <- NA_integer_
-  mdf$wse <- sapply(as.character(mdf$variable), function(i,selabs){selabs[i]}, selabs)
-	for( i in 1:nrow(mdf) ){
-		if( !is.na(mdf[i, "wse"]) ){
-			mdf[i, "se"] <- mdf[i, (mdf[i, "wse"])]
-		}
-	}
-  # prune the redundant columns
-  mdf <- mdf[, -which(colnames(mdf) %in% c("se.chao1", "se.ACE", "se.fisher", "wse"))]
+  if( length(ses) > 0 ){
+    ## Merge s.e. into one "se" column
+    # Define conversion vector
+    selabs = c("se.chao1", "se.ACE", "se.fisher")
+    names(selabs) <- c("Chao1", "ACE", "Fisher")
+    mdf$wse <- sapply(as.character(mdf$variable), function(i, selabs){selabs[i]}, selabs)
+    for( i in 1:nrow(mdf) ){
+      if( !is.na(mdf[i, "wse"]) ){
+        mdf[i, "se"] <- mdf[i, (mdf[i, "wse"])]
+      }
+    }
+    # prune the redundant columns
+    mdf <- mdf[, -which(colnames(mdf) %in% c(selabs, "wse"))]
+  }
 
   ## Interpret measures
   # If not provided (default), keep all 
@@ -443,8 +443,8 @@ plot_richness <- function(physeq, x="samples", measures=NULL,
 	p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE) 
   
   # Add error bars if mdf$se is not all NA
-  if( any(!is.na(mdf$se)) ){
-    p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.2) 
+  if( any(!is.na(mdf[, "se"])) ){
+    p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.1) 
   }
 
   # Rotate horizontal axis labels, and adjust

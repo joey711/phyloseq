@@ -40,9 +40,15 @@
   needed, just not before using this function.
 }
 \examples{
-data("GlobalPatterns")
-estimate_richness(GP, measures=c("Chao1", "ACE", "InvSimpson", "Observed"))
-estimate_richness(GP, measures=c("Shannon", "Observed"))
+## There are many more interesting examples at the phyloseq online tutorials.
+## http://joey711.github.com/phyloseq/plot_richness-examples
+data("soilrep")
+# Default is all available measures
+estimate_richness(soilrep)
+# Specify just one:
+estimate_richness(soilrep, measures="Observed")
+# Specify a few:
+estimate_richness(soilrep, measures=c("Observed", "InvSimpson", "Shannon", "Chao1"))
 }
 \seealso{
   Check out the custom plotting function,
@@ -54,5 +60,7 @@ estimate_richness(GP, measures=c("Shannon", "Observed"))
   \code{\link[vegan]{estimateR}}
 
   \code{\link[vegan]{diversity}}
+
+  \code{\link[vegan]{fisherfit}}
 }
 

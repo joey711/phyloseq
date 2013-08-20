@@ -3,12 +3,13 @@
 \alias{plot_richness_estimates}
 \title{Plot alpha diversity, flexibly with ggplot2}
 \usage{
-  plot_richness(physeq, x="samples", color=NULL,
-  shape=NULL, title=NULL, shsi=FALSE)
+  plot_richness(physeq, x = "samples", color = NULL, shape
+  = NULL, title = NULL, scales = "free_y", nrow = 1, shsi =
+  NULL, measures = NULL)
 
-  plot_richness_estimates(physeq, x = "samples", measures =
-  NULL, color = NULL, shape = NULL, title = NULL, scales =
-  "free_y", nrow = 1, shsi = NULL)
+  plot_richness_estimates(physeq, x = "samples", color =
+  NULL, shape = NULL, title = NULL, scales = "free_y", nrow
+  = 1, shsi = NULL, measures = NULL)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
@@ -28,14 +29,6 @@
   The default value is \code{"samples"}, which will map
   each sample's name to a separate horizontal position in
   the plot.}
-
-  \item{measures}{(Optional). Default is \code{NULL},
-  meaning that all available alpha-diversity measures will
-  be included in plot panels. Alternatively, you can
-  specify one or more measures as a character vector of
-  measure names. Values must be among those supported:
-  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson",
-  "InvSimpson", "Fisher")}.}
 
   \item{color}{(Optional). Default \code{NULL}. The sample
   variable to map to different colors. Like \code{x}, this
@@ -79,7 +72,16 @@
   (wrapped) based on the number of panels and the size of
   the graphics device.}
 
-  \item{shsi}{(Deprecated). No longer supported.}
+  \item{shsi}{(Deprecated). No longer supported. Instead
+  see `measures` below.}
+
+  \item{measures}{(Optional). Default is \code{NULL},
+  meaning that all available alpha-diversity measures will
+  be included in plot panels. Alternatively, you can
+  specify one or more measures as a character vector of
+  measure names. Values must be among those supported:
+  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson",
+  "InvSimpson", "Fisher")}.}
 }
 \value{
   A \code{\link{ggplot}} plot object summarizing the
@@ -117,11 +119,12 @@
 \examples{
 ## There are many more interesting examples at the phyloseq online tutorials.
 ## http://joey711.github.com/phyloseq/plot_richness-examples
+data("soilrep")
+plot_richness(soilrep, measures=c("InvSimpson", "Fisher"))
+plot_richness(soilrep, "Treatment", "warmed",, measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 data("GlobalPatterns")
-GP = prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
-plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"))
-plot_richness(GP, x="SampleType", color="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
-plot_richness(GP, x="SampleType", color="SampleType", measures=c("InvSimpson"))
+plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
+plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 }
 \seealso{
   \code{\link{estimate_richness}}

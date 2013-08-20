@@ -97,7 +97,7 @@ man.col <- c(WC="red", WU="brown", UC="blue", UU="darkgreen")
 # estimated total richness between warmed/unwarmed soil samples
 # Test this formally:
 DF <- data.frame(sample_data(soilrep), estimate_richness(soilrep) )
-t.test(x=subset(DF, warmed=="yes")[, "S.chao1"], y=subset(DF, warmed=="no")[, "S.chao1"])
+t.test(x=subset(DF, warmed=="yes")[, "Chao1"], y=subset(DF, warmed=="no")[, "Chao1"])
 ################################################################################
 # A beta diversity comparison.
 ################################################################################

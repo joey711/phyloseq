@@ -117,17 +117,26 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #'  \code{\link[vegan]{estimateR}}
 #'  
 #'  \code{\link[vegan]{diversity}}
+#'  
+#'  \code{\link[vegan]{fisherfit}}
 #'
 #' @import vegan
 #' @export
 #' @examples 
-#'  data("GlobalPatterns")
-#'  estimate_richness(GP, measures=c("Chao1", "ACE", "InvSimpson", "Observed"))
-#'  estimate_richness(GP, measures=c("Shannon", "Observed"))
+#' ## There are many more interesting examples at the phyloseq online tutorials.
+#' ## http://joey711.github.com/phyloseq/plot_richness-examples
+#'  data("soilrep")
+#'  # Default is all available measures
+#'  estimate_richness(soilrep)
+#'  # Specify just one:
+#'  estimate_richness(soilrep, measures="Observed")
+#'  # Specify a few:
+#'  estimate_richness(soilrep, measures=c("Observed", "InvSimpson", "Shannon", "Chao1"))
 estimate_richness <- function(physeq, split=TRUE, measures=NULL){
-	# Check for singletons, and then warning if they are missing.
-	# These metrics only really meaningful if singletons are included.
+
 	if( !any(otu_table(physeq)==1) ){
+	  # Check for singletons, and then warning if they are missing.
+	  # These metrics only really meaningful if singletons are included.
 		warning(
 			"The data you have provided does not have\n",
 			"any singletons. This is highly suspicious. Results of richness\n",
@@ -180,7 +189,12 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	  outlist <- c(outlist, list(invsimpson = diversity(OTU, index="invsimpson")))
 	}
 	if( "Fisher" %in% measures ){
-	  fisher = round(fisher.alpha(OTU, se=TRUE), 2)[, c("alpha", "se"), ]
+    fisher = tryCatch(fisher.alpha(OTU, se=TRUE), 
+      warning=function(w){
+        warning("phyloseq::estimate_richness: Warning in fisher.alpha(). See `?fisher.fit` or ?`fisher.alpha`. Treat fisher results with caution")
+        suppressWarnings(fisher.alpha(OTU, se=TRUE)[, c("alpha", "se")])
+      }
+    )
 	  colnames(fisher) <- c("Fisher", "se.fisher")
 	  outlist <- c(outlist, list(fisher))
 	}
@@ -191,6 +205,8 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
   # Final prune to just those columns related to "measures". Use grep.
   colkeep = sapply(paste0("(se\\.){0,}", measures), grep, colnames(out), ignore.case=TRUE)
   out = out[, sort(unique(unlist(colkeep))), drop=FALSE]
+  # Make sure that you return a data.frame for reliable performance.
+  out <- as.data.frame(out)
 	return(out)
 }
 ################################################################################
