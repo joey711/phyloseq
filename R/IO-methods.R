@@ -1196,6 +1196,8 @@ import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=
 	
 	otulist       <- import_mothur_otulist(mothur_list_file, cutoff)
 	mothur_groups <- import_mothur_groups(mothur_group_file)
+  # Coerce the sample names column of the group hash table to a factor
+	mothur_groups[, 2] <- factor(mothur_groups[, 2])
 	
 	# Initialize abundance matrix
 	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(levels(mothur_groups[, 2])))
