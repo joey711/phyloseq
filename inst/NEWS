@@ -20,6 +20,11 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.22 - Fix minor bug in `import_mothur`
+===========
+- Bug occurs only when sample names are pure integers. One line fix.
+- This addresses [Issue 242](https://github.com/joey711/phyloseq/issues/242) 
+
 phyloseq 1.5.21 - `plot_richness` / `estimate_richness` updates
 ===========
 -- Additional alpha-diversity measures added to both functions.
