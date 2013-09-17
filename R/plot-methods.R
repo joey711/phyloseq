@@ -67,7 +67,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' A custom plotting function for displaying networks
 #' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #' The network itself should be represented using
-#' the \code{igraph0} package.
+#' the \code{igraph} package.
 #' For the \code{\link{phyloseq-package}} it is suggested that the network object
 #' (argument \code{g})
 #' be created using the
@@ -85,9 +85,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 	line_weight=0.5, line_color=color, line_alpha=0.4,
 #' 	layout.method=layout.fruchterman.reingold, title=NULL)
 #'
-#' @param g (Required). An \code{igraph0}-class object created
+#' @param g (Required). An \code{igraph}-class object created
 #'  either by the convenience wrapper \code{\link{make_network}}, 
-#'  or directly by the tools in the igraph0-package.
+#'  or directly by the tools in the igraph-package.
 #'
 #' @param physeq (Optional). Default \code{NULL}. 
 #'  A \code{\link{phyloseq-class}} object on which \code{g} is based.
@@ -132,15 +132,15 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'
 #' @param layout.method (Optional). Default \code{layout.fruchterman.reingold}.
 #'  A function (closure) that determines the placement of the vertices
-#'  for drawing a graph. Should be able to take an \code{igraph0}-class
+#'  for drawing a graph. Should be able to take an \code{igraph}-class
 #'  as sole argument, and return a two-column coordinate matrix with \code{nrow}
 #'  equal to the number of vertices. For possible options already included in 
-#'  \code{igraph0}-package, see the others also described in the help file:
+#'  \code{igraph}-package, see the others also described in the help file:
 #' 
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
 #'
-#' \code{\link[igraph0]{layout.fruchterman.reingold}}
+#' \code{\link[igraph]{layout.fruchterman.reingold}}
 #'
 #' @return A \code{\link{ggplot}}2 plot representing the network,
 #'  with optional mapping of variable(s) to point color or shape.
@@ -157,8 +157,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 
 #' @import ggplot2
 #' @import reshape2
-#' @importFrom igraph0 layout.fruchterman.reingold
-#' @importFrom igraph0 get.edgelist
+#' @importFrom igraph layout.fruchterman.reingold
+#' @importFrom igraph get.edgelist
+#' @importFrom igraph get.vertex.attribute
 #' @export
 #' @examples 
 #' 
@@ -186,7 +187,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	# Make the vertices-coordinates data.frame
 	vertDF    <- layout.method(g)
 	colnames(vertDF) <- c("x", "y")
-	vertDF    <- data.frame(value=g[[9]][[3]][["name"]], vertDF)
+	vertDF    <- data.frame(value=get.vertex.attribute(g, "name"), vertDF)
 	
 	# If phyloseq object provided,
 	# AND it has the relevant additional data

@@ -20,6 +20,17 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.23 - Update dependency from igraph0 to igraph
+===========
+- Requested by CRAN
+- igraph0 is being deprecated, removed from CRAN
+- igraph is actively updated/maintained. igraph0 isn't / soon won't be.
+- The load bug that I could find from re-running the tutorial in the new dependency
+  had to do with accessing the vertex names. The appropriate function is:
+  `get.vertex.attribute`
+  which was not used previous, but is now imported and used in this version of phyloseq.
+- This also closes [Issue 247](https://github.com/joey711/phyloseq/issues/247)
+
 phyloseq 1.5.22 - Fix minor bug in `import_mothur`
 ===========
 - Bug occurs only when sample names are pure integers. One line fix.
