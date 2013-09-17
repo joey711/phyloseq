@@ -1,11 +1,11 @@
 ################################################################################
-#' Make microbiome network (igraph0)
+#' Make microbiome network (igraph)
 #'
 #' A specialized function for creating a network representation of microbiomes,
 #' sample-wise or taxa-wise,
 #' based on a user-defined ecological distance and (potentially arbitrary) threshold.
 #' The graph is ultimately represented using the 
-#' \code{igraph0}-package.
+#' \code{igraph}-package.
 #'
 #' @usage make_network(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
 #'     keep.isolates=FALSE, ...)
@@ -57,15 +57,15 @@
 #'
 #' @param ... (Optional). Additional parameters passed on to \code{\link{distance}}.
 #'
-#' @return A \code{igraph0}-class object. 
+#' @return A \code{igraph}-class object. 
 #' 
 #' @seealso 
 #'  \code{\link{plot_network}}
 #'
-#' @importFrom igraph0 graph.adjacency
-#' @importFrom igraph0 V
-#' @importFrom igraph0 delete.vertices
-#' @importFrom igraph0 degree
+#' @importFrom igraph graph.adjacency
+#' @importFrom igraph V
+#' @importFrom igraph delete.vertices
+#' @importFrom igraph degree
 #'
 #' @export
 #'
@@ -168,10 +168,10 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 		stop("type argument must be one of \n (1) samples \n or \n (2) taxa")
 	}
     
-    # Calculate the igraph0-formatted network
+    # Calculate the igraph-formatted network
     ig <- graph.adjacency(CoMa, mode="lower")
     
-    # If keeping isolates, done. Else, remove them, then return igraph0.
+    # If keeping isolates, done. Else, remove them, then return igraph.
     if( keep.isolates ){
     	return(ig)
     } else {

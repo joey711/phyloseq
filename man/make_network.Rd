@@ -1,6 +1,6 @@
 \name{make_network}
 \alias{make_network}
-\title{Make microbiome network (igraph0)}
+\title{Make microbiome network (igraph)}
 \usage{
   make_network(physeq, type="samples", distance="jaccard",
   max.dist = 0.4, keep.isolates=FALSE, ...)
@@ -59,14 +59,14 @@
   \code{\link{distance}}.}
 }
 \value{
-  A \code{igraph0}-class object.
+  A \code{igraph}-class object.
 }
 \description{
   A specialized function for creating a network
   representation of microbiomes, sample-wise or taxa-wise,
   based on a user-defined ecological distance and
   (potentially arbitrary) threshold. The graph is
-  ultimately represented using the \code{igraph0}-package.
+  ultimately represented using the \code{igraph}-package.
 }
 \examples{
 # # Example plots with Enterotype Dataset
