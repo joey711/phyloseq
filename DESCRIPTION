@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.5.23
-Date: 2013-09-16
+Version: 1.5.24
+Date: 2013-09-17
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -31,7 +31,9 @@ Depends:
     picante (>= 1.5.2)
 Suggests:
     genefilter (>= 1.42.0),
-    testthat (>= 0.7.1)
+    testthat (>= 0.7.1),
+    knitr (>= 1.3)
+VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.1)
 biocViews: Clustering, Classification, MultipleComparisons,
     QualityControl, GeneticVariability,
