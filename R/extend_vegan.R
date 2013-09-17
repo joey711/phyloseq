@@ -77,18 +77,19 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 # @importFrom vegan estimateR
 # @importFrom vegan diversity
 ################################################################################
-#' Summarize richness estimates
+#' Summarize alpha diversity
 #'
-#' Performs a number of standard richness estimates, and returns the results
-#' as a \code{data.frame}. Can operate on the cumulative population of all
+#' Performs a number of standard alpha diversity estimates, 
+#' and returns the results as a \code{data.frame}.
+#' Strictly speaking, this function is not only estimating richness,
+#' despite its name. 
+#' It can operate on the cumulative population of all
 #' samples in the dataset, or by repeating the richness estimates for each
 #' sample individually.
 #' NOTE: You must use untrimmed datasets
 #' for meaningful results, as these estimates (and even the ``observed'' richness)
 #' are highly dependent on the number of singletons. You can always trim the data
 #' later on if needed, just not before using this function.
-#'
-#' @usage estimate_richness(physeq, split=TRUE)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate
@@ -97,37 +98,52 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @param split (Optional). Logical. Should a separate set of richness estimates
 #'  be performed for each sample? Or alternatively, pool all samples and 
 #'  estimate richness of the entire set.
+#'  
+#' @param measures (Optional). Default is \code{NULL}, meaning that
+#'  all available alpha-diversity measures will be included.
+#'  Alternatively, you can specify one or more measures
+#'  as a character vector of measure names.
+#'  Values must be among those supported:
+#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
 #' @return A \code{data.frame} of the richness estimates, and their standard error.
 #' 
 #' @seealso 
-#'  Check out the custom plotting function, \code{\link{plot_richness_estimates}},
-#'  for easily showing the results of different estimates, with method-specific
-#'  error-bars. Also check out the internal functions borrowed from the \code{vegan}
-#'  package:
-#'  \code{\link[vegan]{estimateR}},
+#'  Check out the custom plotting function, \code{\link{plot_richness}},
+#'  for easily showing the results of different estimates, 
+#'  with method-specific error-bars.
+#'  Also check out the internal functions borrowed from the \code{vegan} package:
+#'  
+#'  \code{\link[vegan]{estimateR}}
+#'  
 #'  \code{\link[vegan]{diversity}}
+#'  
+#'  \code{\link[vegan]{fisherfit}}
 #'
 #' @import vegan
 #' @export
 #' @examples 
-#'  data(GlobalPatterns)
-#'  ( S.GP <- estimate_richness(GlobalPatterns) )
-#'  # # Make the plots
-#'  # plot_richness_estimates(GlobalPatterns, "SampleType")
-#'  # plot_richness_estimates(GlobalPatterns, "SampleType", "SampleType")
-#'  # For more plotting examples, see plot_richness_estimates()
-estimate_richness <- function(physeq, split=TRUE){
-	# Check for singletons, and then warning if they are missing.
-	# These metrics only really meaningful if singletons are included.
+#' ## There are many more interesting examples at the phyloseq online tutorials.
+#' ## http://joey711.github.com/phyloseq/plot_richness-examples
+#'  data("soilrep")
+#'  # Default is all available measures
+#'  estimate_richness(soilrep)
+#'  # Specify just one:
+#'  estimate_richness(soilrep, measures="Observed")
+#'  # Specify a few:
+#'  estimate_richness(soilrep, measures=c("Observed", "InvSimpson", "Shannon", "Chao1"))
+estimate_richness <- function(physeq, split=TRUE, measures=NULL){
+
 	if( !any(otu_table(physeq)==1) ){
+	  # Check for singletons, and then warning if they are missing.
+	  # These metrics only really meaningful if singletons are included.
 		warning(
-			"The experiment object you have provided does not have\n",
+			"The data you have provided does not have\n",
 			"any singletons. This is highly suspicious. Results of richness\n",
-			"estimates are probably unreliable, or wrong, if you have already\n",
+			"estimates (for example) are probably unreliable, or wrong, if you have already\n",
 			"trimmed low-abundance taxa from the data.\n",
 			"\n",
-			"It is recommended that you find the un-trimmed data and retry."
+			"We recommended that you find the un-trimmed data and retry."
 		)
 	}
 	
@@ -139,12 +155,58 @@ estimate_richness <- function(physeq, split=TRUE){
 		if( taxa_are_rows(physeq) ){ OTU <- t(OTU) }
 	}
 	
-	# Some standard richness parameters
-	richness <- round(estimateR(OTU))
-	shannon	 <- round(diversity( OTU ), 2)
-	simpson  <- round(diversity( OTU, index="simpson"), 2)
-	# # fisher   <- round(fisher.alpha( OTU))
-	
-	return( t(rbind(richness, shannon, simpson)) )
+	# Define renaming vector:
+	renamevec = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")
+	names(renamevec) <- c("S.obs", "S.chao1", "S.ACE", "shannon", "simpson", "invsimpson", "fisher")
+	# If measures was not explicitly provided (is NULL), set to all supported methods
+	if( is.null(measures) ){
+	  measures = as.character(renamevec)
+	}
+  # Rename measures if they are in the old-style
+  if( any(measures %in% names(renamevec)) ){
+    measures[measures %in% names(renamevec)] <- renamevec[names(renamevec) %in% measures]
+  }
+  
+  # Stop with error if no measures are supported
+  if( !any(measures %in% renamevec) ){
+    stop("None of the `measures` you provided are supported. Try default `NULL` instead.")
+  }
+  
+  # Initialize to NULL
+  outlist = vector("list")
+	# Some standard diversity indices
+  estimRmeas = c("Chao1", "Observed", "ACE")
+	if( any(estimRmeas %in% measures) ){ 
+    outlist <- c(outlist, list(t(data.frame(estimateR(OTU)))))
+	}
+	if( "Shannon" %in% measures ){
+    outlist <- c(outlist, list(shannon = diversity(OTU, index="shannon")))
+	}
+	if( "Simpson" %in% measures ){
+	  outlist <- c(outlist, list(simpson = diversity(OTU, index="simpson")))
+	}
+	if( "InvSimpson" %in% measures ){
+	  outlist <- c(outlist, list(invsimpson = diversity(OTU, index="invsimpson")))
+	}
+	if( "Fisher" %in% measures ){
+    fisher = tryCatch(fisher.alpha(OTU, se=TRUE), 
+      warning=function(w){
+        warning("phyloseq::estimate_richness: Warning in fisher.alpha(). See `?fisher.fit` or ?`fisher.alpha`. Treat fisher results with caution")
+        suppressWarnings(fisher.alpha(OTU, se=TRUE)[, c("alpha", "se")])
+      }
+    )
+	  colnames(fisher) <- c("Fisher", "se.fisher")
+	  outlist <- c(outlist, list(fisher))
+	}
+  out = do.call("cbind", outlist)
+  # Rename columns per renamevec
+  namechange = intersect(colnames(out), names(renamevec))
+  colnames(out)[colnames(out) %in% namechange] <- renamevec[namechange]
+  # Final prune to just those columns related to "measures". Use grep.
+  colkeep = sapply(paste0("(se\\.){0,}", measures), grep, colnames(out), ignore.case=TRUE)
+  out = out[, sort(unique(unlist(colkeep))), drop=FALSE]
+  # Make sure that you return a data.frame for reliable performance.
+  out <- as.data.frame(out)
+	return(out)
 }
 ################################################################################

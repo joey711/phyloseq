@@ -131,3 +131,58 @@ test_that("plot_ordination: Continuous variables still mapped, uses added dummy 
 ################################################################################
 # Other plot function tests should follow here...
 ################################################################################
+
+# plot_richness tests
+test_that("estimate_richness: test values, classes", {
+  data("soilrep")
+  data("GlobalPatterns")
+  # Default is all available measures
+  erdf = estimate_richness(soilrep)
+  expect_is(erdf, "data.frame")
+  expect_equivalent(dim(erdf), c(56, 10))
+  # Contains all expected measures 
+  expect_true(all(c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher") %in% colnames(erdf)))
+  # and certain standard errors:
+  expect_true(all(c("se.chao1", "se.ACE", "se.fisher") %in% colnames(erdf)))
+  # Test some values. 
+  expect_equivalent(erdf$Observed, apply(otu_table(soilrep), 2, function(x){sum(x>0)}))
+  expect_equivalent(estimate_richness(GlobalPatterns, measures="Observed")[, 1], 
+                    apply(otu_table(GlobalPatterns), 2, function(x){sum(x>0)}))
+  # Calculate "manually" the values that should be Chao1, compare with result.
+  S_0 = apply(otu_table(soilrep), 2, function(x){sum(x>0)})
+  a1  = apply(otu_table(soilrep), 2, function(x){sum(x==1)})
+  a2  = apply(otu_table(soilrep), 2, function(x){sum(x==2)})
+  S_P = S_0 + a1*(a1-1)/(2*(a2+1))
+  expect_equivalent(round(S_P, 4), round(estimate_richness(soilrep, measures="Chao1")[, "Chao1"], 4))
+  # Expect a data.frame, even with just one column
+  expect_is(estimate_richness(soilrep, measures="Observed"), "data.frame")
+  # Specify a few:
+  x = estimate_richness(soilrep, measures=c("Observed", "InvSimpson", "Shannon", "Chao1"))
+  expect_equivalent(round(x[1:5, "Shannon"], 4), 
+                    round(c(6.540578, 6.715170, 6.948412, 7.343088, 6.838917), 4))
+})
+
+test_that("plot_richness: Standard plots work", {
+  data("soilrep")
+  p = plot_richness(soilrep)
+  expect_is(p, "ggplot")
+  expect_equivalent(levels(p$data$variable),
+                    c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher"))
+  c("se.chao1", "se.ACE", "se.fisher")
+  expect_false(all(is.na(p$data$se)))
+  expect_true(any(is.na(p$data$se)))
+    
+  p = plot_richness(soilrep, measures=c("Observed", "Chao1"))
+  expect_is(p, "ggplot")
+  expect_equivalent(levels(p$data$variable), c("Observed", "Chao1"))
+})
+
+test_that("plot_richness: Error in fisher.alpha is caught, warning, still plots", {
+  data("GlobalPatterns")
+  data("soilrep")
+  p = plot_richness(soilrep, measures="Fisher")
+  expect_is(p, "ggplot")
+  expect_warning(p123123 <- plot_richness(GlobalPatterns, measures="Fisher"))
+  expect_is(p123123, "ggplot")
+  expect_equivalent(levels(p123123$data$variable), "Fisher")
+})

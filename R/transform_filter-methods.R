@@ -4,21 +4,37 @@
 # Note that the subsampling is random, so some noise is introduced making the
 # relative abundances slightly different
 ################################################################################
-#' Perform a random subsampling of an OTU table to a level of even depth.
+#' Resample an OTU table such that all samples have the same library size.
 #' 
-#' This function uses the \code{\link{sample}} function to randomly subset from the 
-#' abundance values in each sample of the \code{otu_table} component in the
-#' \code{physeq} argument.
-#' Sampling is performed with replacement from a vector of taxa indices,
-#' with length equal to the argument to \code{sample.size},
-#' and probability according to the abundances for that sample in \code{physeq}.
+#' This function uses the standard R \code{\link{sample}} function to 
+#' resample from the abundance values 
+#' in the \code{otu_table} component of the first argument,
+#' \code{physeq}.
+#' Often one of the major goals of this procedure is to achieve parity in 
+#' total number of counts between samples, as an alternative to other formal
+#' normalization procedures, which is why a single value for the 
+#' \code{sample.size} is expected.
+#' This kind of resampling can be performed with and without replacement,
+#' with replacement being the more computationally-efficient, default setting.
+#' See the \code{replace} parameter documentation for more details.
+#' We recommended that you explicitly select a random number generator seed
+#' before invoking this function, or, alternatively, that you 
+#' explicitly provide a single positive integer argument as \code{rngseed}.
 #'
-#' This approach is sometimes (somewhat mistakenly) called "rarefaction",
-#' or "rarefying", 
-#' but it is actually a single random sample-wise subsampling procedure.
-#' The original rarefaction procedure includes many
-#' random subsampling iterations at increasing depth as a means to
-#' infer richness/alpha-diversity based on apparent convergence.
+#' This approach is sometimes mistakenly called "rarefaction", which
+#' \href{http://en.wikipedia.org/wiki/Rarefaction}{in physics refers to a form of wave decompression;}
+#' but in this context, ecology, the term refers to a
+#' \href{http://en.wikipedia.org/wiki/Rarefaction_(ecology)}{repeated sampling procedure to assess species richness},
+#' first proposed in 1968 by Howard Sanders.
+#' In contrast, this procedure is not typically repeated
+#' (though maybe it should be to ensure robust inference),
+#' but instead used as an \emph{ad hoc} means to
+#' normalize microbiome counts that have 
+#' resulted from libraries of widely-differing sizes.
+#' Here we have intentionally adopted an alternative
+#' name, \code{rarefy}, that has also been used recently
+#' to describe this process 
+#' and, to our knowledge, not previously used in ecology.
 #'
 #' Make sure to use \code{\link{set.seed}} for exactly-reproducible results
 #' of the random subsampling. 
@@ -38,6 +54,29 @@
 #'  If set to \code{FALSE}, then no fiddling with the RNG seed is performed,
 #'  and it is up to the user to appropriately call \code{\link{set.seed}}
 #'  beforehand to achieve reproducible results.
+#'  
+#' @param replace (Optional). Logical. Whether to sample with replacement
+#'  (\code{TRUE}) or without replacement (\code{FALSE}).
+#'  The default is with replacement (\code{replace=TRUE}).
+#'  Two implications to consider are that
+#'  (1) sampling with replacement is faster and more memory efficient
+#'  as currently implemented; and
+#'  (2), sampling with replacement means that there is a chance that the
+#'  number of reads for a given OTU in a given sample could be larger
+#'  than the original count value, as opposed to sampling without replacement
+#'  where the original count value is the maximum possible.
+#'  Prior to phyloseq package version number \code{1.5.20},
+#'  this parameter did not exist and sampling with replacement was the only
+#'  random subsampling implemented in the \code{rarefy_even_depth} function.
+#'  Note that this default behavior was selected for computational efficiency,
+#'  but differs from analogous functions in related packages
+#'  (e.g. subsampling in QIIME).
+#'  
+#'  @param trimOTUs (Optional). Logical. Whether to trim OTUs
+#'   from the dataset that are no longer observed in any sample
+#'   (have a count of zero in every sample). 
+#'   The number of OTUs trimmed, if any, is printed to
+#'   standard out as a reminder.
 #'
 #' @return An object of class \code{phyloseq}. 
 #' Only the \code{otu_table} component is modified.
@@ -52,24 +91,13 @@
 #' @examples
 #' # Test with esophagus dataset
 #' data("esophagus")
-#' eso  = rarefy_even_depth(esophagus)
-#' eso0 = prune_taxa(taxa_names(eso), esophagus) 
-#' plot(as(otu_table(eso), "vector"), as(otu_table(eso0), "vector"))
-#' UniFrac(eso); UniFrac(eso0); UniFrac(esophagus)
-#' # Test with GlobalPatterns dataset
+#' esorepT = rarefy_even_depth(esophagus, replace=TRUE)
+#' esorepF = rarefy_even_depth(esophagus, replace=FALSE)
 #' data("GlobalPatterns")
-#' GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
-#' # remove the samples that have less than 20 total reads from Chlamydiae
-#' GP.chl <- prune_samples(names(which(sample_sums(GP.chl)>=20)), GP.chl)
-#' # # (p <- plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance"))
-#' GP.chl.r = rarefy_even_depth(GP.chl)
-#' GP.chl = prune_taxa(taxa_names(GP.chl.r), GP.chl)
-#' plot(as(otu_table(GP.chl.r), "vector"), as(otu_table(GP.chl), "vector"))
-#' # Try ordination of GP.chl and GP.chl.r (default distance is unweighted UniFrac)
-#' plot_ordination(GP.chl, ordinate(GP.chl, "MDS"), color="SampleType") #+ geom_point(size=5)
-#' plot_ordination(GP.chl.r, ordinate(GP.chl.r, "MDS"), color="SampleType") #+ geom_point(size=5)
+#' GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
+#' GPrepF = rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE)
 rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
-															rngseed=711){
+															rngseed=FALSE, replace=TRUE, trimOTUs=TRUE){
 	
 	if( as(rngseed, "logical") ){
 		# Now call the set.seed using the value expected in phyloseq
@@ -84,18 +112,20 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	} else {
 		cat("You set `rngseed` to FALSE. Make sure you've set & recorded",
 				" the random seed of your session for reproducibility.",
-				"See `set.seed()`", fill=TRUE)
+				"See `?set.seed`", fill=TRUE)
 		cat("...", fill=TRUE)
 	}
 	
 	# Make sure sample.size is of length 1.
 	if( length(sample.size) > 1 ){
-		warning("`sample.size` had more than one value. Using only the first. \n ... \n")
+		warning("`sample.size` had more than one value. ", 
+            "Using only the first. \n ... \n")
 		sample.size <- sample.size[1]	
 	}
 	
 	if( sample.size <= 0 ){
-		stop("sample.size less than or equal to zero. Need positive sample size to work.")
+		stop("sample.size less than or equal to zero. ", 
+         "Need positive sample size to work.")
 	}
 	
 	# Instead of warning, expected behavior now is to prune samples
@@ -115,28 +145,32 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	# enforce orientation as species-are-rows, for assignment
 	if(!taxa_are_rows(newsub)){newsub <- t(newsub)}
 	# apply through each sample, and replace
-	newotu <- apply(otu_table(newsub), 2, rarefaction_subsample, sample.size)
+	newotu <- apply(otu_table(newsub), 2, rarefaction_subsample,
+									sample.size=sample.size, replace=replace)
 	# Add species names to the row indices
 	rownames(newotu) <- taxa_names(physeq)
 	# replace the otu_table.
 	otu_table(newsub) <- otu_table(newotu, TRUE)
-	# Check for and remove empty OTUs
-	# 1. Notify user of empty OTUs being cut.
-  # 2. Cut empty OTUs
-	rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
-  if( length(rmtaxa) > 0 ){
-    cat(length(rmtaxa), "OTUs were removed because they are no longer \n",
-        "present in any sample after random subsampling\n")
-    cat("...", fill=TRUE)
-    #cat(rmtaxa[1:min(5, length(rmtaxa))], sep="\t", fill=TRUE)
-    newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
+  if(trimOTUs){
+    # Check for and remove empty OTUs
+    # 1. Notify user of empty OTUs being cut.
+    # 2. Cut empty OTUs
+    rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
+    if( length(rmtaxa) > 0 ){
+      cat(length(rmtaxa), "OTUs were removed because they are no longer \n",
+          "present in any sample after random subsampling\n")
+      cat("...", fill=TRUE)
+      #cat(rmtaxa[1:min(5, length(rmtaxa))], sep="\t", fill=TRUE)
+      newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
+    }
   }
-	if( as(rngseed, "logical") ){
-		# Reset set.seed to unitialized state
-		set.seed(NULL)
-		cat("Finished. `set.seed(NULL)` called, ", 
-				"resetting RNG seed to unitialized state.", fill=TRUE)
-	}
+  # Don't reset the RNG state. Leave as-is.
+	# 	if( as(rngseed, "logical") ){
+	# 		# Reset set.seed to unitialized state
+	# 		set.seed(NULL)
+	# 		cat("Finished. `set.seed(NULL)` called, ", 
+	# 				"resetting RNG seed to unitialized state.", fill=TRUE)
+	# 	}
 	# return subsampled phyloseq object
 	return(newsub)
 }
@@ -144,19 +178,42 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 # rarefaction subsample function, one sample
 ################################################################################
 #' @keywords internal
-rarefaction_subsample <- function(x, sample.size){
+rarefaction_subsample <- function(x, sample.size, replace=FALSE){
+	# This is a test
+	# x = sample(10, 10)
+	# x = 1:10
+	# sample.size = 50
+	#system.time(obsvec <- foreach(OTUi=1:length(x), times=x, .combine=c) %do% {rep(OTUi, times)})
+	# data("GlobalPatterns")
+	# sample.size = sample_sums(GlobalPatterns)[which.min(sample_sums(GlobalPatterns))]
+	# x = get_taxa(GlobalPatterns, which.max(sample_sums(GlobalPatterns)))
 	# Create replacement species vector
 	rarvec <- numeric(length(x))	
-	# Perform the subsampling. Suppress warnings due to old R compat issue.
-	# Also, make sure to avoid errors from x summing to zero, and there are no observations to sample.
+	# Perform the sub-sampling. Suppress warnings due to old R compat issue.
+	# Also, make sure to avoid errors from x summing to zero, 
+  # and there are no observations to sample.
 	# The initialization of rarvec above is already sufficient.
-	if(sum(x) > 0){
-		suppressWarnings(subsample <- sample(1:length(x), sample.size, TRUE, prob=x))
-		# Tabulate the results
-		sstab <- table(subsample)
-		# Assign the tabulated random subsample values to the species vector
-		rarvec[as(names(sstab), "integer")] <- sstab
+	if(sum(x) <= 0){
+		# Protect against, and quickly return an empty vector, 
+		# if x is already an empty count vector
+		return(rarvec)
 	}
+	if(replace){
+		# resample with replacement
+		suppressWarnings(subsample <- sample(1:length(x), sample.size, replace=TRUE, prob=x))
+	} else {
+		# resample without replacement
+		obsvec <- apply(data.frame(OTUi=1:length(x), times=x), 1, function(x){
+			rep_len(x["OTUi"], x["times"])
+		})
+		obsvec <- unlist(obsvec, use.names=FALSE)
+		# use `sample` for subsampling. Hope that obsvec doesn't overflow.
+		suppressWarnings(subsample <- sample(obsvec, sample.size, replace=FALSE))
+	}
+	# Tabulate the results (these are already named by the order in `x`)
+	sstab <- table(subsample)
+	# Assign the tabulated random subsample values to the species vector
+	rarvec[as(names(sstab), "integer")] <- sstab
 	# Return abundance vector. Let replacement happen elsewhere.
 	return(rarvec)
 }
@@ -250,14 +307,14 @@ setMethod("tip_glom", signature("phylo"), function(tree, speciationMinLength=0.0
 #'  Output class matches the class of \code{tree}.
 #'
 #' @seealso tip_glom
-#' @importFrom igraph0 graph.adjacency
-#' @importFrom igraph0 get.edgelist
+#' @importFrom igraph graph.adjacency
+#' @importFrom igraph get.edgelist
 #' @keywords internal
 tip_glom.internal <- function(tree, speciationMinLength){
 	# Create adjacency matrix, where tips are adjacent
 	# if their distance is below the threshold speciationMinLength
 	tipAdjacent <- (getTipDistMatrix( tree ) < speciationMinLength)
-	# Define igraph0 object based on the tree-tip adjacenecy matrix
+	# Define igraph object based on the tree-tip adjacenecy matrix
 	ig          <- graph.adjacency(tipAdjacent, diag=FALSE)
 	# Define the species cliques to loop through
 	spCliques   <- edgelist2clique( get.edgelist(ig) )
@@ -490,7 +547,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	}
 
 	# Concatenate data up to the taxrank column, use this for agglomeration
-	tax <- as(access(physeq, "tax_table"), "matrix")[, 1:CN]
+	tax <- as(access(physeq, "tax_table"), "matrix")[, 1:CN, drop=FALSE]
 	tax <- apply(tax, 1, function(i){paste(i, sep=";_;", collapse=";_;")})
 	
 	# Remove NAs and useless from the vector/factor for looping.

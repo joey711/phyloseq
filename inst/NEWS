@@ -20,6 +20,76 @@ phyloseq
 * Lots of documentation updates.
 * Lots and lots of fixes and improvements.
 
+phyloseq 1.5.23 - Update dependency from igraph0 to igraph
+===========
+- Requested by CRAN
+- igraph0 is being deprecated, removed from CRAN
+- igraph is actively updated/maintained. igraph0 isn't / soon won't be.
+- The load bug that I could find from re-running the tutorial in the new dependency
+  had to do with accessing the vertex names. The appropriate function is:
+  `get.vertex.attribute`
+  which was not used previous, but is now imported and used in this version of phyloseq.
+- This also closes [Issue 247](https://github.com/joey711/phyloseq/issues/247)
+
+phyloseq 1.5.22 - Fix minor bug in `import_mothur`
+===========
+- Bug occurs only when sample names are pure integers. One line fix.
+- This addresses [Issue 242](https://github.com/joey711/phyloseq/issues/242) 
+
+phyloseq 1.5.21 - `plot_richness` / `estimate_richness` updates
+===========
+-- Additional alpha-diversity measures added to both functions.
+-- New argument, `measures`, added to both functions, allows user to 
+   specify which measures to calculate/display.
+-- Also added unit tests for both functions, absent in prior versions
+
+
+phyloseq 1.5.20 - Bugfixes, `read_tree_greengenes`, and a `replace` optional parameter to rarefy_even_depth()
+===========
+-- read_tree_greengenes() is a new function created specifically to address the problem
+   created when the greengenes consortium chose to publish their official release trees
+   with semicolon-delimited node labels, even though semicolons are also a special newick character.
+   The semicolons only appear when a node has more than one taxonomic rank assigned to it,
+   which is rare in the smaller (lower OTU similarity threshold) trees, but a big problem
+   in all the most commonly used trees, e.g. 97% tree. 
+   The hard part was identifying the precise cause of the problem. Now that it is precisely known,
+   the offending delimiters are temporarily replaced so that the standard parser `read.tree`
+   can create the phylo object, then they are reinstated. 
+   Unit tests have been added to check that this works properly on a GreenGenes release tree
+   that otherwise breaks `read.tree`.
+   This also solves 224
+   https://github.com/joey711/phyloseq/issues/224
+
+-- Fixed a bug in which the highest taxonomic rank fails in `tax_glom`
+  This was a bug resulting from the automatic coercion of single-column
+  matrix subsetting to a vector. Simply changing the relevant line
+  of code in `tax_glom` such that [, , drop=FALSE],
+  solve this issue, Issue 223
+  https://github.com/joey711/phyloseq/issues/223
+  Unit tests have been added that should catch this in the future.
+
+-- rarefy_even_depth() new option to sample without replacement.
+  Two implications to consider are that
+  (1) sampling with replacement is faster and more memory efficient
+  as currently implemented;
+  (2) sampling with replacement means that there is a chance that the
+  number of reads for a given OTU in a given sample could be larger
+  than the original count value. This is in contrast to sampling without replacement
+  where the original count value is the maximum possible.
+  Prior to this phyloseq version,
+  this `replace` parameter did not exist and sampling with replacement was the only
+  random subsampling implemented in the `rarefy_even_depth` function.
+  This prior behavior was selected for computational efficiency, but
+  differs from the behavior of analogous functions in related packages
+  (e.g. rarefying in QIIME).
+
+phyloseq 1.5.19 - add gap statistic support for ordination results
+===========
+- gapstat_ord() - wrapper function for cluster::clusGap for ordination methods
+- plot_clusgap() - wrapper function for plotting gap statistic results from clusGap()
+- Full examples on the soilrep dataset for gap statistic.
+- Fix bug in eigenvalue proportions for axes other 
+  than the first two in ordination plots.
 
 phyloseq 1.5.17 - replace URL with new phyloseq article
 ===========

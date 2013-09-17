@@ -2,7 +2,7 @@ thisVer <- getRversion()
 if(!compareVersion(as.character(thisVer), "2.15.0") >=0)
   stop("R v2.15 is required")
 # Define dependencies in installer  
-cran.nms <- c("ape", "doParallel", "foreach", "ggplot2", "igraph0", "picante", "vegan", "RJSONIO", "plyr")
+cran.nms <- c("ape", "doParallel", "foreach", "ggplot2", "igraph", "picante", "vegan", "RJSONIO", "plyr")
 bioc.nms <- c("multtest", "genefilter")
 ##  cran
 install.packages(cran.nms)

@@ -125,20 +125,25 @@ import <- function(pipelineName, ...){
 #' followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
-#' @param treefilename (Optional).
+#' @param treefilename (Optional). Default value is \code{NULL}. 
 #'  A file representing a phylogenetic tree
 #'  or a \code{\link{phylo}} object.
 #'  Files can be NEXUS or Newick format.
-#'  See \code{\link{read_tree}} for more details. 
+#'  See \code{\link{read_tree}} for more details.
+#'  Also, if using a recent release of the GreenGenes database tree,
+#'  try the \code{\link{read_tree_greengenes}} function --
+#'  this should solve some issues specific to importing that tree. 
 #'  If provided, the tree should have the same OTUs/tip-labels
 #'  as the OTUs in the other files. 
 #'  Any taxa or samples missing in one of the files is removed from all. 
-#'  For the QIIME pipeline
-#'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
-#'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
-#'  Default value is \code{NULL}. 
+#'  As an example from the QIIME pipeline,
+#'  this tree would be a tree of the representative 16S rRNA sequences from each OTU
+#'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs,
+#'  or the complete reference database tree that contains the OTU identifiers
+#'  of every OTU in your abundance table.
 #'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
-#'  for cases where the tree has been --- or needs to be --- imported separately.
+#'  for cases where the tree has been --- or needs to be --- imported separately,
+#'  as in the case of the GreenGenes tree mentioned earlier (code{\link{read_tree_greengenes}}).
 #'
 #' @param refseqfilename (Optional). Default \code{NULL}.
 #'  The file path of the biological sequence file that contains at a minimum
@@ -308,7 +313,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #'  Default is \code{FALSE}, indicating that \code{NULL} will be 
 #'  SILENTLY returned, rather than an error. 
 #'  Be cautious about this behavior. Useful for phyloseq internals, but might
-#'  be hard to track in treefileyour own code if you're not aware of this
+#'  be hard to track in your own code if you're not aware of this
 #'  ``no error by default'' setting. If this is a problem, change this value
 #'  to \code{TRUE}, and you can still use the function.
 #'
@@ -319,7 +324,13 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #'  in the \code{\link[ape]{ape-package}}. Returns NULL if neither tree-reading function worked.
 #'
 #' @seealso
-#'	\code{\link{phylo}}, \code{\link[ape]{read.tree}}, \code{\link[ape]{read.nexus}}
+#' \code{\link{read_tree_greengenes}}
+#'
+#' \code{\link{phylo}}
+#' 
+#' \code{\link[ape]{read.tree}}
+#'  
+#' \code{\link[ape]{read.nexus}}
 #'
 #' @import ape
 #' @export
@@ -330,9 +341,9 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 	# "phylo" object provided directly
 	if( class(treefile)[1] %in% c("phylo") ){ 
 		tree <- treefile
-	# file path to tree file provided (NEXUS)
 	} else {
-		# # Try Nexus first, protected, then newick if it fails
+	  # file path to tree file provided.
+		# Try Nexus first, protected, then newick if it fails
 		tree <- NULL
 		try(tree <- read.nexus(treefile, ...), TRUE)
 		# Try Newick if nexus didn't work.
@@ -343,6 +354,75 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 		stop("tree file could not be read.\nPlease retry with valid tree.")
 	}
 	return(tree)
+}
+################################################################################
+#' Read GreenGenes tree released in annotated newick format
+#'
+#' In principal, this is a standard newick format, that can be imported
+#' into R using \code{\link{read_tree}},
+#' which in-turn utilizes \code{\link[ape]{read.tree}}.
+#' However, \code{\link[ape]{read.tree}} has failed to import
+#' recent (October 2012 and later) releases of the GreenGenes tree,
+#' and this problem has been traced to the additional annotations
+#' added to some internal nodes 
+#' that specify taxonomic classification between single-quotes. 
+#' To solve this problem and create a clear container
+#' for fixing future problems with the format of GreenGenes-released trees,
+#' this function is available in phyloseq and exported for users.
+#' It is also referenced in the documentation of the import functions
+#' for QIIME legacy and BIOM format importers --
+#' \code{\link{import_qiime}} and \code{\link{import_biom}}, respectively.
+#' However, since the precise format of the tree is not restricted to GreenGenes trees
+#' by QIIME or for the biom-format, this function is not called
+#' automatically by those aforementioned import functions.
+#' If your tree is formatted like, or is one of, the official GreenGenes
+#' release trees, then you should use this function and provide its output
+#' to your relevant import function.
+#' 
+#' @param treefile (Required). A character string implying 
+#'  a file \code{\link{connection}}
+#'  (like a path or URL), or an actual \code{\link{connection}}.
+#'  Must be a Newick--formatted tree released by GreenGenes
+#'  in October 2012 or later.
+#'  The similarity threshold of the OTUs should not matter,
+#'  except that it should match your OTU table.
+#'  
+#' @return A tree, represented as a \code{\link{phylo}} object.
+#' 
+#' @import ape
+#' @export
+#' @examples
+#' # Read the May 2013, 73% similarity official tree,
+#' # included as extra data in phyloseq.
+#' treefile = system.file("extdata", "gg13-5-73.tree.gz", package="phyloseq")
+#' x = read_tree_greengenes(treefile)
+#' x
+#' class(x)
+#' y = read_tree(treefile)
+#' y
+#' class(y)
+#' ## Not run, causes an error:
+#' # library("ape")
+#' # read.tree(treefile)
+read_tree_greengenes = function(treefile){
+  alines = readLines(treefile, warn=FALSE)
+  # Collapse to one line, in case it isn't already.
+  alines = paste0(alines, collapse="")
+  # replace all semicolons with something weird
+  # that isn't already a special newick character.
+  newdelim = "><-><"
+  clines = gsub("\\;", newdelim, alines)
+  # reinstate the final character as a semicolon
+  clines = gsub(paste0(newdelim, "$"), ";", clines)
+  # Convert your newick string into a phylo-class tree.
+  tree = read.tree("", text=clines)
+  # Now that it is phylo-class, reinstate semicolon
+  # as the delimiter in the node labels
+  gsub(newdelim, ";", tree$node.label)
+  # Also get rid of those extra quotes
+  gsub("'", "", tree$node.label)
+  # Return the cleaned-up tree
+  return(tree)
 }
 ################################################################################
 #' Import a QIIME-formatted otu-tax file into a list of two matrices.
@@ -406,10 +486,18 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #' @import foreach
 #' @importFrom plyr llply
 #'
-#' @seealso \code{\link{import}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-#'  \code{\link{import_qiime}}
-#'  \code{\link{import_qiime_otu_tax}}
-#'  \code{\link{import_env_file}}
+#' @seealso
+#' \code{\link{import}}
+#' 
+#' \code{\link{merge_phyloseq}}
+#' 
+#' \code{\link{phyloseq}}
+#' 
+#' \code{\link{import_qiime}}
+#'  
+#' \code{\link{import_qiime_otu_tax}}
+#'  
+#' \code{\link{import_env_file}}
 #' @export
 #' @examples
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
@@ -526,10 +614,20 @@ import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime, paral
 #'
 #' @return A \code{sample_data} object.
 #'
-#' @seealso \code{\link{import}}, \code{\link{merge_phyloseq}}, \code{\link{phyloseq}},
-#'  \code{\link{import_qiime}}
-#'  \code{\link{import_qiime_otu_tax}}
-#'  \code{\link{import_env_file}}
+#' @seealso
+#' 
+#' \code{\link{import}}
+#' 
+#' \code{\link{merge_phyloseq}}
+#' 
+#' \code{\link{phyloseq}}
+#' 
+#' \code{\link{import_qiime}}
+#' 
+#' \code{\link{import_qiime_otu_tax}}
+#' 
+#' \code{\link{import_env_file}}
+#' 
 #' @export
 #' @examples 
 #'  mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
@@ -541,7 +639,6 @@ import_qiime_sample_data <- function(mapfilename){
 	rownames(QiimeMap) <- as.character(QiimeMap[,1])
 	return( sample_data(QiimeMap) )
 }
-######################################################################################
 ################################################################################
 #' Read a UniFrac-formatted ENV file.
 #'
@@ -568,7 +665,10 @@ import_qiime_sample_data <- function(mapfilename){
 #'
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{import}}, \code{\link{tip_glom}}
+#' @seealso
+#' \code{\link{import}}
+#' 
+#' \code{\link{tip_glom}}
 #' @export
 #' @examples 
 #' # import_env_file(myEnvFile, myTree)
@@ -604,7 +704,12 @@ import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 #' 
 #' @references \url{http://bmf2.colorado.edu/unifrac/}
 #' 
-#' @seealso \code{\link{import_env_file}}, \code{\link{tip_glom}}, \code{\link{otu_table}}
+#' @seealso
+#' \code{\link{import_env_file}}
+#' 
+#' \code{\link{tip_glom}}
+#' 
+#' \code{\link{otu_table}}
 #'
 #' @keywords internal
 #' @examples #
@@ -630,9 +735,6 @@ envHash2otu_table <- function(tipSampleTable){
 	}
 	return( otu_table(trivialOTU, taxa_are_rows=TRUE) )
 }
-################################################################################
-################################################################################
-################################################################################
 ################################################################################
 ################################################################################
 #' Import RDP cluster file and return otu_table (abundance table).
@@ -934,9 +1036,6 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 }
 ################################################################################
 ################################################################################
-################################################################################
-################################################################################
-################################################################################
 #' Show cutoff values available in a mothur list file
 #'
 #' This is a helper function to report back to the user the different cutoff
@@ -1097,6 +1196,8 @@ import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=
 	
 	otulist       <- import_mothur_otulist(mothur_list_file, cutoff)
 	mothur_groups <- import_mothur_groups(mothur_group_file)
+  # Coerce the sample names column of the group hash table to a factor
+	mothur_groups[, 2] <- factor(mothur_groups[, 2])
 	
 	# Initialize abundance matrix
 	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(levels(mothur_groups[, 2])))
@@ -1505,20 +1606,25 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  imported with other tools using the relatively general-purpose data
 #'  merging function called \code{\link{merge_phyloseq}}.
 #'
-#' @param treefilename (Optional).
+#' @param treefilename (Optional). Default value is \code{NULL}. 
 #'  A file representing a phylogenetic tree
 #'  or a \code{\link{phylo}} object.
 #'  Files can be NEXUS or Newick format.
-#'  See \code{\link{read_tree}} for more details. 
+#'  See \code{\link{read_tree}} for more details.
+#'  Also, if using a recent release of the GreenGenes database tree,
+#'  try the \code{\link{read_tree_greengenes}} function --
+#'  this should solve some issues specific to importing that tree. 
 #'  If provided, the tree should have the same OTUs/tip-labels
 #'  as the OTUs in the other files. 
 #'  Any taxa or samples missing in one of the files is removed from all. 
-#'  For the QIIME pipeline
-#'  this tree is typically a tree of the representative 16S rRNA sequences from each OTU
-#'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs.
-#'  Default value is \code{NULL}. 
+#'  As an example from the QIIME pipeline,
+#'  this tree would be a tree of the representative 16S rRNA sequences from each OTU
+#'  cluster, with the number of leaves/tips equal to the number of taxa/species/OTUs,
+#'  or the complete reference database tree that contains the OTU identifiers
+#'  of every OTU in your abundance table.
 #'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
-#'  for cases where the tree has been --- or needs to be --- imported separately.
+#'  for cases where the tree has been --- or needs to be --- imported separately,
+#'  as in the case of the GreenGenes tree mentioned earlier (code{\link{read_tree_greengenes}}).
 #'
 #' @param refseqfilename (Optional). Default \code{NULL}.
 #'  The file path of the biological sequence file that contains at a minimum
@@ -1588,9 +1694,10 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  using the \code{\link{save}} function.
 #' 
 #' @param version (Optional). Numeric. The expected version number of the file.
-#'  As the BIOM format evolves, version-specific importers will be available
-#'  by adjusting the version value. Default is \code{0.9}. Not implemented.
-#'  Has no effect (yet).
+#'  As the BIOM format evolves, version-specific importers may be available
+#'  by adjusting the version value. Default is \code{1.0}. 
+#'  Not yet implemented. Parsing of the biom-format is done mostly
+#'  by the biom package now available in CRAN.
 #'
 #' @param ... Additional parameters passed on to \code{\link{read_tree}}.
 #'
@@ -1602,6 +1709,10 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' \code{\link{import_qiime}}
 #'
 #' \code{\link{read_tree}}
+#' 
+#' \code{\link{read_tree_greengenes}}
+#' 
+#' \code{\link[biom]{biom-package}}
 #' 
 #' \code{\link[biom]{read_biom}}
 #'

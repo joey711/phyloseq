@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.5.17
-Date: 2013-05-22
+Version: 1.5.23
+Date: 2013-09-16
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -13,11 +13,12 @@ Author: Paul J. McMurdie <mcmurdie@stanford.edu>, Susan
 License: AGPL-3
 Imports:
     ape (>= 3.0.8),
-    biom (>= 0.3.8),
+    biom (>= 0.3.9),
     Biostrings (>= 2.28.0),
+    cluster (>= 1.14.4),
     foreach (>= 1.4),
     ggplot2 (>= 0.9.3.1),
-    igraph0 (>= 0.5.7),
+    igraph (>= 0.6.5.2),
     multtest (>= 2.16.0),
     plyr (>= 1.8),
     reshape2 (>= 1.2.2),
