@@ -251,10 +251,10 @@ data(GlobalPatterns)
 GPUF <- UniFrac(GlobalPatterns)
 ```
 
-Load the pre-computed distance matrix, GPUF
+Load the pre-computed distance matrix, `GPUF`
 
 ```{r load-precomputed-UF}
-load("Unweighted_UniFrac.RData")
+load(system.file("doc", "Unweighted_UniFrac.RData", package="phyloseq"))
 ```
 
 Calculate the PCoA on this distance matrix, `GPUF`.
@@ -288,8 +288,9 @@ We repeat the previous example, but instead using non-metric multidimensional sc
 ```{r GP_UF_NMDS0}
 # (Re)load UniFrac distance matrix and GlobalPatterns data
 data(GlobalPatterns)
-load("Unweighted_UniFrac.RData") # reloads GPUF variable
-GP.NMDS <- metaMDS(GPUF, k=2) # perform NMDS, set to 2 axes
+load(system.file("doc", "Unweighted_UniFrac.RData", package="phyloseq"))
+# perform NMDS, set to 2 axes
+GP.NMDS <- metaMDS(GPUF, k=2) 
 (p <- plot_ordination(GlobalPatterns, GP.NMDS, "samples", color="SampleType") +
   geom_line() + geom_point(size=5) )
 ```
@@ -451,11 +452,12 @@ Another potentially useful and popular way to visualize/decompose sample-distanc
 ```{r}
 # (Re)load UniFrac distance matrix and GlobalPatterns data
 data(GlobalPatterns)
-load("Unweighted_UniFrac.RData") # reloads GPUF variable
+load(system.file("doc", "Unweighted_UniFrac.RData", package="phyloseq"))
 # Manually define color-shading vector based on sample type.
 colorScale    <- rainbow(length(levels(get_variable(GlobalPatterns, "SampleType"))))
 cols          <- colorScale[get_variable(GlobalPatterns, "SampleType")] 
 GP.tip.labels <- as(get_variable(GlobalPatterns, "SampleType"), "character")
+# This is the actual hierarchical clustering call, specifying average-link clustering
 GP.hclust     <- hclust(GPUF, method="average")
 ```
 

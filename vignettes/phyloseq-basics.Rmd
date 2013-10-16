@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{phyloseq analysis vignette}
+%\VignetteIndexEntry{phyloseq basics vignette}
 -->
 `r library("knitr")`
 `r opts_chunk$set(cache=FALSE, fig.width=9)`
@@ -426,15 +426,15 @@ install.packages("doMPI")
 # References
 
 <a id="cite:QIIME"></a>
-J Gregory Caporaso, Justin Kuczynski, Jesse Stombaugh, Kyle Bittinger, Frederic D Bushman **QIIME allows analysis of high-throughput community sequencing data.** *Nature Methods* 7(5):335–336, 2010.
+J Gregory Caporaso, Justin Kuczynski, Jesse Stombaugh, Kyle Bittinger, Frederic D Bushman **QIIME allows analysis of high-throughput community sequencing data.** *Nature Methods* 7(5):335-336, 2010.
 
 
 <a id="cite:Schloss:2009do"></a>
-P D Schloss, S L Westcott, T Ryabin, J R Hall, M Hartmann, et al. **Introducing mothur: Open-Source, Platform-Independent, Community-Supported Software for Describing and Comparing Microbial Communities.** *Applied and Environmental Microbiology* 75(23):7537–7541, 2009.
+P D Schloss, S L Westcott, T Ryabin, J R Hall, M Hartmann, et al. **Introducing mothur: Open-Source, Platform-Independent, Community-Supported Software for Describing and Comparing Microbial Communities.** *Applied and Environmental Microbiology* 75(23):7537-7541, 2009.
 
 
 <a id="cite:RDP"></a>
-J R Cole, Q Wang, E Cardenas, J Fish, B Chai et al. **The Ribosomal Database Project: improved alignments and new tools for rRNA analysis.** *Nucleic Acids Research* 37(Database issue):D141–5, 2009.
+J R Cole, Q Wang, E Cardenas, J Fish, B Chai et al. **The Ribosomal Database Project: improved alignments and new tools for rRNA analysis.** *Nucleic Acids Research* 37(Database issue):D141-5, 2009.
 
 
 <a id="cite:bioconductor"></a>
