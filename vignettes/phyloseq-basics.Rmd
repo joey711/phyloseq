@@ -3,12 +3,12 @@
 %\VignetteIndexEntry{phyloseq analysis vignette}
 -->
 `r library("knitr")`
-`r opts_chunk$set(cache=TRUE, fig.width=9)`
+`r opts_chunk$set(cache=FALSE, fig.width=9)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # Basic storage, access, and manipulation of phylogenetic sequencing data with *phyloseq*
 
-Paul J. M{c}Murdie and Susan Holmes
+Paul J. McMurdie and Susan Holmes
 
 Statistics Department, Stanford University
 
@@ -48,7 +48,7 @@ Let's get started by loading phyloseq, and describing some methods for importing
 % Load phyloseq and Import Data.
 
 ---
-# Load *phyloseq* and import data<a id="pookie"></a>sec:load}
+# Load *phyloseq* and import data <a id="sec:load"></a>
 ## Load *phyloseq*
 To use *phyloseq* in a new R session, it will have to be loaded. This can be done in your package manager, or at the command line using the `library()` command:
 ```{r load-packages, message=FALSE, warning=FALSE}
@@ -62,28 +62,26 @@ Some additional background details are provided below. The best reproducible exa
 
 http://joey711.github.com/phyloseq/import-data
 
-## Import from biom-format}<a id="pookie"></a>sec:biom}
+## Import from biom-format}<a id="sec:biom"></a>
+
 New versions of QIIME (see below) produce a more-comprehensive and formally-defined JSON file format, called biom file format:
 
-``The biom file format (canonically pronounced `biome') is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project."
+"The biom file format (canonically pronounced `biome') is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project."
 
-http://biom-format.org/}
+See [the biom-format home page](http://biom-format.org/) for details.
 
 
 ## Import from QIIME}<a id="pookie"></a>sec:qiimeimport}
-QIIME is a free, open-source OTU clustering and analysis pipeline written for Unix (mostly Linux)~\cite{Caporaso:2010jf}. It is distributed in a number of different forms (including a pre-installed virtual machine), and relevant links for obtaining and using QIIME should be found at:
+QIIME is a free, open-source OTU clustering and analysis pipeline written for Unix (mostly Linux)~\cite{Caporaso:2010jf}. It is distributed in a number of different forms (including a pre-installed virtual machine). See [the QIIME home page](http://qiime.org/) for details.
 
-http://qiime.org/}
-
-### Input}
+### Input
 One QIIME input file (sample map), and two QIIME output files (`otu_table.txt`, `.tre`) are recognized by the `import_qiime()` function. Only one of the three input files is required to run, although an `"otu_table.txt"` file is required if `import_qiime()` is to return a complete experiment object.
 
 In practice, you will have to find the relevant QIIME files among a number of other files created by the QIIME pipeline. A screenshot of the directory structure created during a typical QIIME run is shown in Figure~\ref{fig:qiimedirectory}.
 
 
-
 ![QIIME directory structure](import_qiime_directory_structure.jpg)
-###### []{  A typical QIIME output directory}. The two output files suitable for import by *phyloseq* are highlighted. A third file describing the samples, their barcodes and covariates, is created by the user and required as *input} to QIIME. It is a good idea to import this file, as it can be converted directly to a `sample_data` object and can be extremely useful for certain analyses.}
+###### []{A typical QIIME output directory}. The two output files suitable for import by *phyloseq* are highlighted. A third file describing the samples, their barcodes and covariates, is created by the user and required as *input} to QIIME. It is a good idea to import this file, as it can be converted directly to a `sample_data` object and can be extremely useful for certain analyses.}
 <a id="pookie"></a>fig:qiimedirectory}
 
 \end{figure}
@@ -93,13 +91,11 @@ The class of the object returned by `import_qiime()` depends upon which filename
 
 
 ---
-## Import from mothur}<a id="pookie"></a>sec:mothurimport}
-The open-source, platform-independent, locally-installed software package, "mothur", can also process barcoded amplicon sequences and perform OTU-clustering~\cite{Schloss:2009do}. It is extensively documented on a wiki at the following URL:
-
-http://www.mothur.org/wiki/}
+## Import from mothur <a id="sec:mothurimport"></a>
+The open-source, platform-independent, locally-installed software package, *mothur*, can also process barcoded amplicon sequences and perform OTU-clustering~\cite{Schloss:2009do}. It is extensively documented on [the mothur wiki](http://www.mothur.org/wiki/)
 
 ### Input
-Currently, there are three different files produced by the *mothur* package (Ver $1.22.0$) that can be imported by *phyloseq*. At minimum, a user must supply a "`.list`" file, and at least one of the following two files: `.groups` or `.tree`. The group file is produced by *mothur*'s `make.group()` function. Details can be found at [its wiki page](http://www.mothur.org/wiki/Make.group). The tree file is a phylogenetic tree calculated by *mothur*.
+Currently, there are three different files produced by the *mothur* package (Ver `1.22+`) that can be imported by *phyloseq*. At minimum, a user must supply a "`.list`" file, and at least one of the following two files: `.groups` or `.tree`. The group file is produced by *mothur*'s `make.group()` function. Details can be found at [its wiki page](http://www.mothur.org/wiki/Make.group). The tree file is a phylogenetic tree calculated by *mothur*.
 
 ### Output
 The output from `import_mothur()` depends on which file types are provided. If all three file types are provided, an instance of the phyloseq-class is returned that contains both an OTU abundance table and its associated phylogenetic tree.
@@ -115,13 +111,7 @@ PyroTagger takes as input the untrimmed sequence (`.fasta`) and sequence-quality
 PyroTagger returns a single excel spreadsheet file (`.xls`) containing both abundance and taxonomy data, as well as some associated confidence information related to each taxonomic assignment. This spreadsheet also reports on potential chimeric sequences. This single output file is sufficient for `import_RDP_tab()`, provided the file has been converted to a tab-delimited plain-text format. Any spreadsheet application should suffice. No other changes should be made to the `.xls` file.
 
 ### Output
-`import_RDP_tab()` returns an instance of the phyloseq-class
-that contains the OTU abundance table and taxonomy table.
-To my knowledge, PyroTagger does not calculate a tree
-of the representative sequences from each OTU cluster,
-nor a distance object,
-so analyses like `tip_glom()` and `UniFrac` are not applicable.
-
+`import_RDP_tab()` returns an instance of the phyloseq-class that contains the OTU abundance table and taxonomy table. To my knowledge, PyroTagger does not calculate a tree of the representative sequences from each OTU cluster, nor a distance object, so analyses like `tip_glom()` and `UniFrac` are not applicable.
 
 ---
 ## Import from RDP pipeline
@@ -131,7 +121,7 @@ The Ribosomal Database Project ([RDP](http://rdp.cme.msu.edu/)) provides a web-b
 The output from the Complete Linkage Clustering, `.clust`, is the only input to the RDP pipeline importer:
 
 ```{r, eval=FALSE}
-  myOTU1 <- import_RDP_cluster("path/to/my/filename.clust")
+myOTU1 <- import_RDP_cluster("path/to/my/filename.clust")
 ```
 
 ### Output}
@@ -154,57 +144,66 @@ There are multiple example data sets included in *phyloseq*. Many are from publi
 To load example data into the working environment, use the `data()` command:
 
 ```{r, eval=FALSE}
-  data(GlobalPatterns)
-  data(esophagus)
-  data(enterotype)
-  data(soilrep) 
+data(GlobalPatterns)
+data(esophagus)
+data(enterotype)
+data(soilrep) 
 ```
 
-Similarly, entering `?enterotype` will reveal the documentation for the so-called "enterotype" dataset.
-
-See the Example Data page on the phyloseq GitHub wiki at:
-
-https://github.com/joey711/phyloseq/wiki/Example-data
+Similarly, entering `?enterotype` will reveal the documentation for the so-called "enterotype" dataset. For details examples, see [the Example Data tutorial](http://joey711.github.io/phyloseq/Example-Data.html)
 
 ## phyloseq Object Summaries}
 In small font, the following is the summary of the `GlobalPatterns` dataset that prints to the terminal. These summaries are consistent among all `phyloseq-class` objects. Although the components of `GlobalPatterns` have many thousands of elements, the command-line returns only a short summary of each component. This encourages you to check that an object is still what you expect, without needing to let thousands of elements scroll across the terminal. In the cases in which you do want to see more of a particular component, use an accessor function (see table below).
 
 
 ```{r}
-  data(GlobalPatterns)
-  GlobalPatterns
+data(GlobalPatterns)
+GlobalPatterns
 ```
 
 
 
 ---
 ## Convert raw data to phyloseq components}
-Suppose you have already imported raw data from an experiment into `R}, and their indices are labeled correctly. How do you get *phyloseq* to recognize these tables as the appropriate class of data? And further combine them together? Table~\ref{table:build} lists key functions for converting these core data formats into specific component data objects recognized by *phyloseq*. These will also
+Suppose you have already imported raw data from an experiment into `R`, and their indices are labeled correctly. How do you get *phyloseq* to recognize these tables as the appropriate class of data? And further combine them together? Table~\ref{table:build} lists key functions for converting these core data formats into specific component data objects recognized by *phyloseq*. These will also
 
-\begin{table}[ht]
+Functions for building component data objects
 
-\begin{tabular}{lll}
-\multicolumn{3}{l}{Functions for building component data objects}\\
-\hline
-Function                    & Input Class      & Output Description \\
-\hline
-\Rfunction{`otu_table`        & numeric matrix   & `otu_table` object storing OTU abundance \\
-\Rfunction{`otu_table`        & data.frame       & `otu_table` object storing OTU abundance \\
-\Rfunction{`sample_data`       & data.frame       & `sample_data` object storing sample variables \\
-\Rfunction{tax_}table}          & character matrix & `taxonomyTable` object storing taxonomic identities \\
-\Rfunction{tax_}table}          & data.frame & `taxonomyTable` object storing taxonomic identities \\
-\Rfunction{read_}tree}             & file path char   & phylo-class tree, read from file \\
-\Rfunction{read.table}      & table file path  & A matrix or data.frame (Std `R} core function)  \\
-& & \\
+```{r build-component-data-table, echo=FALSE, message=FALSE, results='asis'}
+L = list(
+  c("Function      "," Input Class      "," Output Description"),
+  c("`otu_table` "," numeric matrix   "," `otu_table` object storing OTU abundance"),
+  c("`otu_table` "," data.frame"," `otu_table` object storing OTU abundance"),
+  c("`sample_data`"," data.frame"," `sample_data` object storing sample variables"),
+  c("`tax_table`   "," character matrix "," `taxonomyTable` object storing taxonomic identities"),
+  c("`tax_table`   "," data.frame "," `taxonomyTable` object storing taxonomic identities"),
+  c("`read_tree`      "," file path char   "," phylo-class tree, read from file"),
+  c("`read.table`      "," table file path  "," A matrix or data.frame (Std `R` core function) ")
+)
+L = lapply(L, FUN=gsub, pattern="^[[:space:]]+", replacement="\\2")
+L = lapply(L, FUN=gsub, pattern="[[:space:]]+$", replacement="\\2")
+require("plyr")
+require("xtable")
+print(xtable(ldply(L)), type="html")
+```
 
-\multicolumn{3}{l}{Functions for building complex data objects}\\
-\hline
-Function                    & Input Class                 & Output Description \\
-\hline
-\Rfunction{phyloseq}        & 2 or more component objects & phyloseq-class, "experiment-level" object \\
-\Rfunction{merge_}phyloseq}  & 2 or more component or phyloseq-class objects & Combined instance of phyloseq-class \\
-\hline
-\end{tabular}
+Functions for building complex data objects
+
+```{r build-complex-table, echo=FALSE, message=FALSE, results='asis'}
+L = list(
+  c("Two or more component objects", "phyloseq-class, *experiment-level* object"),
+  c("Two or more component or phyloseq-class objects ", " Combined instance of phyloseq-class")
+)
+L = lapply(L, FUN=gsub, pattern="^[[:space:]]+", replacement="\\2")
+L = lapply(L, FUN=gsub, pattern="[[:space:]]+$", replacement="\\2")
+Ltab = ldply(L)
+colnames(Ltab) <- c("Input Class", "Output Description")
+rownames(Ltab) <- c("`phyloseq`", "`merge_phyloseq`")
+require("plyr")
+require("xtable")
+print(xtable(Ltab), align=c("ll"), type="html")
+```
+
 
 ###### { Constructors: functions for building *phyloseq* objects.}
 <a id="pookie"></a>table:build}
@@ -219,7 +218,7 @@ tre1 <- read.nexus(my_nexus_file)
 ```
 
 ## `phyloseq()` function: building complex phyloseq objects}
-Once you've converted the data tables to their appropriate class, combining them into one object requires only one additional function call, \Rfunction{phyloseq()}:
+Once you've converted the data tables to their appropriate class, combining them into one object requires only one additional function call, `phyloseq()}:
 ```{r, eval=FALSE}
 ex1b <- phyloseq(my_otu_table, my_sample_data, my_taxonomyTable, my_tree)
 ```
@@ -234,78 +233,67 @@ Whenever an instance of the phyloseq-class is created by *phyloseq* --- for exam
 ## Merge} 
 The phyloseq project includes support for two complete different categories of merging.
 
-\begin{itemize}
+  - Merging the OTUs or samples in a phyloseq object}, based upon a taxonomic or sample variable: `merge_samples()`,  `merge_taxa()`
 
-\item Merging the OTUs or samples in a phyloseq object}, based upon a taxonomic or sample variable:
-
-merge\_{}samples() merge\_{}taxa()
-
-\item Merging two or more data objects} that come from the same experiment, so that their data becomes part of the same phyloseq object:
-
-merge\_{}phyloseq()
-
-\end{itemize}
+  - Merging two or more data objects} that come from the same experiment, so that their data becomes part of the same phyloseq object: `merge_phyloseq()`
 
 For further details, see the reproducible online tutorial at:
 
-http://joey711.github.com/phyloseq/merge}
+http://joey711.github.com/phyloseq/merge
 
 
 ---
 # Accessor functions}<a id="pookie"></a>sec:accessors}
 Once you have a phyloseq object available, many accessor functions are available to query aspects of the data set. The function name and its purpose are summarized in Table~\ref{table:access}.
 
-\begin{table}[ht]
-
-\begin{tabular}{l|l}
-\hline
-Function                    & Returns \\
-\hline
-\Rfunction{[}               & Standard extraction operator.
-          works on `otu_table`, `sample_data`, and `taxonomyTable` \\
-\Rfunction{access}          & General slot accessor function for phyloseq-package \\
-\Rfunction{get_}taxa}      & Abundance values of all taxa in sample `i' \\
-\Rfunction{get_}sample}      & Abundance values of taxa `i' for all samples \\
-\Rfunction{get_}taxa_}unique}      & A unique vector of the observed taxa at a particular taxonomic rank \\
-\Rfunction{get_}variable}     & An individual sample variable vector/factor \\
-\Rfunction{nsamples}        & Get the number of samples described by an object \\
-\Rfunction{ntaxa}        & Get the number of OTUs (taxa) described by an object \\
-\Rfunction{`otu_table`        & Build or access otu_}table objects \\
-\Rfunction{rank_}names}      & Get the names of the available taxonomic ranks \\
-\Rfunction{`sample_data`      & Build or access `sample_data` objects \\
-\Rfunction{sample_}names}    & The names of all samples \\
-\Rfunction{taxa_}names}   & The names of all taxa \\
-\Rfunction{sample_}sums}      & The sum of the abundance values of each sample \\
-\Rfunction{sample_}variables} & The names of sample variables \\
-\Rfunction{taxa_}sums}     & The sum of the abundance values of each taxa \\
-\Rfunction{taxa_}are_}rows}  & `TRUE} if taxa are row indices in `otu_table` \\
-\Rfunction{tax_}table}          & A taxonomy table \\
-\Rfunction{tre}             & Access the tree contained in a phyloseq object \\
-\hline
-\end{tabular}
+```{r accessor-xtable, echo=FALSE, message=FALSE, results='asis'}
+L = list(
+  c("Function                    "," Returns"),
+  c("`[` "," Standard extraction operator. Works on `otu_table`, `sample_data`, and `taxonomyTable`"),
+  c("`access`   "," General slot accessor function for phyloseq-package"),
+  c("`get_taxa`      "," Abundance values of all taxa in sample `i'"),
+  c("`get_sample`      "," Abundance values of taxa `i' for all samples"),
+  c("`get_taxa_unique`      "," A unique vector of the observed taxa at a particular taxonomic rank"),
+  c("`get_variable`     "," An individual sample variable vector/factor"),
+  c("`nsamples` "," Get the number of samples described by an object"),
+  c("`ntaxa` "," Get the number of OTUs (taxa) described by an object"),
+  c("`otu_table`", "Build or access otu_table objects"),
+  c("`rank_names`      "," Get the names of the available taxonomic ranks"),
+  c("`sample_data`      "," Build or access `sample_data` objects"),
+  c("`sample_names`    "," The names of all samples"),
+  c("`taxa_names`   "," The names of all taxa"),
+  c("`sample_sums`      "," The sum of the abundance values of each sample"),
+  c("`sample_variables` "," The names of sample variables"),
+  c("`taxa_sums`     "," The sum of the abundance values of each taxa"),
+  c("`taxa_are_rows`  "," `TRUE` if taxa are row indices in `otu_table`"),
+  c("`tax_table`   "," A taxonomy table"),
+  c("`phy_tree`    "," Access the tree contained in a phyloseq object")
+)
+L = lapply(L, FUN=gsub, pattern="^[[:space:]]+", replacement="\\2")
+L = lapply(L, FUN=gsub, pattern="[[:space:]]+$", replacement="\\2")
+require("plyr")
+require("xtable")
+print(xtable(ldply(L)), type="html")
+```
 
 ###### { Accessor functions for *phyloseq* objects.}
 <a id="pookie"></a>table:access}
-\end{table}
 
-
-
-% Data Trimming.
 
 ---
 # Trimming, subsetting, filtering phyloseq data<a id="pookie"></a>sec:trim}
-## Trimming: `prune_}taxa()} and `prune_}samples()}}
+## Trimming: `prune_taxa()` and 
 Trimming high-throughput phylogenetic sequencing data can be useful, or even necessary, for certain types of analyses. However, it is important that the original data always be available for reference and reproducibility; and that the methods used for trimming be transparent to others, so they can perform the same trimming or filtering steps on the same or related data.
 
 To facilitate this, *phyloseq* contains many ways to trim/filter the data from a phylogenetic sequencing project. Because matching indices for taxa and samples is strictly enforced, subsetting one of the data components automatically subsets the corresponding indices from the others. Variables holding trimmed versions of your original data can be declared, and further trimmed, without losing track of the original data.
 
-In general, most trimming should be accomplished using the S4 methods `prune_}taxa()} or `prune_}samples()}.
+In general, most trimming should be accomplished using the S4 methods `prune_taxa()` or `prune_samples()`.
 
 ## Simple filtering example}
 ```{r echo=FALSE}
 topN <- 20
 ```
-For example, lets make a new object that only holds the most abundant \Sexpr{topN} taxa in the experiment. To accomplish this, we will use the `prune_}taxa()} function.
+For example, lets make a new object that only holds the most abundant \Sexpr{topN} taxa in the experiment. To accomplish this, we will use the `prune_taxa()` function.
 ```{r}
 data(GlobalPatterns)
 most_abundant_taxa <- sort(taxa_sums(GlobalPatterns), TRUE)[1:topN]
@@ -326,9 +314,9 @@ The previous example was a relatively simple filtering in which we kept only the
 
 ### `genefilter_sample`: Filter by Within-Sample Criteria}
 
-For this more complicated filtering *phyloseq* contains a function, `genefilter_sample`, that takes as an argument a *phyloseq* object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (`otu_table`), as well as an integer argument, `A}, that specifies for how many samples the filtering function must return `TRUE} for a particular taxa to avoid removal from the object. A supporting function `filterfun_}sample} is also included in *phyloseq* to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. `genefilter_sample` returns a logical vector suitable for sending directly to prune_}taxa() for the actual trimming.
+For this more complicated filtering *phyloseq* contains a function, `genefilter_sample`, that takes as an argument a *phyloseq* object, as well as a list of one or more filtering functions that will be applied to each sample in the abundance matrix (`otu_table`), as well as an integer argument, `A}, that specifies for how many samples the filtering function must return `TRUE` for a particular taxa to avoid removal from the object. A supporting function `filterfun_}sample} is also included in *phyloseq* to facilitate creating a properly formatted function (enclosure) if more than one function is going to be applied simultaneously. `genefilter_sample` returns a logical vector suitable for sending directly to prune_}taxa() for the actual trimming.
 
-Here is an example on a completely fabricated `otu_table` called `testOTU}.
+Here is an example on a completely fabricated `otu_table` called `testOTU`.
 ```{r, eval=FALSE}
 testOTU <- otu_table(matrix(sample(1:50, 25, replace=TRUE), 5, 5), taxa_are_rows=FALSE)
 f1  <- filterfun_sample(topk(2))
@@ -338,7 +326,7 @@ prune_taxa(wh1, testOTU)
 prune_taxa(wh2, testOTU)
 ```
 
-Here is a second example using the included dataset, `GlobalPatterns`. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset `GlobalPatterns`. Note that it is not necessary to subset `GlobalPatterns` in order to do this filtering. The S4 method `prune_}taxa()} subsets each of the relavent component objects, and returns the complex object back.
+Here is a second example using the included dataset, `GlobalPatterns`. The most abundant taxa are kept only if they are in the most abundant 10\% of taxa in at least half of the samples in dataset `GlobalPatterns`. Note that it is not necessary to subset `GlobalPatterns` in order to do this filtering. The S4 method `prune_taxa()` subsets each of the relavent component objects, and returns the complex object back.
 ```{r}
 data(GlobalPatterns)
 f1  <- filterfun_sample(topp(0.1))
@@ -453,15 +441,15 @@ ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
 
 ---
 # Phylogenetic smoothing}<a id="pookie"></a>sec:glom}
-##  `tax_glom()` Method}
+##  tax_glom() 
 Suppose we are skeptical about the importance of OTU-level distinctions in our dataset. For this scenario, *phyloseq* includes a taxonomic-agglommeration method,  `tax_glom()`, which merges taxa of the same taxonomic category for a user-specified taxonomic level. In the following code, we merge all taxa of the same Genus, and store that new object as `ex6}.
 
 ```{r, eval=FALSE}
 ex6 <- tax_glom(GlobalPatterns, taxlevel="Genus")
 ```
 
-## `tip_glom()` method}
-Similarly, our original example object (`GlobalPatterns`) also contains a phlyogenetic tree corresponding to each OTU, which we could also use as a means to merge taxa in our dataset that are closely related. In this case, we specify a threshold patristic distance. Taxa more closely related than this threshold are merged. This is especially useful when a dataset has many taxa that lack a taxonomic assignment at the level you want to investigate, a problem when using  `tax_glom()`. Note that for datasets with a large number of taxa, `tax_}glom} will be noticeably faster than `tip_}glom}. Also, keep in mind that `tip_}glom} requires that its first argument be an object that contains a tree, while `tax_}glom} instead requires a `taxonomyTable` (See Appendix~\ref{sec:app-classes}).
+## tip_glom() 
+Similarly, our original example object (`GlobalPatterns`) also contains a phlyogenetic tree corresponding to each OTU, which we could also use as a means to merge taxa in our dataset that are closely related. In this case, we specify a threshold patristic distance. Taxa more closely related than this threshold are merged. This is especially useful when a dataset has many taxa that lack a taxonomic assignment at the level you want to investigate, a problem when using  `tax_glom()`. Note that for datasets with a large number of taxa, `tax_glom` will be noticeably faster than `tip_}glom}. Also, keep in mind that `tip_}glom} requires that its first argument be an object that contains a tree, while `tax_glom` instead requires a `taxonomyTable` (See Appendix~\ref{sec:app-classes}).
 
 ```{r, eval=FALSE}
 ex7 <- tip_glom(GlobalPatterns, speciationMinLength = 0.05)
@@ -475,9 +463,9 @@ Command output not provided here to save time during compilation of the vignette
 ---
 # *phyloseq* classes}<a id="pookie"></a>sec:app-classes}
 
-The class structure in the *phyloseq* package follows the inheritance diagram shown in Fig.~\ref{fig:phyloseqclasses}. The *phyloseq* package contains multiple inherited classes with incremental complexity so that methods can be extended to handle exactly the data types that are present in a particular object. Currently, *phyloseq* uses 4 core data classes. They are the OTU abundance table (`otu_table`), a table of sample data (`sample_data`), a table of taxonomic descriptors (`taxonomyTable`), and a phylogenetic tree (`"phylo"`, *ape* package). The `otu_table` class can be considered the central data type, as it directly represents the number and type of sequences observed in each sample. `otu_table` extends the numeric matrix class in the \R{} base, and has a few additonal feature slots. The most important of these feature slots is the `taxa_are_rows` slot, which holds a single logical that indicates whether the table is oriented with taxa as rows (as in the *genefilter* package in Bioconductor~\cite{Bioconductor}) or with taxa as columns (as in *vegan* and *picante* packages). In *phyloseq* methods, as well as its extensions of methods in other packages, the `taxa_are_rows` value is checked to ensure proper orientation of the `otu_table`. A *phyloseq* user is only required to specify the `otu_table` orientation during initialization, following which all handling is internal. 
+The class structure in the *phyloseq* package follows the inheritance diagram shown in Fig.~\ref{fig:phyloseqclasses}. The *phyloseq* package contains multiple inherited classes with incremental complexity so that methods can be extended to handle exactly the data types that are present in a particular object. Currently, *phyloseq* uses 4 core data classes. They are the OTU abundance table (`otu_table`), a table of sample data (`sample_data`), a table of taxonomic descriptors (`taxonomyTable`), and a phylogenetic tree (`"phylo"`, *ape* package). The `otu_table` class can be considered the central data type, as it directly represents the number and type of sequences observed in each sample. `otu_table` extends the numeric matrix class in the `R` base, and has a few additonal feature slots. The most important of these feature slots is the `taxa_are_rows` slot, which holds a single logical that indicates whether the table is oriented with taxa as rows (as in the *genefilter* package in Bioconductor~\cite{Bioconductor}) or with taxa as columns (as in *vegan* and *picante* packages). In *phyloseq* methods, as well as its extensions of methods in other packages, the `taxa_are_rows` value is checked to ensure proper orientation of the `otu_table`. A *phyloseq* user is only required to specify the `otu_table` orientation during initialization, following which all handling is internal. 
 
-The `sample_data` class directly inherits \R's `data.frame` class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a `data.frame` in this context requires that samples/trials are rows, and variables are columns (consistent with *vegan* and other packages). The `taxonomyTable` class directly inherits the `matrix} class, and is oriented such that rows are taxa/OTUs and columns are taxonomic levels (e.g. *Phylum*). 
+The `sample_data` class directly inherits `R`'s `data.frame` class, and thus effectively stores both categorical and numerical data about each sample. The orientation of a `data.frame` in this context requires that samples/trials are rows, and variables are columns (consistent with *vegan* and other packages). The `taxonomyTable` class directly inherits the `matrix} class, and is oriented such that rows are taxa/OTUs and columns are taxonomic levels (e.g. *Phylum*). 
 
 The phyloseq-class can be considered an "experiment-level class" and should contain two or more of the previously-described core data classes. We assume that *phyloseq* users will be interested in analyses that utilize their abundance counts derived from the phylogenetic sequencing data, and so the `phyloseq()` constructor will stop with an error if the arguments do not include an `otu_table`. There are a number of common methods that require either an `otu_table` and `sample_data` combination, or an `otu_table` and phylogenetic tree combination. These methods can operate on instances of the phyloseq-class, and will stop with an error if the required component data is missing.  
 
@@ -489,25 +477,17 @@ The phyloseq-class can be considered an "experiment-level class" and should cont
 
 # Installation
 ## Installation
-Please check the "Installation" tutorial:
-
-http://joey711.github.com/phyloseq/install} 
-
-for help with installation. This is likely to be the first place news and updated information about installation will be posted, as well. Also check out the rest of the phyloseq homepage on GitHub 
-
-(http://joey711.github.com/phyloseq})
-
-as this is the best place to post issues, bug reports, feature requests, contribute code, etc.
+Please check [the phyloseq installation tutorial](http://joey711.github.com/phyloseq/install) for help with installation. This is likely to be the first place news and updated information about installation will be posted, as well. Also check out the rest of [the phyloseq homepage on GitHub](http://joey711.github.io/phyloseq/), as this is the best place to post issues, bug reports, feature requests, contribute code, etc.
 
 ## Installing Parallel Backend
 
 For running parallel implementation of functions/methods in *phyloseq* (e.g. `UniFrac(GlobalPatterns, parallel=TRUE)`), you will need also to install a function for registering a parallel "backend". Only one working parallel backend is needed, but there are several options, and the best one will depend on the details of your particular system. The "doParallel" package is a good place to start. Any one of the following lines from an `R` session will install a backend package.
 
 ```{r, eval=FALSE}
-  install.packages("doParallel")
-  install.packages("doMC")
-  install.packages("doSNOW")
-  install.packages("doMPI")
+install.packages("doParallel")
+install.packages("doMC")
+install.packages("doSNOW")
+install.packages("doMPI")
 ```
 
 ---
