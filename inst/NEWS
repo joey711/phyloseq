@@ -1,5 +1,14 @@
+CHANGES IN VERSION 1.7.2
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Reformat NEWS (this) file.
+
 CHANGES IN VERSION 1.7.1
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- Rmd/HTML-based vignettes. No more Rnw/Sweave/PDF
 
@@ -7,6 +16,8 @@ CHANGES IN VERSION 1.7.1
 
 CHANGES IN VERSION 1.5.23 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- Update dependency from igraph0 to igraph
 
@@ -26,6 +37,8 @@ CHANGES IN VERSION 1.5.23
 CHANGES IN VERSION 1.5.22
 -------------------------
 
+
+
 	- Fix minor bug in `import_mothur`
 
 	- Bug occurs only when sample names are pure integers. One line fix.
@@ -35,7 +48,9 @@ CHANGES IN VERSION 1.5.22
 CHANGES IN VERSION 1.5.21 
 -------------------------
 
-- `plot_richness` / `estimate_richness` updates
+USER-VISIBLE CHANGES
+
+	- `plot_richness` / `estimate_richness` updates
 
 	- Additional alpha-diversity measures added to both functions.
 	
@@ -47,6 +62,8 @@ CHANGES IN VERSION 1.5.21
 
 CHANGES IN VERSION 1.5.20 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- Bugfixes, `read_tree_greengenes`, and a `replace` optional parameter to rarefy_even_depth()
 
@@ -90,6 +107,8 @@ CHANGES IN VERSION 1.5.20
 CHANGES IN VERSION 1.5.19 
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- add gap statistic support for ordination results
 
 	- gapstat_ord() - wrapper function for cluster::clusGap for ordination methods
@@ -104,12 +123,15 @@ CHANGES IN VERSION 1.5.19
 CHANGES IN VERSION 1.5.17 
 -------------------------
 
-- replace URL with new phyloseq article
+USER-VISIBLE CHANGES
 
-http://dx.plos.org/10.1371/journal.pone.0061217
+	- replace URL with new phyloseq article
+		http://dx.plos.org/10.1371/journal.pone.0061217
 
 CHANGES IN VERSION 1.5.16 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- rarefy_even_depth improvements
 	  User-side convenience upgrades to rarefy_even_depth() behavior.
@@ -126,10 +148,14 @@ CHANGES IN VERSION 1.5.16
 CHANGES IN VERSION 1.5.13-15 - build improvements, changed dependencies
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- Shifted RJSONIO dependency to the new "biom" package in CRAN
 
 CHANGES IN VERSION 1.5.11-12 - 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- major feature: interface to microbio.me/qiime data repo
 
@@ -152,20 +178,28 @@ CHANGES IN VERSION 1.5.11-12 -
 CHANGES IN VERSION 1.5.9 - minor bugfix
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- Bugfix for psmelt()/plotting when entire columns in tax_table are empty
 
 CHANGES IN VERSION 1.5.8 - update reshape dependency to reshape2
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- This satisfies [issue 134](https://github.com/joey711/phyloseq/issues/134)
 
 CHANGES IN VERSION 1.5.6-.7 - plot_ordination()
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- plot_ordination() now includes percent variability on axis labels, if possible
 
 CHANGES IN VERSION 1.5.5 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- Update citation info for latest per-reviewed phyloseq article
 
@@ -174,10 +208,14 @@ CHANGES IN VERSION 1.5.5
 CHANGES IN VERSION 1.5.4 - Add taxonomic classification data to mt() output, if available
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- This completes a feature request in [Issue 179](https://github.com/joey711/phyloseq/issues/179)
 
 CHANGES IN VERSION 1.5.3 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- bug fix in plot_heatmap labels derived from ggplot2 change
 
@@ -186,15 +224,21 @@ CHANGES IN VERSION 1.5.3
 CHANGES IN VERSION 1.5.2 
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- bug fix pass extra args to `transform_sample_counts`
 
 CHANGES IN VERSION 1.5.0 
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- Level up to R version 3.0.0
 
 CHANGES IN VERSION 1.3.23 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- bug fix for transform_sample_counts
 
@@ -207,13 +251,18 @@ CHANGES IN VERSION 1.3.23
 CHANGES IN VERSION 1.3.22 
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- additional tests for prun_*() and phyloseq() functions
 
 	- Before releasing v1.3.21 on GitHub:master some gaps in re-order checking were noticed. 
-		These are now caught by new unit tests and phyloseq/prune/etc have been further revised to 		ensure that properly-ordered OTUs are not disordered during a pruning step.
+		These are now caught by new unit tests and phyloseq/prune/etc have been further revised to
+ 		ensure that properly-ordered OTUs are not disordered during a pruning step.
 
 CHANGES IN VERSION 1.3.21 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- accessor efficiency
 	
@@ -224,6 +273,8 @@ CHANGES IN VERSION 1.3.21
 
 CHANGES IN VERSION 1.3.20 
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- reference sequence class update.
 
@@ -264,9 +315,10 @@ CHANGES IN VERSION 1.3.20
 	- DRY (and hopefully speed) improvements to merge_taxa(). 
 		Additional speed improvements may be possible for tip_glom, tax_glom in later revisions
 
-
 CHANGES IN VERSION 1.3.14
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- Shortened/replaced examples in the longest-running doc examples.
 	  This substantially reduces the time it takes to run package checks.
@@ -283,493 +335,824 @@ CHANGES IN VERSION 1.3.14
 CHANGES IN VERSION 1.3.13
 -------------------------
 
-- Fixed unofficial warning from missing (unregistered) classes 
-  of ordination objects. Stems from the internal get_eigenvalue
-  being defined as S4 generic instead of S3.
-Solves the following logged issue:
-https://github.com/joey711/phyloseq/issues/166
+USER-VISIBLE CHANGES
 
-- Name of get_eigenvalue generic replaced with extract_eigenvalue,
-  in addition to re-defining as S3 generic. 
+	- Fixed unofficial warning from missing (unregistered) classes 
+	  of ordination objects. Stems from the internal get_eigenvalue
+  	  being defined as S4 generic instead of S3.
+	  Solves the following logged issue:
+	  https://github.com/joey711/phyloseq/issues/166
 
-- Fixed ggplot2 warning from over-specified "bins" in the
-  plot_scree bar plot. Changed to stat="identity", solves problem
+	- Name of get_eigenvalue generic replaced with extract_eigenvalue,
+	  in addition to re-defining as S3 generic. 
 
-- Fixed warning when eigenvalues get (slightly) negative. They
-  are now set to 0.0 for the purposes of plotting in plot_scree.
+	- Fixed ggplot2 warning from over-specified "bins" in the
+	  plot_scree bar plot. Changed to stat="identity", solves problem
+
+	- Fixed warning when eigenvalues get (slightly) negative. They
+	  are now set to 0.0 for the purposes of plotting in plot_scree.
 
 CHANGES IN VERSION 1.3.12
 -------------------------
-- Fixed a parsing issue for some QIIME-produced .biom files
-  that had leading space characters. Issue further described at
-https://github.com/joey711/phyloseq/issues/171
-  Fixed such that any number of leading/lagging space characters
-  are removed from taxonomic classification entries
 
-- Fixed build issue on some windows machines derived from problem
-  with figure files having colons in the filename.
+USER-VISIBLE CHANGES
+
+	- Fixed a parsing issue for some QIIME-produced .biom files
+	  that had leading space characters. Issue further described at
+	  https://github.com/joey711/phyloseq/issues/171
+	  Fixed such that any number of leading/lagging space characters
+	  are removed from taxonomic classification entries
+
+	- Fixed build issue on some windows machines derived from problem
+	  with figure files having colons in the filename.
 
 CHANGES IN VERSION 1.3.11
 -------------------------
-- Added tree option for import_biom() importer so that users can avoid
-  using merge_phyloseq() if their files are otherwise standard vanilla
-- Address Issue 169 and 167
-https://github.com/joey711/phyloseq/issues/169
-https://github.com/joey711/phyloseq/issues/167
+
+USER-VISIBLE CHANGES
+
+	- Added tree option for import_biom() importer so that users can avoid
+	  using merge_phyloseq() if their files are otherwise standard vanilla
+
+	- Address Issue 169 and 167
+	  https://github.com/joey711/phyloseq/issues/169
+	  https://github.com/joey711/phyloseq/issues/167
 
 CHANGES IN VERSION 1.3.10
 -------------------------
-- Added support for Shannon/Simpson alpha-diversity indices in plot_richness
-  https://github.com/joey711/phyloseq/issues/164
 
-- All sample_data now embedded in plot_richness output graphic, in case want 
-  to use other covariates in additional layers not originally specified.
-  For instance, if you wanted to include geom_text(label=addLayer1).
-  See plot_richness online tutorial.
+USER-VISIBLE CHANGES
+
+	- Added support for Shannon/Simpson alpha-diversity indices in plot_richness
+	  https://github.com/joey711/phyloseq/issues/164
+
+	- All sample_data now embedded in plot_richness output graphic, in case want 
+	  to use other covariates in additional layers not originally specified.
+	  For instance, if you wanted to include geom_text(label=addLayer1).
+	  See plot_richness online tutorial.
 
 CHANGES IN VERSION 1.3.9
 -------------------------
-- Added ability to add node labels, bootstrap values to tree graphics
-  generated by plot_tree.
-- The labeling itself is opened-up as a user-provided function to facilitate
-  custom node-labeling needs (including symbols and other ggplot2 geoms)
-- Commonly-needed functions are provided as newly-documented exported 
-  functions in the package:
-nodeplotdefault - adds whatever is in the node label to the graphic
-nodeplotboot - Adds the labels as bootstrap values, coercing/rounding as needed
-nodeplotblank - Ensures that node labels are not added.
-- These new functions can be used to give valid arguments to the new
-  `nodelabf` argument in plot_tree().
-- Some other re-organization to plot_tree to show more code in 
-  the main plot_tree function.
+
+USER-VISIBLE CHANGES
+
+	- Added ability to add node labels, bootstrap values to tree graphics
+	  generated by plot_tree.
+
+	- The labeling itself is opened-up as a user-provided function to facilitate
+	  custom node-labeling needs (including symbols and other ggplot2 geoms)
+
+	- Commonly-needed functions are provided as newly-documented exported 
+	  functions in the package:
+		nodeplotdefault - adds whatever is in the node label to the graphic
+		nodeplotboot - Adds the labels as bootstrap values, coercing/rounding as needed
+		nodeplotblank - Ensures that node labels are not added.
+
+	- These new functions can be used to give valid arguments to the new
+	  `nodelabf` argument in plot_tree().
+
+	- Some other re-organization to plot_tree to show more code in 
+	  the main plot_tree function.
 
 CHANGES IN VERSION 1.3.8
 -------------------------
-- Fix bug in plot_tree graphic if sample names start with a number
-- This fixes https://github.com/joey711/phyloseq/issues/149
-- Also added fill argument to default aesthetic map definition, useful if fillable shapes defined in subsequent layers
+
+USER-VISIBLE CHANGES
+
+	- Fix bug in plot_tree graphic if sample names start with a number
+
+	- This fixes https://github.com/joey711/phyloseq/issues/149
+
+	- Also added fill argument to default aesthetic map definition, useful if fillable shapes defined in subsequent layers
 
 CHANGES IN VERSION 1.3.7
 -------------------------
-- Revisions to plot_tree to improve formatting, organization, "ladderize"
-	- contributed by Gregory Jordan
-- Color scale option removed from original pull request
+
+USER-VISIBLE CHANGES
+
+	- Revisions to plot_tree to improve formatting, organization
+
+	- "ladderize" contributed by Gregory Jordan
+
+	- Color scale option removed from original pull request
+	
 	- already supported as core ggplot2 functionality through layering
-- Added links and roxygen2-header revisions for proper doc formatting
-- Fixed bug in which alternative size-variables still labeled as "abundance" in legend.
+
+	- Added links and roxygen2-header revisions for proper doc formatting
+
+	- Fixed bug in which alternative size-variables still labeled as "abundance" in legend.
 
 CHANGES IN VERSION 1.3.6
 -------------------------
-- Updated basics vignette
+
+USER-VISIBLE CHANGES
+
+	- Updated basics vignette
 
 CHANGES IN VERSION 1.3.5
 -------------------------
-- Updated README.md to point to phyloseq home page (instead of redundant display of content). 
-- Also added README.html
+
+USER-VISIBLE CHANGES
+
+	- Updated README.md to point to phyloseq home page (instead of redundant display of content). 
+	
+	- Also added README.html
 
 CHANGES IN VERSION 1.3.4
 -------------------------
-- Updated tests, examples for merge_samples()
-- Updated some dependency min versions
-- First 2013 commit
+
+USER-VISIBLE CHANGES
+
+	- Updated tests, examples for merge_samples()
+
+	- Updated some dependency min versions
+
+	- First 2013 commit
 
 CHANGES IN VERSION 1.3.3
 -------------------------
-- updates to import_qiime()
-- modular building of taxonomy table in import_qiime() and import_biom()
+
+USER-VISIBLE CHANGES
+
+	- updates to import_qiime()
+
+	- modular building of taxonomy table in import_qiime() and import_biom()
 
 CHANGES IN VERSION 1.3.2
 -------------------------
-- import_biom() fixes.
+
+USER-VISIBLE CHANGES
+
+	- import_biom() fixes.
+
 	- More robust data handling for taxonomy table
+
 	- Flexibility: Can take custom parsing function for taxonomy vectors
+
 	- tests added for new parsing functions
-		- parse_taxonomy_default
-		- parse_taxonomy_greengenes
+		parse_taxonomy_default
+		parse_taxonomy_greengenes
 
 CHANGES IN VERSION 1.3.1
 -------------------------
-- New function: plot_bar() that is simpler more reliable than plot_taxa_bar.
-- plot_taxa_bar now deprecated.
+
+USER-VISIBLE CHANGES
+
+	- New function: plot_bar() that is simpler more reliable than plot_taxa_bar.
+
+	- plot_taxa_bar now deprecated.
+	
 	- labeled deprecated in title doc
+
 	- replaced examples in vignette with plot_bar examples
 
 CHANGES IN VERSION 1.3.0
 -------------------------
-- Level up github devel version number to reflect devel order/status relative to latest BioC release
+
+USER-VISIBLE CHANGES
+
+	- Level up github devel version number to reflect devel order/status relative to latest BioC release
 
 
 CHANGES IN VERSION 1.1.58
 -------------------------
-- Fixed a bug in import_qiime in which import fails if there are any empty taxonomy string fields in a file that otherwise has some taxonomic assignments. Now the taxonomy entries for that OTU (row in the taxonomy table) are left all NA_character_ by default.
+
+USER-VISIBLE CHANGES
+
+	- Fixed a bug in import_qiime in which import fails if there are any empty taxonomy 
+		string fields in a file that otherwise has some taxonomic assignments. 
+		Now the taxonomy entries for that OTU (row in the taxonomy table) are left all NA_character_ by default.
 
 CHANGES IN VERSION 1.1.57
 -------------------------
-- Added automatic removal of single and double quotes from phylogenetic tree tip names provided to the phyloseq-constructor. This should help avoid problems importing data that includes a tree, for the cases where the taxa/OTU names don't match because of these extra quotation marks. Added directly into the phyloseq() constructor, so that it doesn't matter how/where the tree was imported/add.
-- Removal of quotes is only initiated when OTU/taxa names fail to match AT ALL
-(intersection is length zero) between component taxa names. 
-- This feature needs to be added to unit tests as well.
+
+USER-VISIBLE CHANGES
+
+	- Added automatic removal of single and double quotes from phylogenetic tree tip names provided to the phyloseq-constructor.
+		This should help avoid problems
+	 	importing data that includes a tree, for the cases where the taxa/OTU names don't match because of these extra quotation marks. Added directly into the 
+		phyloseq() constructor, so that it doesn't matter how/where the tree was imported/add.
+
+	- Removal of quotes is only initiated when OTU/taxa names fail to match AT ALL
+		(intersection is length zero) between component taxa names. 
+
+	- This feature needs to be added to unit tests as well.
 
 CHANGES IN VERSION 1.1.55
 -------------------------
-- Added "title" argument to plot_scree() and plot_ordination(…, type="scree"), for consistency.
+
+USER-VISIBLE CHANGES
+
+	- Added "title" argument to plot_scree() and plot_ordination(…, type="scree"), for consistency.
 
 CHANGES IN VERSION 1.1.54
 -------------------------
-- Changed "species" label in different plot_ordination() graphics to "taxa"
-- Fixed an issue with a default parameter in a related internal function
-	(changed "samples" to "sites" for vegan compatibility).
+
+USER-VISIBLE CHANGES
+
+	- Changed "species" label in different plot_ordination() graphics to "taxa"
+
+	- Fixed an issue with a default parameter in a related internal function
+		(changed "samples" to "sites" for vegan compatibility).
 
 CHANGES IN VERSION 1.1.53
 -------------------------
-- Fixed additional title issues in plot_network and plot_richness
+
+USER-VISIBLE CHANGES
+
+	- Fixed additional title issues in plot_network and plot_richness
 
 CHANGES IN VERSION 1.1.52
 -------------------------
-- Added plot_scree() function for making eigenvalue "scree" plots in ggplot2
-- Added corresponding type="scree" option to plot_ordination, for convenience.
+
+USER-VISIBLE CHANGES
+
+	- Added plot_scree() function for making eigenvalue "scree" plots in ggplot2
+
+	- Added corresponding type="scree" option to plot_ordination, for convenience.
 
 CHANGES IN VERSION 1.1.51
 -------------------------
-- Returned to "Imports:" dependency for ggplot2 following a ggplot2 bug fix
+
+USER-VISIBLE CHANGES
+
+	- Returned to "Imports:" dependency for ggplot2 following a ggplot2 bug fix
 
 CHANGES IN VERSION 1.1.50
 -------------------------
-- Fixed several compatibility issues to support latest version of ggplot2 (0.9.2).
-- Also changes plot_richness_estimates() to plot_richness().
+
+USER-VISIBLE CHANGES
+
+	- Fixed several compatibility issues to support latest version of ggplot2 (0.9.2).
+
+	- Also changes plot_richness_estimates() to plot_richness().
 
 CHANGES IN VERSION 1.1.45
 -------------------------
-- Backward compatibility for import_qiime_sampleData,
-  now superseded by import_qiime_sample_data
-- Added a functioning example based on the GlobalPatterns
-  example sample-map file included in the package extdata.
+
+USER-VISIBLE CHANGES
+
+	- Backward compatibility for import_qiime_sampleData,
+	  now superseded by import_qiime_sample_data
+
+	- Added a functioning example based on the GlobalPatterns
+	  example sample-map file included in the package extdata.
 
 CHANGES IN VERSION 1.1.44
 -------------------------
-- Fixed minor bug in tax_glom function.
-Thanks to Katie Shelef for the bug report. Bug only affected tax_glom behavior when the right-most rank was specified as the position for merging.
+
+USER-VISIBLE CHANGES
+
+	- Fixed minor bug in tax_glom function.
+	  Thanks to Katie Shelef for the bug report. Bug only affected tax_glom behavior when the
+	  right-most rank was specified as the position for merging.
 
 CHANGES IN VERSION 1.1.43
 -------------------------
-- fixed distance() issue from species/taxa replacement for type argument.
+
+USER-VISIBLE CHANGES
+
+	- fixed distance() issue from species/taxa replacement for type argument.
 
 CHANGES IN VERSION 1.1.42
 -------------------------
-- fixed make_network/plot_network issue from species/taxa replacement for type argument.
+
+USER-VISIBLE CHANGES
+
+	- fixed make_network/plot_network issue from species/taxa replacement for type argument.
 
 CHANGES IN VERSION 1.1.41
 -------------------------
-- Fixed documentation for `prune_taxa` and `prune_samples`
-- Updated `prune_samples` method to allow for logical vectors.
-- Fixed `prune_taxa` so that it properly fails with a message if the taxa argument is a logical of wrong length.
-   There was some potential (and no warning) for unpredictable vector-recycling
-   with short vectors in the old implementation.
+
+USER-VISIBLE CHANGES
+
+	- Fixed documentation for `prune_taxa` and `prune_samples`
+
+	- Updated `prune_samples` method to allow for logical vectors.
+
+	- Fixed `prune_taxa` so that it properly fails with a message if the taxa argument is a logical of wrong length.
+	   There was some potential (and no warning) for unpredictable vector-recycling
+	   with short vectors in the old implementation.
 
 CHANGES IN VERSION 1.1.40
 -------------------------
-## Huge Update and Renaming Event.
-- Made all functions use an *underscore* for English word delimiter, if they were using an abbreviation. 
-- Replaced "species" in all function names with "taxa". 
-- These changes are all backward compatible, for now, so your old code should work. Let me know if it doesn't and I will quickly make the adjustment. This will remain true through the next official release,
-but functional references to "species" will not be supported afterward,
-except in the occasions where you actually mean taxonomic species, like `tax_glom(x, "species")`.
+
+USER-VISIBLE CHANGES
+
+	- Huge Update and Renaming Event.
+
+	- Made all functions use an *underscore* for English word delimiter, if they were using an abbreviation. 
+
+	- Replaced "species" in all function names with "taxa". 
+
+	- These changes are all backward compatible, for now, so your old code should work. 
+		Let me know if it doesn't and I will quickly make the adjustment. This will remain true through the next official release,
+		but functional references to "species" will not be supported afterward,
+		except in the occasions where you actually mean taxonomic species, like `tax_glom(x, "species")`.
 
 CHANGES IN VERSION 1.1.33
 -------------------------
-Revise taxglom() such that it handles phyloseq and taxonomyTable classes,
-throws warning otherwise. It should not take a manually-produced character
-vector, as this is roughly equivalent to functionality supported in other method,
-especially prune_species()/merge_species().
-Also added unit-tests and executable examples for taxglom().
-Got rid of taxglom.internal, incorporated directly into taxglom().
-taxglom() is no longer an S4-method, and 
-doesn't need to be now that the character-vector argument option is omitted,
-with S4-class handling delegated to merge_species().
-Updated "taxTab<-" to be S4 assignment, clearer handling of taxonomy Table assignments,
-especially useful for taxglom.
+
+USER-VISIBLE CHANGES
+
+	- Revise taxglom() such that it handles phyloseq and taxonomyTable classes,
+		throws warning otherwise. It should not take a manually-produced character
+		vector, as this is roughly equivalent to functionality supported in other method,
+		especially prune_species()/merge_species().
+
+	- Also added unit-tests and executable examples for taxglom().
+		Got rid of taxglom.internal, incorporated directly into taxglom().
+		taxglom() is no longer an S4-method, and 
+		doesn't need to be now that the character-vector argument option is omitted,
+		with S4-class handling delegated to merge_species().
+		Updated "taxTab<-" to be S4 assignment, clearer handling of taxonomy Table assignments,
+		especially useful for taxglom.
 
 CHANGES IN VERSION 1.1.29
 -------------------------
-Add unit tests and example files for import_biom (as well as import("biom",...) ).
+
+USER-VISIBLE CHANGES
+
+	- Add unit tests and example files for import_biom (as well as import("biom",...) ).
 
 CHANGES IN VERSION 1.1.28
 -------------------------
-Added rarefy_even_depth() function for random subsampling of microbiome samples to the same number of reads. Default uses the minimum total reads among the samples in the dataset. This is based on the core "sample" function, which can have its random number generator fixed by set.seed for reproducibility.
+
+USER-VISIBLE CHANGES
+
+	- Added rarefy_even_depth() function for random subsampling of microbiome samples to the same number of reads. 
+		Default uses the minimum total reads among the samples in the dataset. This is based on the core "sample" function, 
+		which can have its random number generator fixed by set.seed for reproducibility.
 
 CHANGES IN VERSION 1.1.27
 -------------------------
-Fix bug in plot_ordination that caused an error rather than produce unannotated plots when sampleData absent in the input.
+
+USER-VISIBLE CHANGES
+
+	- Fix bug in plot_ordination that caused an error rather than produce unannotated plots when sampleData absent in the input.
 
 CHANGES IN VERSION 1.1.23-26
 -------------------------
-Added unit tests and bugfixes
+
+USER-VISIBLE CHANGES
+
+	- Added unit tests and bugfixes
 
 CHANGES IN VERSION 1.1.19-22
 -------------------------
-Improving import_qiime() importer to handle large datasets,
-like the HMPv35 dataset, for example, while also providing useful status messages
-during non-trivial imports that might take 10 minutes or more to complete.
+
+USER-VISIBLE CHANGES
+
+	- Improving import_qiime() importer to handle large datasets,
+		like the HMPv35 dataset, for example, while also providing useful status messages
+		during non-trivial imports that might take 10 minutes or more to complete.
 
 CHANGES IN VERSION 1.1.18
 -------------------------
-Added replicate labels as a "Sample" factor in the soilrep dataset.
+
+USER-VISIBLE CHANGES
+
+	- Added replicate labels as a "Sample" factor in the soilrep dataset.
 
 CHANGES IN VERSION 1.1.17
 -------------------------
-Fix possible bug that results from the latest version (0.6+) of igraph not being backward compatible. A stable igraph0 package is available on CRAN as a stop-gap, and so all igraph dependencies were migrated to "igraph0" until the phyloseq-source can be updated to match the igraph latest.
+
+USER-VISIBLE CHANGES
+
+	- Fix possible bug that results from the latest version (0.6+) of igraph not being backward compatible. 
+		A stable igraph0 package is available on CRAN as a stop-gap, and so all igraph dependencies were migrated
+		to "igraph0" until the phyloseq-source can be updated to match the igraph latest.
 
 CHANGES IN VERSION 1.1.15
 -------------------------
-plot_heatmap: Added default (but adjustable) threshold to omit taxa/sample labels
+
+USER-VISIBLE CHANGES
+
+	- plot_heatmap: Added default (but adjustable) threshold to omit taxa/sample labels
 
 CHANGES IN VERSION 1.1.14
 -------------------------
-Update import_qiime() function to import latest non-BIOM qiime output files.
-	Also added check for presence of taxonomy information (consensus lineage).
+
+USER-VISIBLE CHANGES
+
+	- Update import_qiime() function to import latest non-BIOM qiime output files.
+		Also added check for presence of taxonomy information (consensus lineage).
 
 CHANGES IN VERSION 1.1.10
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Add plot_heatmap() function, for easy flexible heat maps built with ggplot2
 
 CHANGES IN VERSION 1.1.8-9
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Fix bug for some variants of new BIOM format
+
 	- Add import_RDP_otu() import function for new RDP pipeline export format
 
 CHANGES IN VERSION 1.1.7
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Removed the old plot_tree_phyloseq() function, in favor of the new ggplot2-based plot_tree()
+
 	- Uncommented / tested formal examples in documentation of plot-functions
+
 	- Updated variable names and doc for the plot_taxa_bar() function
 
 CHANGES IN VERSION 1.1.6
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Update vignette with plot_tree() example, replacing the 
-   old base-graphics function, plot_tree_phyloseq().
+	   old base-graphics function, plot_tree_phyloseq().
+
 	- Fix bug in legend for trees with size mapped to abundance
 
 CHANGES IN VERSION 1.1.5
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Add initial version of tree_plot(), built with ggplot2
+
 	- Adds several internal functions borrowed from devel version of ggphylo
 
 CHANGES IN VERSION 1.1.4
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Add errorIfNULL option to auxiliary accessors
-  (e.g. sample.variables(), rank.names())
+	  (e.g. sample.variables(), rank.names())
 
 CHANGES IN VERSION 1.1.1-3
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- R version updated to match Bioconductor, R-2.15.0+
+
 	- ape-package version updated to 3.0+
+
 	- ape-package now import dependency
+
 	- ggplot2-package version updated to 0.9.0+
+
 	- ggplot2-package now import dependency
 
 CHANGES IN VERSION 0.99.48
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Updated README.md
 
 CHANGES IN VERSION 0.99.47
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Add support for ordinate() to take dist-object instead of distance-method string.
+
 	- Update the documentation for ordinate() to reflect change.
+
 	- Updated README.md to describe new tools, distance() and ordinate()
+
 	- Update JSD documentation.
 
 CHANGES IN VERSION 0.99.46
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added support and documentation for Jensen-Shannon Divergence to distance().
+
 	- Some updates to distance() function and its documentation.
 
 CHANGES IN VERSION 0.99.45
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Completely remove vegdist documentation from phyloseq by omitting all roxygen2
-  headers except for 
-  #' keywords internal
-  This finally fixes it, without build warnings/errors, once and for all.
+	  headers except for #' keywords internal
+
+	-  This finally fixes it, without build warnings/errors, once and for all.
 
 CHANGES IN VERSION 0.99.44
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Make the phyloseq::vegdist() wrapper an internal function. Documentation updated as well.
-  This is a solution to Issue 87
-  https://github.com/joey711/phyloseq/issues/87
+	  This is a solution to Issue 87
+	  https://github.com/joey711/phyloseq/issues/87
+
 	- Remove rda.phyloseq and cca.phyloseq from exported methods.
-  Documentation had already been removed when these were first attempted to be converted
-  to internal methods in CHANGES IN VERSION 0.99.42
+	  Documentation had already been removed when these were first attempted to be converted
+	  to internal methods in CHANGES IN VERSION 0.99.42
+
 	- Modify make_sample_network to use the new distance() function, and be able to pass on
-  additional parameters to distance().
+	  additional parameters to distance().
+
 	- Re-order arguments to make_sample_network to better represent the stability of defaults.
+
 	- Removed redundant parameters from make_sample_network(). Transformations to abundance
-  tables should be performed upstream using phyloseq tools, not embedded in this function.
+	  tables should be performed upstream using phyloseq tools, not embedded in this function.
+
 	- Modify vignettes to reflect these changes.
+
 	- Rebuild vignette.
+
 	- Update import() documentation to reflect support for BIOM format, import_biom() function.
 
 CHANGES IN VERSION 0.99.43
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Revise component assignment operators, e.g. "sampleData(physeq)<-" to coerce/access
-  from more diverse objects based on context. Documentation for these operators updated.
-  This is a more general solution to Issue 68
-  https://github.com/joey711/phyloseq/issues/68
+	  from more diverse objects based on context. Documentation for these operators updated.
+	  This is a more general solution to Issue 68
+	  https://github.com/joey711/phyloseq/issues/68
 
 CHANGES IN VERSION 0.99.42
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- purge rda.phyloseq and cca.phyloseq from documentation, vignettes. Internal functions.
+
 	- analysis vignette revisions
 
 CHANGES IN VERSION 0.99.41
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added ordinate() function, general ordination wrapper.
 
 CHANGES IN VERSION 0.99.40
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Fixed case issues with source filenames. 
-  Required multiple commits, break in versioning for source files that had improper letter case (e.g. ".r")
+	  Required multiple commits, break in versioning for source files that had improper letter case (e.g. ".r")
 
 CHANGES IN VERSION 0.99.37 - 0.99.39
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Vignette updates.
 
 CHANGES IN VERSION 0.99.36
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added general distance calculation wrapper, distance()
+
 	- Consolidated it with unifrac.R code in a new "distance-methods.R" source file.
 
 CHANGES IN VERSION 0.99.35
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added tool to retain user-defined subset of points from an ordination, subset_ord_plot
+
 	- Updates to vignette
+
 	- Remove a poorly-documented, unpublished example dataset, ex1 -> and all references to it in documentation
 
 CHANGES IN VERSION 0.99.34
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Updates to vignette
 
 CHANGES IN VERSION 0.99.33
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Allow color specification for "biplot" type in plot_ordination()
+
 	- bug fix for certain combinations of biplot options.
 
 CHANGES IN VERSION 0.99.32
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Remove plot_ordination_biplot() from phyloseq -> replaced by: plot_ordination()
-	-  |-> also removed from vignette.
+
+	- pipes "|->" also removed from vignette.
+
 	- Remove calcplot(). -> Will be replaced by pipeline_() methods
+
 	- plot_ordination() shown in vignette for "species" plot type.
+
 	- Fix - Allow flexible axis labels for plot_ordination()
 
 CHANGES IN VERSION 0.99.31
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Aesthetic fixes in plot_ordination()
+
 	- Remove plot_ordination_samples() -> redundant, covered by plot_ordination().
 
 CHANGES IN VERSION 0.99.30
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added plot_ordination -> general ordination plotting function
 
 CHANGES IN VERSION 0.99.29
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added first-draft of analysis vignette to package
+
 	- Total package-space and build/check times tested
 
 CHANGES IN VERSION 0.99.28
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Fixed bug when specifying alternative axes in plot_ordination_samples()
 
 CHANGES IN VERSION 0.99.27
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added DPCoA() function for Double Principle Coordinate Analysis, relies heavily on ade4.
+
 	- Added ade4 dependency. Some masking, but no errors apparent.
+
 	- Added dpcoa extension for scores()
+
 	- minor bugfix in plot_ordination_biplot().
 
 CHANGES IN VERSION 0.99.26
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Add plot_ordination_samples() for convenient ordination plotting
+
 	- Renamed plot_ordination_phyloseq to more precise, plot_ordination_biplot()
+
 	- Added extension to vegan::scores for ape:pcoa results, scores.pcoa()
 
 CHANGES IN VERSION 0.99.25
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Fix build warning from duplicate import in namespace
+
 	- Update README.md
 
 CHANGES IN VERSION 0.99.24
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Advanced network/graph plotting/visualization wrappers: make_sample_network(), plot_sample_network()
+
 	- Advanced alpha diversity wrappers: plot_richness_estimates(), estimate_richness()
+
 	- Added taxafilter() function for even more convenient filtering of species/taxa
+
 	- Added reshape dependency for explicit use of melt() function.
 
 CHANGES IN VERSION 0.99.23
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added a rooted tree to "GlobalPatterns" dataset
+
 	- Allow multi-class tests with mt()
 
 CHANGES IN VERSION 0.99.20
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added "GlobalPatterns" dataset, and some other minor improvements
+
 	- added "GlobalPatterns" dataset, with doc and some analysis
-  examples. More examples will be added to the vignette.
+	  examples. More examples will be added to the vignette.
+
 	- add getVariable accessor function, for streamlining access
-  to values/vectors/factors/etc of the variates contained in
-  the sampleData component
+	  to values/vectors/factors/etc of the variates contained in
+	  the sampleData component
+
 	- revise documentation about parallelization of import_biom()
+
 	- revise documentation for enterotype dataset
 
 CHANGES IN VERSION 0.99.19
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- fixed a bug in general import() function in which it properly processed import command, but then failed to return result.
 
 CHANGES IN VERSION 0.99.18
 -------------------------
+
+USER-VISIBLE CHANGES
+
 	- Added import_biom() function to import BIOM format OTU-clustered data / metadata
+
 	- Added (direct) dependency for plyr, as well as RJSONIO 
 
-
-CHANGES IN VERSION 0.4.2 - 0.4.7
+CHANGES IN VERSION 0.4.2-7
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- Improvements to import_mothur() via import_mothur_otulist().
+
 	- merge_samples() function added, in preparation for hypergeometric (fisher.test) test wrapper.
+
 	- Fixed bug in merge_phyloseq() for certain combinations of objects. 
+
 	- Various other fixes and improvements.
 
 CHANGES IN VERSION 0.4.1
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- First official submission to Bioconductor
+
 	- Includes many build-fixes, bug-fixes
+
 	- Final tweaks to conform to Bioconductor guidelines
 
 CHANGES IN VERSION 0.3
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- Added Importers for mothur, RDP-pipeline, and PyroTagger
+
 	- Lots of new plotting and analysis support
+
 	- Parallelized UniFrac calculations using foreach package
+
 	- Some improvements to the class inheritance structure to simplify method extension and future development.
+
 	- Function-level documentation
+
 	- Vignette-level documentation
+
 	- Package dependencies achieved via import for all packages with a namespace. Depends (full load) otherwise.
 
 CHANGES IN VERSION 0.2.4
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- Added ordination and plotting pipeline, calcplot() and plot.ordination.phyloseq()
+
 	- All trees converted to phylo4 by default. Support for phyla achieved by coercion to phylo4.
 
 CHANGES IN VERSION 0.2
 -------------------------
+
+USER-VISIBLE CHANGES
 
 	- Modifications for proper build, and bug tests.
 
 CHANGES IN VERSION 0.1
 -------------------------
 
+USER-VISIBLE CHANGES
+
 	- basic data structure in place.
+
 	- some support for phylo4 objects
+
 	- import_qiime(): A Qiime input wrapper
 
