@@ -1,0 +1,82 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{phyloseq and DESeq2 on Colorectal Cancer Data}
+-->
+`r library("knitr")`
+`r opts_chunk$set(cache=FALSE, fig.width=9)`
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+
+# Example using Negative Binomial in Microbiome Differential Abundance Testing
+
+In this example I use the publicly available data from a study on colorectal cancer:
+
+[Genomic analysis identifies association of Fusobacterium with colorectal carcinoma](http://genome.cshlp.org/content/22/2/292.long).
+Kostic, A. D., Gevers, D., Pedamallu, C. S., Michaud, M., Duke, F., Earl, A. M., et al. (2012). *Genome research*, 22(2), 292–298. 
+
+As a side-note, this work was published ahead of print in [Genome Research](http://genome.cshlp.org/) alongside a highly-related article from a separate group of researchers (long-live reproducible observations!): [Fusobacterium nucleatum infection is prevalent in human colorectal carcinoma](http://genome.cshlp.org/content/22/2/299.long). In case you are interested. For the purposes of example, however, we will stick to the data from the former study, with data available at the [microbio.me/qiime](http://www.microbio.me/qiime/) server.
+
+Study ID:  `1457`
+
+Project Name:	`Kostic_colorectal_cancer_fusobacterium`
+
+Study Abstract:	The tumor microenvironment of colorectal carcinoma is a complex community of genomically altered cancer cells, nonneoplastic cells, and a diverse collection of microorganisms. Each of these components may contribute to carcino genesis; however, the role of the microbiota is the least well understood. We have characterized the composition of the microbiota in colorectal carcinoma using whole genome sequences from nine tumor/normal pairs. Fusobacterium sequences were enriched in carcinomas, confirmed by quantitative PCR and 16S rDNA sequence analysis of 95 carcinoma/normal DNA pairs, while the Bacteroidetes and Firmicutes phyla were depleted in tumors. Fusobacteria were also visualized within colorectal tumors using FISH. These findings reveal alterations in the colorectal cancer microbiota; however, the precise role of Fusobacteria in colorectal carcinoma pathogenesis requires further investigation.
+
+## Import data with phyloseq, convert to DESeq2
+
+Start by loading phyloseq.
+
+```{r load-packages}
+library("phyloseq")
+packageVersion("phyloseq")
+```
+
+Defined file path, and import the published OTU count data into R.
+
+```{r filepath}
+filepath = system.file("extdata", "study_1457_split_library_seqs_and_mapping.zip", package="phyloseq")
+kostic = microbio_me_qiime("~/Downloads/study_1457_split_library_seqs_and_mapping.zip")
+```
+
+Here I had to use a relative file path so that this example works on all systems that have phyloseq installed. In practice, your file path will look like this (if you've downloaded the data ahead of time):
+
+```{r example-path-local, eval=FALSE}
+filepath = "~/Downloads/study_1457_split_library_seqs_and_mapping.zip"
+kostic = microbio_me_qiime(filepath)
+```
+
+Or like this (if you're accessing data directly from the microbio.me/qiime server directly):
+
+```{r example-path-remote, eval=FALSE}
+kostic = microbio_me_qiime(1457)
+```
+
+
+## Convert to DESeq2's DESeqDataSet class
+
+Define the major sample covariate, `DIAGNOSIS`, as the study design. The focus of this study was to compare the microbiomes of pairs of healthy and cancerous tissues.
+
+```{r load-stuff}
+kostic
+head(sample_data(kostic)$DIAGNOSIS, 25)
+diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
+```
+
+Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
+
+```{r deseq2}
+library("DESeq2")
+packageVersion("DESeq2")
+diagdds = DESeq(diagdds)#, fitType="local")
+res = results(diagdds)
+res = res[order(res$padj, na.last=NA), ]
+alpha = 0.01
+sigtab = res[(res$padj < alpha), ]
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(kostic)[rownames(sigtab), ], "matrix"))
+```
+
+Let's look at just the significant OTUs that were enriched in the carcinoma tissue
+
+```{r table}
+posigtab = sigtab[sigtab[, "log2FoldChange"] > 0, ]
+posigtab
+```

@@ -1,3 +1,15 @@
+CHANGES IN VERSION 1.7.3
+-------------------------
+
+NEW FEATURES
+
+	- Added phyloseq_to_deseq2() wrapper function and examples for computing
+	  multiple OTU tests using Negative Binomial model and GLM (DESeq2).
+
+USER-VISIBLE CHANGES
+
+	- Also added new .Rmd vignette for using DESeq, with colorectal carcinoma data
+
 CHANGES IN VERSION 1.7.2
 -------------------------
 
