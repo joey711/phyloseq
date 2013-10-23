@@ -25,7 +25,7 @@ Study Abstract:	The tumor microenvironment of colorectal carcinoma is a complex 
 
 Start by loading phyloseq.
 
-```{r load-packages}
+```{r load-phyloseq, message=FALSE, warning=FALSE}
 library("phyloseq")
 packageVersion("phyloseq")
 ```
@@ -53,30 +53,56 @@ kostic = microbio_me_qiime(1457)
 
 ## Convert to DESeq2's DESeqDataSet class
 
-Define the major sample covariate, `DIAGNOSIS`, as the study design. The focus of this study was to compare the microbiomes of pairs of healthy and cancerous tissues.
+In this example I'm using the major sample covariate, `DIAGNOSIS`, as the study design factor. The focus of this study was to compare the microbiomes of pairs of healthy and cancerous tissues, so this makes sense. Your study could have a more complex or nested design, and you should think carefully about the study design formula, because this is critical to the test results and their meaning. You might even need to define a new factor if none of the variables in your current table appropriately represent your study's design. See [the DESeq2 home page](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html) for more details. 
 
-```{r load-stuff}
+Here is the summary of the data variable `kostic` that we are about to use, as well as the first few entries of the `DIAGNOSIS` factor.
+```{r show-variables}
 kostic
 head(sample_data(kostic)$DIAGNOSIS, 25)
-diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
 ```
 
-Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
+### DESeq2 conversion and call
 
-```{r deseq2}
+First load DESeq2.
+
+```{r deseq2, message=FALSE, warning=FALSE}
 library("DESeq2")
 packageVersion("DESeq2")
-diagdds = DESeq(diagdds)#, fitType="local")
+```
+
+The following two lines actually do all the complicated DESeq2 work. The function `phyloseq_to_deseq2` converts your phyloseq-format microbiome data into a `DESeqDataSet` with dispersions estimated, using the experimental design formula, also shown (the `~DIAGNOSIS` term). The `DESeq` function does the rest of the testing, in this case with default testing framework, but you can actually use alternatives. 
+
+```{r run-deseq2}
+diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
+diagdds = DESeq(diagdds, fitType="local")
+```
+Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
+
+### Investigate test results table
+
+The following `results` function call creates a table of the results of the tests. Very fast. The hard work was already stored with the rest of the DESeq2-related data in our latest version of the `diagdds` object (see above). I then order by the adjusted p-value, removing the entries with an `NA` value. The rest of this example is just formatting the results table with taxonomic information for nice(ish) display in the HTML output.
+
+```{r grab-results-process-table}
 res = results(diagdds)
 res = res[order(res$padj, na.last=NA), ]
 alpha = 0.01
 sigtab = res[(res$padj < alpha), ]
 sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(kostic)[rownames(sigtab), ], "matrix"))
+head(sigtab)
 ```
 
-Let's look at just the significant OTUs that were enriched in the carcinoma tissue
+Let's look at just the OTUs that were significantly enriched in the carcinoma tissue. First, cleaning up the table a little for legibility.
 
-```{r table}
+```{r table, results='asis'}
 posigtab = sigtab[sigtab[, "log2FoldChange"] > 0, ]
-posigtab
+posigtab = posigtab[, c("baseMean", "log2FoldChange", "lfcSE", "padj", "Phylum", "Class", "Family", "Genus")]
+# Make a markdown table
+posigtab = data.frame(OTU=rownames(posigtab), posigtab)
+cat(paste(colnames(posigtab), collapse=" | "), fill=TRUE)
+cat(paste(rep("---", times=ncol(posigtab)), collapse=" | "), fill=TRUE)
+dummy = apply(posigtab, 1, function(x){
+  cat(paste(x, collapse=" | "), fill=TRUE)
+})
 ```
+
+As expected from the original study abstract and title, a *Fusobacterium* OTU was most-significantly differentially abundant between the cancerous and healthy samples.
