@@ -12,15 +12,15 @@
   specifies the design of the experiment, taking the form
   \code{formula(~ x + y + z)}. That is, a formula with
   right-hand side only. By default, the functions in this
-  package will use the last variable in the formula (e.g.
-  \code{z}) for presenting results (fold changes, etc.) and
-  plotting. When considering your specification of
-  experimental design, you will want to re-order the levels
-  so that the \code{NULL} set is first. For example, the
-  following line of code would ensure that Enterotype 1 is
-  used as the reference sample class in tests by setting it
-  to the first of the factor levels using the
-  \code{\link{relevel}} function:
+  package and DESeq2 will use the last variable in the
+  formula (e.g. \code{z}) for presenting results (fold
+  changes, etc.) and plotting. When considering your
+  specification of experimental design, you will want to
+  re-order the levels so that the \code{NULL} set is first.
+  For example, the following line of code would ensure that
+  Enterotype 1 is used as the reference sample class in
+  tests by setting it to the first of the factor levels
+  using the \code{\link{relevel}} function:
 
   \code{sample_data(entill)$Enterotype <-
   relevel(sample_data(entill)$Enterotype, "1")}}
