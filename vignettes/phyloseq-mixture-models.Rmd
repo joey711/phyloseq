@@ -74,7 +74,7 @@ The following two lines actually do all the complicated DESeq2 work. The functio
 
 ```{r run-deseq2}
 diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
-diagdds = DESeq(diagdds, fitType="local")
+diagdds = DESeq(diagdds)#, fitType="local")
 ```
 Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
 
@@ -93,9 +93,11 @@ head(sigtab)
 
 Let's look at just the OTUs that were significantly enriched in the carcinoma tissue. First, cleaning up the table a little for legibility.
 
-```{r table, results='asis'}
+```{r table-prelim}
 posigtab = sigtab[sigtab[, "log2FoldChange"] > 0, ]
 posigtab = posigtab[, c("baseMean", "log2FoldChange", "lfcSE", "padj", "Phylum", "Class", "Family", "Genus")]
+```
+```{r make-markdown-table, echo=FALSE, results='asis'}
 # Make a markdown table
 posigtab = data.frame(OTU=rownames(posigtab), posigtab)
 cat(paste(colnames(posigtab), collapse=" | "), fill=TRUE)
@@ -106,3 +108,26 @@ dummy = apply(posigtab, 1, function(x){
 ```
 
 As expected from the original study abstract and title, a *Fusobacterium* OTU was most-significantly differentially abundant between the cancerous and healthy samples.
+
+Here is a bar plot showing the log2-fold-change, showing Genus and Phylum. Uses some ggplot2 commands.
+
+```{r bar-plot}
+library("ggplot2")
+theme_set(theme_bw())
+scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+}
+sigtabgen = subset(sigtab, !is.na(Genus))
+# Phylum order
+x = tapply(sigtabgen$log2FoldChange, sigtabgen$Phylum, function(x) max(x))
+x = sort(x, TRUE)
+sigtabgen$Phylum = factor(as.character(sigtabgen$Phylum), levels=names(x))
+# Genus order
+x = tapply(sigtabgen$log2FoldChange, sigtabgen$Genus, function(x) max(x))
+x = sort(x, TRUE)
+sigtabgen$Genus = factor(as.character(sigtabgen$Genus), levels=names(x))
+ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, fill=Phylum)) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
+```
+
