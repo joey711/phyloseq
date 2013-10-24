@@ -1,0 +1,133 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{phyloseq and DESeq2 on Colorectal Cancer Data}
+-->
+`r library("knitr")`
+`r opts_chunk$set(cache=FALSE, fig.width=9)`
+<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+
+# Example using Negative Binomial in Microbiome Differential Abundance Testing
+
+In this example I use the publicly available data from a study on colorectal cancer:
+
+[Genomic analysis identifies association of Fusobacterium with colorectal carcinoma](http://genome.cshlp.org/content/22/2/292.long).
+Kostic, A. D., Gevers, D., Pedamallu, C. S., Michaud, M., Duke, F., Earl, A. M., et al. (2012). *Genome research*, 22(2), 292-298. 
+
+As a side-note, this work was published ahead of print in [Genome Research](http://genome.cshlp.org/) alongside a highly-related article from a separate group of researchers (long-live reproducible observations!): [Fusobacterium nucleatum infection is prevalent in human colorectal carcinoma](http://genome.cshlp.org/content/22/2/299.long). In case you are interested. For the purposes of example, however, we will stick to the data from the former study, with data available at the [microbio.me/qiime](http://www.microbio.me/qiime/) server.
+
+Study ID:  `1457`
+
+Project Name:	`Kostic_colorectal_cancer_fusobacterium`
+
+Study Abstract:	The tumor microenvironment of colorectal carcinoma is a complex community of genomically altered cancer cells, nonneoplastic cells, and a diverse collection of microorganisms. Each of these components may contribute to carcino genesis; however, the role of the microbiota is the least well understood. We have characterized the composition of the microbiota in colorectal carcinoma using whole genome sequences from nine tumor/normal pairs. Fusobacterium sequences were enriched in carcinomas, confirmed by quantitative PCR and 16S rDNA sequence analysis of 95 carcinoma/normal DNA pairs, while the Bacteroidetes and Firmicutes phyla were depleted in tumors. Fusobacteria were also visualized within colorectal tumors using FISH. These findings reveal alterations in the colorectal cancer microbiota; however, the precise role of Fusobacteria in colorectal carcinoma pathogenesis requires further investigation.
+
+## Import data with phyloseq, convert to DESeq2
+
+Start by loading phyloseq.
+
+```{r load-phyloseq, message=FALSE, warning=FALSE}
+library("phyloseq")
+packageVersion("phyloseq")
+```
+
+Defined file path, and import the published OTU count data into R.
+
+```{r filepath}
+filepath = system.file("extdata", "study_1457_split_library_seqs_and_mapping.zip", package="phyloseq")
+kostic = microbio_me_qiime("~/Downloads/study_1457_split_library_seqs_and_mapping.zip")
+```
+
+Here I had to use a relative file path so that this example works on all systems that have phyloseq installed. In practice, your file path will look like this (if you've downloaded the data ahead of time):
+
+```{r example-path-local, eval=FALSE}
+filepath = "~/Downloads/study_1457_split_library_seqs_and_mapping.zip"
+kostic = microbio_me_qiime(filepath)
+```
+
+Or like this (if you're accessing data directly from the microbio.me/qiime server directly):
+
+```{r example-path-remote, eval=FALSE}
+kostic = microbio_me_qiime(1457)
+```
+
+
+## Convert to DESeq2's DESeqDataSet class
+
+In this example I'm using the major sample covariate, `DIAGNOSIS`, as the study design factor. The focus of this study was to compare the microbiomes of pairs of healthy and cancerous tissues, so this makes sense. Your study could have a more complex or nested design, and you should think carefully about the study design formula, because this is critical to the test results and their meaning. You might even need to define a new factor if none of the variables in your current table appropriately represent your study's design. See [the DESeq2 home page](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html) for more details. 
+
+Here is the summary of the data variable `kostic` that we are about to use, as well as the first few entries of the `DIAGNOSIS` factor.
+```{r show-variables}
+kostic
+head(sample_data(kostic)$DIAGNOSIS, 25)
+```
+
+### DESeq2 conversion and call
+
+First load DESeq2.
+
+```{r deseq2, message=FALSE, warning=FALSE}
+library("DESeq2")
+packageVersion("DESeq2")
+```
+
+The following two lines actually do all the complicated DESeq2 work. The function `phyloseq_to_deseq2` converts your phyloseq-format microbiome data into a `DESeqDataSet` with dispersions estimated, using the experimental design formula, also shown (the `~DIAGNOSIS` term). The `DESeq` function does the rest of the testing, in this case with default testing framework, but you can actually use alternatives. 
+
+```{r run-deseq2}
+diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
+diagdds = DESeq(diagdds)#, fitType="local")
+```
+Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
+
+### Investigate test results table
+
+The following `results` function call creates a table of the results of the tests. Very fast. The hard work was already stored with the rest of the DESeq2-related data in our latest version of the `diagdds` object (see above). I then order by the adjusted p-value, removing the entries with an `NA` value. The rest of this example is just formatting the results table with taxonomic information for nice(ish) display in the HTML output.
+
+```{r grab-results-process-table}
+res = results(diagdds)
+res = res[order(res$padj, na.last=NA), ]
+alpha = 0.01
+sigtab = res[(res$padj < alpha), ]
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(kostic)[rownames(sigtab), ], "matrix"))
+head(sigtab)
+```
+
+Let's look at just the OTUs that were significantly enriched in the carcinoma tissue. First, cleaning up the table a little for legibility.
+
+```{r table-prelim}
+posigtab = sigtab[sigtab[, "log2FoldChange"] > 0, ]
+posigtab = posigtab[, c("baseMean", "log2FoldChange", "lfcSE", "padj", "Phylum", "Class", "Family", "Genus")]
+```
+```{r make-markdown-table, echo=FALSE, results='asis'}
+# Make a markdown table
+posigtab = data.frame(OTU=rownames(posigtab), posigtab)
+cat(paste(colnames(posigtab), collapse=" | "), fill=TRUE)
+cat(paste(rep("---", times=ncol(posigtab)), collapse=" | "), fill=TRUE)
+dummy = apply(posigtab, 1, function(x){
+  cat(paste(x, collapse=" | "), fill=TRUE)
+})
+```
+
+As expected from the original study abstract and title, a *Fusobacterium* OTU was most-significantly differentially abundant between the cancerous and healthy samples.
+
+Here is a bar plot showing the log2-fold-change, showing Genus and Phylum. Uses some ggplot2 commands.
+
+```{r bar-plot}
+library("ggplot2")
+theme_set(theme_bw())
+scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+}
+sigtabgen = subset(sigtab, !is.na(Genus))
+# Phylum order
+x = tapply(sigtabgen$log2FoldChange, sigtabgen$Phylum, function(x) max(x))
+x = sort(x, TRUE)
+sigtabgen$Phylum = factor(as.character(sigtabgen$Phylum), levels=names(x))
+# Genus order
+x = tapply(sigtabgen$log2FoldChange, sigtabgen$Genus, function(x) max(x))
+x = sort(x, TRUE)
+sigtabgen$Genus = factor(as.character(sigtabgen$Genus), levels=names(x))
+ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, fill=Phylum)) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
+```
+
