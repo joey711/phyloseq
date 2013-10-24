@@ -8,6 +8,10 @@ inst/.DS_Store
 
 cache/*
 figure/*
+vignettes/cache/*
+vignettes/figure/*
+vignettes/*.html
+vignettes/*.md
 *.Rapp.history
 
 .DS_Store
