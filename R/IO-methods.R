@@ -1059,10 +1059,7 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 #' @seealso \code{\link{import_mothur}}
 #'  
 show_mothur_list_cutoffs <- function(mothur_list_file){
-	mothurlist <- readLines(mothur_list_file)
-	tabsplit   <- strsplit(mothurlist, "\t", fixed=TRUE)
-	cutoffs    <- sapply(tabsplit, function(i){ as.character(i[[1]][1]) })
-	return(cutoffs)
+  scan(mothur_list_file, "character", comment.char="\t", quiet=TRUE)
 }
 ################################################################################
 #' Import mothur list file and return as list object in R.
@@ -1100,38 +1097,40 @@ show_mothur_list_cutoffs <- function(mothur_list_file){
 #' @keywords internal
 #'  
 import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
-	mothurlist <- readLines(mothur_list_file)
-	tabsplit   <- strsplit(mothurlist, "\t", fixed=TRUE)
-	cutoffs    <- sapply(tabsplit, function(i){ as.character(i[[1]][1]) })
-	names(tabsplit) <- cutoffs
-	
-	# Need to select a cutoff if none was provided by user. 
-	# Take the largest non-"unique" cutoff possible,
-	# if "unique" is the only cutoff included in the list file, use that.
-	if( is.null(cutoff) ){
-		if( length(cutoffs) >= 2 ){
-			selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
-			cutoff <- as.character(max(selectCutoffs))
-		} else {
-			# There is only one cutoff value. Use that one.
-			cutoff <- cutoffs
-		}
-	}
-	# cutoff is often numeric, but the index itself must be a character.
-	if( class(cutoff)=="numeric" ){ cutoff <- as(cutoff, "character") }
-	
-	# The first two elements are the cutoff and the number of OTUs. metadata. rm.
-	OTUs <- tabsplit[[cutoff]][-(1:2)]
-	
-	# split each element on commas
-	OTUs <- strsplit(OTUs, ",", fixed=TRUE)
-	
-	# Name each OTU (currently as the first seq name in each cluster), and return the list
-	# # # names(OTUs) <- paste("OTUID_", 1:length(OTUs), sep="")
-	names(OTUs) <- sapply(OTUs, function(i){return(i[1])})
-	
-	# return as-is
-	return(OTUs)
+  # mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
+  # cutoff = 0.04
+  cutoffs = show_mothur_list_cutoffs(mothur_list_file)
+  # Need to select a cutoff if none was provided by user. 
+  # Take the largest non-"unique" cutoff possible,
+  # if "unique" is the only cutoff included in the list file, use that.
+  if( is.null(cutoff) ){
+    if( length(cutoffs) > 1 ){
+      selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
+      cutoff <- as.character(max(selectCutoffs))
+    } else {
+      # There is only one cutoff value. Use that one.
+      cutoff <- cutoffs
+    }
+  } else {
+    # Provided by user, non-null. Coerce to character for indexing
+    cutoff <- as.character(cutoff)
+    # Check that it is in set of available cutoffs.
+    if( !cutoff %in% cutoffs ){
+      stop("The cutoff value you provided is not among those available. Try show_mothur_list_cutoffs()")
+    }
+  }
+  # Read only the line corresponding to that cutoff  
+  inputline = which(cutoffs == cutoff)
+  rawlines = scan(mothur_list_file, "character", sep="\t", skip=(inputline-1), nlines=1, na.strings="", quiet=TRUE)
+  rawlines = rawlines[!is.na(rawlines)]
+  # The first two elements are the cutoff and the number of OTUs. skip, and read to first comma for OTUnames
+  OTUnames = scan(text=rawlines, what="character", comment.char=",", quiet=TRUE)[3:as.integer(rawlines[2])]
+  # split each element on commas
+  OTUs <- strsplit(rawlines[3:as.integer(rawlines[2])], ",", fixed=TRUE)
+  # Name each OTU (currently as the first seq name in each cluster), and return the list
+  names(OTUs) <- OTUnames
+  # return as-is
+  return(OTUs)
 }
 ################################################################################
 #' Parse mothur group file into a simple hash table.
@@ -1158,9 +1157,7 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
 #' @keywords internal
 #'
 import_mothur_groups <- function(mothur_group_file){
-	group_table <- read.table(mothur_group_file, sep="\t")
-	rownames(group_table) <- as(group_table[, 1], "character")
-	return(group_table)
+	read.table(mothur_group_file, sep="\t", as.is=TRUE, stringsAsFactors=FALSE, colClasses="character", row.names=1)
 }
 ################################################################################
 #' Import mothur list and group files and return an otu_table
@@ -1191,27 +1188,29 @@ import_mothur_groups <- function(mothur_group_file){
 #'
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
-#'  
+#' @importFrom plyr ldply
+#' @importFrom plyr ddply
 import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=NULL){
-	
 	otulist       <- import_mothur_otulist(mothur_list_file, cutoff)
 	mothur_groups <- import_mothur_groups(mothur_group_file)
-  # Coerce the sample names column of the group hash table to a factor
-	mothur_groups[, 2] <- factor(mothur_groups[, 2])
-	
-	# Initialize abundance matrix
-	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(levels(mothur_groups[, 2])))
-	colnames(mothur_otu_table) <- levels(mothur_groups[, 2])
+	# Initialize abundance matrix with zeros for sparse assignment
+  samplenames = unique(mothur_groups[, 1])
+	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(samplenames))
+	colnames(mothur_otu_table) <- samplenames
 	rownames(mothur_otu_table) <- names(otulist)
+
+	# Write a sparse versino of the abundance table
+	df = ldply(otulist, function(x){data.frame(read=x, stringsAsFactors=FALSE)})
+	colnames(df)[1] <- "OTU"
+	df = data.frame(df, sample=mothur_groups[df[, "read"], 1], stringsAsFactors=FALSE)
+	adf = ddply(df, c("OTU", "sample"), function(x){
+	  # x = subset(df, OTU=="59_3_17" & sample=="C")
+	  data.frame(x[1, c("OTU", "sample"), drop=FALSE], abundance=nrow(x))
+	})
 	
-	# cycle through each otu, and sum the number of seqs observed for each sample
-	for( i in names(otulist) ){
-		icount <- tapply(otulist[[i]], mothur_groups[otulist[[i]], 2], length)
-		mothur_otu_table[i, names(icount)] <- icount
-	}
-	
-	# Rather than fix the tapply-induced NAs, just replace NAs with 0.
-	mothur_otu_table[is.na(mothur_otu_table)] <- 0
+	# Vectorized for speed using matrix indexing.
+	# See help("Extract") for details about matrix indexing. Diff than 2-vec index.
+	mothur_otu_table[as(adf[, c("OTU", "sample")], "matrix")] <- adf[, "abundance"] 
 	
 	# Finally, return the otu_table as a phyloseq otu_table object.
 	return(otu_table(mothur_otu_table, taxa_are_rows=TRUE))
