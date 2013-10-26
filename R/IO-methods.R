@@ -1216,6 +1216,64 @@ import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=
 	return(otu_table(mothur_otu_table, taxa_are_rows=TRUE))
 }
 ################################################################################
+#' Import mothur shared file and return an otu_table
+#'
+#' @param mothur_shared_file (Required). A 
+#' \href{http://www.mothur.org/wiki/Shared_file}{shared file}
+#' produced by \emph{mothur}.
+#'
+#' @return An \code{\link{otu_table}} object.
+#'
+#' @seealso \code{\link{import_mothur}}
+#' @keywords internal
+import_mothur_shared = function(mothur_shared_file){
+  rawtab = read.table(mothur_shared_file, header=TRUE, row.names=2, stringsAsFactors=FALSE)[, -(1:2)]
+  return(otu_table(t(as.matrix(rawtab)), taxa_are_rows=TRUE))
+}
+################################################################################
+#' Import mothur constaxonomy file and return a taxonomyTable
+#'
+#' @param mothur_constaxonomy_file (Required). A 
+#'  \href{http://www.mothur.org/wiki/Constaxonomy_file}{consensus taxonomy file} 
+#'  produced by \emph{mothur}.
+#' @param parseFunction (Optional). A specific function used for parsing the taxonomy string.
+#'  See \code{\link{parse_taxonomy_default}} for an example. If the default is
+#'  used, this function expects a semi-colon delimited taxonomy string, with
+#'  no additional rank specifier. A common taxonomic database is GreenGenes,
+#'  and for recent versions its taxonomy includes a prefix, which is best cleaved
+#'  and used to precisely label the ranks (\code{\link{parse_taxonomy_greengenes}}).
+#'
+#' @return An \code{\link{taxonomyTable-class}} object.
+#'
+#' @seealso \code{\link{import_mothur}}
+#' 
+#' \code{\link{tax_table}}
+#' 
+#' \code{\link{phyloseq}}
+#' 
+#' @keywords internal
+import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction=parse_taxonomy_default){
+  # mothur_constaxonomy_file = "~/Downloads/Make_biom_files/final.tx.1.cons.taxonomy"
+  read.table(mothur_constaxonomy_file)
+  rawtab = read.table(mothur_constaxonomy_file, header=TRUE, row.names=1, stringsAsFactors=FALSE)[, "Taxonomy", drop=FALSE]
+  if( identical(parseFunction, parse_taxonomy_default) ){
+    # Proceed with default parsing stuff.
+    # Remove the confidence strings inside the parentheses, if present
+    rawtab[, "Taxonomy"] = gsub("\\([[:digit:]]+\\)", "", rawtab[, "Taxonomy"])
+    # Remove the quotation marks, if present
+    rawtab[, "Taxonomy"] = gsub("\"", "", rawtab[, "Taxonomy"])
+    # Remove trailing semicolon
+    rawtab[, "Taxonomy"] = gsub(";$", "", rawtab[, "Taxonomy"])
+    # Split on semicolon
+    taxlist = strsplit(rawtab[, "Taxonomy"], ";", fixed=TRUE)
+    taxlist = lapply(taxlist, parseFunction)
+  } else {
+    taxlist = lapply(rawtab[, "Taxonomy"], parseFunction)
+  }
+  names(taxlist) <- rownames(rawtab)
+  return(build_tax_table(taxlist))
+}
+################################################################################
 #' Import and prune mothur-produced tree.
 #'
 #' The \code{\link[ape]{read.tree}} function is sufficient for importing a 
