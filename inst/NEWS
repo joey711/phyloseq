@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.7.4
+-------------------------
+
+NEW FEATURES
+
+	- import_mothur now handles more formats
+	
+	- Added documentation to discourage .group/.list formats
+
 CHANGES IN VERSION 1.7.3
 -------------------------
 
