@@ -5,9 +5,16 @@ NEW FEATURES
 
 	- User-specified axis ordering to plot_heatmap()
 
+	- User-specified axis edges to plot_heatmap()
+
+	- This addresses:
+	  [Issue 237](https://github.com/joey711/phyloseq/issues/237)
+	  [Issue 230](https://github.com/joey711/phyloseq/issues/230)
+
 USER-VISIBLE CHANGES
 	
-	- New arguments to plot_heatmap(), `taxa.order`, `sample.order`
+	- New arguments to plot_heatmap():
+	  `taxa.order`, `sample.order`, `first.sample`, `first.taxa`
 
 CHANGES IN VERSION 1.7.3
 -------------------------
