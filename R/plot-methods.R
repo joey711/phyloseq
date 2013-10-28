@@ -2372,11 +2372,6 @@ RadialTheta <- function(pos){
 #' issue, the rgl-package has some known installation issues that have further
 #' influenced to avoid making NeatMap a formal dependency (Although we love
 #' both NeatMap and rgl!).
-#' 
-#' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
-#'  sample.label=NULL, taxa.label=NULL,
-#'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4),
-#'  max.label=250, title=NULL, species.label=taxa.label, ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
@@ -2445,11 +2440,6 @@ RadialTheta <- function(pos){
 #'
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
-#'  
-#' @param species.label (Deprecated). Equivalent to and over-ridden by
-#'  \code{taxa.label}, but for the same purpose. Old nomenclature that
-#'  will be removed in the next release of phyloseq. Included here for
-#'  backward compatibility.
 #'
 #' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
 #' 
@@ -2486,21 +2476,34 @@ RadialTheta <- function(pos){
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
 	sample.label=NULL, taxa.label=NULL, 
 	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 
-	max.label=250, title=NULL, species.label=taxa.label, ...){
-	
-	if( is.null(taxa.label) & !is.null(species.label) ){
-		# If species.label was provided, but not taxa.label, assign it to taxa.label
-		taxa.label = species.label
-	}
-	
-	# Initialize sample and species order vectors as NULL
-	OTUorder <- sample.order <- NULL
-	
-	# Copy the approach from NeatMap by doing ordination on samples, but use 
-	# phyloseq-wrapped distance/ordination procedures.
-	# Reorder by the angle in radial coordinates on the 2-axis plane.
-	if( !is.null(method) ){
-		# Capture the NMDS iterations cat() output with capture.output
+	max.label=250, title=NULL, taxa.order=NULL, sample.order=NULL, ...){
+
+  # User-override ordering
+  if( !is.null(taxa.order) & length(taxa.order)==1 ){
+    # Assume `taxa.order` is a tax_table variable. Use it for ordering.
+    rankcol = which(rank_names(physeq) %in% taxa.order)
+    taxmat = as(tax_table(physeq)[, 1:rankcol], "matrix")
+    taxa.order = apply(taxmat, 1, paste, sep="", collapse="")
+    names(taxa.order) <- taxa_names(physeq)
+    taxa.order = names(sort(taxa.order, na.last=TRUE))
+  }
+  if( !is.null(sample.order) & length(sample.order)==1 ){
+    # Assume `sample.order` is a sample variable. Use it for ordering.
+    sample.order = as.character(get_variable(physeq, sample.order))
+    names(sample.order) <- sample_names(physeq)
+    sample.order = names(sort(sample.order, na.last=TRUE))
+  }
+  
+  if( !is.null(method) & (is.null(taxa.order) | is.null(sample.order)) ){
+    # Only attempt NeatMap if method is non-NULL & at least one of
+    # taxa.order and sample.order is not-yet defined.
+    # If both axes orders pre-defined by user, no need to perform ordination...
+    
+	  # Copy the approach from NeatMap by doing ordination on samples, but use 
+	  # phyloseq-wrapped distance/ordination procedures.
+	  # Reorder by the angle in radial coordinates on the 2-axis plane.
+    
+    # Capture the NMDS iterations cat() output with capture.output
 		#junk = capture.output( ps.ord <- ordinate(physeq, method, distance), file=NULL)
 		junk = capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
 		reduction.result = scores(ps.ord, choices=c(1, 2), display="sites")
@@ -2510,7 +2513,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
 		if( class(test) != "try-error" & !is.null(test) ){			
 			OTUreduct = scores(ps.ord, choices=c(1, 2), display="species")
-			OTUorder  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
+			taxa.order  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
 		}
 	}
 
@@ -2529,9 +2532,9 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Make sure it is a factor, but with default order/levels
 		adf$Sample = factor(adf$Sample)
 	}
-	if( !is.null(OTUorder) ){
+	if( !is.null(taxa.order) ){
 		# If OTU-order is available, coerce to factor with special level-order
-		adf$OTU = factor(adf$OTU, levels=OTUorder)
+		adf$OTU = factor(adf$OTU, levels=taxa.order)
 	} else {
 		# Make sure it is a factor, but with default order/levels
 		adf$OTU = factor(adf$OTU)
@@ -2552,6 +2555,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 			)
 		)		
 	} else {
+	  # Remove the labels from any rendering.
 		p = p + scale_x_discrete("Sample", labels="")
 	}
 	# OTUs
@@ -2586,9 +2590,9 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Make a OTU-named vector of the values for taxa.label
 		labvec <- as(tax_table(physeq)[, taxa.label], "character")
 		names(labvec) <- taxa_names(physeq)
-		if( !is.null(OTUorder) ){		
-			# Re-order according to OTUorder
-			labvec <- labvec[OTUorder]
+		if( !is.null(taxa.order) ){		
+			# Re-order according to taxa.order
+			labvec <- labvec[taxa.order]
 		}
 		# Replace any NA (missing) values with "" instead. Avoid recycling labels.
 		labvec[is.na(labvec)] <- ""		

@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.7.5
+-------------------------
+
+NEW FEATURES
+
+	- User-specified axis ordering to plot_heatmap()
+
+USER-VISIBLE CHANGES
+	
+	- New arguments to plot_heatmap(), `taxa.order`, `sample.order`
+
 CHANGES IN VERSION 1.7.3
 -------------------------
 
