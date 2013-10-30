@@ -29,7 +29,7 @@
   produce a list file with multiple cutoff values, even if
   a specific cutoff is specified. It is suggested that you
   check which cutoff values are available in a given list
-  file using the \code{\link{show_mothur_list_cutoffs}}
+  file using the \code{\link{show_mothur_cutoffs}}
   function.}
 }
 \value{
