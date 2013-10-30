@@ -11,6 +11,9 @@ mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phylose
 mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
 cutoff    <- "0.10"
 esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)	
+# mothur "Shared" file, create with mothur from these example data files
+mothshared = system.file("extdata", "esophagus.fn.shared.gz", package="phyloseq")
+constaxonomy = system.file("extdata", "mothur_example.cons.taxonomy.gz", package="phyloseq")
 
 test_that("import_mothur: import of esophagus dataset from mothur files in extdata/ produces a phyloseq object", {
 	expect_that(esophman, is_a("phyloseq"))
@@ -47,6 +50,17 @@ test_that("import_mothur: imported files become S4 object", {
 
 test_that("import_mothur: show method output tests",{
 	expect_that(esophman, prints_text("phyloseq-class experiment-level object"))
+})
+
+test_that("Test newer supported mothur output files, constaxonomy and shared files", {
+  # Shared file
+  sharedOTU = import_mothur(mothur_shared_file=mothshared, cutoff=cutoff)
+  expect_is(sharedOTU, "otu_table")
+  expect_equivalent(as(sharedOTU[1:5, ], "matrix")[, "B"], c(50, 37, 14, 52, 2))
+  expect_equivalent(as(sharedOTU[1, ], "matrix")[1, ], c(50, 19, 5))
+  # Constaxonomy file
+  tax = import_mothur(mothur_constaxonomy_file=constaxonomy)
+  expect_is(tax, "taxonomyTable")
 })
 
 ################################################################################

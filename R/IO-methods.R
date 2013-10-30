@@ -32,7 +32,7 @@
 #' \code{\link{import_mothur}}
 #' 
 #' Separate tools for mothur are also:
-#' \code{\link{show_mothur_list_cutoffs}}
+#' \code{\link{show_mothur_cutoffs}}
 #' \code{\link{import_mothur_dist}}
 #' \code{\link{export_mothur_dist}}
 #' 
@@ -1036,30 +1036,28 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 }
 ################################################################################
 ################################################################################
-#' Show cutoff values available in a mothur list file
+#' Show cutoff values available in a mothur file. 
 #'
 #' This is a helper function to report back to the user the different cutoff
-#' values available in a given \emph{list} file created by the OTU clustering
-#' and analysis package called \emph{mothur}
+#' values available in a given mothur file -- 
+#' for instance, a list or shared file.
 #'
-#' @usage show_mothur_list_cutoffs(mothur_list_file)
-#'
-#' @param mothur_list_file The list file name and/or location as produced by \emph{mothur}.
+#' @param mothur_list_file The file name and/or location as produced by \emph{mothur}.
 #'
 #' @return A character vector of the different cutoff values contained in the file.
 #'  For a given set of arguments to the \code{cluster()} command from within
 #'  \emph{mothur}, a number of OTU-clustering results are returned in the same
-#'  list file. The exact cutoff values used by \emph{mothur} can vary depending
-#'  on the input data. This simple function returns the cutoffs that were actually
+#'  file. The exact cutoff values used by \emph{mothur} can vary depending
+#'  on the input data/parameters. This simple function returns the cutoffs that were actually
 #'  included in the \emph{mothur} output. This an important extra step prior to
-#'  importing the OTUs with the \code{import_mothur_otulist()} function.
+#'  importing data with the \code{\link{import_mothur}} function.
 #' 
 #' @export
 #'
 #' @seealso \code{\link{import_mothur}}
 #'  
-show_mothur_list_cutoffs <- function(mothur_list_file){
-  scan(mothur_list_file, "character", comment.char="\t", quiet=TRUE)
+show_mothur_cutoffs <- function(mothur_list_file){
+  unique(scan(mothur_list_file, "character", comment.char="\t", quiet=TRUE))
 }
 ################################################################################
 #' Import mothur list file and return as list object in R.
@@ -1086,39 +1084,21 @@ show_mothur_list_cutoffs <- function(mothur_list_file){
 #'  function within the \emph{mothur} package will often produce a list file
 #'  with multiple cutoff values, even if a specific cutoff is specified. It is
 #'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
+#'  file using the \code{\link{show_mothur_cutoffs}} function.
 #'
 #' @return A list, where each element is a character vector of 1 or more 
 #'  sequence identifiers, indicating how each sequence from the original data
 #'  is clustered into OTUs by \emph{mothur}. Note that in some cases this is highly
 #'  dependent on the choice for \code{cutoff}. 
 #'
-#' @seealso \code{\link{show_mothur_list_cutoffs}}, \code{\link{import_mothur}}
+#' @seealso \code{\link{show_mothur_cutoffs}}, \code{\link{import_mothur}}
 #' @keywords internal
 #'  
 import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
   # mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
   # cutoff = 0.04
-  cutoffs = show_mothur_list_cutoffs(mothur_list_file)
-  # Need to select a cutoff if none was provided by user. 
-  # Take the largest non-"unique" cutoff possible,
-  # if "unique" is the only cutoff included in the list file, use that.
-  if( is.null(cutoff) ){
-    if( length(cutoffs) > 1 ){
-      selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
-      cutoff <- as.character(max(selectCutoffs))
-    } else {
-      # There is only one cutoff value. Use that one.
-      cutoff <- cutoffs
-    }
-  } else {
-    # Provided by user, non-null. Coerce to character for indexing
-    cutoff <- as.character(cutoff)
-    # Check that it is in set of available cutoffs.
-    if( !cutoff %in% cutoffs ){
-      stop("The cutoff value you provided is not among those available. Try show_mothur_list_cutoffs()")
-    }
-  }
+  cutoffs = show_mothur_cutoffs(mothur_list_file)
+  cutoff = select_mothur_cutoff(cutoff, cutoffs)
   # Read only the line corresponding to that cutoff  
   inputline = which(cutoffs == cutoff)
   rawlines = scan(mothur_list_file, "character", sep="\t", skip=(inputline-1), nlines=1, na.strings="", quiet=TRUE)
@@ -1131,6 +1111,34 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
   names(OTUs) <- OTUnames
   # return as-is
   return(OTUs)
+}
+################################################################################
+# Need to select a cutoff if none was provided by user. 
+# Take the largest non-"unique" cutoff possible,
+# if "unique" is the only cutoff included in the list file, use that.
+# Multiple cutoffs are provided in both `.shared` and `.list` files.
+# This function consolidates the heuristic for selecting/checking a specified cutoff.
+#' @keywords internal
+select_mothur_cutoff = function(cutoff, cutoffs){
+  if( is.null(cutoff) ){
+    # cutoff was NULL, need to select one.
+    if( length(cutoffs) > 1 ){
+      # Select the largest value, avoiding the "unique" option.
+      selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
+      cutoff <- as.character(max(selectCutoffs))
+    } else {
+      # There is only one cutoff value, so use it.
+      # Don't have to specify a cutoff, in this case
+      cutoff <- cutoffs
+    }
+  } else {
+    # Provided by user, non-null. Coerce to character for indexing
+    cutoff <- as.character(cutoff)
+    # Check that it is in set of available cutoffs.
+    if( !cutoff %in% cutoffs ){
+      stop("The cutoff value you provided is not among those available. Try show_mothur_cutoffs()")
+    }
+  }
 }
 ################################################################################
 #' Parse mothur group file into a simple hash table.
@@ -1175,14 +1183,15 @@ import_mothur_groups <- function(mothur_group_file){
 #' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
 #'  that matches one of the cutoff-values used to produce the OTU clustering 
 #'  results contained within the list-file created by \emph{mothur} (and specified
-#'  by the \code{mothur_list_file} argument). The default
+#'  by the \code{mothur_list_file} argument). 
+#'  The default
 #'  is to take the largest value among the cutoff values contained in the list
 #'  file. If only one cutoff is included in the file, it is taken and this
 #'  argument does not need to be specified. Note that the \code{cluster()}
 #'  function within the \emph{mothur} package will often produce a list file
 #'  with multiple cutoff values, even if a specific cutoff is specified. It is
 #'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
+#'  file using the \code{\link{show_mothur_cutoffs}} function.
 #'
 #' @return An \code{\link{otu_table}} object.
 #'
@@ -1226,8 +1235,15 @@ import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=
 #'
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
-import_mothur_shared = function(mothur_shared_file){
-  rawtab = read.table(mothur_shared_file, header=TRUE, row.names=2, stringsAsFactors=FALSE)[, -(1:2)]
+import_mothur_shared = function(mothur_shared_file, cutoff=NULL){
+  #mothur_shared_file = "~/github/phyloseq/inst/extdata/esophagus.fn.shared.gz"
+  # Check that cutoff is in cutoffs, or select a cutoff if none given.
+  cutoffs = show_mothur_cutoffs(mothur_shared_file)
+  cutoffs = cutoffs[!cutoffs %in% "label"]
+  cutoff = select_mothur_cutoff(cutoff, cutoffs)
+  x = readLines(mothur_shared_file)
+  rawtab = read.table(text=x[grep(paste0("^", cutoff), x)], header=FALSE, row.names=2, stringsAsFactors=FALSE)[, -(1:2)]
+  colnames(rawtab) <- strsplit(x[1], "\t")[[1]][4:(ncol(rawtab)+3)]
   return(otu_table(t(as.matrix(rawtab)), taxa_are_rows=TRUE))
 }
 ################################################################################
@@ -1313,7 +1329,7 @@ import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction=pa
 #'  function within the \emph{mothur} package will often produce a list file
 #'  with multiple cutoff values, even if a specific cutoff is specified. It is
 #'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
+#'  file using the \code{\link{show_mothur_cutoffs}} function.
 #'
 #' @param mothur_shared_file (Optional). A 
 #' \href{http://www.mothur.org/wiki/Shared_file}{shared file}
@@ -1372,7 +1388,7 @@ import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction=pa
 #' # mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
 #' # mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
 #' # # # Actual examples follow:
-#' # show_mothur_list_cutoffs(mothur_list_file)
+#' # show_mothur_cutoffs(mothur_list_file)
 #' # test1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
 #' # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
 #' # # Returns just a tree
@@ -1392,22 +1408,22 @@ import_mothur <- function(mothur_list_file=NULL,  mothur_group_file=NULL,
 	if( !is.null(mothur_group_file) & !is.null(mothur_list_file) ){
 	  # If list & group files provided, you can make an OTU table.
 		groupOTU = import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff)
-		pslist = c(pslist, groupOTU)
+		pslist = c(pslist, list(groupOTU))
 	} 
 	
 	if( !is.null(mothur_tree_file) ){
 		tree <- read_tree(mothur_tree_file)
-		pslist = c(pslist, tree)
+		pslist = c(pslist, list(tree))
 	}
   
   if( !is.null(mothur_shared_file) ){
     OTUshared <- import_mothur_shared(mothur_shared_file)
-    pslist = c(pslist, OTUshared)
+    pslist = c(pslist, list(OTUshared))
   }
   
   if( !is.null(mothur_constaxonomy_file) ){
     tax <- import_mothur_constaxonomy(mothur_constaxonomy_file, parseFunction)
-    pslist = c(pslist, tax)
+    pslist = c(pslist, list(tax))
   }  
   
   return(do.call("phyloseq", pslist))

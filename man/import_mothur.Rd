@@ -38,7 +38,7 @@
   with multiple cutoff values, even if a specific cutoff is
   specified. It is suggested that you check which cutoff
   values are available in a given list file using the
-  \code{\link{show_mothur_list_cutoffs}} function.}
+  \code{\link{show_mothur_cutoffs}} function.}
 
   \item{mothur_shared_file}{(Optional). A
   \href{http://www.mothur.org/wiki/Shared_file}{shared
@@ -115,7 +115,7 @@
 # mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
 # mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
 # # # Actual examples follow:
-# show_mothur_list_cutoffs(mothur_list_file)
+# show_mothur_cutoffs(mothur_list_file)
 # test1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
 # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
 # # Returns just a tree
