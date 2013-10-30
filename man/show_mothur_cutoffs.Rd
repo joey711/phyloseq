@@ -1,8 +1,11 @@
 \name{show_mothur_cutoffs}
 \alias{show_mothur_cutoffs}
+\alias{show_mothur_list_cutoffs}
 \title{Show cutoff values available in a mothur file.}
 \usage{
   show_mothur_cutoffs(mothur_list_file)
+
+  show_mothur_list_cutoffs(mothur_list_file)
 }
 \arguments{
   \item{mothur_list_file}{The file name and/or location as
