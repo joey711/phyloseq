@@ -103,6 +103,11 @@ phyloseq <- function(...){
 	# Force both samples and taxa indices to be in the same order.
 	ps = index_reorder(ps, "both")
 	
+	# Replace any NA branch-length values in the tree with zero.
+	if( !is.null(phy_tree(ps, FALSE)) ){
+	  ps@phy_tree <- fix_phylo(ps@phy_tree)
+	}
+  
 	return(ps)
 }
 ################################################################################

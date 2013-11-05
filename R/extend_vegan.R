@@ -4,7 +4,6 @@
 # vegan:::scores.default
 ################################################################################
 # pcoa-class, from pcoa{ape}
-#' @import ape
 #' @keywords internal
 scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 	if(is.null(choices)){

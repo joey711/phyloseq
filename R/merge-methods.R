@@ -35,7 +35,7 @@
 #' of the relevant component type is returned.
 #'
 #' Merges between 2 or more tree objects are ultimately done using 
-#' \code{\link{consensus}} from the ape package.
+#' \code{\link[ape]{consensus}} from the ape package.
 #' This has the potential to limit somewhat the final data object, because trees
 #' don't merge with other trees in the same granular manner as data tables, and
 #' ultimately the species/taxa in higher-order phyloseq objects will be clipped to
@@ -122,7 +122,6 @@ merge_phyloseq <- function(...){
 #'
 #' @rdname merge_phyloseq_pair-methods
 #' @docType methods
-#' @import ape
 #' @export
 #'
 #' @examples #
@@ -224,6 +223,7 @@ setMethod("merge_phyloseq_pair", signature("sample_data", "sample_data"), functi
 ################################################################################
 #' @aliases merge_phyloseq_pair,phylo,phylo-method
 #' @rdname merge_phyloseq_pair-methods
+#' @importFrom ape consensus
 setMethod("merge_phyloseq_pair", signature("phylo", "phylo"), function(x, y){
 	if(identical(x, y)){
 		return(x)
@@ -383,7 +383,7 @@ setMethod("merge_taxa", "otu_table", function(x, eqtaxa, archetype=1L){
 	return(x)
 })
 ###############################################################################
-#' @import ape
+#' @importFrom ape drop.tip
 #' @aliases merge_taxa,phylo-method
 #' @rdname merge_taxa-methods
 setMethod("merge_taxa", "phylo", function(x, eqtaxa, archetype=1L){

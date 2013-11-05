@@ -129,7 +129,7 @@
 #' \href{http://cran.r-project.org/web/views/Multivariate.html}{Multivariate Statistics}
 #' 
 #' @import vegan
-#' @import ape
+#' @importFrom ape pcoa
 #' @export
 #' @examples
 #' # # Take a subset of the GP dataset for quicker computation of examples
@@ -300,7 +300,7 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' @author Julia Fukuyama \email{julia.fukuyama@@gmail.com}.
 #'  Adapted for phyloseq by Paul J. McMurdie.
 #'
-#' @import ape
+#' @importFrom ape cophenetic.phylo
 #' @export
 #' @references
 #' Pavoine, S., Dufour, A.B. and Chessel, D. (2004) 
@@ -344,18 +344,18 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	
 	# if the patristic distances are not Euclidean, 
 	# then correct them or throw meaningful error.
-	if( !ade4::is.euclid(patristicDist) ){
+	if( !is.euclid(patristicDist) ){
 		patristicDist <- correction(patristicDist)
 		
 		# Check that this is now Euclidean.
-		if( !ade4::is.euclid(patristicDist) ){
+		if( !is.euclid(patristicDist) ){
 			stop('Corrected distance still not Euclidean \n',
 			"please provide a different correction method")
 		}
 	}
 	
 	# NOTE: the dpcoa function in ade4 requires a data.frame
-	return( ade4::dpcoa(data.frame(OTU), patristicDist, scannf, ...) )
+	return( dpcoa(data.frame(OTU), patristicDist, scannf, ...) )
 }
 ################################################################################
 ################################################################################

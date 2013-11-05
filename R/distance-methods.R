@@ -731,8 +731,21 @@ setGeneric("UniFrac", function(physeq, weighted=FALSE, normalized=TRUE, parallel
 ################################################################################
 #' @aliases UniFrac,phyloseq-method
 #' @rdname UniFrac-methods
+#' @importFrom ape is.rooted
+#' @importFrom ape root
 setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE){
 
+  # Check if tree is rooted, set random root with warning if it is not.
+  if( !is.rooted(phy_tree(physeq)) ){
+    #phy_tree(physeq) <- unroot(phy_tree(physeq))
+    randoroot = sample(taxa_names(physeq), 1)
+    warning("Randomly assigning root as -- ", randoroot, " -- in the phylogenetic tree in the data you provided.")
+    phy_tree(physeq) <- root(phy=phy_tree(physeq), outgroup=randoroot, resolve.root=TRUE, interactive=FALSE)
+    if( !is.rooted(phy_tree(physeq)) ){
+      stop("Problem automatically rooting tree. Make sure your tree is rooted before attempting UniFrac calculation. See ?ape::root")
+    }
+  } 
+  
 	if( fast ){
 		fastUniFrac(physeq, weighted, normalized, parallel)
 	} else {
@@ -747,6 +760,7 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
 # http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html
 ################################################################################
 #' @keywords internal
+#' @import foreach
 fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
 	# # # require(picante); require(ape); require(foreach)
 
@@ -825,47 +839,47 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	}
 
 	########################################	
-   	# optionally-parallel implementation with foreach
+  # optionally-parallel implementation with foreach
 	########################################
-  	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
-		A  <- i[1]
-		B  <- i[2]
-		AT <- sample_sums(OTU)[A]
-		BT <- sample_sums(OTU)[B]		
-		if( weighted ){ # weighted UniFrac
-			# subset matrix to just columns A and B
-			edge_array_AB <- edge_array[, c(A, B)]
-			# Perform UFwi equivalent, "inline" with apply on edge_array_AB
-			wUF_branchweight <- apply(edge_array_AB, 1, function(br, A, B, ATBT){
-				abs((br[A]/ATBT[A]) - (br[B]/ATBT[B]))
-			}, A, B, c(AT, BT))
-			# calculate the w-UF numerator
-			numerator <- sum(tree$edge.length * wUF_branchweight)
-			# if not-normalized weighted UniFrac, just return "numerator";
-			# the u-value in the w-UniFrac description
-			if(!normalized){
-				return(numerator)
-			} else {
-				# denominator (assumes tree-indices and otu_table indices are same order)
-				denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
-				# return the normalized weighted UniFrac values
-				return(numerator / denominator)
-			}
-		} else { # unweighted UniFrac
-			# subset matrix to just columns A and B
-			edge_occ_AB <- edge_occ[, c(A, B)]
-			# keep only the unique branches, sum the lengths
-			edge_uni_AB_sum <- sum( (tree$edge.length * edge_occ_AB)[apply(edge_occ_AB, 1, sum) < 2, ] )
-			# Normalize this sum to the total branches among these two samples, A and B
-			uwUFpairdist <- edge_uni_AB_sum / sum( tree$edge.length[apply(edge_occ_AB, 1, sum) > 0] )
-			return(uwUFpairdist)
-		}
+	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
+	  A  <- i[1]
+	  B  <- i[2]
+	  AT <- sample_sums(OTU)[A]
+	  BT <- sample_sums(OTU)[B]		
+	  if( weighted ){ # weighted UniFrac
+	    # subset matrix to just columns A and B
+	    edge_array_AB <- edge_array[, c(A, B)]
+	    # Perform UFwi equivalent, "inline" with apply on edge_array_AB
+	    wUF_branchweight <- apply(edge_array_AB, 1, function(br, A, B, ATBT){
+	      abs((br[A]/ATBT[A]) - (br[B]/ATBT[B]))
+	    }, A, B, c(AT, BT))
+	    # calculate the w-UF numerator
+	    numerator <- sum(tree$edge.length * wUF_branchweight)
+	    # if not-normalized weighted UniFrac, just return "numerator";
+	    # the u-value in the w-UniFrac description
+	    if(!normalized){
+	      return(numerator)
+	    } else {
+	      # denominator (assumes tree-indices and otu_table indices are same order)
+	      denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
+	      # return the normalized weighted UniFrac values
+	      return(numerator / denominator)
+	    }
+	  } else { # unweighted UniFrac
+	    # subset matrix to just columns A and B
+	    edge_occ_AB <- edge_occ[, c(A, B)]
+	    # keep only the unique branches, sum the lengths
+	    edge_uni_AB_sum <- sum( (tree$edge.length * edge_occ_AB)[apply(edge_occ_AB, 1, sum) < 2, ] )
+	    # Normalize this sum to the total branches among these two samples, A and B
+	    uwUFpairdist <- edge_uni_AB_sum / sum( tree$edge.length[apply(edge_occ_AB, 1, sum) > 0] )
+	    return(uwUFpairdist)
+	  }
 	}
 	
-    # This is in serial, but it is quick.
-    distlist2distmat <- function(i, spn, DL){
-    	UniFracMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
-    }
+  # This is in serial, but it is quick.
+  distlist2distmat <- function(i, spn, DL){
+    UniFracMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
+  }
 	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
     
     return(as.dist(UniFracMat))

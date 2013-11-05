@@ -1482,7 +1482,7 @@ tree.has.tags <- function(phylo) {
 #' @author Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
 #' @importFrom plyr rbind.fill
-#' @import ape
+#' @importFrom ape ladderize
 #'
 #' @keywords internal
 tree.layout <- function(
