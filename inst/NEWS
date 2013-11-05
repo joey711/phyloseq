@@ -4,6 +4,8 @@ CHANGES IN VERSION 1.7.7
 USER-VISIBLE CHANGES
 
 	- Tree fixes:
+		https://github.com/joey711/phyloseq/issues/235
+		https://github.com/joey711/phyloseq/issues/255
 
 	- If a tree has NA branch-length values, they are automatically set to 0.
 		This occurs within both phyloseq(), and read_tree().
