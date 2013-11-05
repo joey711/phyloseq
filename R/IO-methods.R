@@ -332,7 +332,8 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #'  
 #' \code{\link[ape]{read.nexus}}
 #'
-#' @import ape
+#' @importFrom ape read.nexus
+#' @importFrom ape read.tree
 #' @export
 #' @examples
 #' read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
@@ -353,6 +354,11 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 	if( errorIfNULL & is.null(tree) ){
 		stop("tree file could not be read.\nPlease retry with valid tree.")
 	}
+  if( !is.null(tree) ){
+    # Perform any standard phyloseq checks/fixes
+    # E.g. Replace any NA branch-length values in the tree with zero.
+    tree = fix_phylo(tree)    
+  }
 	return(tree)
 }
 ################################################################################
@@ -389,7 +395,7 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #'  
 #' @return A tree, represented as a \code{\link{phylo}} object.
 #' 
-#' @import ape
+#' @importFrom ape read.tree
 #' @export
 #' @examples
 #' # Read the May 2013, 73% similarity official tree,
@@ -1572,7 +1578,7 @@ export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 #' @param return (Optional). Should the ENV table be returned to the R workspace?
 #'  Default is \code{FALSE}.
 #'
-#' @import ape
+#' @importFrom ape write.nexus
 #' @export
 #' 
 #' @examples

@@ -633,8 +633,7 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
 })
-# import covering ape::drop.tip
-#' @import ape
+#' @importFrom ape drop.tip
 #' @aliases prune_taxa,character,phylo-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){

@@ -20,8 +20,8 @@
   object of the relevant component type is returned.
 
   Merges between 2 or more tree objects are ultimately done
-  using \code{\link{consensus}} from the ape package. This
-  has the potential to limit somewhat the final data
+  using \code{\link[ape]{consensus}} from the ape package.
+  This has the potential to limit somewhat the final data
   object, because trees don't merge with other trees in the
   same granular manner as data tables, and ultimately the
   species/taxa in higher-order phyloseq objects will be
