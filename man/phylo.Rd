@@ -2,7 +2,7 @@
 \alias{phylo}
 \title{S3 class placeholder definition (list) for phylogenetic trees}
 \description{
-  The ape package does export a version of its
+  The ape package does not export a version of its
   \code{\link[ape]{phylo}}-class, partly because it is not
   really defined formally anywhere. Instead, it is an S3
   class extended from the base class, \code{\link{list}} --

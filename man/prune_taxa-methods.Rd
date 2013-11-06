@@ -53,7 +53,7 @@ x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus)
 identical(x1, x2)
 }
 \seealso{
-  \code{\link{prune_taxa}}
+  \code{\link{prune_samples}}
 
   \code{\link[picante]{prune.sample}}
 }

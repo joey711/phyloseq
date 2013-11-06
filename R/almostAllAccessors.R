@@ -147,11 +147,11 @@ setMethod("taxa_are_rows", "phyloseq", function(physeq){
 #' @docType methods
 #' @export
 #'
-#' @examples #
-#' # # From "picante" package
-#' # data("phylocom")
-#' # tree <- phylocom$phylo
-#' # ntaxa(tree)
+#' @examples 
+#' data("esophagus")
+#' ntaxa(esophagus)
+#' phy_tree(esophagus)
+#' ntaxa(phy_tree(esophagus))
 setGeneric("ntaxa", function(physeq) standardGeneric("ntaxa"))
 #' @rdname ntaxa-methods
 #' @aliases ntaxa,ANY-method
@@ -203,14 +203,13 @@ setMethod("ntaxa", "XStringSet", function(physeq){
 #' @export
 #'
 #' @examples #
-#' # # From "picante" package
-#' # data("phylocom")
-#' # tree <- phylocom$phylo
-#' # OTU1 <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-#' # taxa_names(tree)
-#' # taxa_names(OTU1)
-#' # physeq1 <- phyloseq(OTU1, tree)
-#' # taxa_names(physeq1)
+#' data("esophagus")
+#' tree <- phy_tree(esophagus)
+#' OTU1 <- otu_table(esophagus)
+#' taxa_names(tree)
+#' taxa_names(OTU1)
+#' physeq1 <- phyloseq(OTU1, tree)
+#' taxa_names(physeq1)
 setGeneric("taxa_names", function(physeq) standardGeneric("taxa_names"))	
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,ANY-method
@@ -259,13 +258,12 @@ setMethod("taxa_names", "XStringSet", function(physeq) names(physeq) )
 #' @export
 #'
 #' @examples #
-#' # # From "picante" package
-#' # data("phylocom")
-#' # tree <- phylocom$phylo
-#' # OTU1 <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-#' # nsamples(OTU1)
-#' # physeq1 <- phyloseq(OTU1, tree)
-#' # nsamples(physeq1)
+#' data("esophagus")
+#' tree <- phy_tree(esophagus)
+#' OTU1 <- otu_table(esophagus)
+#' nsamples(OTU1)
+#' physeq1 <- phyloseq(OTU1, tree)
+#' nsamples(physeq1)
 setGeneric("nsamples", function(physeq) standardGeneric("nsamples"))
 #' @rdname nsamples-methods
 #' @aliases nsamples,ANY-method
@@ -306,8 +304,7 @@ setMethod("nsamples", "sample_data", function(physeq) nrow(physeq) )
 #' @docType methods
 #' @export
 #'
-#' @examples #
-#' # # From "picante" package
+#' @examples 
 #' # data(GlobalPatterns)
 #' # sample_names(GlobalPatterns)
 setGeneric("sample_names", function(physeq) standardGeneric("sample_names"))

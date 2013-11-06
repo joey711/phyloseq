@@ -119,24 +119,13 @@
   the example code below.
 }
 \examples{
-# ################################################################################
-# # Perform UniFrac on esophagus data
-# ################################################################################
-# data("esophagus")
-# (y <- UniFrac(esophagus, TRUE))
-# UniFrac(esophagus, TRUE, FALSE)
-# UniFrac(esophagus, FALSE)
-# picante::unifrac(as(t(otu_table(esophagus)), "matrix"), tre(esophagus))
-# ################################################################################
-# # Try phylocom example data from picante package
-# # It comes as a list, so you must construct the phyloseq object first.
-# ################################################################################
-# data("phylocom")
-# (x1 <- phyloseq(otu_table(phylocom$sample, FALSE), phylocom$phylo))
-# UniFrac(x1, TRUE)
-# UniFrac(x1, TRUE, FALSE)
-# UniFrac(x1, FALSE)
-# picante::unifrac(phylocom$sample, phylocom$phylo)
+################################################################################
+# Perform UniFrac on esophagus data
+################################################################################
+data("esophagus")
+(y <- UniFrac(esophagus, TRUE))
+UniFrac(esophagus, TRUE, FALSE)
+UniFrac(esophagus, FALSE)
 # ################################################################################
 # # Now try a parallel implementation using doParallel, which leverages the
 # # new 'parallel' core package in R 2.14.0+

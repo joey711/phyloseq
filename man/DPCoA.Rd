@@ -3,7 +3,7 @@
 \title{Calculate Double Principle Coordinate Analysis (DPCoA)
 using phylogenetic distance}
 \usage{
-  DPCoA(physeq, correction=cailliez, scannf=FALSE, ...)
+  DPCoA(physeq, correction = cailliez, scannf = FALSE, ...)
 }
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}}

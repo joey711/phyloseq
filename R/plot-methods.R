@@ -2491,8 +2491,8 @@ RadialTheta <- function(pos){
 #'
 #' Please see further examples in the 
 #' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
-#'
-#' @import vegan
+#' 
+#' @importFrom vegan scores
 #' @import scales 
 #' 
 #' @export

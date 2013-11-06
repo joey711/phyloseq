@@ -28,8 +28,6 @@
   Get sample names.
 }
 \examples{
-#
-# # From "picante" package
 # data(GlobalPatterns)
 # sample_names(GlobalPatterns)
 }

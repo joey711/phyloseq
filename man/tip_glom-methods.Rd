@@ -51,20 +51,9 @@
   applications.
 }
 \examples{
-#
-# # # data(phylocom)
-# # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-# # # x1   <- phyloseq(otu, phylocom$phylo)
-# # # print(x1); par(mfrow=c(2, 1)); plot(phy_tree(x1))
-# # # x2 <- tip_glom(x1, speciationMinLength = 2.5)
-# # # plot(phy_tree(x2))
-# # # ## Try on example datset 1
-# # # data(GlobalPatterns); ntaxa(GlobalPatterns)
-# # # ex7 <- tip_glom(GlobalPatterns, speciationMinLength = 0.05)
-# # # ntaxa(ex7)
-# data(esophagus); ntaxa(esophagus); par(mfrow=c(2, 1)); plot(phy_tree(esophagus))
-# phy_tree(esophagus)$edge.length
-# x3 <- tip_glom(esophagus, speciationMinLength = 0.20)
-# ntaxa(x3); plot(phy_tree(x3))
+data(esophagus); ntaxa(esophagus); plot(phy_tree(esophagus))
+phy_tree(esophagus)$edge.length
+x3 <- tip_glom(esophagus, speciationMinLength = 0.20)
+ntaxa(x3); plot(phy_tree(x3))
 }
 
