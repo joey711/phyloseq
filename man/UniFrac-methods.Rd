@@ -161,13 +161,12 @@ UniFrac(esophagus, FALSE)
   The main implementation (Fast UniFrac) is adapted from
   the algorithm's description in:
 
-  Hamady, Lozupone, and Knight, ``Fast UniFrac:
-  facilitating high-throughput phylogenetic analyses of
-  microbial communities including analysis of
+  Hamady, Lozupone, and Knight,
+  ``\href{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}{Fast
+  UniFrac:} facilitating high-throughput phylogenetic
+  analyses of microbial communities including analysis of
   pyrosequencing and PhyloChip data.'' The ISME Journal
   (2010) 4, 17--27.
-
-  \url{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}
 
   See also additional descriptions of UniFrac in the
   following articles:
@@ -186,6 +185,8 @@ UniFrac(esophagus, FALSE)
   Environ Microbiol. 2005 71 (12):8228-35.
 }
 \seealso{
-  \code{\link{distance}}, \code{\link[picante]{unifrac}}
+  \code{\link{distance}}
+
+  \code{unifrac} in the picante package.
 }
 

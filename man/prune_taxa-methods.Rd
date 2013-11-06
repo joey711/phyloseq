@@ -42,7 +42,8 @@
   objects. This is particularly useful for pruning a
   phyloseq object that has more than one component that
   describes OTUs. Credit: the \code{phylo}-class version is
-  adapted from \code{\link[picante]{prune.sample}}.
+  adapted from
+  \href{http://cran.at.r-project.org/web/packages/picante/index.html}{prune.sample}.
 }
 \examples{
 data("esophagus")
@@ -55,6 +56,6 @@ identical(x1, x2)
 \seealso{
   \code{\link{prune_samples}}
 
-  \code{\link[picante]{prune.sample}}
+  \href{http://cran.at.r-project.org/web/packages/picante/index.html}{prune.sample}
 }
 
