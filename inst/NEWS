@@ -1,3 +1,77 @@
+CHANGES IN VERSION 1.7.8
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Package dependencies reduced/clarified:
+		https://github.com/joey711/phyloseq/issues/259
+		Should reduce chances for collisions with other packages, and related issues.
+		Removed any dependencies on the picante package.
+
+	- Replaced picante::node.age() with a faster implementation, node_ages()
+		Appears to be 3 times faster.
+		Speeds up UniFrac() and tip_glom() calculations.
+
+CHANGES IN VERSION 1.7.7
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Tree fixes:
+		https://github.com/joey711/phyloseq/issues/235
+		https://github.com/joey711/phyloseq/issues/255
+
+	- If a tree has NA branch-length values, they are automatically set to 0.
+		This occurs within both phyloseq(), and read_tree().
+
+	- UniFrac calculations require a rooted tree. While a rooted tree is
+		not required to be part of a phyloseq object, it is a helpful
+		default behavior to select a random root when UniFrac is called
+		and the tree is unrooted, flashing a notice to the user.
+	
+	- Precise import from ape-package, rather than full-import. 
+		Smaller chance for collisions.
+		Precisely-defined dependencies listed in NAMESPACE
+
+	- As a result of the previous, phyloseq defines a placeholder "phylo" class,
+		extended from "list". This seems to match the class
+		from a full import of ape, and is necessary since ape does not
+		export the "phylo" class.
+
+CHANGES IN VERSION 1.7.6
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Merged branches 1.7.4 and 1.7.5
+
+CHANGES IN VERSION 1.7.5
+-------------------------
+
+NEW FEATURES
+
+	- User-specified axis ordering to plot_heatmap()
+
+	- User-specified axis edges to plot_heatmap()
+
+	- This addresses:
+	  [Issue 237](https://github.com/joey711/phyloseq/issues/237)
+	  [Issue 230](https://github.com/joey711/phyloseq/issues/230)
+
+USER-VISIBLE CHANGES
+	
+	- New arguments to plot_heatmap():
+	  `taxa.order`, `sample.order`, `first.sample`, `first.taxa`
+
+CHANGES IN VERSION 1.7.4
+-------------------------
+
+NEW FEATURES
+
+	- import_mothur now handles more formats
+	
+	- Added documentation to discourage .group/.list formats
+
 CHANGES IN VERSION 1.7.3
 -------------------------
 
@@ -49,7 +123,7 @@ USER-VISIBLE CHANGES
 CHANGES IN VERSION 1.5.22
 -------------------------
 
-
+USER-VISIBLE CHANGES
 
 	- Fix minor bug in `import_mothur`
 

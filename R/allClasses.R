@@ -56,8 +56,108 @@ setClass("sample_data", contains="data.frame")
 #' @rdname taxonomyTable-class
 #' @exportClass taxonomyTable
 setClass("taxonomyTable", contains = "matrix")
+#metaMDS
 ################################################################################
-#' An S4 copy of the main phylogenetic tree class from the ape package.
+#' S3 class placeholder definition (list) for metaMDS
+#' 
+#' The ape package does export a version of its \code{\link[vegan]{metaMDS}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the list components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq.
+#' 
+#' @seealso 
+#' \code{\link[vegan]{metaMDS}}
+#' 
+#' @keywords internal
+metaMDS <- structure(list(), class = "metaMDS")
+###
+# Remove if this ever works
+# @importClassesFrom vegan metaMDS
+################################################################################
+#' S3 class placeholder definition (list) for decorana
+#' 
+#' The ape package does export a version of its \code{\link[vegan]{decorana}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the list components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq. 
+#' 
+#' @seealso 
+#' \code{\link[vegan]{decorana}}
+#' 
+#' @keywords internal
+decorana <- structure(list(), class = "decorana")
+###
+# Remove if this ever works
+# @importClassesFrom vegan decorana
+################################################################################
+#' S3 class placeholder definition (list) for dpcoa
+#' 
+#' The ape package does export a version of its \code{\link[ade4]{dpcoa}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the list components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq. 
+#' 
+#' @seealso 
+#' \code{\link[ade4]{dpcoa}}
+#' 
+#' @importFrom ade4 print.dpcoa
+#' @importFrom ade4 plot.dpcoa
+#' @keywords internal
+dpcoa <- structure(list(), class = "dpcoa")
+###
+# If this ever works
+# @importClassesFrom ade4 dpcoa
+################################################################################
+#' S3 class placeholder definition (list) for phylogenetic trees
+#' 
+#' The ape package does not export a version of its \code{\link[ape]{phylo}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq. 
+#' Similarly, if a formal definition for the the phylo-class is ever exported
+#' by ape, the current philosophy of phyloseq would be to remove this
+#' internal definition and import the former. Note that there is still some 
+#' work going on for the phylobase package, which is addressing these same 
+#' exact issues for S4 phylogenetic tree interaction. 
+#' A very large number of packages (around 60 at my last count), depend on ape,
+#' making it easily the de facto standard for representing phylogenetic trees in R;
+#' and the phyloseq team would prefer to use any exported definitions from
+#' the ape package if possible and available.
+#' 
+#' @seealso 
+#' \code{\link[ape]{phylo}}
+#' 
+#' @keywords internal
+phylo <- structure(list(), class = "phylo")
+###
+# If this ever works
+# @importClassesFrom ape phylo
+###
+#' An S4 placeholder of the main phylogenetic tree class from the ape package.
 #'
 #' See the \code{\link[ape]{ape}} package for details about this type of
 #' representation of a phylogenetic tree. It is used throught ape.
@@ -68,6 +168,33 @@ setClass("taxonomyTable", contains = "matrix")
 #' @rdname phylo-class
 #' @exportClass phylo
 setOldClass("phylo")
+################################################################################
+#' Method for fixing problems with phylo-class trees in phyloseq
+#' 
+#' For now this only entails replacing each missing (\code{NA}) branch-length
+#' value with 0.0.
+#' 
+#' @keywords internal
+setGeneric("fix_phylo", function(tree) standardGeneric("fix_phylo") )
+#' @rdname fix_phylo
+#' @aliases fix_phylo,phylo-method
+setMethod("fix_phylo", "phylo", function(tree){
+  tree$edge.length[which(is.na(tree$edge.length))] <- 0
+  return(tree)
+})
+################################################################################
+#' S3 class for ape-calculated MDS results
+#' 
+#' Nothing to import, because ape doesn't (yet) export this S3 class.
+#' We will define it here, but keep it internal.
+#' For the moment, its only use is for proper dispatch in our extensions
+#' to the scores S3 generic from vegan,
+#' for generic extraction of coordinates and possibly other features from
+#' any ordination results.
+#' 
+#' @keywords internal
+pcoa <- structure(list(), class = "pcoa")
+# @importMethodsFrom ape print
 ################################################################################
 # Use setClassUnion to define the unholy NULL-data union as a virtual class.
 # This is a way of dealing with the expected scenarios in which one or more of
@@ -80,7 +207,6 @@ setClassUnion("otu_tableOrNULL", c("otu_table", "NULL"))
 setClassUnion("sample_dataOrNULL", c("sample_data", "NULL"))
 #' @keywords internal
 setClassUnion("taxonomyTableOrNULL", c("taxonomyTable", "NULL"))
-#' @import ape
 #' @keywords internal
 setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 #' @importClassesFrom Biostrings BStringSet
@@ -143,7 +269,6 @@ setClassUnion("XStringSetOrNULL", c("XStringSet", "NULL"))
 #'  constructor/accessors \code{\link{otu_table}}, \code{\link{sample_data}},
 #'  \code{\link{tax_table}}, \code{\link{phy_tree}}, and \code{\link{refseq}}.
 #' 
-#' @import ape
 #' @importClassesFrom Biostrings XStringSet
 #' @name phyloseq-class
 #' @rdname phyloseq-class

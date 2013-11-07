@@ -2,6 +2,12 @@
 # Backward compatibility aliases
 
 
+#' @rdname show_mothur_cutoffs
+#' @aliases show_mothur_cutoffs
+#' @export
+show_mothur_list_cutoffs <- show_mothur_cutoffs
+
+
 #' @rdname sample_data-methods
 #' @aliases sample_data
 #' @export

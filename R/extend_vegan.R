@@ -4,7 +4,7 @@
 # vegan:::scores.default
 ################################################################################
 # pcoa-class, from pcoa{ape}
-#' @import ape
+#' @importFrom vegan scores
 #' @keywords internal
 scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 	if(is.null(choices)){
@@ -20,7 +20,8 @@ scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 	}
 }
 # dpcoa-class, from ade4::dpcoa or phyloseq::DPCoA
-# @import ade4
+# @importClassesFrom ade4 dpcoa
+#' @importFrom vegan scores
 #' @keywords internal
 scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 	ifelse(display=="species", coords <- x$l1, coords <- x$l2)
@@ -32,7 +33,6 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 ################################################################################
 ################################################################################
 # Extend vegdist for phyloseq classes
-# @importFrom vegan vegdist
 ################################################################################
 # \code{\link[vegan]{vegdist}} wrapper for phyloseq classes
 #
@@ -42,19 +42,20 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 # verbatim.
 #
 # @seealso \code{\link[vegan]{vegdist}} 
-# @import vegan
 # @rdname vegdist-methods
 # @docType methods
 # @aliases vegdist
 #
 # @examples
-# # data(esophagus)
-# # vegdist(esophagus, "jaccard")
+# data(esophagus)
+# vegdist(esophagus, "jaccard")
+#' @importFrom vegan vegdist
 #' @keywords internal
 setGeneric("vegdist")
 ################################################################################
 # @aliases vegdist,otu_table-method
 # @rdname vegdist-methods
+#' @importFrom vegan vegdist
 setMethod("vegdist", "otu_table", function(x, method = "bray", binary = FALSE,
 	diag = FALSE, upper = FALSE, na.rm = FALSE, ...){
 	# Make sure in sample-by-species orientation
@@ -73,9 +74,6 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 	x <- otu_table(x)
 	vegdist(x, method, binary, diag, upper, na.rm, ...)	
 })
-################################################################################
-# @importFrom vegan estimateR
-# @importFrom vegan diversity
 ################################################################################
 #' Summarize alpha diversity
 #'
@@ -120,7 +118,9 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #'  
 #'  \code{\link[vegan]{fisherfit}}
 #'
-#' @import vegan
+#' @importFrom vegan estimateR
+#' @importFrom vegan diversity
+#' @importFrom vegan fisher.alpha
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.

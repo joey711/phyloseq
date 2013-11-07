@@ -1482,7 +1482,7 @@ tree.has.tags <- function(phylo) {
 #' @author Gregory Jordan \email{gjuggler@@gmail.com}
 #' 
 #' @importFrom plyr rbind.fill
-#' @import ape
+#' @importFrom ape ladderize
 #'
 #' @keywords internal
 tree.layout <- function(
@@ -2372,11 +2372,6 @@ RadialTheta <- function(pos){
 #' issue, the rgl-package has some known installation issues that have further
 #' influenced to avoid making NeatMap a formal dependency (Although we love
 #' both NeatMap and rgl!).
-#' 
-#' @usage plot_heatmap(physeq, method="NMDS", distance="bray", 
-#'  sample.label=NULL, taxa.label=NULL,
-#'  low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4),
-#'  max.label=250, title=NULL, species.label=taxa.label, ...)
 #'
 #' @param physeq (Required). The data, in the form of an instance of the
 #'  \code{\link{phyloseq-class}}. This should be what you get as a result
@@ -2445,11 +2440,40 @@ RadialTheta <- function(pos){
 #'
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
+#'
+#' @param sample.order (Optional). Default \code{NULL}. 
+#'  Either a single character string matching 
+#'  one of the \code{\link{sample_variables}} in your data,
+#'  or a character vector of \code{\link{sample_names}}
+#'  in the precise order that you want them displayed in the heatmap.
+#'  This overrides any ordination ordering that might be done
+#'  with the \code{method}/\code{distance} arguments.
 #'  
-#' @param species.label (Deprecated). Equivalent to and over-ridden by
-#'  \code{taxa.label}, but for the same purpose. Old nomenclature that
-#'  will be removed in the next release of phyloseq. Included here for
-#'  backward compatibility.
+#' @param taxa.order (Optional). Default \code{NULL}. 
+#'  Either a single character string matching 
+#'  one of the \code{\link{rank_names}} in your data,
+#'  or a character vector of \code{\link{taxa_names}}
+#'  in the precise order that you want them displayed in the heatmap.
+#'  This overrides any ordination ordering that might be done
+#'  with the \code{method}/\code{distance} arguments.
+#' 
+#' @param first.sample (Optional). Default \code{NULL}.
+#'  A character string matching one of the \code{\link{sample_names}}
+#'  of your input data (\code{physeq}). 
+#'  It will become the left-most sample in the plot.
+#'  For the ordination-based ordering (recommended),
+#'  the left and right edges of the axes are adjaacent in a continuous ordering. 
+#'  Therefore, the choice of starting sample is meaningless and arbitrary,
+#'  but it is aesthetically poor to have the left and right edge split 
+#'  a natural cluster in the data.
+#'  This argument allows you to specify the left edge
+#'  and thereby avoid cluster-splitting, emphasize a gradient, etc.
+#'  
+#' @param first.taxa (Optional). Default \code{NULL}.
+#'  A character string matching one of the \code{\link{taxa_names}}
+#'  of your input data (\code{physeq}). 
+#'  This is equivalent to \code{first.sample} (above),
+#'  but for the taxa/OTU indices, usually the vertical axis.
 #'
 #' @param ... (Optional). Additional parameters passed to \code{\link{ordinate}}.
 #' 
@@ -2467,8 +2491,8 @@ RadialTheta <- function(pos){
 #'
 #' Please see further examples in the 
 #' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
-#'
-#' @import vegan
+#' 
+#' @importFrom vegan scores
 #' @import scales 
 #' 
 #' @export
@@ -2477,42 +2501,95 @@ RadialTheta <- function(pos){
 #' gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 #' # FYI, the base-R function uses a non-ecological ordering scheme,
 #' # but does add potentially useful hclust dendrogram to the sides...
-#' heatmap(otu_table(gpac))
-#' plot_heatmap(gpac)
-#' # example relabelling based on a sample variable and taxonomic rank.
-#' plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
-#' # Now repeat the plot, but change the color scheme in various ways.
-#' # See the online tutorial for many other examples.
+#' gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
+#' # Remove the nearly-empty samples (e.g. 10 reads or less)
+#' gpac = prune_samples(sample_sums(gpac) > 50, gpac)
+#' # Use DESeq2 variance-stabilizing transformation of counts
+#' gpacds2 = phyloseq_to_deseq2(gpac, design=~SampleType)
+#' library("DESeq2")
+#' gpacds2 = estimateSizeFactors(gpacds2)
+#' gpacds2 = estimateDispersions(gpacds2, fitType="local")
+#' gpacvst = getVarianceStabilizedData(gpacds2)
+#' otu_table(gpac) <- otu_table(gpacvst, TRUE)
+#' # Set values below zero, to zero.
+#' otu_table(gpac)[otu_table(gpac) < 0.0] <- 0
+#' # Arbitrary order if method set to NULL
+#' plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family")
+#' # Use ordination
+#' plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family")
+#' # Use ordination for OTUs, but not sample-order
+#' plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", sample.order="SampleType")
+#' # Specifying both orders omits any attempt to use ordination. The following should be the same.
+#' p0 = plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", taxa.order="Phylum", sample.order="SampleType")
+#' p1 = plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family", taxa.order="Phylum", sample.order="SampleType")
+#' #expect_equivalent(p0, p1)
+#' # Example: Order matters. Random ordering of OTU indices is difficult to interpret, even with structured sample order
+#' rando = sample(taxa_names(gpac), size=ntaxa(gpac), replace=FALSE)
+#' plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family", taxa.order=rando, sample.order="SampleType")
+#' # # Select the edges of each axis. 
+#' # First, arbitrary edge, ordering
+#' plot_heatmap(gpac, method=NULL)
+#' # Second, biological-ordering (instead of default ordination-ordering), but arbitrary edge
+#' plot_heatmap(gpac, taxa.order="Family", sample.order="SampleType")
+#' # Third, biological ordering, selected edges
+#' plot_heatmap(gpac, taxa.order="Family", sample.order="SampleType", first.taxa="546313", first.sample="NP2")
+#' # Fourth, add meaningful labels
+#' plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", taxa.order="Family", sample.order="SampleType", first.taxa="546313", first.sample="NP2")
 plot_heatmap <- function(physeq, method="NMDS", distance="bray", 
 	sample.label=NULL, taxa.label=NULL, 
 	low="#000033", high="#66CCFF", na.value="black", trans=log_trans(4), 
-	max.label=250, title=NULL, species.label=taxa.label, ...){
-	
-	if( is.null(taxa.label) & !is.null(species.label) ){
-		# If species.label was provided, but not taxa.label, assign it to taxa.label
-		taxa.label = species.label
-	}
-	
-	# Initialize sample and species order vectors as NULL
-	OTUorder <- sample.order <- NULL
-	
-	# Copy the approach from NeatMap by doing ordination on samples, but use 
-	# phyloseq-wrapped distance/ordination procedures.
-	# Reorder by the angle in radial coordinates on the 2-axis plane.
-	if( !is.null(method) ){
-		# Capture the NMDS iterations cat() output with capture.output
-		#junk = capture.output( ps.ord <- ordinate(physeq, method, distance), file=NULL)
-		junk = capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
-		reduction.result = scores(ps.ord, choices=c(1, 2), display="sites")
-		sample.order = sample_names(physeq)[order(RadialTheta(reduction.result))]
+	max.label=250, title=NULL, sample.order=NULL, taxa.order=NULL,
+  first.sample=NULL, first.taxa=NULL, ...){
 
-		# Also want to re-order species, if possible
+  # User-override ordering
+  if( !is.null(taxa.order) & length(taxa.order)==1 ){
+    # Assume `taxa.order` is a tax_table variable. Use it for ordering.
+    rankcol = which(rank_names(physeq) %in% taxa.order)
+    taxmat = as(tax_table(physeq)[, 1:rankcol], "matrix")
+    taxa.order = apply(taxmat, 1, paste, sep="", collapse="")
+    names(taxa.order) <- taxa_names(physeq)
+    taxa.order = names(sort(taxa.order, na.last=TRUE))
+  }
+  if( !is.null(sample.order) & length(sample.order)==1 ){
+    # Assume `sample.order` is a sample variable. Use it for ordering.
+    sample.order = as.character(get_variable(physeq, sample.order))
+    names(sample.order) <- sample_names(physeq)
+    sample.order = names(sort(sample.order, na.last=TRUE))
+  }
+  
+  if( !is.null(method) & (is.null(taxa.order) | is.null(sample.order)) ){
+    # Only attempt NeatMap if method is non-NULL & at least one of
+    # taxa.order and sample.order is not-yet defined.
+    # If both axes orders pre-defined by user, no need to perform ordination...
+    
+	  # Copy the approach from NeatMap by doing ordination on samples, but use 
+	  # phyloseq-wrapped distance/ordination procedures.
+	  # Reorder by the angle in radial coordinates on the 2-axis plane.
+    
+    # Capture the NMDS iterations cat() output with capture.output
+		junk = capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
+    if( is.null(sample.order) ){
+      # Only define new ord-based sample order if user did not define one already
+      reduction.result = scores(ps.ord, choices=c(1, 2), display="sites")
+      sample.order = sample_names(physeq)[order(RadialTheta(reduction.result))]      
+    }
+
 		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
-		if( class(test) != "try-error" & !is.null(test) ){			
+		if( class(test) != "try-error" & !is.null(test) & is.null(taxa.order) ){			
+		  # re-order species/taxa/OTUs, if possible,
+		  # and only if user did not define an order already
 			OTUreduct = scores(ps.ord, choices=c(1, 2), display="species")
-			OTUorder  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
+			taxa.order  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
 		}
 	}
+  
+  # Now that index orders are determined, check/assign edges of axes, if specified
+  if( !is.null(first.sample) ){
+    sample.order = restart(sample.order, first.sample)
+  }
+  if( !is.null(first.taxa) ){
+    taxa.order = restart(taxa.order, first.taxa)
+  }
 
 	# melt physeq with the standard user-accessible data melting function
 	# for creating plot-ready data.frames, psmelt.
@@ -2529,9 +2606,9 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Make sure it is a factor, but with default order/levels
 		adf$Sample = factor(adf$Sample)
 	}
-	if( !is.null(OTUorder) ){
+	if( !is.null(taxa.order) ){
 		# If OTU-order is available, coerce to factor with special level-order
-		adf$OTU = factor(adf$OTU, levels=OTUorder)
+		adf$OTU = factor(adf$OTU, levels=taxa.order)
 	} else {
 		# Make sure it is a factor, but with default order/levels
 		adf$OTU = factor(adf$OTU)
@@ -2552,6 +2629,7 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 			)
 		)		
 	} else {
+	  # Remove the labels from any rendering.
 		p = p + scale_x_discrete("Sample", labels="")
 	}
 	# OTUs
@@ -2586,9 +2664,9 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 		# Make a OTU-named vector of the values for taxa.label
 		labvec <- as(tax_table(physeq)[, taxa.label], "character")
 		names(labvec) <- taxa_names(physeq)
-		if( !is.null(OTUorder) ){		
-			# Re-order according to OTUorder
-			labvec <- labvec[OTUorder]
+		if( !is.null(taxa.order) ){		
+			# Re-order according to taxa.order
+			labvec <- labvec[taxa.order]
 		}
 		# Replace any NA (missing) values with "" instead. Avoid recycling labels.
 		labvec[is.na(labvec)] <- ""		
@@ -2609,6 +2687,16 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	}
 			
 	return(p)
+}
+################################################################################
+# Chunk re-order a vector so that specified newstart is first.
+# Different than relevel.
+#' @keywords internal
+restart = function(x, newstart){
+  # x = sample_names(gpac)
+  # newstart = "NP2"
+  pivot = which(x %in% newstart)
+  return(c(x[pivot:length(x)], x[1:(pivot-1)]))
 }
 ################################################################################
 #' Create a ggplot summary of gap statistic results

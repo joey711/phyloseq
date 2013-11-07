@@ -2,10 +2,12 @@
 \alias{plot_heatmap}
 \title{Create an ecologically-organized heatmap using ggplot2 graphics}
 \usage{
-  plot_heatmap(physeq, method="NMDS", distance="bray",
-  sample.label=NULL, taxa.label=NULL, low="#000033",
-  high="#66CCFF", na.value="black", trans=log_trans(4),
-  max.label=250, title=NULL, species.label=taxa.label, ...)
+  plot_heatmap(physeq, method = "NMDS", distance = "bray",
+  sample.label = NULL, taxa.label = NULL, low = "#000033",
+  high = "#66CCFF", na.value = "black", trans =
+  log_trans(4), max.label = 250, title = NULL, sample.order
+  = NULL, taxa.order = NULL, first.sample = NULL,
+  first.taxa = NULL, ...)
 }
 \arguments{
   \item{physeq}{(Required). The data, in the form of an
@@ -83,11 +85,42 @@
   \item{title}{(Optional). Default \code{NULL}. Character
   string. The main title for the graphic.}
 
-  \item{species.label}{(Deprecated). Equivalent to and
-  over-ridden by \code{taxa.label}, but for the same
-  purpose. Old nomenclature that will be removed in the
-  next release of phyloseq. Included here for backward
-  compatibility.}
+  \item{sample.order}{(Optional). Default \code{NULL}.
+  Either a single character string matching one of the
+  \code{\link{sample_variables}} in your data, or a
+  character vector of \code{\link{sample_names}} in the
+  precise order that you want them displayed in the
+  heatmap. This overrides any ordination ordering that
+  might be done with the \code{method}/\code{distance}
+  arguments.}
+
+  \item{taxa.order}{(Optional). Default \code{NULL}. Either
+  a single character string matching one of the
+  \code{\link{rank_names}} in your data, or a character
+  vector of \code{\link{taxa_names}} in the precise order
+  that you want them displayed in the heatmap. This
+  overrides any ordination ordering that might be done with
+  the \code{method}/\code{distance} arguments.}
+
+  \item{first.sample}{(Optional). Default \code{NULL}. A
+  character string matching one of the
+  \code{\link{sample_names}} of your input data
+  (\code{physeq}). It will become the left-most sample in
+  the plot. For the ordination-based ordering
+  (recommended), the left and right edges of the axes are
+  adjaacent in a continuous ordering. Therefore, the choice
+  of starting sample is meaningless and arbitrary, but it
+  is aesthetically poor to have the left and right edge
+  split a natural cluster in the data. This argument allows
+  you to specify the left edge and thereby avoid
+  cluster-splitting, emphasize a gradient, etc.}
+
+  \item{first.taxa}{(Optional). Default \code{NULL}. A
+  character string matching one of the
+  \code{\link{taxa_names}} of your input data
+  (\code{physeq}). This is equivalent to
+  \code{first.sample} (above), but for the taxa/OTU
+  indices, usually the vertical axis.}
 
   \item{...}{(Optional). Additional parameters passed to
   \code{\link{ordinate}}.}
@@ -155,12 +188,40 @@ data("GlobalPatterns")
 gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 # FYI, the base-R function uses a non-ecological ordering scheme,
 # but does add potentially useful hclust dendrogram to the sides...
-heatmap(otu_table(gpac))
-plot_heatmap(gpac)
-# example relabelling based on a sample variable and taxonomic rank.
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
-# Now repeat the plot, but change the color scheme in various ways.
-# See the online tutorial for many other examples.
+gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
+# Remove the nearly-empty samples (e.g. 10 reads or less)
+gpac = prune_samples(sample_sums(gpac) > 50, gpac)
+# Use DESeq2 variance-stabilizing transformation of counts
+gpacds2 = phyloseq_to_deseq2(gpac, design=~SampleType)
+library("DESeq2")
+gpacds2 = estimateSizeFactors(gpacds2)
+gpacds2 = estimateDispersions(gpacds2, fitType="local")
+gpacvst = getVarianceStabilizedData(gpacds2)
+otu_table(gpac) <- otu_table(gpacvst, TRUE)
+# Set values below zero, to zero.
+otu_table(gpac)[otu_table(gpac) < 0.0] <- 0
+# Arbitrary order if method set to NULL
+plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family")
+# Use ordination
+plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family")
+# Use ordination for OTUs, but not sample-order
+plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", sample.order="SampleType")
+# Specifying both orders omits any attempt to use ordination. The following should be the same.
+p0 = plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", taxa.order="Phylum", sample.order="SampleType")
+p1 = plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family", taxa.order="Phylum", sample.order="SampleType")
+#expect_equivalent(p0, p1)
+# Example: Order matters. Random ordering of OTU indices is difficult to interpret, even with structured sample order
+rando = sample(taxa_names(gpac), size=ntaxa(gpac), replace=FALSE)
+plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family", taxa.order=rando, sample.order="SampleType")
+# # Select the edges of each axis.
+# First, arbitrary edge, ordering
+plot_heatmap(gpac, method=NULL)
+# Second, biological-ordering (instead of default ordination-ordering), but arbitrary edge
+plot_heatmap(gpac, taxa.order="Family", sample.order="SampleType")
+# Third, biological ordering, selected edges
+plot_heatmap(gpac, taxa.order="Family", sample.order="SampleType", first.taxa="546313", first.sample="NP2")
+# Fourth, add meaningful labels
+plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", taxa.order="Family", sample.order="SampleType", first.taxa="546313", first.sample="NP2")
 }
 \references{
   Because this function relies so heavily in principle, and

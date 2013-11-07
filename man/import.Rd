@@ -54,7 +54,7 @@
   For mothur, see: \code{\link{import_mothur}}
 
   Separate tools for mothur are also:
-  \code{\link{show_mothur_list_cutoffs}}
+  \code{\link{show_mothur_cutoffs}}
   \code{\link{import_mothur_dist}}
   \code{\link{export_mothur_dist}}
 

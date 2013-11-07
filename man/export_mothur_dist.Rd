@@ -41,8 +41,8 @@
 }
 \examples{
 #
-### data(GlobalPatterns)
-### myDistObject <- as.dist(cophenetic(tre(GlobalPatterns)))
-### export_mothur_dist(myDistObject, "myfilepathname.dist")
+data(esophagus)
+myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
+export_mothur_dist(myDistObject)
 }
 

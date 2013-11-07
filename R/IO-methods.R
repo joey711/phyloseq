@@ -32,7 +32,7 @@
 #' \code{\link{import_mothur}}
 #' 
 #' Separate tools for mothur are also:
-#' \code{\link{show_mothur_list_cutoffs}}
+#' \code{\link{show_mothur_cutoffs}}
 #' \code{\link{import_mothur_dist}}
 #' \code{\link{export_mothur_dist}}
 #' 
@@ -332,7 +332,8 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #'  
 #' \code{\link[ape]{read.nexus}}
 #'
-#' @import ape
+#' @importFrom ape read.nexus
+#' @importFrom ape read.tree
 #' @export
 #' @examples
 #' read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
@@ -353,6 +354,11 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 	if( errorIfNULL & is.null(tree) ){
 		stop("tree file could not be read.\nPlease retry with valid tree.")
 	}
+  if( !is.null(tree) ){
+    # Perform any standard phyloseq checks/fixes
+    # E.g. Replace any NA branch-length values in the tree with zero.
+    tree = fix_phylo(tree)    
+  }
 	return(tree)
 }
 ################################################################################
@@ -389,7 +395,7 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 #'  
 #' @return A tree, represented as a \code{\link{phylo}} object.
 #' 
-#' @import ape
+#' @importFrom ape read.tree
 #' @export
 #' @examples
 #' # Read the May 2013, 73% similarity official tree,
@@ -1036,33 +1042,28 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file,
 }
 ################################################################################
 ################################################################################
-#' Show cutoff values available in a mothur list file
+#' Show cutoff values available in a mothur file. 
 #'
 #' This is a helper function to report back to the user the different cutoff
-#' values available in a given \emph{list} file created by the OTU clustering
-#' and analysis package called \emph{mothur}
+#' values available in a given mothur file -- 
+#' for instance, a list or shared file.
 #'
-#' @usage show_mothur_list_cutoffs(mothur_list_file)
-#'
-#' @param mothur_list_file The list file name and/or location as produced by \emph{mothur}.
+#' @param mothur_list_file The file name and/or location as produced by \emph{mothur}.
 #'
 #' @return A character vector of the different cutoff values contained in the file.
 #'  For a given set of arguments to the \code{cluster()} command from within
 #'  \emph{mothur}, a number of OTU-clustering results are returned in the same
-#'  list file. The exact cutoff values used by \emph{mothur} can vary depending
-#'  on the input data. This simple function returns the cutoffs that were actually
+#'  file. The exact cutoff values used by \emph{mothur} can vary depending
+#'  on the input data/parameters. This simple function returns the cutoffs that were actually
 #'  included in the \emph{mothur} output. This an important extra step prior to
-#'  importing the OTUs with the \code{import_mothur_otulist()} function.
+#'  importing data with the \code{\link{import_mothur}} function.
 #' 
 #' @export
 #'
 #' @seealso \code{\link{import_mothur}}
 #'  
-show_mothur_list_cutoffs <- function(mothur_list_file){
-	mothurlist <- readLines(mothur_list_file)
-	tabsplit   <- strsplit(mothurlist, "\t", fixed=TRUE)
-	cutoffs    <- sapply(tabsplit, function(i){ as.character(i[[1]][1]) })
-	return(cutoffs)
+show_mothur_cutoffs <- function(mothur_list_file){
+  unique(scan(mothur_list_file, "character", comment.char="\t", quiet=TRUE))
 }
 ################################################################################
 #' Import mothur list file and return as list object in R.
@@ -1089,49 +1090,61 @@ show_mothur_list_cutoffs <- function(mothur_list_file){
 #'  function within the \emph{mothur} package will often produce a list file
 #'  with multiple cutoff values, even if a specific cutoff is specified. It is
 #'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
+#'  file using the \code{\link{show_mothur_cutoffs}} function.
 #'
 #' @return A list, where each element is a character vector of 1 or more 
 #'  sequence identifiers, indicating how each sequence from the original data
 #'  is clustered into OTUs by \emph{mothur}. Note that in some cases this is highly
 #'  dependent on the choice for \code{cutoff}. 
 #'
-#' @seealso \code{\link{show_mothur_list_cutoffs}}, \code{\link{import_mothur}}
+#' @seealso \code{\link{show_mothur_cutoffs}}, \code{\link{import_mothur}}
 #' @keywords internal
 #'  
 import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
-	mothurlist <- readLines(mothur_list_file)
-	tabsplit   <- strsplit(mothurlist, "\t", fixed=TRUE)
-	cutoffs    <- sapply(tabsplit, function(i){ as.character(i[[1]][1]) })
-	names(tabsplit) <- cutoffs
-	
-	# Need to select a cutoff if none was provided by user. 
-	# Take the largest non-"unique" cutoff possible,
-	# if "unique" is the only cutoff included in the list file, use that.
-	if( is.null(cutoff) ){
-		if( length(cutoffs) >= 2 ){
-			selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
-			cutoff <- as.character(max(selectCutoffs))
-		} else {
-			# There is only one cutoff value. Use that one.
-			cutoff <- cutoffs
-		}
-	}
-	# cutoff is often numeric, but the index itself must be a character.
-	if( class(cutoff)=="numeric" ){ cutoff <- as(cutoff, "character") }
-	
-	# The first two elements are the cutoff and the number of OTUs. metadata. rm.
-	OTUs <- tabsplit[[cutoff]][-(1:2)]
-	
-	# split each element on commas
-	OTUs <- strsplit(OTUs, ",", fixed=TRUE)
-	
-	# Name each OTU (currently as the first seq name in each cluster), and return the list
-	# # # names(OTUs) <- paste("OTUID_", 1:length(OTUs), sep="")
-	names(OTUs) <- sapply(OTUs, function(i){return(i[1])})
-	
-	# return as-is
-	return(OTUs)
+  # mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
+  # cutoff = 0.04
+  cutoffs = show_mothur_cutoffs(mothur_list_file)
+  cutoff = select_mothur_cutoff(cutoff, cutoffs)
+  # Read only the line corresponding to that cutoff  
+  inputline = which(cutoffs == cutoff)
+  rawlines = scan(mothur_list_file, "character", sep="\t", skip=(inputline-1), nlines=1, na.strings="", quiet=TRUE)
+  rawlines = rawlines[!is.na(rawlines)]
+  # The first two elements are the cutoff and the number of OTUs. skip, and read to first comma for OTUnames
+  OTUnames = scan(text=rawlines, what="character", comment.char=",", quiet=TRUE)[3:as.integer(rawlines[2])]
+  # split each element on commas
+  OTUs <- strsplit(rawlines[3:as.integer(rawlines[2])], ",", fixed=TRUE)
+  # Name each OTU (currently as the first seq name in each cluster), and return the list
+  names(OTUs) <- OTUnames
+  # return as-is
+  return(OTUs)
+}
+################################################################################
+# Need to select a cutoff if none was provided by user. 
+# Take the largest non-"unique" cutoff possible,
+# if "unique" is the only cutoff included in the list file, use that.
+# Multiple cutoffs are provided in both `.shared` and `.list` files.
+# This function consolidates the heuristic for selecting/checking a specified cutoff.
+#' @keywords internal
+select_mothur_cutoff = function(cutoff, cutoffs){
+  if( is.null(cutoff) ){
+    # cutoff was NULL, need to select one.
+    if( length(cutoffs) > 1 ){
+      # Select the largest value, avoiding the "unique" option.
+      selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
+      cutoff <- as.character(max(selectCutoffs))
+    } else {
+      # There is only one cutoff value, so use it.
+      # Don't have to specify a cutoff, in this case
+      cutoff <- cutoffs
+    }
+  } else {
+    # Provided by user, non-null. Coerce to character for indexing
+    cutoff <- as.character(cutoff)
+    # Check that it is in set of available cutoffs.
+    if( !cutoff %in% cutoffs ){
+      stop("The cutoff value you provided is not among those available. Try show_mothur_cutoffs()")
+    }
+  }
 }
 ################################################################################
 #' Parse mothur group file into a simple hash table.
@@ -1158,9 +1171,7 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
 #' @keywords internal
 #'
 import_mothur_groups <- function(mothur_group_file){
-	group_table <- read.table(mothur_group_file, sep="\t")
-	rownames(group_table) <- as(group_table[, 1], "character")
-	return(group_table)
+	read.table(mothur_group_file, sep="\t", as.is=TRUE, stringsAsFactors=FALSE, colClasses="character", row.names=1)
 }
 ################################################################################
 #' Import mothur list and group files and return an otu_table
@@ -1178,125 +1189,143 @@ import_mothur_groups <- function(mothur_group_file){
 #' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
 #'  that matches one of the cutoff-values used to produce the OTU clustering 
 #'  results contained within the list-file created by \emph{mothur} (and specified
-#'  by the \code{mothur_list_file} argument). The default
+#'  by the \code{mothur_list_file} argument). 
+#'  The default
 #'  is to take the largest value among the cutoff values contained in the list
 #'  file. If only one cutoff is included in the file, it is taken and this
 #'  argument does not need to be specified. Note that the \code{cluster()}
 #'  function within the \emph{mothur} package will often produce a list file
 #'  with multiple cutoff values, even if a specific cutoff is specified. It is
 #'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
+#'  file using the \code{\link{show_mothur_cutoffs}} function.
 #'
 #' @return An \code{\link{otu_table}} object.
 #'
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
-#'  
+#' @importFrom plyr ldply
+#' @importFrom plyr ddply
 import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=NULL){
-	
 	otulist       <- import_mothur_otulist(mothur_list_file, cutoff)
 	mothur_groups <- import_mothur_groups(mothur_group_file)
-  # Coerce the sample names column of the group hash table to a factor
-	mothur_groups[, 2] <- factor(mothur_groups[, 2])
-	
-	# Initialize abundance matrix
-	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(levels(mothur_groups[, 2])))
-	colnames(mothur_otu_table) <- levels(mothur_groups[, 2])
+	# Initialize abundance matrix with zeros for sparse assignment
+  samplenames = unique(mothur_groups[, 1])
+	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(samplenames))
+	colnames(mothur_otu_table) <- samplenames
 	rownames(mothur_otu_table) <- names(otulist)
+
+	# Write a sparse versino of the abundance table
+	df = ldply(otulist, function(x){data.frame(read=x, stringsAsFactors=FALSE)})
+	colnames(df)[1] <- "OTU"
+	df = data.frame(df, sample=mothur_groups[df[, "read"], 1], stringsAsFactors=FALSE)
+	adf = ddply(df, c("OTU", "sample"), function(x){
+	  # x = subset(df, OTU=="59_3_17" & sample=="C")
+	  data.frame(x[1, c("OTU", "sample"), drop=FALSE], abundance=nrow(x))
+	})
 	
-	# cycle through each otu, and sum the number of seqs observed for each sample
-	for( i in names(otulist) ){
-		icount <- tapply(otulist[[i]], mothur_groups[otulist[[i]], 2], length)
-		mothur_otu_table[i, names(icount)] <- icount
-	}
-	
-	# Rather than fix the tapply-induced NAs, just replace NAs with 0.
-	mothur_otu_table[is.na(mothur_otu_table)] <- 0
+	# Vectorized for speed using matrix indexing.
+	# See help("Extract") for details about matrix indexing. Diff than 2-vec index.
+	mothur_otu_table[as(adf[, c("OTU", "sample")], "matrix")] <- adf[, "abundance"] 
 	
 	# Finally, return the otu_table as a phyloseq otu_table object.
 	return(otu_table(mothur_otu_table, taxa_are_rows=TRUE))
 }
 ################################################################################
-#' Import and prune mothur-produced tree.
+#' Import mothur shared file and return an otu_table
 #'
-#' The \code{\link[ape]{read.tree}} function is sufficient for importing a 
-#' \emph{mothur}-produced tree into \code{R} in \code{"phylo"} format. This 
-#' function further requires a list file as input, and prunes / renames the tree
-#' such that it is compatible with the associated abundance data. The expected
-#' tree output from \emph{mothur} will contain a tip for each sequence in the
-#' original dataset, even if those sequences are highly similar or identical. 
-#' This function returns a reduced tree that has been pruned to contain only unique
-#' taxa, as defined by a particular OTU-clustering cutoff in the \emph{mothur}
-#' list file.
+#' @param mothur_shared_file (Required). A 
+#' \href{http://www.mothur.org/wiki/Shared_file}{shared file}
+#' produced by \emph{mothur}.
 #'
-#' This is a user-available module of a more comprehensive function for importing
-#' output files from the \emph{mothur} package, \code{link{import_mothur}}. 
-#' The \code{import_mothur} function
-#' is suggested if the goal is to import more than just the tree from \emph{mothur}.
-#'
-#' @usage import_mothur_tree(mothur_tree_file, mothur_list_file, cutoff=NULL)
-#'
-#' @param mothur_tree_file The tree file name that was output from \emph{mothur}.
-#'  Probably a file that ends with the suffix \code{".tree"}.
-#'
-#' @param mothur_list_file The list file name and/or location as produced by \emph{mothur}.
-#'
-#' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
-#'  that matches one of the cutoff-values used to produce the OTU clustering 
-#'  results contained within the list-file created by \emph{mothur} (and specified
-#'  by the \code{mothur_list_file} argument). The default
-#'  is to take the largest value among the cutoff values contained in the list
-#'  file. If only one cutoff is included in the file, it is taken and this
-#'  argument does not need to be specified. Note that the \code{cluster()}
-#'  function within the \emph{mothur} package will often produce a list file
-#'  with multiple cutoff values, even if a specific cutoff is specified. It is
-#'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
-#'
-#' @return A reduced tree that has been pruned to contain only unique
-#'  taxa, as defined by a particular OTU-clustering cutoff in the \emph{mothur}
-#'  list file. 
+#' @return An \code{\link{otu_table}} object.
 #'
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
-#' 
-import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
-	
-	otulist <- import_mothur_otulist(mothur_list_file, cutoff)
-
-	# Read the original all-sequences tree from mothur
-	tree <- read_tree(mothur_tree_file)
-	
-	# Loop to merge the sequences in the tree by OTU
-	# cycle through each otu, and sum the number of seqs observed for each sample
-	for( i in names(otulist) ){
-		# i <- names(otulist)[1]
-		# First merge the reads that are in the same OTU ("eqtaxa" argument)
-		tree <- merge_taxa(tree, otulist[[i]])
-		# Rename the tip that was kept to the otuID.
-		# By default, the first element of eqtaxa is used as archetype.
-		# This also ensures reliable behavior in the instances of singleton OTUs
-		tree$tip.label[tree$tip.label == otulist[[i]][1]] <- i
-	}
-	return(tree)
+import_mothur_shared = function(mothur_shared_file, cutoff=NULL){
+  #mothur_shared_file = "~/github/phyloseq/inst/extdata/esophagus.fn.shared.gz"
+  # Check that cutoff is in cutoffs, or select a cutoff if none given.
+  cutoffs = show_mothur_cutoffs(mothur_shared_file)
+  cutoffs = cutoffs[!cutoffs %in% "label"]
+  cutoff = select_mothur_cutoff(cutoff, cutoffs)
+  x = readLines(mothur_shared_file)
+  rawtab = read.table(text=x[grep(paste0("^", cutoff), x)], header=FALSE, row.names=2, stringsAsFactors=FALSE)[, -(1:2)]
+  colnames(rawtab) <- strsplit(x[1], "\t")[[1]][4:(ncol(rawtab)+3)]
+  return(otu_table(t(as.matrix(rawtab)), taxa_are_rows=TRUE))
 }
 ################################################################################
-#' General function for importing mothur files into phyloseq.
+#' Import mothur constaxonomy file and return a taxonomyTable
 #'
-#' @usage import_mothur(mothur_list_file,  mothur_group_file=NULL, mothur_tree_file=NULL, cutoff=NULL)
+#' @param mothur_constaxonomy_file (Required). A 
+#'  \href{http://www.mothur.org/wiki/Constaxonomy_file}{consensus taxonomy file} 
+#'  produced by \emph{mothur}.
+#'  
+#' @param parseFunction (Optional). A specific function used for parsing the taxonomy string.
+#'  See \code{\link{parse_taxonomy_default}} for an example. If the default is
+#'  used, this function expects a semi-colon delimited taxonomy string, with
+#'  no additional rank specifier. A common taxonomic database is GreenGenes,
+#'  and for recent versions its taxonomy includes a prefix, which is best cleaved
+#'  and used to precisely label the ranks (\code{\link{parse_taxonomy_greengenes}}).
 #'
-#' @param mothur_list_file Required. The list file name / location produced by \emph{mothur}.
+#' @return An \code{\link{taxonomyTable-class}} object.
 #'
-#' @param mothur_group_file Optional. The name/location of the group file produced 
+#' @seealso \code{\link{import_mothur}}
+#' 
+#' \code{\link{tax_table}}
+#' 
+#' \code{\link{phyloseq}}
+#' 
+#' @keywords internal
+import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction=parse_taxonomy_default){
+  read.table(mothur_constaxonomy_file)
+  rawtab = read.table(mothur_constaxonomy_file, header=TRUE, row.names=1, stringsAsFactors=FALSE)[, "Taxonomy", drop=FALSE]
+  if( identical(parseFunction, parse_taxonomy_default) ){
+    # Proceed with default parsing stuff.
+    # Remove the confidence strings inside the parentheses, if present
+    rawtab[, "Taxonomy"] = gsub("\\([[:digit:]]+\\)", "", rawtab[, "Taxonomy"])
+    # Remove the quotation marks, if present
+    rawtab[, "Taxonomy"] = gsub("\"", "", rawtab[, "Taxonomy"])
+    # Remove trailing semicolon
+    rawtab[, "Taxonomy"] = gsub(";$", "", rawtab[, "Taxonomy"])
+    # Split on semicolon
+    taxlist = strsplit(rawtab[, "Taxonomy"], ";", fixed=TRUE)
+    taxlist = lapply(taxlist, parseFunction)
+  } else {
+    taxlist = lapply(rawtab[, "Taxonomy"], parseFunction)
+  }
+  names(taxlist) <- rownames(rawtab)
+  return(build_tax_table(taxlist))
+}
+################################################################################
+#' General function for importing mothur data files into phyloseq.
+#'
+#' Technically all parameters are optional,
+#' but if you don't provide any file connections, then nothing will be returned.
+#' While the \code{list} and \code{group} files are the first two arguments
+#' for legacy-compatibility reasons, we don't recommend that you use these
+#' file types with modern (large) datasets. They are comically inefficient, as
+#' they store the name of every sequencing read in both files. The \emph{mothur}
+#' package provides conversions utilities to create other more-efficient formats,
+#' which we recommend, like 
+#' the \href{http://www.mothur.org/wiki/Shared_file}{shared file} for an OTU table.
+#' Alternatively, mothur also provides a utility to create a biom-format file
+#' that is independent of OTU clustering platform. Biom-format files 
+#' should be imported not with this function, but with \code{\link{import_biom}}.
+#' The resulting objects after import should be \code{\link{identical}} in R.
+#'
+#' @param mothur_list_file (Optional). The list file name / location produced by \emph{mothur}.
+#'
+#' @param mothur_group_file (Optional). The name/location of the group file produced 
 #'  by \emph{mothur}'s \code{make.group()} function. It contains information
 #'  about the sample source of individual sequences, necessary for creating a
 #'  species/taxa abundance table (\code{otu_table}). See
 #'  \code{http://www.mothur.org/wiki/Make.group} 
 #'
-#' @param mothur_tree_file Optional. The tree file name produced by \emph{mothur}.
-#'  Probably a file that ends with the suffix \code{".tree"}.
+#' @param mothur_tree_file (Optional). 
+#'  A tree file, presumably produced by \emph{mothur},
+#'  and readable by \code{\link{read_tree}}.
+#'  The file probably has extension \code{".tree"}.
 #'
-#' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
+#' @param cutoff (Optional). A character string indicating the cutoff value, (or \code{"unique"}), 
 #'  that matches one of the cutoff-values used to produce the OTU clustering 
 #'  results contained within the list-file created by \emph{mothur} (and specified
 #'  by the \code{mothur_list_file} argument). The default
@@ -1306,14 +1335,46 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #'  function within the \emph{mothur} package will often produce a list file
 #'  with multiple cutoff values, even if a specific cutoff is specified. It is
 #'  suggested that you check which cutoff values are available in a given list
-#'  file using the \code{\link{show_mothur_list_cutoffs}} function.
+#'  file using the \code{\link{show_mothur_cutoffs}} function.
 #'
-#' @return The object class depends on the provided arguments.
-#'  If the first three arguments are provided, then an \code{otuTree} object should
-#'  be returned, containing both an OTU-only tree and its associated 
-#'  \code{otu_table}-class abundance table. If only a list and group file are 
-#'  provided, then an \code{otu_table} object is returned. Similarly, if only a list
-#'  and tree file are provided, then only a tree is returned (\code{"phylo"} class).
+#' @param mothur_shared_file (Optional). A 
+#' \href{http://www.mothur.org/wiki/Shared_file}{shared file}
+#' produced by \emph{mothur}.
+#' 
+#' @param mothur_constaxonomy_file (Optional). A 
+#'  \href{http://www.mothur.org/wiki/Constaxonomy_file}{consensus taxonomy file} 
+#'  produced by \emph{mothur}.
+#'  
+#' @param parseFunction (Optional). A specific function used for parsing the taxonomy string.
+#'  See \code{\link{parse_taxonomy_default}} for an example. If the default is
+#'  used, this function expects a semi-colon delimited taxonomy string, with
+#'  no additional rank specifier. A common taxonomic database is GreenGenes,
+#'  and in recent versions its taxonomy entries include a prefix, which is best cleaved
+#'  and used to precisely label the ranks (\code{\link{parse_taxonomy_greengenes}}).
+#'
+#' @return The object class depends on the provided arguments. 
+#'  A phyloseq object is returned if enough data types are provided.
+#'  If only one data component can be created from the data, it is returned.
+#' 
+#'  FASTER (recommended for larger data sizes):
+#'  
+#'  If only a \code{mothur_constaxonomy_file} is provided, 
+#'  then a  \code{\link{taxonomyTable-class}} object is returned.
+#'  
+#'  If only a \code{mothur_shared_file} is provided, 
+#'  then an \code{\link{otu_table}} object is returned.
+#'  
+#'  SLOWER (but fine for small file sizes):
+#'  
+#'  The list and group file formats are extremely inefficient for large datasets,
+#'  and they are not recommended. The mothur software provides tools for 
+#'  converting to other file formats, such as a so-called ``shared'' file.
+#'  You should provide a shared file, or group/list files, but not
+#'  both at the same time.
+#'  If only a list and group file are provided, 
+#'  then an \code{otu_table} object is returned. 
+#'  Similarly, if only a list and tree file are provided, 
+#'  then only a tree is returned (\code{\link[ape]{phylo}}-class).
 #'
 #' @references \url{http://www.mothur.org/wiki/Main_Page}
 #'
@@ -1333,7 +1394,7 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #' # mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
 #' # mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
 #' # # # Actual examples follow:
-#' # show_mothur_list_cutoffs(mothur_list_file)
+#' # show_mothur_cutoffs(mothur_list_file)
 #' # test1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
 #' # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
 #' # # Returns just a tree
@@ -1344,33 +1405,34 @@ import_mothur_tree <- function(mothur_tree_file, mothur_list_file, cutoff=NULL){
 #' # import_mothur(mothur_list_file)
 #' # # Should return an "OMG, you must provide the list file" error
 #' # import_mothur()
-import_mothur <- function(mothur_list_file,  mothur_group_file=NULL,
-		mothur_tree_file=NULL, cutoff=NULL){
+import_mothur <- function(mothur_list_file=NULL,  mothur_group_file=NULL,
+  mothur_tree_file=NULL, cutoff=NULL,
+  mothur_shared_file=NULL, mothur_constaxonomy_file=NULL, parseFunction=parse_taxonomy_default){
 
-	if( missing(mothur_list_file) ){cat("you must provide the mothur_list_file argument\n")}
-
-	# Create otu_table object, OTU, only if group file provided. 
-	if( !is.null(mothur_group_file) ){
-		OTU  <- import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff)		
+  pslist = vector("list")
+  
+	if( !is.null(mothur_group_file) & !is.null(mothur_list_file) ){
+	  # If list & group files provided, you can make an OTU table.
+		groupOTU = import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff)
+		pslist = c(pslist, list(groupOTU))
 	} 
 	
-	# Similarly, only get modified tree object if tree file provided.
 	if( !is.null(mothur_tree_file) ){
-		tree <- import_mothur_tree(mothur_tree_file, mothur_list_file, cutoff)		
+		tree <- read_tree(mothur_tree_file)
+		pslist = c(pslist, list(tree))
 	}
-
-	### Decide what is going to be returned, based on arguments.
-	# If no group and no tree, then only list. Return list module output.
-	if( is.null(mothur_group_file) & is.null(mothur_tree_file) ){
-		return(import_mothur_otulist(mothur_list_file, cutoff))
-	} else if( !is.null(mothur_group_file) & is.null(mothur_tree_file) ){
-		return(OTU)
-	} else if( is.null(mothur_group_file) & !is.null(mothur_tree_file) ){
-		return(tree)
-	} else if( !is.null(mothur_group_file) & !is.null(mothur_tree_file) ){
-		# Return a merged OTU and tree object
-		return(phyloseq(OTU, tree))		
-	}
+  
+  if( !is.null(mothur_shared_file) ){
+    OTUshared <- import_mothur_shared(mothur_shared_file)
+    pslist = c(pslist, list(OTUshared))
+  }
+  
+  if( !is.null(mothur_constaxonomy_file) ){
+    tax <- import_mothur_constaxonomy(mothur_constaxonomy_file, parseFunction)
+    pslist = c(pslist, list(tax))
+  }  
+  
+  return(do.call("phyloseq", pslist))
 }
 ################################################################################
 #' Import mothur-formatted distance file
@@ -1448,11 +1510,13 @@ import_mothur_dist <- function(mothur_dist_file){
 #'  on the input data. This simple function returns the cutoffs that were actually
 #'  included in the \emph{mothur} output. This an important extra step prior to
 #'  importing the OTUs with the \code{import_mothur_otulist()} function.
+#'  
+#' @export
 #'
 #' @examples #
-#' ### data(GlobalPatterns) 
-#' ### myDistObject <- as.dist(cophenetic(tre(GlobalPatterns)))
-#' ### export_mothur_dist(myDistObject, "myfilepathname.dist")
+#' data(esophagus) 
+#' myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
+#' export_mothur_dist(myDistObject)
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 	if( class(x)== "matrix" ){ x <- as.dist(x) }
 	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }
@@ -1516,7 +1580,7 @@ export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 #' @param return (Optional). Should the ENV table be returned to the R workspace?
 #'  Default is \code{FALSE}.
 #'
-#' @import ape
+#' @importFrom ape write.nexus
 #' @export
 #' 
 #' @examples

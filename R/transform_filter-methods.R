@@ -253,21 +253,11 @@ rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 #' @docType methods
 #' @export
 #'
-#' @examples #
-#' # # # data(phylocom)
-#' # # # otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-#' # # # x1   <- phyloseq(otu, phylocom$phylo)
-#' # # # print(x1); par(mfrow=c(2, 1)); plot(phy_tree(x1))
-#' # # # x2 <- tip_glom(x1, speciationMinLength = 2.5)
-#' # # # plot(phy_tree(x2))
-#' # # # ## Try on example datset 1
-#' # # # data(GlobalPatterns); ntaxa(GlobalPatterns)
-#' # # # ex7 <- tip_glom(GlobalPatterns, speciationMinLength = 0.05)
-#' # # # ntaxa(ex7)
-#' # data(esophagus); ntaxa(esophagus); par(mfrow=c(2, 1)); plot(phy_tree(esophagus))
-#' # phy_tree(esophagus)$edge.length
-#' # x3 <- tip_glom(esophagus, speciationMinLength = 0.20)
-#' # ntaxa(x3); plot(phy_tree(x3))
+#' @examples 
+#' data(esophagus); ntaxa(esophagus); plot(phy_tree(esophagus))
+#' phy_tree(esophagus)$edge.length
+#' x3 <- tip_glom(esophagus, speciationMinLength = 0.20)
+#' ntaxa(x3); plot(phy_tree(x3))
 setGeneric("tip_glom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tip_glom"))
 #' @rdname tip_glom-methods
 #' @aliases tip_glom,phylo,otu_table-method
@@ -341,25 +331,25 @@ tip_glom.internal <- function(tree, speciationMinLength){
 #' 
 #' @seealso tip_glom
 #' @keywords internal
+#' @importFrom ape cophenetic.phylo
 #' @aliases gettipdistmatrix getTipDistMatrix
 setGeneric("getTipDistMatrix", function(tree, byRootFraction=FALSE) standardGeneric("getTipDistMatrix"))
 setMethod("getTipDistMatrix", signature("phylo"), function(tree, byRootFraction=FALSE){
-	### require("picante") # picante is a "depends"-level dependency of phyloseq.
 	pairwiseSpecDists = cophenetic(tree)
 	# If byRootFraction is true, normalize the cophenetic distances
 	# according to the mean root age.
 	if( byRootFraction ){
 		# Want to normalize pairwise tip distances by their mean distance to root
 		# start with tipAges
-		tipAges = node.age(tree)$ages[which(tree$edge[,2] %in% 1:length(tree$tip.label))]
+		tipAges = node_ages(tree)[which(tree$edge[, 2] %in% 1:length(tree$tip.label))]
 		names(tipAges) = tree$tip.label
 		###### Want Mmean to be a matrix of the mean pairwise root-distance b/w each tip-pair
-		Mmean = matrix(NA,length(tipAges),length(tipAges),
-			dimnames=list(names(tipAges),names(tipAges))) 	
-		means = combn(tipAges,2,mean)
-		ind = combn(length(tipAges),2)
-		for(i in 1:ncol(ind)){Mmean[ind[1,i], ind[2,i]] <- means[i]}
-		for(i in 1:ncol(ind)){Mmean[ind[2,i], ind[1,i]] <- means[i]}
+		Mmean = matrix(NA, length(tipAges), length(tipAges),
+			dimnames=list(names(tipAges), names(tipAges))) 	
+		means = combn(tipAges, 2, mean)
+		ind = combn(length(tipAges), 2)
+		for(i in 1:ncol(ind)){Mmean[ind[1, i], ind[2, i]] <- means[i]}
+		for(i in 1:ncol(ind)){Mmean[ind[2, i], ind[1, i]] <- means[i]}
 		diag(Mmean) <- tipAges
 		# take the ratio of spec distances to the mean
 		fracDists = pairwiseSpecDists / Mmean
@@ -581,7 +571,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' objects. This is particularly useful for pruning a phyloseq object that has
 #' more than one component that describes OTUs.
 #' Credit: the \code{phylo}-class version is adapted from
-#' \code{\link[picante]{prune.sample}}.
+#' \href{http://cran.at.r-project.org/web/packages/picante/index.html}{prune.sample}.
 #'
 #' @usage prune_taxa(taxa, x)
 #'
@@ -600,9 +590,10 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' the class of the argument, \code{x}.
 #'
 #' @seealso
-#'  \code{\link{prune_taxa}}
+#'  
+#'  \code{\link{prune_samples}}
 #'
-#'  \code{\link[picante]{prune.sample}}
+#'  \href{http://cran.at.r-project.org/web/packages/picante/index.html}{prune.sample}
 #'
 #' @rdname prune_taxa-methods
 #' @export
@@ -633,8 +624,7 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		return( prune_taxa(taxa_names(x)[taxa], x) )		
 	}
 })
-# import covering ape::drop.tip
-#' @import ape
+#' @importFrom ape drop.tip
 #' @aliases prune_taxa,character,phylo-method
 #' @rdname prune_taxa-methods
 setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
