@@ -14,6 +14,7 @@
 #' convenience wrappers for input from common clustering applications, common analysis pipelines, 
 #' and native implementation of methods that are not available in other R packages.
 #'
+#' @import methods
 #' @name phyloseq-package
 #' @author Paul J. McMurdie II \email{mcmurdie@@stanford.edu}
 #' @references \url{www.stanford.edu/~mcmurdie}
