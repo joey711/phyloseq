@@ -27,11 +27,10 @@
   Get the number of taxa/species.
 }
 \examples{
-#
-# # From "picante" package
-# data("phylocom")
-# tree <- phylocom$phylo
-# ntaxa(tree)
+data("esophagus")
+ntaxa(esophagus)
+phy_tree(esophagus)
+ntaxa(phy_tree(esophagus))
 }
 \seealso{
   taxa_names

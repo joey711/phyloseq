@@ -119,24 +119,13 @@
   the example code below.
 }
 \examples{
-# ################################################################################
-# # Perform UniFrac on esophagus data
-# ################################################################################
-# data("esophagus")
-# (y <- UniFrac(esophagus, TRUE))
-# UniFrac(esophagus, TRUE, FALSE)
-# UniFrac(esophagus, FALSE)
-# picante::unifrac(as(t(otu_table(esophagus)), "matrix"), tre(esophagus))
-# ################################################################################
-# # Try phylocom example data from picante package
-# # It comes as a list, so you must construct the phyloseq object first.
-# ################################################################################
-# data("phylocom")
-# (x1 <- phyloseq(otu_table(phylocom$sample, FALSE), phylocom$phylo))
-# UniFrac(x1, TRUE)
-# UniFrac(x1, TRUE, FALSE)
-# UniFrac(x1, FALSE)
-# picante::unifrac(phylocom$sample, phylocom$phylo)
+################################################################################
+# Perform UniFrac on esophagus data
+################################################################################
+data("esophagus")
+(y <- UniFrac(esophagus, TRUE))
+UniFrac(esophagus, TRUE, FALSE)
+UniFrac(esophagus, FALSE)
 # ################################################################################
 # # Now try a parallel implementation using doParallel, which leverages the
 # # new 'parallel' core package in R 2.14.0+
@@ -172,13 +161,12 @@
   The main implementation (Fast UniFrac) is adapted from
   the algorithm's description in:
 
-  Hamady, Lozupone, and Knight, ``Fast UniFrac:
-  facilitating high-throughput phylogenetic analyses of
-  microbial communities including analysis of
+  Hamady, Lozupone, and Knight,
+  ``\href{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}{Fast
+  UniFrac:} facilitating high-throughput phylogenetic
+  analyses of microbial communities including analysis of
   pyrosequencing and PhyloChip data.'' The ISME Journal
   (2010) 4, 17--27.
-
-  \url{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}
 
   See also additional descriptions of UniFrac in the
   following articles:
@@ -197,6 +185,8 @@
   Environ Microbiol. 2005 71 (12):8228-35.
 }
 \seealso{
-  \code{\link{distance}}, \code{\link[picante]{unifrac}}
+  \code{\link{distance}}
+
+  \code{unifrac} in the picante package.
 }
 

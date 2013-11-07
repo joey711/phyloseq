@@ -56,10 +56,79 @@ setClass("sample_data", contains="data.frame")
 #' @rdname taxonomyTable-class
 #' @exportClass taxonomyTable
 setClass("taxonomyTable", contains = "matrix")
+#metaMDS
+################################################################################
+#' S3 class placeholder definition (list) for metaMDS
+#' 
+#' The ape package does export a version of its \code{\link[vegan]{metaMDS}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the list components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq.
+#' 
+#' @seealso 
+#' \code{\link[vegan]{metaMDS}}
+#' 
+#' @keywords internal
+metaMDS <- structure(list(), class = "metaMDS")
+###
+# Remove if this ever works
+# @importClassesFrom vegan metaMDS
+################################################################################
+#' S3 class placeholder definition (list) for decorana
+#' 
+#' The ape package does export a version of its \code{\link[vegan]{decorana}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the list components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq. 
+#' 
+#' @seealso 
+#' \code{\link[vegan]{decorana}}
+#' 
+#' @keywords internal
+decorana <- structure(list(), class = "decorana")
+###
+# Remove if this ever works
+# @importClassesFrom vegan decorana
+################################################################################
+#' S3 class placeholder definition (list) for dpcoa
+#' 
+#' The ape package does export a version of its \code{\link[ade4]{dpcoa}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the list components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq. 
+#' 
+#' @seealso 
+#' \code{\link[ade4]{dpcoa}}
+#' 
+#' @importFrom ade4 print.dpcoa
+#' @importFrom ade4 plot.dpcoa
+#' @keywords internal
+dpcoa <- structure(list(), class = "dpcoa")
+###
+# If this ever works
+# @importClassesFrom ade4 dpcoa
 ################################################################################
 #' S3 class placeholder definition (list) for phylogenetic trees
 #' 
-#' The ape package does export a version of its \code{\link[ape]{phylo}}-class,
+#' The ape package does not export a version of its \code{\link[ape]{phylo}}-class,
 #' partly because it is not really defined formally anywhere.
 #' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
 #' this is a very common and easy approach --
@@ -82,7 +151,6 @@ setClass("taxonomyTable", contains = "matrix")
 #' @seealso 
 #' \code{\link[ape]{phylo}}
 #' 
-#' @importFrom ape print.phylo
 #' @keywords internal
 phylo <- structure(list(), class = "phylo")
 ###
@@ -126,6 +194,7 @@ setMethod("fix_phylo", "phylo", function(tree){
 #' 
 #' @keywords internal
 pcoa <- structure(list(), class = "pcoa")
+# @importMethodsFrom ape print
 ################################################################################
 # Use setClassUnion to define the unholy NULL-data union as a virtual class.
 # This is a way of dealing with the expected scenarios in which one or more of

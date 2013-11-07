@@ -22,13 +22,12 @@
 }
 \examples{
 #
-# # From "picante" package
-# data("phylocom")
-# tree <- phylocom$phylo
-# OTU1 <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-# nsamples(OTU1)
-# physeq1 <- phyloseq(OTU1, tree)
-# nsamples(physeq1)
+data("esophagus")
+tree <- phy_tree(esophagus)
+OTU1 <- otu_table(esophagus)
+nsamples(OTU1)
+physeq1 <- phyloseq(OTU1, tree)
+nsamples(physeq1)
 }
 \seealso{
   \code{\link{taxa_names}}, \code{\link{sample_names}},

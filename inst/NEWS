@@ -1,3 +1,17 @@
+CHANGES IN VERSION 1.7.8
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Package dependencies reduced/clarified:
+		https://github.com/joey711/phyloseq/issues/259
+		Should reduce chances for collisions with other packages, and related issues.
+		Removed any dependencies on the picante package.
+
+	- Replaced picante::node.age() with a faster implementation, node_ages()
+		Appears to be 3 times faster.
+		Speeds up UniFrac() and tip_glom() calculations.
+
 CHANGES IN VERSION 1.7.7
 -------------------------
 

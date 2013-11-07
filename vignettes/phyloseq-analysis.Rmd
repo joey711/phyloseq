@@ -283,14 +283,14 @@ Next, we will reproduce Figure 5 from the "Global Patterns" article([Caporaso 20
 
 
 #### non-metric Multi-Dimensional Scaling (NMDS)
-We repeat the previous example, but instead using non-metric multidimensional scaling (NMDS - `metaMDS()`) limited to just two dimensions. This approach limits the amount of residual distance "not shown" in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
+We repeat the previous example, but instead using non-metric multidimensional scaling (NMDS) limited to just two dimensions. This approach limits the amount of residual distance "not shown" in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
 
 ```{r GP_UF_NMDS0}
 # (Re)load UniFrac distance matrix and GlobalPatterns data
 data(GlobalPatterns)
 load(system.file("doc", "Unweighted_UniFrac.RData", package="phyloseq"))
 # perform NMDS, set to 2 axes
-GP.NMDS <- metaMDS(GPUF, k=2) 
+GP.NMDS <- ordinate(GlobalPatterns, "NMDS", GPUF)
 (p <- plot_ordination(GlobalPatterns, GP.NMDS, "samples", color="SampleType") +
   geom_line() + geom_point(size=5) )
 ```
@@ -459,13 +459,7 @@ cols          <- colorScale[get_variable(GlobalPatterns, "SampleType")]
 GP.tip.labels <- as(get_variable(GlobalPatterns, "SampleType"), "character")
 # This is the actual hierarchical clustering call, specifying average-link clustering
 GP.hclust     <- hclust(GPUF, method="average")
-```
-
-Plot the hierarchical clustering results as a dendrogram, after first converting the `hclust-class` object to `phylo-class` tree using the `as.phylo()` function.
-
-```{r GPfig4, fig.width=7, fig.height=4}
-plot(as.phylo(GP.hclust), show.tip.label=TRUE, tip.color="white")
-tiplabels(GP.tip.labels, col=cols, frame="none", adj=-0.05, cex=0.7)
+plot(GP.hclust, col=cols)
 ```
 
 An alternative means of summarizing a distance matrix via hierarchical clustering and plotting as an annotated dendrogram. Compare with Figure 4 from the [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107)). Some differences in Figure~\ref{fig:GPfig4 from the original article might be explained by [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107) in phyloseq being the summed observations from both primer directions (5' and 3'), while in the article they show the results separately. Furthermore, in the article the "mock" community is not included in the dataset, but an extra fecal sample is included.

@@ -30,14 +30,13 @@
 }
 \examples{
 #
-# # From "picante" package
-# data("phylocom")
-# tree <- phylocom$phylo
-# OTU1 <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
-# taxa_names(tree)
-# taxa_names(OTU1)
-# physeq1 <- phyloseq(OTU1, tree)
-# taxa_names(physeq1)
+data("esophagus")
+tree <- phy_tree(esophagus)
+OTU1 <- otu_table(esophagus)
+taxa_names(tree)
+taxa_names(OTU1)
+physeq1 <- phyloseq(OTU1, tree)
+taxa_names(physeq1)
 }
 \seealso{
   ntaxa

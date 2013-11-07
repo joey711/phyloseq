@@ -128,7 +128,10 @@
 #'
 #' \href{http://cran.r-project.org/web/views/Multivariate.html}{Multivariate Statistics}
 #' 
-#' @import vegan
+#' @importFrom vegan decorana
+#' @importFrom vegan metaMDS
+#' @importFrom vegan wisconsin
+#' @importFrom vegan decostand
 #' @importFrom ape pcoa
 #' @export
 #' @examples
@@ -190,7 +193,7 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 	}
 
 	# Define an internal function for accessing and orienting the OTU table
-	# in a fashion suitable for vegan/picante functions
+	# in a fashion suitable for vegan functions
 	veganify <- function(physeq){
 		OTU <- otu_table(physeq)
 		if( taxa_are_rows(OTU) ){ OTU <- t(OTU) }
@@ -261,8 +264,6 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' will not provide a Euclidean distance matrix, and so a correction
 #' will be performed, if needed. See \code{correction} argument. 
 #'
-#' @usage DPCoA(physeq, correction=cailliez, scannf=FALSE, ...)
-#'
 #' @param physeq (Required). A \code{\link{phyloseq-class}} object
 #'  containing, at a minimum, abundance (\code{\link{otu_table-class}}) and 
 #'  phylogenetic (\code{\link[ape]{phylo}}) components.
@@ -301,6 +302,9 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #'  Adapted for phyloseq by Paul J. McMurdie.
 #'
 #' @importFrom ape cophenetic.phylo
+#' @importFrom ade4 cailliez
+#' @importFrom ade4 dpcoa
+#' @importFrom ade4 is.euclid
 #' @export
 #' @references
 #' Pavoine, S., Dufour, A.B. and Chessel, D. (2004) 
@@ -398,7 +402,6 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @docType methods
 #'
 #' @keywords internal
-#' @import vegan
 #' @examples #
 #' # data(GlobalPatterns)
 #' # # For RDA, use thresholded-rank
@@ -413,6 +416,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' # mod1 <- cca.phyloseq(GlobalPatterns)
 setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
 ################################################################################
+#' @importFrom vegan cca
 #' @aliases cca.phyloseq,formula-method
 #' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "formula", function(X, data=NULL){
@@ -431,9 +435,10 @@ setMethod("cca.phyloseq", "formula", function(X, data=NULL){
 	}
 	# Good idea to qualify, as ade4 also has a conflicting "cca"
 	# and might be a dependency in the future.	
-	vegan::cca(newFormula, data=data)	
+	cca(newFormula, data=data)	
 })
 ################################################################################
+#' @importFrom vegan cca
 #' @aliases cca.phyloseq,otu_table-method
 #' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "otu_table", function(X){
@@ -444,9 +449,10 @@ setMethod("cca.phyloseq", "otu_table", function(X){
 	}
 	# Good idea to qualify, as ade4 also has a conflicting "cca"
 	# and might be a dependency in the future.
-	vegan::cca(X)	
+	cca(X)	
 })
 ################################################################################
+#' @importFrom vegan cca
 #' @aliases cca.phyloseq,phyloseq-method
 #' @rdname cca-rda-phyloseq-methods
 setMethod("cca.phyloseq", "phyloseq", function(X){
@@ -455,14 +461,13 @@ setMethod("cca.phyloseq", "phyloseq", function(X){
 ################################################################################
 #' @keywords internal
 #' @usage rda.phyloseq(X, ...)
-#' @import vegan
+#' @importFrom vegan rda
 #' @rdname cca-rda-phyloseq-methods
 #' @aliases cca.phyloseq rda.phyloseq
 setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
 #' @aliases rda.phyloseq,formula-method
 #' @rdname cca-rda-phyloseq-methods
 setMethod("rda.phyloseq", "formula", function(X, data=NULL){
-	#require(vegan)
 	physeq <- get( as.character(X)[2] )
 	OTU    <- otu_table( physeq )
 	if( taxa_are_rows(OTU) ){
@@ -540,6 +545,7 @@ setMethod("rda.phyloseq", "phyloseq", function(X){
 #' An object of S3 class \code{"clusGap"}, basically a list with components.
 #' See the \code{\link[cluster]{clusGap}} documentation for more details.
 #' 
+#' @importFrom vegan scores
 #' @importFrom cluster clusGap
 #' @importFrom cluster pam
 #' @export

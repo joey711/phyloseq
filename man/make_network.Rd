@@ -74,17 +74,17 @@ data(enterotype)
 ig <- make_network(enterotype, max.dist=0.3)
 plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 #
-# ig <- make_network(enterotype, max.dist=0.2)
-# plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+ig1 <- make_network(enterotype, max.dist=0.2)
+plot_network(ig1, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 #
 # # Three methods of choosing/providing distance/distance-method
-# Provide method name available to distance
+# Provide method name available to distance() function
 ig <- make_network(enterotype, max.dist=0.3, distance="jaccard")
 # Provide distance object, already computed
 jaccdist <- distance(enterotype, "jaccard")
 ih <- make_network(enterotype, max.dist=0.3, distance=jaccdist)
 # Provide "custom" function.
-ii <- make_network(enterotype, max.dist=0.3, distance=function(x){vegdist(x, "jaccard")})
+ii <- make_network(enterotype, max.dist=0.3, distance=function(x){vegan::vegdist(x, "jaccard")})
 # The have equal results:
 all.equal(ig, ih)
 all.equal(ig, ii)

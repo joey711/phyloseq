@@ -292,13 +292,13 @@ setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function
 #' @docType methods
 #' @rdname merge_taxa-methods
 #' @examples #
-#' data(phylocom)
-#' tree <- phylocom$phylo
-#' otu  <- otu_table(phylocom$sample, taxa_are_rows=FALSE)
+#' data(esophagus)
+#' tree <- phy_tree(esophagus)
+#' otu  <- otu_table(esophagus)
 #' otutree0 <- phyloseq(otu, tree)
-#' plot_tree(otutree0)
+#' # plot_tree(otutree0)
 #' otutree1 <- merge_taxa(otutree0, 1:8, 2)
-#' plot_tree(otutree1)
+#' # plot_tree(esophagus, ladderize="left")
 setGeneric("merge_taxa", function(x, eqtaxa, archetype=1L) standardGeneric("merge_taxa"))
 ################################################################################
 #' @keywords internal

@@ -2,7 +2,8 @@
 \alias{distance}
 \title{General distance / dissimilarity index calculator}
 \usage{
-  distance(physeq, method="unifrac", type="samples", ...)
+  distance(physeq, method = "unifrac", type = "samples",
+  ...)
 }
 \arguments{
   \item{physeq}{(Required).  A \code{\link{phyloseq-class}}

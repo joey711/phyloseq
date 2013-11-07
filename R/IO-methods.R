@@ -1510,11 +1510,13 @@ import_mothur_dist <- function(mothur_dist_file){
 #'  on the input data. This simple function returns the cutoffs that were actually
 #'  included in the \emph{mothur} output. This an important extra step prior to
 #'  importing the OTUs with the \code{import_mothur_otulist()} function.
+#'  
+#' @export
 #'
 #' @examples #
-#' ### data(GlobalPatterns) 
-#' ### myDistObject <- as.dist(cophenetic(tre(GlobalPatterns)))
-#' ### export_mothur_dist(myDistObject, "myfilepathname.dist")
+#' data(esophagus) 
+#' myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
+#' export_mothur_dist(myDistObject)
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 	if( class(x)== "matrix" ){ x <- as.dist(x) }
 	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }
