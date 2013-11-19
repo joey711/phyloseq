@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.7.9
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Fixed typo-derived bug in new vignette.
+
+	- These changes allow user to build from source without error.
+
 CHANGES IN VERSION 1.7.8
 -------------------------
 
