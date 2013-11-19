@@ -34,7 +34,7 @@ Defined file path, and import the published OTU count data into R.
 
 ```{r filepath}
 filepath = system.file("extdata", "study_1457_split_library_seqs_and_mapping.zip", package="phyloseq")
-kostic = microbio_me_qiime("~/Downloads/study_1457_split_library_seqs_and_mapping.zip")
+kostic = microbio_me_qiime(filepath)
 ```
 
 Here I had to use a relative file path so that this example works on all systems that have phyloseq installed. In practice, your file path will look like this (if you've downloaded the data ahead of time):
