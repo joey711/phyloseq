@@ -313,22 +313,23 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 #' Journal of Theoretical Biology, 228, 523-537.
 #' 
 #' @examples
-#' # # # # # # # Esophagus
-#' # data(esophagus)
-#' # eso.dpcoa <- DPCoA(esophagus)
-#' # plot_ordination(esophagus, eso.dpcoa, "samples")
-#' # plot_ordination(esophagus, eso.dpcoa, "species")
-#' # plot_ordination(esophagus, eso.dpcoa, "biplot")
-#' # #
-#' # #
-#' # # # # # # # GlobalPatterns
-#' # data(GlobalPatterns)
-#' # # subset GP to top-150 taxa (to save computation time in example)
-#' # keepTaxa <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:150])
-#' # GP       <- prune_taxa(keepTaxa, GlobalPatterns)
-#' # # Perform DPCoA
-#' # GP.dpcoa <- DPCoA(GP)
-#' # plot_ordination(GP, GP.dpcoa, color="SampleType")
+#' # # # # # # Esophagus
+#' data(esophagus)
+#' eso.dpcoa <- DPCoA(esophagus)
+#' eso.dpcoa
+#' plot_ordination(esophagus, eso.dpcoa, "samples")
+#' plot_ordination(esophagus, eso.dpcoa, "species")
+#' plot_ordination(esophagus, eso.dpcoa, "biplot")
+#' #
+#' #
+#' # # # # # # GlobalPatterns
+#' data(GlobalPatterns)
+#' # subset GP to top-150 taxa (to save computation time in example)
+#' keepTaxa <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:150])
+#' GP       <- prune_taxa(keepTaxa, GlobalPatterns)
+#' # Perform DPCoA
+#' GP.dpcoa <- DPCoA(GP)
+#' plot_ordination(GP, GP.dpcoa, color="SampleType")
 DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	# Check that physeq is a phyloseq-class
 	if(!class(physeq)=="phyloseq"){stop("physeq must be phyloseq-class")}

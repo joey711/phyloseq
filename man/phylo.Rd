@@ -1,6 +1,6 @@
 \name{phylo}
 \alias{phylo}
-\title{S3 class placeholder definition (list) for phylogenetic trees}
+\title{S3 class placeholder definition (list) for phylogenetic trees.}
 \description{
   The ape package does not export a version of its
   \code{\link[ape]{phylo}}-class, partly because it is not
@@ -11,21 +11,20 @@
   requires exact naming conventions for element names of
   the components. The phyloseq package does not provide any
   validity checks that a given phylo instance is valid
-  (conforms to the conventions in the ape package)... yet.
-  If problems arise, this might be considered, and they
-  could be defined judiciously and within phyloseq.
-  Similarly, if a formal definition for the the phylo-class
-  is ever exported by ape, the current philosophy of
-  phyloseq would be to remove this internal definition and
-  import the former. Note that there is still some work
-  going on for the phylobase package, which is addressing
-  these same exact issues for S4 phylogenetic tree
-  interaction. A very large number of packages (around 60
-  at my last count), depend on ape, making it easily the de
-  facto standard for representing phylogenetic trees in R;
-  and the phyloseq team would prefer to use any exported
-  definitions from the ape package if possible and
-  available.
+  (conforms to the conventions in the ape package). Yet. If
+  problems arise, this might be considered, and they could
+  be defined judiciously and within phyloseq. Similarly, if
+  a formal definition for the the phylo-class is ever
+  exported by ape, the current philosophy of phyloseq would
+  be to remove this internal definition and import the
+  former. Note that there is still some work going on for
+  the phylobase package, which is addressing these same
+  exact issues for S4 phylogenetic tree interaction. A very
+  large number of packages (around 60 at my last count),
+  depend on ape, making it easily the de facto standard for
+  representing phylogenetic trees in R; and the phyloseq
+  team would prefer to use any exported definitions from
+  the ape package if possible and available.
 }
 \seealso{
   \code{\link[ape]{phylo}}

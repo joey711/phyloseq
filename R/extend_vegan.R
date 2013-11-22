@@ -19,8 +19,7 @@ scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 		return( x$vectors[, choices] )		
 	}
 }
-# dpcoa-class, from ade4::dpcoa or phyloseq::DPCoA
-# @importClassesFrom ade4 dpcoa
+# dpcoa-class, from ade4
 #' @importFrom vegan scores
 #' @keywords internal
 scores.dpcoa <- function(x, choices=NULL, display="sites", ...){

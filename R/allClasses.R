@@ -104,29 +104,39 @@ decorana <- structure(list(), class = "decorana")
 ################################################################################
 #' S3 class placeholder definition (list) for dpcoa
 #' 
-#' The ape package does export a version of its \code{\link[ade4]{dpcoa}}-class,
+#' The ade4 package does not export a version of its \code{\link[ade4]{dpcoa}}-class,
 #' partly because it is not really defined formally anywhere.
 #' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
 #' this is a very common and easy approach --
 #' and proper behavior of any method taking an instance of this class 
 #' requires exact naming conventions for element names of the list components.
 #' The phyloseq package does not provide any validity checks that a given phylo
-#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' instance is valid (conforms to the conventions in the ape package). Yet.
 #' If problems arise, this might be considered, and they could be defined
 #' judiciously and within phyloseq. 
+#' 
+#' An instance of this class can be produced from within phyloseq using either
+#' the \code{\link{DPCoA}} function, or the higher-level wrapping function
+#' \code{\link{ordinate}}.
 #' 
 #' @seealso 
 #' \code{\link[ade4]{dpcoa}}
 #' 
-#' @importFrom ade4 print.dpcoa
-#' @importFrom ade4 plot.dpcoa
+#' \code{\link{DPCoA}}
+#' 
+#' \code{\link{ordinate}}
+#' 
 #' @keywords internal
 dpcoa <- structure(list(), class = "dpcoa")
-###
+################################################################################
+## # @keywords internal
+## print.dpcoa <- ade4:::print.dpcoa
+################################################################################
 # If this ever works
 # @importClassesFrom ade4 dpcoa
 ################################################################################
-#' S3 class placeholder definition (list) for phylogenetic trees
+#
+#' S3 class placeholder definition (list) for phylogenetic trees.
 #' 
 #' The ape package does not export a version of its \code{\link[ape]{phylo}}-class,
 #' partly because it is not really defined formally anywhere.
@@ -135,7 +145,7 @@ dpcoa <- structure(list(), class = "dpcoa")
 #' and proper behavior of any method taking an instance of this class 
 #' requires exact naming conventions for element names of the components.
 #' The phyloseq package does not provide any validity checks that a given phylo
-#' instance is valid (conforms to the conventions in the ape package)... yet.
+#' instance is valid (conforms to the conventions in the ape package). Yet.
 #' If problems arise, this might be considered, and they could be defined
 #' judiciously and within phyloseq. 
 #' Similarly, if a formal definition for the the phylo-class is ever exported
@@ -153,10 +163,10 @@ dpcoa <- structure(list(), class = "dpcoa")
 #' 
 #' @keywords internal
 phylo <- structure(list(), class = "phylo")
-###
+################################################################################
 # If this ever works
 # @importClassesFrom ape phylo
-###
+################################################################################
 #' An S4 placeholder of the main phylogenetic tree class from the ape package.
 #'
 #' See the \code{\link[ape]{ape}} package for details about this type of
