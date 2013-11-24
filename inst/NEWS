@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.7.10
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Fixes build-error originating from change in ade4 NAMESPACE in version 1.6.2
+	
+	- Change minimum ade4 version to 1.6.2
+	
+	- Uncommented examples now included in documentation for DPCoA function
+
 CHANGES IN VERSION 1.7.9
 -------------------------
 
