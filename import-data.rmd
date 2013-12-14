@@ -1,14 +1,43 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
+`r opts_chunk$set(cache=FALSE, fig.width=10)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # Importing phyloseq Data
 
+The custom functions that read external data files and return an instance of the phyloseq-class are called *importers*. Validity and coherency between data components are checked by the phyloseq-class constructor, `phyloseq()` which is invoked internally by the importers, and is also the suggested function for creating a phyloseq object from [manually imported data](#manual). The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-`r NULL`) component data describe exactly the same OTUs and samples, in the same order. 
+
+See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions and documentation links to their specific doc pages, or see below for examples using some of the more popular [import functions](#import_functions).
+
+## [Create phyloseq Data Manually](#manual)
+
+### [MG-RAST](#mgrast)
+
+## <a name="import_functions"></a> Currently available import functions
+
+### [microbio_me_qiime](#microbio_me)
+
+### [import_biom](#import_biom)
+
+### [import_qiime](#import_qiime)
+
+### [import_mothur](#import_mothur)
+
+### [import_pyrotagger](#import_pyrotagger)
+
+
 ---
-## Load requisite packages
+
+
+---
+
+
+---
+
+---
+## Begin examples, load requisite packages
 
 ```{r package-load, warning=FALSE, message=FALSE}
-library("phyloseq")
-packageVersion("phyloseq")
+library("phyloseq"); packageVersion("phyloseq")
+library("ggplot2"); packageVersion("ggplot2")
 ```
 
 Define a default theme for ggplot graphics.
@@ -16,14 +45,166 @@ Define a default theme for ggplot graphics.
 theme_set(theme_bw())
 ```
 
-The custom functions that read external data files and return an instance of the phyloseq-class are called "importers". Validity and coherency between data components are checked by the phyloseq-class constructor, `phyloseq()` which is invoked internally by the importers, and is also the suggested function for creating a phyloseq object from "manually" imported data. The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-`r NULL`) component data describe exactly the same OTUs and samples, in the same order. 
-
-## Currently available import functions
-
-See `?import` after phyloseq has been loaded (`library("phyloseq")`), to get an overview of available import functions and documentation links to their specific doc pages, or see below for examples using some of the more popular importers.
 
 ---
-### import_biom
+
+### <a name="manual"></a> Create phyloseq Data Manually
+
+There are lots of ways to get data related to a microbiome project, and not all of these will come from a popular server or workflow that is already supported in phyloseq. We also want to encourage users to create and share their own import code for special data formats. For these reasons especially, phyloseq provides tools for *constructing* phyloseq component data, and the experiment-level multi-component data object, the *phyloseq-class*. These are the same functions used internally by [the currently available importers](#import_functions).
+
+```{r eval=FALSE}
+?phyloseq
+?otu_table
+?sample_data
+?tax_table
+```
+
+<img src="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0061217.g003/largerimage" width="750px" />
+
+**If you can get the data into R, then you can get it "into" phyloseq.**
+
+Constructors:
+
+- `otu_table` - Works on any numeric `matrix`. You must also specify if the species are rows or columns
+- `sample_data` - Works on any `data.frame`. The rownames must match the sample names in the `otu_table` if you plan to combine them as a phyloseq-object
+- `tax_table` - Works on any character `matrix`. The rownames must match the OTU names (`taxa_names`) of the `otu_table` if you plan to combine it with a phyloseq-object.
+- `phyloseq` - Takes as argument an `otu_table` and any unordered list of valid phyloseq components: `sample_data`, `tax_table`, `phylo`, or `XStringSet`. The tip labels of a phylo-object (tree) must match the OTU names of the `otu_table`, and similarly, the sequence names of an `XStringSet` object must match the OTU names of the `otu_table`. 
+- `merge_phyloseq` - Can take any number of phyloseq objects and/or phyloseq components, and attempts to combine them into one larger phyloseq object. This is most-useful for adding separately-imported components to an already-created phyloseq object.
+
+**Note:** OTUs and samples are included in the combined object only if they are present in all components. For instance, extra "leaves" on the tree will be trimmed off when that tree is added to a phyloseq object.
+
+**Example** - In the following example, we will define random example data tables in R, and then combine these into a phyloseq object. If you are able to get your data tables into R, then you can apply the following method to manually create phyloseq instances of your own data.
+
+
+We'll create the example vanilla R tables using base R code. No packages required yet. 
+
+```{r}
+# Create a pretend OTU table that you read from a file, called otumat
+otumat = matrix(sample(1:100, 100, replace = TRUE), nrow = 10, ncol = 10)
+otumat
+```
+
+It needs sample names and OTU names, the index names of the your own matrix might already have this.
+
+```{r}
+rownames(otumat) <- paste0("OTU", 1:nrow(otumat))
+colnames(otumat) <- paste0("Sample", 1:ncol(otumat))
+otumat
+```
+
+Now we need a pretend taxonomy table
+
+```{r}
+taxmat = matrix(sample(letters, 70, replace = TRUE), nrow = nrow(otumat), ncol = 7)
+rownames(taxmat) <- rownames(otumat)
+colnames(taxmat) <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+taxmat
+class(otumat)
+class(taxmat)
+```
+
+Note how these are just vanilla R matrices. Now let's tell phyloseq how to combine them into a phyloseq object.
+
+```{r}
+# In the previous lines, we didn't even need to have phyloseq loaded yet. Now we do.
+library("phyloseq")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+TAX = tax_table(taxmat)
+OTU
+TAX
+physeq = phyloseq(OTU, TAX)
+physeq
+plot_bar(physeq, fill = "Family")
+```
+
+Let's add to this, pretending we also had other types of data available.
+
+Create random sample data, and add that to the combined dataset. Make sure that the sample names match the `sample_names` of the `otu_table`.
+
+```{r}
+sampledata = sample_data(data.frame(
+  Location = sample(LETTERS[1:4], size=nsamples(physeq), replace=TRUE),
+  Depth = sample(50:1000, size=nsamples(physeq), replace=TRUE),
+  row.names=sample_names(physeq),
+  stringsAsFactors=FALSE
+))
+sampledata
+```
+
+Now create a random phylogenetic tree with the ape package, and add it to your dataset. Make sure its tip labels match your `OTU_table`.
+
+```{r}
+library("ape")
+random_tree = rtree(ntaxa(physeq), rooted=TRUE, tip.label=taxa_names(physeq))
+plot(random_tree)
+```
+
+Now let's combine these altogether. We can do this either by adding the new data components to the phyloseq object we already have by using `merge_phyloseq`, or we can use a fresh new call to `phyloseq` to build it again from scratch. The results should be identical, and we can check. You can always do either one with the help from accessor functions, and the choice is stylistic.
+
+Merge new data with current phyloseq object:
+
+```{r}
+physeq1 = merge_phyloseq(physeq, sampledata, random_tree)
+physeq1
+```
+
+Rebuild phyloseq data from scratch using all the simulated data components we just generated:
+
+```{r}
+physeq2 = phyloseq(OTU, TAX, sampledata, random_tree)
+physeq2
+```
+
+Are they identical?
+
+```{r identical-check-manual}
+identical(physeq1, physeq2)
+```
+
+Let's build a couple tree plots with the new combined data.
+
+```{r treeplot}
+plot_tree(physeq1, color="Location", label.tips="taxa_names", ladderize="left", plot.margin=0.3)
+plot_tree(physeq1, color="Depth", shape="Location", label.tips="taxa_names", ladderize="right", plot.margin=0.3)
+```
+
+Now how about some heatmaps.
+
+```{r heatmap-random}
+plot_heatmap(physeq1)
+plot_heatmap(physeq1, taxa.label="Phylum")
+```
+
+As you can see, you gain access to the all the typical phyloseq tools, but without relying on any of the import wrappers.
+
+
+---
+
+### <a name="mgrast"></a> MG-RAST
+
+A recent phyloseq issues tracker post discusses and demonstrates importing a `.biom` file exported by MG-RAST:
+
+https://github.com/joey711/phyloseq/issues/272
+
+The otherwise-recommended [import_biom](#import_biom) function does not work properly (for now) on this special variant of the BIOM-format. Or said another way, the [import_biom](#import_biom) function anticipates a different special variant of the BIOM-format the is generated by recent versions of QIIME. The [issue post about MG-RAST and phyloseq](https://github.com/joey711/phyloseq/issues/272) provides an example for [importing the data manually](#manual) using coercion functions and phyloseq constructors.
+
+
+---
+
+### <a name="microbio_me"></a> [microbio_me_qiime](http://joey711.github.io/phyloseq/download-microbio.me.html)
+
+[microbio_me_qiime](http://joey711.github.io/phyloseq/download-microbio.me.html) is a function in phyloseq that interfaces with the QIIME data server:
+
+http://www.microbio.me/qiime/index.psp
+
+You will need to setup an account to browse the available data sets and their IDs. If you know a datasets ID already, or its assigned number, you can provide that as the sole argument to this function and it will download, unpack, and import the data into R, all in one command. Alternatively, if you have already downloaded the data from the QIIME server, and now have it locally on your hard drive, you can provide the local path to this tar-gz or zip file, and it will perform the unpacking and importing step for you. I'm finding this increasingly useful for creating demonstrations of methods and graphics, and can be a very effective way for you to provide fully reproducible analysis if your own data is already hosted on the [microbio.me](http://www.microbio.me/qiime/index.psp) server.
+
+See the [microbio_me_qiime tutorial](http://joey711.github.io/phyloseq/download-microbio.me.html) for further details and examples.
+
+
+---
+
+### <a name="import_biom"></a>import_biom
 
 Newer versions of [QIIME](http://www.qiime.org/) produce a more-comprehensive and formally-defined JSON file format, called [biom file format](http://biom-format.org/):
 
@@ -71,7 +252,8 @@ refseq(myData)
 
 
 ---
-### import_qiime
+
+### <a name="import_qiime"></a> import_qiime
 
 QIIME produces several files that can be analyzed in the phyloseq-package, including especially an OTU file that typically contains both OTU-abundance and taxonomic identity information. The map-file is also an important input to QIIME that stores sample covariates, converted naturally to the sample_data-class component data type in the phyloseq-package. QIIME may also produce a phylogenetic tree with a tip for each OTU, which can also be imported by this function.
 
@@ -97,7 +279,10 @@ plot_heatmap(qiimedata, sample.label="SampleType", species.label="Phylum")
 
 
 ---
-### import_mothur
+
+### <a name="import_mothur"></a> import_mothur
+
+
 The open-source, platform-independent, locally-installed software package, "mothur"", can also process barcoded amplicon sequences and perform OTU-clustering, among other things. It is extensively documented on a wiki at [the mothur wiki](http://www.mothur.org/wiki/Main_Page).
 
 ```{r}
@@ -148,7 +333,8 @@ import_mothur()
 
 
 ---
-### import_pyrotagger
+
+### <a name="import_pyrotagger"></a> import_pyrotagger
 
 PyroTagger is created and maintained by the [Joint Genome Institute](http://pyrotagger.jgi-psf.org/)
 
