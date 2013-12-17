@@ -1,3 +1,15 @@
+CHANGES IN VERSION 1.7.11
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Adds warning in make_network() and error in plot_network if empty graph encountered
+		Issue 275, check/warning for empty igraph objects
+		https://github.com/joey711/phyloseq/issues/275
+	
+	- rarefy_even_depth() messages changed from cat() to messages(), and optional verbose argument added
+		https://github.com/joey711/phyloseq/issues/263
+
 CHANGES IN VERSION 1.7.10
 -------------------------
 

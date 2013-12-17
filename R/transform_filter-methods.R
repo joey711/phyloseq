@@ -84,6 +84,14 @@
 #'   (have a count of zero in every sample). 
 #'   The number of OTUs trimmed, if any, is printed to
 #'   standard out as a reminder.
+#'   
+#' @param verbose (Optional). Logical. Default is \code{TRUE}.
+#'  If \code{TRUE}, extra non-warning, non-error messages are printed
+#'  to standard out, describing steps in the rarefying process, 
+#'  the OTUs and samples removed, etc. This can be useful the
+#'  first few times the function is executed, but can be set
+#'  to \code{FALSE} as-needed once behavior has been verified
+#'  as expected.  
 #'
 #' @return An object of class \code{phyloseq}. 
 #' Only the \code{otu_table} component is modified.
