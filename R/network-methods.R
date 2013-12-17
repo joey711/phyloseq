@@ -66,6 +66,7 @@
 #' @importFrom igraph V
 #' @importFrom igraph delete.vertices
 #' @importFrom igraph degree
+#' @importFrom igraph vcount
 #'
 #' @export
 #'
