@@ -28,7 +28,9 @@ sam_data <- sample_data
 #' @rdname plot_richness
 #' @aliases plot_richness
 #' @export
-plot_richness_estimates <- plot_richness
+plot_richness_estimates <- function(){
+  .Deprecated("plot_richness")
+}
 
 
 #' @rdname import_qiime_sample_data

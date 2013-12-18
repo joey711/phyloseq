@@ -31,11 +31,8 @@
 #' @author Pei et al. \email{zhiheng.pei@@med.nyu.edu}
 #' @keywords data
 #' @examples
-#' # Example using esophagus-data in a UniFrac calculation. 
 #' data(esophagus)
 #' UniFrac(esophagus, weighted=TRUE)
-#' UniFrac(esophagus, weighted=FALSE)
-#' #
 #' # How to re-create the esophagus dataset using import_mothur function
 #' mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
 #' mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
@@ -43,7 +40,6 @@
 #' show_mothur_list_cutoffs(mothlist)
 #' cutoff    <- "0.10"
 #' esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)	
-#' identical(esophagus, esophman)
 ################################################################################
 NA
 ################################################################################
@@ -84,28 +80,9 @@ NA
 #' @author Arumugam, M., Raes, J., et al.
 #' @keywords data
 #' @examples
-#' # Try simple network-analysis plot
 #' data(enterotype)
 #' ig <- make_network(enterotype, "samples", max.dist=0.3)
 #' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-#' # 
-#' # Filter samples that don't have Enterotype
-#' x <- subset_samples(enterotype, !is.na(Enterotype))
-#' # 
-#' # Alternatively. . .
-#' ent.cca <- ordinate(x ~ Enterotype, "CCA")
-#' plot_ordination(x, ent.cca, color="Enterotype")
-#' plot_ordination(x, ent.cca, "biplot")
-#' plot_ordination(x, ent.cca, "split", color="Enterotype")
-#' # 
-#' # # multiple testing of genera correlating with enterotype 2
-#' # mt(x, data.frame(sample_data(x))[, "Enterotype"]==2)
-#' # # Should return a data.frame, with the following head()
-#'                              # # # # # index     teststat   rawp   adjp plower
-#' # # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001
-#' # # # Bacteroides                     203 -9.015717540 0.0001 0.0088 0.0001
-#' # # # Holdemania                      201 -5.810081084 0.0001 0.0088 0.0001
-#' # # # Acetivibrio                     156 -5.246137207 0.0001 0.0088 0.0001
 ################################################################################
 NA
 ################################################################################
@@ -183,25 +160,7 @@ NA
 #' ################################################################################
 #' # Graphically compare richness between the different treatments.
 #' man.col <- c(WC="red", WU="brown", UC="blue", UU="darkgreen")
-#' (p <- plot_richness_estimates(soilrep, x="Treatment", color="Treatment") )
-#' # Add boxplots using ggplot2
-#' # library(ggplot2)
-#' # p + geom_boxplot() + scale_color_manual(values=man.col)
-#' # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-#' # The treatments do not appear to have affected the
-#' # estimated total richness between warmed/unwarmed soil samples
-#' # Test this formally:
-#' DF <- data.frame(sample_data(soilrep), estimate_richness(soilrep) )
-#' t.test(x=subset(DF, warmed=="yes")[, "Chao1"], y=subset(DF, warmed=="no")[, "Chao1"])
-#' ################################################################################
-#' # A beta diversity comparison.
-#' ################################################################################
-#' # Perform non-metric multidimensional scaling, using Bray-Curtis distance
-#' soil.NMDS <- ordinate(soilrep, "NMDS", "bray")
-#' (p <- plot_ordination(soilrep, soil.NMDS, "samples", color="Treatment") )
-#' # Additional formatting using ggplot2
-#' # library(ggplot2)
-#' # ( p <- p + geom_point(size=5, alpha=0.5) + facet_grid(warmed ~ clipped) )
+#' plot_richness(soilrep, x="Treatment", color="Treatment", measures=c("Observed", "Chao1", "Shannon"))
 ################################################################################
 NA
 ################################################################################
@@ -248,16 +207,7 @@ NA
 #'
 #' @examples
 #' data(GlobalPatterns)
-#' # Remove unobserved taxa
-#' GP0   <- prune_species(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
-#' # Perform ordination (in this case, detrended correspondence analysis)
-#' gpdca <- ordinate(GP0, "DCA")
-#' # Create plot of samples
-#' plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes")
-#' # # More complicated plot facetting by phylum.
-#' # library("ggplot2")
-#' # plot_ordination(GP0, gpdca, color="SampleType", title="DCA on abundances, first two axes") + geom_line()
-#' # plot_ordination(GP0, gpdca, "taxa", color="Kingdom") + facet_wrap(~Phylum, 8)
+#' plot_richness(GlobalPatterns, x="SampleType", measures=c("Observed", "Chao1", "Shannon"))
 ################################################################################
 NA
 ################################################################################
