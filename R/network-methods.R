@@ -66,6 +66,7 @@
 #' @importFrom igraph V
 #' @importFrom igraph delete.vertices
 #' @importFrom igraph degree
+#' @importFrom igraph vcount
 #'
 #' @export
 #'
@@ -98,86 +99,73 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 	keep.isolates=FALSE, ...){
 
 	if( type %in% c("taxa", "species", "OTUs", "otus", "otu")){
-	    # Calculate or asign taxa-wise distance matrix
-	    if( class(distance) == "dist" ){ # If argument is already a distance matrix.
-	    	# If distance a distance object, use it rather than re-calculate
-	    	obj.dist <- distance
-	    	if( attributes(obj.dist)$Size != ntaxa(physeq) ){
-	    		stop("ntaxa(physeq) does not match size of dist object in distance")
-	    	}
-	    	if( !setequal(attributes(obj.dist)$Labels, taxa_names(physeq)) ){
-	    		stop("taxa_names does not exactly match dist-indices")
-	    	}
-	
-	    # If character string, pass on to distance(), assume supported
-	    } else if( class(distance) == "character" ){ 
-		    obj.dist <- distance(physeq, method=distance, type=type, ...)
-	
-		# Else, assume a custom function and attempt to calculate.
-	    } else { 	
-	    	# Enforce orientation for taxa-wise distances
-		    if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
-		    
-		    # Calculate distances
-		    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
+    # Calculate or asign taxa-wise distance matrix
+	  if( class(distance) == "dist" ){ 
+	    # If distance a distance object, use it rather than re-calculate
+	    obj.dist <- distance
+	    if( attributes(obj.dist)$Size != ntaxa(physeq) ){
+	      stop("ntaxa(physeq) does not match size of dist object in distance")
 	    }
+	    if( !setequal(attributes(obj.dist)$Labels, taxa_names(physeq)) ){
+	      stop("taxa_names does not exactly match dist-indices")
+	    }
+	  } else if( class(distance) == "character" ){ 
+	    # If character string, pass on to distance(), assume supported
+	    obj.dist <- distance(physeq, method=distance, type=type, ...)
+	    # Else, assume a custom function and attempt to calculate.
+	  } else { 	
+	    # Enforce orientation for taxa-wise distances
+	    if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
+	    # Calculate distances
+	    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
+	  }
 	    # coerce distance-matrix back into vanilla matrix, Taxa Distance Matrix, TaDiMa
 	    TaDiMa  <- as.matrix(obj.dist)
-	    
 	    # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
 	    TaDiMa <- TaDiMa + diag(Inf, ntaxa(physeq), ntaxa(physeq))
-	    
 	    # Convert distance matrix to coincidence matrix, CoMa, using max.dist
 		CoMa <- TaDiMa < max.dist   
-			
 	} else if( type == "samples" ){
-		
-	    # Calculate or asign sample-wise distance matrix
-	    if( class(distance) == "dist" ){ # If argument is already a distance matrix.
-	    	# If distance a distance object, use it rather than re-calculate
-	    	obj.dist <- distance
-	    	if( attributes(obj.dist)$Size != nsamples(physeq) ){
-	    		stop("nsamples(physeq) does not match size of dist object in distance")
-	    	}
-	    	if( !setequal(attributes(obj.dist)$Labels, sample_names(physeq)) ){
-	    		stop("sample_names does not exactly match dist-indices")
-	    	}
-	    	
-	    # If character string, pass on to distance(), assume supported    	
-	    } else if( class(distance) == "character" ){
-		    obj.dist <- distance(physeq, method=distance, type=type, ...)
-	
-		# Else, assume a custom function and attempt to calculate.	    
-	    } else { 
-	    	# Enforce orientation for sample-wise distances
-		    if(taxa_are_rows(physeq)){ physeq <- t(physeq) }
-		    
-		    # Calculate distances
-		    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
+    # Calculate or asign sample-wise distance matrix
+	  if( class(distance) == "dist" ){ # If argument is already a distance matrix.
+	    # If distance a distance object, use it rather than re-calculate
+	    obj.dist <- distance
+	    if( attributes(obj.dist)$Size != nsamples(physeq) ){
+	      stop("nsamples(physeq) does not match size of dist object in distance")
 	    }
-	    # coerce distance-matrix back into vanilla matrix, Sample Distance Matrix, SaDiMa
-	    SaDiMa  <- as.matrix(obj.dist)
-	    
-	    # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
-	    SaDiMa <- SaDiMa + diag(Inf, nsamples(physeq), nsamples(physeq))
-	    
-	    # Convert distance matrix to coincidence matrix, CoMa, using max.dist
-		CoMa <- SaDiMa < max.dist  
-		  
+	    if( !setequal(attributes(obj.dist)$Labels, sample_names(physeq)) ){
+	      stop("sample_names does not exactly match dist-indices")
+	    }
+	    # If character string, pass on to distance(), assume supported    	
+	  } else if( class(distance) == "character" ){
+	    # Else, assume a custom function and attempt to calculate. 
+	    obj.dist <- distance(physeq, method=distance, type=type, ...)
+	  } else { 
+	    # Enforce orientation for sample-wise distances
+	    if(taxa_are_rows(physeq)){ physeq <- t(physeq) }
+	    # Calculate distances
+	    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
+	  }
+	  # coerce distance-matrix back into vanilla matrix, Sample Distance Matrix, SaDiMa
+	  SaDiMa  <- as.matrix(obj.dist)
+	  # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
+	  SaDiMa <- SaDiMa + diag(Inf, nsamples(physeq), nsamples(physeq))
+	  # Convert distance matrix to coincidence matrix, CoMa, using max.dist
+	  CoMa <- SaDiMa < max.dist  
 	} else {
 		stop("type argument must be one of \n (1) samples \n or \n (2) taxa")
 	}
-    
-    # Calculate the igraph-formatted network
-    ig <- graph.adjacency(CoMa, mode="lower")
-    
-    # If keeping isolates, done. Else, remove them, then return igraph.
-    if( keep.isolates ){
-    	return(ig)
-    } else {
-	    isolates   <- V(ig)[degree(ig) == 0]
-	    ig.no.isol <- delete.vertices(ig, V(ig)[degree(ig) == 0])
-	    return(ig.no.isol)
-    }
+	# Calculate the igraph-formatted network
+	ig <- graph.adjacency(CoMa, mode="lower")
+	if( !keep.isolates ){
+	  # If not-keeping isolates, remove them
+	  isolates <- V(ig)[degree(ig) == 0]
+	  ig = delete.vertices(ig, V(ig)[degree(ig) == 0])
+	}
+	if( vcount(ig) < 2 ){
+	  # Report a warning if the graph is empty
+	  warning("The graph you created has too few vertices. Consider changing `max.dist` argument, and check your data.")
+	}      
+	return(ig)  
 }
 ################################################################################

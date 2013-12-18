@@ -4,7 +4,7 @@
 \usage{
   rarefy_even_depth(physeq, sample.size =
   min(sample_sums(physeq)), rngseed = FALSE, replace =
-  TRUE, trimOTUs = TRUE)
+  TRUE, trimOTUs = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}}
@@ -48,22 +48,41 @@
   sample (have a count of zero in every sample). The number
   of OTUs trimmed, if any, is printed to standard out as a
   reminder.}
+
+  \item{verbose}{(Optional). Logical. Default is
+  \code{TRUE}. If \code{TRUE}, extra non-warning, non-error
+  messages are printed to standard out, describing steps in
+  the rarefying process, the OTUs and samples removed, etc.
+  This can be useful the first few times the function is
+  executed, but can be set to \code{FALSE} as-needed once
+  behavior has been verified as expected.}
 }
 \value{
   An object of class \code{phyloseq}. Only the
   \code{otu_table} component is modified.
 }
 \description{
-  This function uses the standard R \code{\link{sample}}
-  function to resample from the abundance values in the
-  \code{otu_table} component of the first argument,
-  \code{physeq}. Often one of the major goals of this
-  procedure is to achieve parity in total number of counts
-  between samples, as an alternative to other formal
-  normalization procedures, which is why a single value for
-  the \code{sample.size} is expected. This kind of
-  resampling can be performed with and without replacement,
-  with replacement being the more
+  Please note that the authors of phyloseq do not advocate
+  using this as a normalization procedure, despite its
+  recent popularity. Our justifications for using
+  alternative approaches to address disparities in library
+  sizes have been made available as
+  \href{http://arxiv.org/abs/1310.0424}{an article in the
+  quantitative-biology sub-arXiv} ahead of peer-reviewed
+  publication. See \code{\link{phyloseq_to_deseq2}} for a
+  recommended alternative to rarefying. Nevertheless, for
+  comparison and demonstration, the rarefying procedure is
+  implemented here in good faith and with options we hope
+  are useful. This function uses the standard R
+  \code{\link{sample}} function to resample from the
+  abundance values in the \code{otu_table} component of the
+  first argument, \code{physeq}. Often one of the major
+  goals of this procedure is to achieve parity in total
+  number of counts between samples, as an alternative to
+  other formal normalization procedures, which is why a
+  single value for the \code{sample.size} is expected. This
+  kind of resampling can be performed with and without
+  replacement, with replacement being the more
   computationally-efficient, default setting. See the
   \code{replace} parameter documentation for more details.
   We recommended that you explicitly select a random number
@@ -79,15 +98,13 @@
   this context, ecology, the term refers to a
   \href{http://en.wikipedia.org/wiki/Rarefaction_(ecology)}{repeated
   sampling procedure to assess species richness}, first
-  proposed in 1968 by Howard Sanders. In contrast, this
-  procedure is not typically repeated (though maybe it
-  should be to ensure robust inference), but instead used
-  as an \emph{ad hoc} means to normalize microbiome counts
-  that have resulted from libraries of widely-differing
-  sizes. Here we have intentionally adopted an alternative
-  name, \code{rarefy}, that has also been used recently to
-  describe this process and, to our knowledge, not
-  previously used in ecology.
+  proposed in 1968 by Howard Sanders. In contrast, the
+  procedure implemented here is used as an \emph{ad hoc}
+  means to normalize microbiome counts that have resulted
+  from libraries of widely-differing sizes. Here we have
+  intentionally adopted an alternative name, \code{rarefy},
+  that has also been used recently to describe this process
+  and, to our knowledge, not previously used in ecology.
 
   Make sure to use \code{\link{set.seed}} for
   exactly-reproducible results of the random subsampling.

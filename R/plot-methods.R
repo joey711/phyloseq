@@ -175,6 +175,11 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	line_weight=0.5, line_color=color, line_alpha=0.4,
 	layout.method=layout.fruchterman.reingold, title=NULL){
 
+  if( vcount(g) < 2 ){
+    # Report a warning if the graph is empty
+    stop("The graph you provided, `g`, has too few vertices. Check your graph, or the output of `make_network` and try again.")
+  }
+  
 	# disambiguate species/OTU/taxa as argument type...
 	if( type %in% c("taxa", "species", "OTUs", "otus", "otu") ){
 		type <- "taxa"
