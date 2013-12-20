@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.7.12
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Formal deprecation of functions using .Deprecated
+		Issue 269, 
+		https://github.com/joey711/phyloseq/issues/269
+
 CHANGES IN VERSION 1.7.11
 -------------------------
 
