@@ -4,15 +4,9 @@
 \alias{tax_table,ANY-method}
 \alias{tax_table,data.frame-method}
 \alias{tax_table,matrix-method}
-\alias{taxtab}
-\alias{taxTab}
 \title{Build or access the taxonomyTable.}
 \usage{
   tax_table(object, errorIfNULL=TRUE)
-
-  taxtab(object, errorIfNULL = TRUE)
-
-  taxTab(object, errorIfNULL = TRUE)
 }
 \arguments{
   \item{object}{An object among the set of classes defined

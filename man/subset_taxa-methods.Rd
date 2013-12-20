@@ -1,12 +1,9 @@
 \docType{methods}
 \name{subset_taxa}
-\alias{subset_species}
 \alias{subset_taxa}
 \title{Subset species by taxonomic expression}
 \usage{
   subset_taxa(physeq, ...)
-
-  subset_species(physeq, ...)
 }
 \arguments{
   \item{physeq}{A \code{\link{taxonomyTable-class}}, or

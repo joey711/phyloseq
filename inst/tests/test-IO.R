@@ -25,7 +25,7 @@ test_that("import_mothur: The two phyloseq objects, example and just-imported, a
 })
 
 test_that("import_mothur: Test mothur file import on the (esophagus data).", {
-	smlc <- show_mothur_list_cutoffs(mothlist)
+	smlc <- show_mothur_cutoffs(mothlist)
 	expect_that(smlc, is_equivalent_to(c("unique", "0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10")))	
 })
 
@@ -93,7 +93,7 @@ test_that("Class of import result is phyloseq-class", {
 test_that("Classes of components are as expected", {
 	expect_that(otu_table(t0), is_a("otu_table"))
 	expect_that(tax_table(t0), is_a("taxonomyTable"))
-	expect_that(sam_data(t0), is_a("sample_data"))
+	expect_that(sample_data(t0), is_a("sample_data"))
 	expect_that(phy_tree(t0), is_a("phylo"))		
 	expect_that(refseq(t0), is_a("DNAStringSet"))
 })

@@ -1,6 +1,5 @@
 \docType{methods}
 \name{taxa_names}
-\alias{species.names}
 \alias{taxa_names}
 \alias{taxa_names,ANY-method}
 \alias{taxa_names,otu_table-method}
@@ -12,8 +11,6 @@
 \title{Get species / taxa names.}
 \usage{
   taxa_names(physeq)
-
-  species.names(physeq)
 }
 \arguments{
   \item{physeq}{\code{\link{phyloseq-class}},

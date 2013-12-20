@@ -4,11 +4,11 @@
 library("phyloseq"); library("testthat"); library("ggplot2")
 data("GlobalPatterns")
 # Subset to small dataset for quicker testing
-GP <- prune_species(taxa_sums(GlobalPatterns)>10000, GlobalPatterns)
+GP <- prune_taxa(taxa_sums(GlobalPatterns)>10000, GlobalPatterns)
 
 # Pretend GP doesn't have sample_data or tax_table
 GP.tax <- tax_table(GP)
-GP.sd  <- sam_data(GP)
+GP.sd  <- sample_data(GP)
 GP.tr  <- phy_tree(GP)
 # GP <- phyloseq(otu_table(GP), GP.tr)
 GP.otu <- otu_table(GP)
@@ -139,11 +139,11 @@ test_that("estimate_richness: test values, classes", {
   # Default is all available measures
   erdf = estimate_richness(soilrep)
   expect_is(erdf, "data.frame")
-  expect_equivalent(dim(erdf), c(56, 10))
+  expect_equivalent(nrow(erdf), 56)
   # Contains all expected measures 
   expect_true(all(c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher") %in% colnames(erdf)))
   # and certain standard errors:
-  expect_true(all(c("se.chao1", "se.ACE", "se.fisher") %in% colnames(erdf)))
+  expect_true(all(c("se.chao1", "se.ACE") %in% colnames(erdf)))
   # Test some values. 
   expect_equivalent(erdf$Observed, apply(otu_table(soilrep), 2, function(x){sum(x>0)}))
   expect_equivalent(estimate_richness(GlobalPatterns, measures="Observed")[, 1], 
@@ -168,21 +168,18 @@ test_that("plot_richness: Standard plots work", {
   expect_is(p, "ggplot")
   expect_equivalent(levels(p$data$variable),
                     c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher"))
-  c("se.chao1", "se.ACE", "se.fisher")
   expect_false(all(is.na(p$data$se)))
   expect_true(any(is.na(p$data$se)))
-    
   p = plot_richness(soilrep, measures=c("Observed", "Chao1"))
   expect_is(p, "ggplot")
   expect_equivalent(levels(p$data$variable), c("Observed", "Chao1"))
 })
 
-test_that("plot_richness: Error in fisher.alpha is caught, warning, still plots", {
+test_that("plot_richness/estimate_richness: fisher.alpha", {
   data("GlobalPatterns")
   data("soilrep")
   p = plot_richness(soilrep, measures="Fisher")
   expect_is(p, "ggplot")
-  expect_warning(p123123 <- plot_richness(GlobalPatterns, measures="Fisher"))
-  expect_is(p123123, "ggplot")
+  expect_is(p123123 <- plot_richness(GlobalPatterns, measures="Fisher"), "ggplot")
   expect_equivalent(levels(p123123$data$variable), "Fisher")
 })

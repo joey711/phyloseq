@@ -1,13 +1,9 @@
 \name{tax_glom}
 \alias{tax_glom}
-\alias{taxglom}
 \title{Agglomerate taxa of the same type.}
 \usage{
   tax_glom(physeq, taxrank=rank_names(physeq)[1],
   NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
-
-  taxglom(physeq, taxrank = rank_names(physeq)[1], NArm =
-  TRUE, bad_empty = c(NA, "", " ", "\t"))
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}} or

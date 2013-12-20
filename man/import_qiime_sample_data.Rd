@@ -1,11 +1,8 @@
 \name{import_qiime_sample_data}
 \alias{import_qiime_sample_data}
-\alias{import_qiime_sampleData}
 \title{Import just \code{sample_data} file from QIIME pipeline.}
 \usage{
   import_qiime_sample_data(mapfilename)
-
-  import_qiime_sampleData(mapfilename)
 }
 \arguments{
   \item{mapfilename}{(Required). A character string or

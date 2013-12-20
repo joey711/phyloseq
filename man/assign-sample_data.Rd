@@ -1,13 +1,9 @@
 \name{sample_data<-}
 \alias{assign-sample_data}
-\alias{sam_data<-}
 \alias{sample_data<-}
-\alias{sampleData<-}
 \title{Assign (new) sample_data to \code{x}}
 \usage{
   sample_data(x) <- value
-
-  sam_data(x) <- value
 }
 \arguments{
   \item{x}{(Required). \code{\link{phyloseq-class}}. The
@@ -50,22 +46,10 @@
   (internally) for any other issues.
 }
 \examples{
-#
-# data(GlobalPatterns)
-# # An example of pruning to just the first 10 samples in GlobalPatterns
-# ex2a <- prune_samples(sample_names(GlobalPatterns)[1:10], GlobalPatterns)
-# # The following 3 lines produces an ex2b that is equal to ex2a
-# ex2b <- GlobalPatterns
-# SD <- sample_data(GlobalPatterns)[1:10, ]
-# sample_data(ex2b) <- SD
-# identical(ex2a, ex2b)
-# print(ex2b)
-# # Example restoring the original sample_data component. ex2c lacks sample_data
-# ex2c <- phyloseq(otu_table(GlobalPatterns), tax_table(GlobalPatterns), phy_tree(GlobalPatterns))
-# sample_data(ex2c) <- GlobalPatterns
-# identical(ex2c, GlobalPatterns)
-# # Can try on ex2b, but other components have only 10 samples. No change.
-# sample_data(ex2b) <- GlobalPatterns
-# identical(ex2a, ex2b) # still true.
+data(soilrep)
+soilrep
+head(sample_data(soilrep))
+sample_data(soilrep)$Time <- as.integer(substr(sample_data(soilrep)$Sample, 1, 1))
+head(sample_data(soilrep))
 }
 

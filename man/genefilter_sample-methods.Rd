@@ -4,12 +4,9 @@
 \alias{genefilter_sample,matrix-method}
 \alias{genefilter_sample,otu_table-method}
 \alias{genefilter_sample,phyloseq-method}
-\alias{genefilterSample}
 \title{Filter OTUs with arbitrary function, sample-wise.}
 \usage{
   genefilter_sample(X, flist, A=1)
-
-  genefilterSample(X, flist, A = 1)
 }
 \arguments{
   \item{X}{The object that needs trimming. Can be matrix,

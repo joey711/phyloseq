@@ -439,7 +439,7 @@ unifracPair <- function(occ, tree, A, B){
 	
 	# Prune tree to just those species present in either A or B
 	ispecies <- colnames(occ)[ (occ[A, ] > 0) | (occ[B, ] > 0) ]
-	itree    <- prune_species(ispecies, tree)
+	itree    <- prune_taxa(ispecies, tree)
 	
 	# numerator loops over each edge:
 	edges <- 1:nrow(itree$edge)

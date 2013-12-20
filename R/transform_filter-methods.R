@@ -740,12 +740,12 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 #' @rdname prune_samples-methods
 #' @docType methods
 #' @export
-#' @examples #
+#' @examples
 #'  data(GlobalPatterns)
 #'  # Subset to just the Chlamydiae phylum.
 #'  GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
 #'  # Remove the samples that have less than 20 total reads from Chlamydiae
-#'  GP.chl <- prune_samples(sampleSums(GP.chl)>=20, GP.chl)
+#'  GP.chl <- prune_samples(sample_sums(GP.chl)>=20, GP.chl)
 #'  # (p <- plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance"))
 setGeneric("prune_samples", function(samples, x) standardGeneric("prune_samples"))
 #' @aliases prune_samples,character,otu_table-method

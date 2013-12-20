@@ -4,7 +4,6 @@
 \alias{phy_tree<-}
 \alias{phy_tree<-,phyloseq,phylo-method}
 \alias{phy_tree<-,phyloseq,phyloseq-method}
-\alias{tre<-}
 \title{Assign a (new) phylogenetic tree to \code{x}}
 \usage{
   phy_tree(x) <- value
@@ -20,18 +19,12 @@
 }
 \examples{
 #
-# data(GlobalPatterns)
-# # An example of pruning to just the first 100 taxa in GlobalPatterns.
-# ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
-# # The following 3 lines produces an ex2b that is equal to ex2a
-# ex2b <- GlobalPatterns
-# tree <- prune_species(taxa_names(GlobalPatterns)[1:100], phy_tree(GlobalPatterns))
-# phy_tree(ex2b) <- tree
-# identical(ex2a, ex2b)
-# print(ex2b)
-# # Example adding a phylo tree from phyloseq class
-# ex2c <- phyloseq(otu_table(ex2b), sample_data(ex2b), tax_table(ex2b))
-# phy_tree(ex2c) <- ex2b
-# identical(ex2b, ex2c)
+data("esophagus")
+# An example of pruning to just the first 20 taxa in esophagus
+ex2a <- prune_taxa(taxa_names(esophagus)[1:20], esophagus)
+# The following 3 lines produces an ex2b that is equal to ex2a
+ex2b <- ex2a
+phy_tree(ex2b) <- phy_tree(esophagus)
+identical(ex2a, ex2b)
 }
 
