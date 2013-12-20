@@ -3,12 +3,9 @@
 \alias{phy_tree}
 \alias{phy_tree,ANY-method}
 \alias{phy_tree,phylo-method}
-\alias{tre}
 \title{Retrieve phylogenetic tree (\code{\link[ape]{phylo}}-class) from object.}
 \usage{
   phy_tree(physeq, errorIfNULL=TRUE)
-
-  tre(physeq, errorIfNULL = TRUE)
 }
 \arguments{
   \item{physeq}{(Required). An instance of phyloseq-class

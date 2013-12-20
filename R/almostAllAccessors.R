@@ -298,15 +298,15 @@ setMethod("nsamples", "sample_data", function(physeq) nrow(physeq) )
 #'
 #' @seealso \code{\link{taxa_names}}, \code{\link{nsamples}}
 #' 
-#' @aliases sample_names sampleNames
+#' @aliases sample_names
 #'
 #' @rdname sample_names-methods
 #' @docType methods
 #' @export
 #'
 #' @examples 
-#' # data(GlobalPatterns)
-#' # sample_names(GlobalPatterns)
+#' data(esophagus)
+#' sample_names(esophagus)
 setGeneric("sample_names", function(physeq) standardGeneric("sample_names"))
 # Unless otherwise specified, this should return a value of NULL
 # That way, objects that do not explicitly describe samples all

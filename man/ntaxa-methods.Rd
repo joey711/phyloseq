@@ -1,6 +1,5 @@
 \docType{methods}
 \name{ntaxa}
-\alias{nspecies}
 \alias{ntaxa}
 \alias{ntaxa,ANY-method}
 \alias{ntaxa,otu_table-method}
@@ -11,8 +10,6 @@
 \title{Get the number of taxa/species.}
 \usage{
   ntaxa(physeq)
-
-  nspecies(physeq)
 }
 \arguments{
   \item{physeq}{\code{\link{phyloseq-class}},

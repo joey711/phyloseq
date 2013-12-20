@@ -4,12 +4,9 @@
 \alias{tip_glom,phylo,ANY-method}
 \alias{tip_glom,phylo,otu_table-method}
 \alias{tip_glom,phyloseq,ANY-method}
-\alias{tipglom}
 \title{Agglomerate closely-related taxa using single-linkage clustering.}
 \usage{
   tip_glom(tree, OTU, speciationMinLength=0.02)
-
-  tipglom(tree, OTU, speciationMinLength = 0.02)
 }
 \arguments{
   \item{tree}{\code{\link{phyloseq-class}}, containing an

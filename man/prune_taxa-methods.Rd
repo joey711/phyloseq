@@ -1,5 +1,4 @@
 \name{prune_taxa}
-\alias{prune_species}
 \alias{prune_taxa}
 \alias{prune_taxa,character,otu_table-method}
 \alias{prune_taxa,character,phylo-method}
@@ -12,8 +11,6 @@
 \title{Prune unwanted OTUs / taxa from a phylogenetic object.}
 \usage{
   prune_taxa(taxa, x)
-
-  prune_species(taxa, x)
 }
 \arguments{
   \item{taxa}{(Required). A character vector of the taxa in

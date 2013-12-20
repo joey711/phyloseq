@@ -8,7 +8,7 @@ GP <- prune_species(taxa_sums(GlobalPatterns)>10000, GlobalPatterns)
 
 # Pretend GP doesn't have sample_data or tax_table
 GP.tax <- tax_table(GP)
-GP.sd  <- sam_data(GP)
+GP.sd  <- sample_data(GP)
 GP.tr  <- phy_tree(GP)
 # GP <- phyloseq(otu_table(GP), GP.tr)
 GP.otu <- otu_table(GP)

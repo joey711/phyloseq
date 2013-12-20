@@ -1,12 +1,9 @@
 \name{filterfun_sample}
 \alias{filterfun_sample}
-\alias{filterfunSample}
 \title{A sample-wise filter function builder
 analogous to \code{\link[genefilter]{filterfun}}.}
 \usage{
   filterfun_sample(...)
-
-  filterfunSample(...)
 }
 \arguments{
   \item{...}{A comma-separated list of functions.}

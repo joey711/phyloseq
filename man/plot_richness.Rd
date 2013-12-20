@@ -1,6 +1,5 @@
 \name{plot_richness}
 \alias{plot_richness}
-\alias{plot_richness_estimates}
 \title{Plot alpha diversity, flexibly with ggplot2}
 \usage{
   plot_richness(physeq, x = "samples", color = NULL, shape

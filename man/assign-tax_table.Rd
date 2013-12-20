@@ -5,7 +5,6 @@
 \alias{tax_table<-,phyloseq,taxonomyTable-method}
 \alias{tax_table<-,taxonomyTable,ANY-method}
 \alias{tax_table<-,taxonomyTable,taxonomyTable-method}
-\alias{taxTab<-}
 \title{Assign a (new) Taxonomy Table to \code{x}}
 \usage{
   tax_table(x) <- value
@@ -26,7 +25,6 @@
   Assign a (new) Taxonomy Table to \code{x}
 }
 \examples{
-#
 # data(GlobalPatterns)
 # # An example of pruning to just the first 100 taxa in GlobalPatterns.
 # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)

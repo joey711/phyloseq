@@ -1,11 +1,8 @@
 \name{taxa_sums}
-\alias{speciesSums}
 \alias{taxa_sums}
 \title{Returns the total number of individuals observed from each species/taxa/OTU.}
 \usage{
   taxa_sums(x)
-
-  speciesSums(x)
 }
 \arguments{
   \item{x}{\code{\link{otu_table-class}}, or

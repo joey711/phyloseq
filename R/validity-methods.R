@@ -106,7 +106,7 @@ validphyloseq <- function(object){
 	}
 	# If there is sample data, check that sample-names overlap
 	if( !is.null(object@sam_data) ){
-		if( length(intersect(sample.names(object@sam_data), sample.names(object@otu_table))) <= 0 ){
+		if( length(intersect(sample_names(object@sam_data), sample_names(object@otu_table))) <= 0 ){
 			return("\n Component sample names do not match.\n Try sample_names()")
 		}
 	}

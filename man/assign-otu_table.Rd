@@ -5,7 +5,6 @@
 \alias{otu_table<-,otu_table,otu_table-method}
 \alias{otu_table<-,phyloseq,otu_table-method}
 \alias{otu_table<-,phyloseq,phyloseq-method}
-\alias{otuTable<-}
 \title{Assign a new OTU Table to \code{x}}
 \usage{
   otu_table(x) <- value

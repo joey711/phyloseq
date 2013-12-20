@@ -1,7 +1,5 @@
 \docType{methods}
 \name{taxa_are_rows}
-\alias{speciesarerows}
-\alias{speciesAreRows}
 \alias{taxa_are_rows}
 \alias{taxa_are_rows,ANY-method}
 \alias{taxa_are_rows,otu_table-method}
@@ -9,10 +7,6 @@
 \title{Access taxa_are_rows slot from otu_table objects.}
 \usage{
   taxa_are_rows(physeq)
-
-  speciesarerows(physeq)
-
-  speciesAreRows(physeq)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
