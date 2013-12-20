@@ -124,16 +124,16 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
 #' ## http://joey711.github.com/phyloseq/plot_richness-examples
-#'  data("soilrep")
+#'  data("esophagus")
 #'  # Default is all available measures
-#'  estimate_richness(soilrep)
+#'  estimate_richness(esophagus)
 #'  # Specify just one:
-#'  estimate_richness(soilrep, measures="Observed")
+#'  estimate_richness(esophagus, measures="Observed")
 #'  # Specify a few:
-#'  estimate_richness(soilrep, measures=c("Observed", "InvSimpson", "Shannon", "Chao1"))
+#'  estimate_richness(esophagus, measures=c("Observed", "InvSimpson", "Shannon", "Chao1"))
 estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 
-	if( !any(otu_table(physeq)==1) ){
+  if( !any(otu_table(physeq)==1) ){
 	  # Check for singletons, and then warning if they are missing.
 	  # These metrics only really meaningful if singletons are included.
 		warning(
@@ -194,8 +194,12 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
         suppressWarnings(fisher.alpha(OTU, se=TRUE)[, c("alpha", "se")])
       }
     )
-	  colnames(fisher) <- c("Fisher", "se.fisher")
-	  outlist <- c(outlist, list(fisher))
+    if(!is.null(dim(fisher))){
+      colnames(fisher)[1:2] <- c("Fisher", "se.fisher")
+      outlist <- c(outlist, list(fisher))
+    } else {
+      outlist <- c(outlist, Fisher=list(fisher))
+    }
 	}
   out = do.call("cbind", outlist)
   # Rename columns per renamevec

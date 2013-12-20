@@ -17,7 +17,7 @@
 #' @examples
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
-#' # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
+#' # ex2a <- prune_taxa(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
 #' # # The following 3 lines produces an ex2b that is equal to ex2a
 #' # ex2b <- GlobalPatterns
 #' # OTU <- otu_table(GlobalPatterns)[1:100, ]
@@ -145,7 +145,7 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 #' @examples
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
-#' # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
+#' # ex2a <- prune_taxa(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
 #' # # The following 3 lines produces an ex2b that is equal to ex2a
 #' # ex2b <- GlobalPatterns
 #' # TT <- tax_table(GlobalPatterns)[1:100, ]
@@ -193,19 +193,13 @@ setMethod("tax_table<-", c("taxonomyTable", "ANY"), function(x, value){
 #' @rdname assign-phy_tree
 #' @aliases assign-phy_tree phy_tree<-
 #' @examples #
-#' # data(GlobalPatterns)
-#' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
-#' # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
-#' # # The following 3 lines produces an ex2b that is equal to ex2a
-#' # ex2b <- GlobalPatterns
-#' # tree <- prune_species(taxa_names(GlobalPatterns)[1:100], phy_tree(GlobalPatterns))
-#' # phy_tree(ex2b) <- tree
-#' # identical(ex2a, ex2b)
-#' # print(ex2b)
-#' # # Example adding a phylo tree from phyloseq class
-#' # ex2c <- phyloseq(otu_table(ex2b), sample_data(ex2b), tax_table(ex2b))
-#' # phy_tree(ex2c) <- ex2b
-#' # identical(ex2b, ex2c)
+#' data("esophagus")
+#' # An example of pruning to just the first 20 taxa in esophagus
+#' ex2a <- prune_taxa(taxa_names(esophagus)[1:20], esophagus)
+#' # The following 3 lines produces an ex2b that is equal to ex2a
+#' ex2b <- ex2a
+#' phy_tree(ex2b) <- phy_tree(esophagus)
+#' identical(ex2a, ex2b)
 setGeneric("phy_tree<-", function(x, value) standardGeneric("phy_tree<-"))
 #' @rdname assign-phy_tree
 #' @aliases phy_tree<-,phyloseq,phylo-method

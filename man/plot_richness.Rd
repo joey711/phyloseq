@@ -116,7 +116,7 @@
 ## http://joey711.github.com/phyloseq/plot_richness-examples
 data("soilrep")
 plot_richness(soilrep, measures=c("InvSimpson", "Fisher"))
-plot_richness(soilrep, "Treatment", "warmed",, measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
+plot_richness(soilrep, "Treatment", "warmed", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 data("GlobalPatterns")
 plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
 plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
