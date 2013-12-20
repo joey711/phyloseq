@@ -50,28 +50,9 @@
   (end quote)
 }
 \examples{
-# Try simple network-analysis plot
 data(enterotype)
 ig <- make_network(enterotype, "samples", max.dist=0.3)
 plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-#
-# Filter samples that don't have Enterotype
-x <- subset_samples(enterotype, !is.na(Enterotype))
-#
-# Alternatively. . .
-ent.cca <- ordinate(x ~ Enterotype, "CCA")
-plot_ordination(x, ent.cca, color="Enterotype")
-plot_ordination(x, ent.cca, "biplot")
-plot_ordination(x, ent.cca, "split", color="Enterotype")
-#
-# # multiple testing of genera correlating with enterotype 2
-# mt(x, data.frame(sample_data(x))[, "Enterotype"]==2)
-# # Should return a data.frame, with the following head()
-# # # # # index     teststat   rawp   adjp plower
-# # # Prevotella                      207 11.469961374 0.0001 0.0088 0.0001
-# # # Bacteroides                     203 -9.015717540 0.0001 0.0088 0.0001
-# # # Holdemania                      201 -5.810081084 0.0001 0.0088 0.0001
-# # # Acetivibrio                     156 -5.246137207 0.0001 0.0088 0.0001
 }
 \author{
   Arumugam, M., Raes, J., et al.

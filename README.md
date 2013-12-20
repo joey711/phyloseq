@@ -4,9 +4,14 @@
 
 ## Pre-submission article on microbiome normalization
 
+New version, as of December 12th, 2013:
+
 [Waste Not, Want Not: Why Rarefying Microbiome Data is Inadmissible](http://arxiv.org/abs/1310.0424)
 
 (2013) Submitted. Available ahead of acceptance.
+[PDF version 2](http://arxiv.org/pdf/1310.0424v2.pdf),
+[PDF version 1](http://arxiv.org/pdf/1310.0424v1.pdf)
+
 
 ## Latest peer-reviewed article about phyloseq
 [phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data](http://dx.plos.org/10.1371/journal.pone.0061217)

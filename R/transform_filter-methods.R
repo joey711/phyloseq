@@ -6,6 +6,15 @@
 ################################################################################
 #' Resample an OTU table such that all samples have the same library size.
 #' 
+#' Please note that the authors of phyloseq do not advocate using this
+#' as a normalization procedure, despite its recent popularity.
+#' Our justifications for using alternative approaches to address
+#' disparities in library sizes have been made available as 
+#' \href{http://arxiv.org/abs/1310.0424}{an article in the quantitative-biology sub-arXiv}
+#' ahead of peer-reviewed publication.
+#' See \code{\link{phyloseq_to_deseq2}} for a recommended alternative to rarefying.
+#' Nevertheless, for comparison and demonstration, the rarefying procedure is implemented
+#' here in good faith and with options we hope are useful.
 #' This function uses the standard R \code{\link{sample}} function to 
 #' resample from the abundance values 
 #' in the \code{otu_table} component of the first argument,
@@ -26,9 +35,7 @@
 #' but in this context, ecology, the term refers to a
 #' \href{http://en.wikipedia.org/wiki/Rarefaction_(ecology)}{repeated sampling procedure to assess species richness},
 #' first proposed in 1968 by Howard Sanders.
-#' In contrast, this procedure is not typically repeated
-#' (though maybe it should be to ensure robust inference),
-#' but instead used as an \emph{ad hoc} means to
+#' In contrast, the procedure implemented here is used as an \emph{ad hoc} means to
 #' normalize microbiome counts that have 
 #' resulted from libraries of widely-differing sizes.
 #' Here we have intentionally adopted an alternative
@@ -77,6 +84,14 @@
 #'   (have a count of zero in every sample). 
 #'   The number of OTUs trimmed, if any, is printed to
 #'   standard out as a reminder.
+#'   
+#' @param verbose (Optional). Logical. Default is \code{TRUE}.
+#'  If \code{TRUE}, extra non-warning, non-error messages are printed
+#'  to standard out, describing steps in the rarefying process, 
+#'  the OTUs and samples removed, etc. This can be useful the
+#'  first few times the function is executed, but can be set
+#'  to \code{FALSE} as-needed once behavior has been verified
+#'  as expected.  
 #'
 #' @return An object of class \code{phyloseq}. 
 #' Only the \code{otu_table} component is modified.
@@ -97,23 +112,23 @@
 #' GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
 #' GPrepF = rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE)
 rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
-															rngseed=FALSE, replace=TRUE, trimOTUs=TRUE){
+															rngseed=FALSE, replace=TRUE, trimOTUs=TRUE, verbose=TRUE){
 	
 	if( as(rngseed, "logical") ){
 		# Now call the set.seed using the value expected in phyloseq
 		set.seed(rngseed)
-		# Print to screen this value
-		cat("`set.seed(", rngseed, 
-				")` was used to initialize repeatable random subsampling.",
-				sep="", fill=TRUE)
-		cat("Please record this for your records so others can reproduce.", fill=TRUE)
-		cat("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="", fill=TRUE)		
-		cat("...", fill=TRUE)
-	} else {
-		cat("You set `rngseed` to FALSE. Make sure you've set & recorded",
-				" the random seed of your session for reproducibility.",
-				"See `?set.seed`", fill=TRUE)
-		cat("...", fill=TRUE)
+    if(verbose){
+      # Print to screen this value
+      message("`set.seed(", rngseed, ")` was used to initialize repeatable random subsampling.")
+      message("Please record this for your records so others can reproduce.")
+      message("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="")		
+      message("...")      
+    }
+	} else if(verbose){
+		message("You set `rngseed` to FALSE. Make sure you've set & recorded\n",
+				" the random seed of your session for reproducibility.\n",
+				"See `?set.seed`\n")
+		message("...")
 	}
 	
 	# Make sure sample.size is of length 1.
@@ -132,11 +147,13 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	# that have fewer reads than `sample.size`
 	if( min(sample_sums(physeq)) < sample.size ){
 		rmsamples = sample_names(physeq)[sample_sums(physeq) < sample.size]
-		cat(length(rmsamples), " samples removed",
-				"because they contained fewer reads than `sample.size`.", fill=TRUE)
-		cat("Up to first five removed samples are: \n")
-		cat(rmsamples[1:min(5, length(rmsamples))], sep="\t", fill=TRUE)
-		cat("...", fill=TRUE)
+    if(verbose){
+      message(length(rmsamples), " samples removed",
+          "because they contained fewer reads than `sample.size`.")
+      message("Up to first five removed samples are: \n")
+      message(rmsamples[1:min(5, length(rmsamples))], sep="\t")
+      message("...")      
+    }
 		# Now done with notifying user of pruning, actually prune.
 		physeq = prune_samples(setdiff(sample_names(physeq), rmsamples), physeq)
 	}
@@ -147,7 +164,7 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 	# apply through each sample, and replace
 	newotu <- apply(otu_table(newsub), 2, rarefaction_subsample,
 									sample.size=sample.size, replace=replace)
-	# Add species names to the row indices
+	# Add OTU names to the row indices
 	rownames(newotu) <- taxa_names(physeq)
 	# replace the otu_table.
 	otu_table(newsub) <- otu_table(newotu, TRUE)
@@ -157,21 +174,14 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
     # 2. Cut empty OTUs
     rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
     if( length(rmtaxa) > 0 ){
-      cat(length(rmtaxa), "OTUs were removed because they are no longer \n",
-          "present in any sample after random subsampling\n")
-      cat("...", fill=TRUE)
-      #cat(rmtaxa[1:min(5, length(rmtaxa))], sep="\t", fill=TRUE)
+      if(verbose){
+        message(length(rmtaxa), "OTUs were removed because they are no longer \n",
+            "present in any sample after random subsampling\n")
+        message("...")
+      }
       newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
     }
   }
-  # Don't reset the RNG state. Leave as-is.
-	# 	if( as(rngseed, "logical") ){
-	# 		# Reset set.seed to unitialized state
-	# 		set.seed(NULL)
-	# 		cat("Finished. `set.seed(NULL)` called, ", 
-	# 				"resetting RNG seed to unitialized state.", fill=TRUE)
-	# 	}
-	# return subsampled phyloseq object
 	return(newsub)
 }
 ################################################################################

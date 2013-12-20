@@ -28,8 +28,8 @@
 # # # SM <- sample_data(GlobalPatterns)
 # # # DF <- data.frame(SM)
 # # # DF <- data.frame(DF, col1=1:nrow(DF), col2=paste(1:nrow(DF), "t", sep=""))
-# # # DF <- reconcile_variables(DF)
-# # # SM <- sample_data(reconcile_variables(SM))
+# # # DF <- reconcile_categories(DF)
+# # # SM <- sample_data(reconcile_categories(SM))
 # # # sapply(DF, class)
 # # # sapply(SM, class)
 }

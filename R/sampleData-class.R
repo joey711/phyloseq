@@ -91,18 +91,19 @@ setMethod("sample_data", "data.frame", function(object){
 #' # # # SM <- sample_data(GlobalPatterns)
 #' # # # DF <- data.frame(SM)
 #' # # # DF <- data.frame(DF, col1=1:nrow(DF), col2=paste(1:nrow(DF), "t", sep=""))
-#' # # # DF <- reconcile_variables(DF)
-#' # # # SM <- sample_data(reconcile_variables(SM))
+#' # # # DF <- reconcile_categories(DF)
+#' # # # SM <- sample_data(reconcile_categories(SM))
 #' # # # sapply(DF, class)
 #' # # # sapply(SM, class)
 reconcile_categories <- function(DFSM){
-	DF <- as(DFSM, "data.frame")
-	variable_classes <- sapply(DF, class)
-	factor_cols <- names(variable_classes[variable_classes %in% c("factor", "character")])
+	DF = as(DFSM, "data.frame")
+	#variable_classes <- sapply(DF, class)
+	#factor_cols <- names(variable_classes[variable_classes %in% c("factor", "character")])
+	factor_cols = which(sapply(DF, inherits, what="factor"))
 	for( j in factor_cols){
 		DF[, j] <- factor( as(DF[, j], "character") )
 	}
-	return( DF )
+	return(DF)
 }
 ################################################################################
 #' Subset samples by sample_data expression
