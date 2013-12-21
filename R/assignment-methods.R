@@ -12,12 +12,12 @@
 #' @export
 #' @docType methods
 #' @rdname assign-otu_table
-#' @aliases assign-otu_table otu_table<- otuTable<-
+#' @aliases assign-otu_table
 #'
 #' @examples
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
-#' # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
+#' # ex2a <- prune_taxa(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
 #' # # The following 3 lines produces an ex2b that is equal to ex2a
 #' # ex2b <- GlobalPatterns
 #' # OTU <- otu_table(GlobalPatterns)[1:100, ]
@@ -59,12 +59,12 @@ setMethod("otu_table<-", c("phyloseq", "phyloseq"), function(x, value){
 #' @export
 #' @docType methods
 #' @rdname assign-taxa_are_rows
-#' @aliases assign-taxa_are_rows taxa_are_rows<- speciesAreRows<-
+#' @aliases assign-taxa_are_rows taxa_are_rows<-
 #'
-#' @examples #
-#' # data(GlobalPatterns)
-#' # taxa_are_rows(GlobalPatterns)
-#' # taxa_are_rows(otu_table(GlobalPatterns))
+#' @examples
+#'  data(esophagus)
+#'  taxa_are_rows(esophagus)
+#'  taxa_are_rows(otu_table(esophagus))
 setGeneric("taxa_are_rows<-", function(x, value){
 	standardGeneric("taxa_are_rows<-")
 })
@@ -114,24 +114,13 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 #'
 #' @export
 #' @rdname assign-sample_data
-#' @aliases assign-sample_data sample_data<- sam_data<- sampleData<-
-#' @examples #
-#' # data(GlobalPatterns)
-#' # # An example of pruning to just the first 10 samples in GlobalPatterns
-#' # ex2a <- prune_samples(sample_names(GlobalPatterns)[1:10], GlobalPatterns)
-#' # # The following 3 lines produces an ex2b that is equal to ex2a
-#' # ex2b <- GlobalPatterns
-#' # SD <- sample_data(GlobalPatterns)[1:10, ]
-#' # sample_data(ex2b) <- SD
-#' # identical(ex2a, ex2b)
-#' # print(ex2b)
-#' # # Example restoring the original sample_data component. ex2c lacks sample_data
-#' # ex2c <- phyloseq(otu_table(GlobalPatterns), tax_table(GlobalPatterns), phy_tree(GlobalPatterns))
-#' # sample_data(ex2c) <- GlobalPatterns
-#' # identical(ex2c, GlobalPatterns)
-#' # # Can try on ex2b, but other components have only 10 samples. No change.
-#' # sample_data(ex2b) <- GlobalPatterns
-#' # identical(ex2a, ex2b) # still true.
+#' @aliases assign-sample_data sample_data<-
+#' @examples
+#'  data(soilrep)
+#'  soilrep
+#'  head(sample_data(soilrep))
+#'  sample_data(soilrep)$Time <- as.integer(substr(sample_data(soilrep)$Sample, 1, 1))
+#'  head(sample_data(soilrep))
 "sample_data<-" <- function(x, value){
 	if( !inherits(value, "sample_data") ){
 		value <- sample_data(value)
@@ -152,11 +141,11 @@ setMethod("taxa_are_rows<-", c("phyloseq", "logical"), function(x, value){
 #'
 #' @export
 #' @rdname assign-tax_table
-#' @aliases assign-tax_table tax_table<- taxTab<-
-#' @examples #
+#' @aliases assign-tax_table tax_table<-
+#' @examples
 #' # data(GlobalPatterns)
 #' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
-#' # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
+#' # ex2a <- prune_taxa(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
 #' # # The following 3 lines produces an ex2b that is equal to ex2a
 #' # ex2b <- GlobalPatterns
 #' # TT <- tax_table(GlobalPatterns)[1:100, ]
@@ -202,21 +191,15 @@ setMethod("tax_table<-", c("taxonomyTable", "ANY"), function(x, value){
 #' @export
 #' @docType methods
 #' @rdname assign-phy_tree
-#' @aliases assign-phy_tree phy_tree<- tre<-
+#' @aliases assign-phy_tree phy_tree<-
 #' @examples #
-#' # data(GlobalPatterns)
-#' # # An example of pruning to just the first 100 taxa in GlobalPatterns.
-#' # ex2a <- prune_species(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
-#' # # The following 3 lines produces an ex2b that is equal to ex2a
-#' # ex2b <- GlobalPatterns
-#' # tree <- prune_species(taxa_names(GlobalPatterns)[1:100], phy_tree(GlobalPatterns))
-#' # phy_tree(ex2b) <- tree
-#' # identical(ex2a, ex2b)
-#' # print(ex2b)
-#' # # Example adding a phylo tree from phyloseq class
-#' # ex2c <- phyloseq(otu_table(ex2b), sample_data(ex2b), tax_table(ex2b))
-#' # phy_tree(ex2c) <- ex2b
-#' # identical(ex2b, ex2c)
+#' data("esophagus")
+#' # An example of pruning to just the first 20 taxa in esophagus
+#' ex2a <- prune_taxa(taxa_names(esophagus)[1:20], esophagus)
+#' # The following 3 lines produces an ex2b that is equal to ex2a
+#' ex2b <- ex2a
+#' phy_tree(ex2b) <- phy_tree(esophagus)
+#' identical(ex2a, ex2b)
 setGeneric("phy_tree<-", function(x, value) standardGeneric("phy_tree<-"))
 #' @rdname assign-phy_tree
 #' @aliases phy_tree<-,phyloseq,phylo-method

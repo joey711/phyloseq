@@ -1,6 +1,5 @@
 \docType{methods}
 \name{merge_taxa}
-\alias{merge_species}
 \alias{merge_taxa}
 \alias{merge_taxa,otu_table-method}
 \alias{merge_taxa,phylo-method}
@@ -11,8 +10,6 @@
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \usage{
   merge_taxa(x, eqtaxa, archetype=1)
-
-  merge_species(x, eqtaxa, archetype = 1L)
 }
 \arguments{
   \item{x}{(Required). An object that describes species

@@ -1,3 +1,19 @@
+CHANGES IN VERSION 1.7.12
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Formal deprecation of functions using .Deprecated
+		Issue 269, 
+		https://github.com/joey711/phyloseq/issues/269
+
+	- Fixed bug in interface with vegan::fisher.alpha(..., se=TRUE). 
+		vegan doc states that this returns a data.frame, 
+		but a data.frame is not returned in vegan version 1.7.10.
+		phyloseq no checks output dimensions before processing in `estimate_richness`
+
+	- Replaced deprecated functions in tests and documentation.
+
 CHANGES IN VERSION 1.7.11
 -------------------------
 

@@ -5,15 +5,9 @@
 \alias{sample_names,otu_table-method}
 \alias{sample_names,phyloseq-method}
 \alias{sample_names,sample_data-method}
-\alias{sample.names}
-\alias{sampleNames}
 \title{Get sample names.}
 \usage{
   sample_names(physeq)
-
-  sampleNames(physeq)
-
-  sample.names(physeq)
 }
 \arguments{
   \item{physeq}{(Required). A \code{\link{phyloseq-class}},
@@ -28,8 +22,8 @@
   Get sample names.
 }
 \examples{
-# data(GlobalPatterns)
-# sample_names(GlobalPatterns)
+data(esophagus)
+sample_names(esophagus)
 }
 \seealso{
   \code{\link{taxa_names}}, \code{\link{nsamples}}

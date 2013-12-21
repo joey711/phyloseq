@@ -362,12 +362,14 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' ## http://joey711.github.com/phyloseq/plot_richness-examples
 #' data("soilrep")
 #' plot_richness(soilrep, measures=c("InvSimpson", "Fisher"))
-#' plot_richness(soilrep, "Treatment", "warmed",, measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
+#' plot_richness(soilrep, "Treatment", "warmed", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 #' data("GlobalPatterns")
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
                           scales="free_y", nrow=1, shsi=NULL, measures=NULL){
+
+  #library("reshape2"); library("vegan"); data("soilrep"); physeq=soilrep; x="samples"; color=NULL; shape=NULL; title=NULL; scales="free_y"; nrow=1; shsi=NULL; measures=NULL  
   
   # Calculate the relevant alpha-diversity measures
   erDF = estimate_richness(physeq, split=TRUE, measures=measures)
@@ -396,7 +398,7 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 	# sample_names used to be default, and should also work.
 	# #backwardcompatibility
 	if( !is.null(x) ){
-		if( x %in% c("sample", "samples", "sample_names") ){
+		if( x %in% c("sample", "samples", "sample_names", "sample.names") ){
 			x <- "samples"
 		}
 	} else {
@@ -411,9 +413,13 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
   
   if( length(ses) > 0 ){
     ## Merge s.e. into one "se" column
-    # Define conversion vector
-    selabs = c("se.chao1", "se.ACE", "se.fisher")
-    names(selabs) <- c("Chao1", "ACE", "Fisher")
+    # Define conversion vector, `selabs`
+    selabs = ses
+    # Trim the "se." from the names
+    names(selabs) <- substr(selabs, 4, 100)
+    # Make first letter of selabs' names uppercase
+    substr(names(selabs), 1, 1) <- toupper(substr(names(selabs), 1, 1))
+    # use selabs conversion vector to process `mdf`
     mdf$wse <- sapply(as.character(mdf$variable), function(i, selabs){selabs[i]}, selabs)
     for( i in 1:nrow(mdf) ){
       if( !is.na(mdf[i, "wse"]) ){

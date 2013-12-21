@@ -53,7 +53,7 @@ UniFrac(esophagus, weighted=TRUE)
 mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
 mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
 mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
-show_mothur_list_cutoffs(mothlist)
+show_mothur_cutoffs(mothlist)
 cutoff    <- "0.10"
 esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)
 }

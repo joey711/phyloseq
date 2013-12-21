@@ -1,11 +1,8 @@
 \name{sample_variables}
 \alias{sample_variables}
-\alias{sample.variables}
 \title{Get the sample variables present in sample_data}
 \usage{
   sample_variables(physeq, errorIfNULL=TRUE)
-
-  sample.variables(physeq, errorIfNULL = TRUE)
 }
 \arguments{
   \item{physeq}{(Required).
