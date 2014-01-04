@@ -24,8 +24,22 @@ packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.21'
+## [1] '1.7.12'
 ```
+
+
+We will also use ggplot2 commands in at least one section, so we will load ggplot2 now as well.
+
+
+```r
+library("ggplot2")
+packageVersion("ggplot2")
+```
+
+```
+## [1] '0.9.3.1'
+```
+
 
 
 We want to plot trees, sometimes even bootstrap values, but notice that the node labels in the `GlobalPatterns` dataset are actually a bit strange. They look like they might be bootstrap values, but they sometimes have two decimals.
@@ -74,7 +88,7 @@ Now let's look at what happens with the default `plot_tree` settings.
 plot_tree(physeq)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 By default, black dots are annotated next to tips (OTUs) in the tree, one for each sample in which that OTU was observed. Some have more dots than others. Also by default, the node labels that were stored in the tree were added next to each node without any processing (although we had trimmed their length to 4 characters in the previous step).
 
@@ -84,7 +98,7 @@ What if we want to just see the tree with no sample points next to the tips?
 plot_tree(physeq, "treeonly")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 And what about without the node labels either?
 
@@ -92,7 +106,7 @@ And what about without the node labels either?
 plot_tree(physeq, "treeonly", nodeplotblank)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 We can adjust the way branches are rotated to make it look nicer using the `ladderize` parameter.
 
@@ -100,21 +114,21 @@ We can adjust the way branches are rotated to make it look nicer using the `ladd
 plot_tree(physeq, "treeonly", nodeplotblank, ladderize = "left")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-101.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-111.png) 
 
 ```r
 plot_tree(physeq, "treeonly", nodeplotblank, ladderize = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-102.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-112.png) 
 
 And what if we want to add the OTU labels next to each tip?
 
 ```r
-plot_tree(physeq, "treeonly", nodeplotblank, label.tips = "taxa_names", ladderize = "left")
+plot_tree(physeq, nodelabf = nodeplotblank, label.tips = "taxa_names", ladderize = "left")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
 
 
 Any `method` parameter argument other than `"sampledodge"` (the default) will not add dodged sample points next to the tips.
@@ -123,58 +137,101 @@ Any `method` parameter argument other than `"sampledodge"` (the default) will no
 plot_tree(physeq, "anythingelse")
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
 
 ## Mapping Variables in Data
 In the default argument to `method`, `"sampledodge"`, a point is added next to each OTU tip in the tree for every sample in which that OTU was observed. We can then map certain aesthetic features of these points to variables in our data.
 
 ### Color
-Color is one of the most useful aesthetics in tree graphics that are usually pretty complicated. Color can be mapped to either taxonomic ranks or sample covariates. For instance, we can map color to the type of sample collected (environmental location).
+Color is one of the most useful aesthetics in tree graphics when they are complicated. Color can be mapped to either taxonomic ranks or sample covariates. For instance, we can map color to the type of sample collected (environmental location).
 
 ```r
-plot_tree(physeq, color = "SampleType", ladderize = "left")
+plot_tree(physeq, nodelabf = nodeplotboot(), ladderize = "left", color = "SampleType")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+
+and we can alternatively map color to taxonomic class.
+
+```r
+plot_tree(physeq, nodelabf = nodeplotboot(), ladderize = "left", color = "Class")
+```
+
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+
+
+### Shape
+You can also map a variable to point shape if it has 6 or fewer categories, and this can be done even when color is also mapped. Here we map shape to taxonomic class so that we can still indicate it in the graphic while also mapping `SampleType` to point color.
+
+```r
+plot_tree(physeq, nodelabf = nodeplotboot(), ladderize = "left", color = "SampleType", 
+    shape = "Class")
+```
+
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
 
 
 ### node labels
-One of the most common reasons to label nodes is to add confidence measures, often a bootstrap value, to the nodes of the tree. The following four graphics show different ways of doing (or not doing) this.
+One of the most common reasons to label nodes is to add confidence measures, often a bootstrap value, to the nodes of the tree. The following graphics show different ways of doing this (labels are added by default if present in your tree).
 
 ```r
-plot_tree(physeq, nodelabf = nodeplotblank, color = "SampleType", ladderize = "left")
+# The default
+plot_tree(physeq, color = "SampleType", ladderize = "left")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-141.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-171.png) 
 
 ```r
-plot_tree(physeq, nodelabf = NULL, color = "SampleType", ladderize = "left")
-```
-
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-142.png) 
-
-```r
+# Special bootstrap label
 plot_tree(physeq, nodelabf = nodeplotboot(), color = "SampleType", ladderize = "left")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-143.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-172.png) 
 
 ```r
+# Special bootstrap label with alternative thresholds
 plot_tree(physeq, nodelabf = nodeplotboot(80, 0, 3), color = "SampleType", ladderize = "left")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-144.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-173.png) 
 
 
 ### tip labels
+- **label.tips** - The `label.tips` parameter controls labeling of tree tips (AKA leaves).  Default is NULL, indicating that no tip labels will be printed. If `"taxa_names"` is a special argument resulting in the OTU name (try `taxa_names` function) being labelled next to the leaves or next to the set of points that label the leaves. Alternatively, if your data object contains a `tax_table`, then one of the rank names (from `rank_names(physeq)`) can be provided, and the classification of each OTU at that rank will be labeled instead.
+- **text.size** - A positive numeric argument indicating the ggplot2 size parameter for the taxa labels. Default is `NULL`. If left as `NULL`, this function will automatically calculate a (hopefully) optimal text size given the size constraints posed by the tree itself (for a vertical tree). This argument is included mainly in case the automatically-calculated size is wrong and you want to change it. Note that this parameter is only meaningful if `label.tips` is not `NULL`
+
 
 ```r
 plot_tree(physeq, nodelabf = nodeplotboot(80, 0, 3), color = "SampleType", label.tips = "taxa_names", 
     ladderize = "left")
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+
+
+## Radial Tree
+
+Making a radial tree is easy with ggplot2, simply recognizing that our vertically-oriented tree is a cartesian mapping of the data to a graphic -- and that a radial tree is the same mapping, but with polar coordinates instead.
+
+
+```r
+data(esophagus)
+plot_tree(esophagus, color = "sample_names", ladderize = "left") + coord_polar(theta = "y")
+```
+
+![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19.png) 
+
+
+The `GlobalPatterns` dataset has additional data we can map, so we will re-do some preliminary data loading/trimming to make this radial-tree example self contained, and then show the same plot as above.
+
+
+```r
+plot_tree(physeq, nodelabf = nodeplotboot(60, 60, 3), color = "SampleType", 
+    shape = "Class", ladderize = "left") + coord_polar(theta = "y")
+```
+
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20.png) 
 
 
 
@@ -190,17 +247,17 @@ The default tree without any additional parameters is plot with black points tha
 plot_tree(esophagus, title = "Default tree.")
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21.png) 
 
 
 If for some reason you just want an unadorned tree, the `"treeonly"` method can be selected. This tends to plot much faster than the annotated tree, and is still a ggplot2 object that you *might* be able to add further layers to manually.
 
 
 ```r
-plot_tree(esophagus, "treeonly", title="method = \"treeonly\"")
+plot_tree(esophagus, "treeonly", title = "method = \"treeonly\"")
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22.png) 
 
 
 Now let's shade tips according to the sample in which a particular OTU was observed.
@@ -210,7 +267,7 @@ Now let's shade tips according to the sample in which a particular OTU was obser
 plot_tree(esophagus, color = "samples")
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23.png) 
 
 
 We can also scale the size of tips according to abundance; usually related to number of sequencing reads, but depends on what you have done with the data prior to this step.
@@ -220,7 +277,7 @@ We can also scale the size of tips according to abundance; usually related to nu
 plot_tree(esophagus, size = "abundance")
 ```
 
-![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-24.png) 
 
 
 Both graphical features included at once.
@@ -230,7 +287,7 @@ Both graphical features included at once.
 plot_tree(esophagus, size = "abundance", color = "samples")
 ```
 
-![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-25.png) 
 
 
 There is some overlap of the tip points. Let's adjust the base spacing to spread them out a little bit.
@@ -240,7 +297,7 @@ There is some overlap of the tip points. Let's adjust the base spacing to spread
 plot_tree(esophagus, size = "abundance", color = "samples", base.spacing = 0.03)
 ```
 
-![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21.png) 
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26.png) 
 
 
 Good, now what if we wanted to also display the specific numeric value of OTU abundances that occurred more than 3 times in a given sample? For that, `plot_tree` includes the `min.abundance` parameter, set to `Inf` by default to prevent any point labels from being written.
@@ -251,7 +308,8 @@ plot_tree(esophagus, size = "abundance", color = "samples", base.spacing = 0.03,
     min.abundance = 3)
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27.png) 
+
 
 
 # More Examples with the Global Patterns dataset
@@ -295,7 +353,7 @@ Some patterns are immediately discernable with minimal parameter choices:
 plot_tree(gpa, color = "SampleType")
 ```
 
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26.png) 
+![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31.png) 
 
 
 
@@ -304,7 +362,7 @@ plot_tree(gpa, color = "SampleType")
 plot_tree(gpa, color = "Phylum")
 ```
 
-![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27.png) 
+![plot of chunk unnamed-chunk-32](figure/unnamed-chunk-32.png) 
 
 
 
@@ -313,7 +371,7 @@ plot_tree(gpa, color = "Phylum")
 plot_tree(gpa, color = "SampleType", shape = "Phylum")
 ```
 
-![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28.png) 
+![plot of chunk unnamed-chunk-33](figure/unnamed-chunk-33.png) 
 
 
 
@@ -322,7 +380,7 @@ plot_tree(gpa, color = "SampleType", shape = "Phylum")
 plot_tree(gpa, color = "Phylum", label.tips = "Genus")
 ```
 
-![plot of chunk unnamed-chunk-29](figure/unnamed-chunk-29.png) 
+![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34.png) 
 
 
 However, the text-label size scales with number of species, and with common graphics-divice sizes/resolutions, these ~200 taxa still make for a somewhat crowded graphic. 
@@ -335,7 +393,7 @@ gpac <- subset_species(gpa, Phylum == "Crenarchaeota")
 plot_tree(gpac, color = "SampleType", shape = "Genus")
 ```
 
-![plot of chunk unnamed-chunk-30](figure/unnamed-chunk-30.png) 
+![plot of chunk unnamed-chunk-35](figure/unnamed-chunk-35.png) 
 
 
 
@@ -344,7 +402,7 @@ plot_tree(gpac, color = "SampleType", shape = "Genus")
 plot_tree(gpac, color = "SampleType", label.tips = "Genus")
 ```
 
-![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31.png) 
+![plot of chunk unnamed-chunk-36](figure/unnamed-chunk-36.png) 
 
 
 Let's add some abundance information. Notice that the default spacing gets a little crowded when we map species-abundance to point-size:
@@ -354,7 +412,7 @@ Let's add some abundance information. Notice that the default spacing gets a lit
 plot_tree(gpac, color = "SampleType", shape = "Genus", size = "abundance", plot.margin = 0.4)
 ```
 
-![plot of chunk unnamed-chunk-32](figure/unnamed-chunk-32.png) 
+![plot of chunk unnamed-chunk-37](figure/unnamed-chunk-37.png) 
 
 
 So let's spread it out a little bit with the `base.spacing` parameter, and while we're at it, let's call off the node labels...
@@ -365,7 +423,7 @@ plot_tree(gpac, nodelabf = nodeplotblank, color = "SampleType", shape = "Genus",
     size = "abundance", base.spacing = 0.04, plot.margin = 0.4)
 ```
 
-![plot of chunk unnamed-chunk-33](figure/unnamed-chunk-33.png) 
+![plot of chunk unnamed-chunk-38](figure/unnamed-chunk-38.png) 
 
 
 ## Chlamydiae-only tree
@@ -377,7 +435,7 @@ plot_tree(GP.chl, color = "SampleType", shape = "Family", label.tips = "Genus",
     size = "abundance", plot.margin = 0.6)
 ```
 
-![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34.png) 
+![plot of chunk unnamed-chunk-39](figure/unnamed-chunk-39.png) 
 
 			
 
