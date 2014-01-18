@@ -96,6 +96,7 @@ tipglom <- function(...){.Deprecated("tip_glom", package="phyloseq");return(tip_
 taxglom <- function(...){.Deprecated("tax_glom", package="phyloseq");return(tax_glom(...))}
 tre <- function(...){.Deprecated("phy_tree", package="phyloseq");return(phy_tree(...))}
 show_mothur_list_cutoffs <- function(...){.Deprecated("show_mothur_cutoffs", package="phyloseq");return(show_mothur_cutoffs(...))}
+originalUniFrac <- function(...){.Deprecated("fastUniFrac", package="phyloseq");return(fastUniFrac(...))}  
 "sam_data<-" <- function(x, value){
   .Deprecated("sample_data<-", package="phyloseq")
   sample_data(x) <- value
