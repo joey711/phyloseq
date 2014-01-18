@@ -39,19 +39,24 @@
   backend so that \code{foreach::\%dopar\%} does not throw
   a warning.}
 
-  \item{fast}{(Optional). Logical. Do you want to use the
-  ``Fast UniFrac'' algorithm? Implemented natively in the
-  \code{phyloseq-package}. This is the default and the
-  recommended option. There should be no difference in the
-  output between the two algorithms. Moreover, the original
-  UniFrac algorithm only outperforms this implementation of
-  fast-UniFrac if the datasets are so small (approximated
-  by the value of \code{ntaxa(physeq) * nsamples(physeq)})
-  that the difference in time is inconsequential (less than
-  1 second). In practice it does not appear that this
-  parameter should ever be set to \code{FALSE}, but the
-  option is nevertheless included in the package for
-  comparisons and instructional purposes.}
+  \item{fast}{(Optional). Logical. DEPRECATED. Do you want
+  to use the ``Fast UniFrac'' algorithm? Implemented
+  natively in the \code{phyloseq-package}. \code{TRUE} is
+  now the only supported option. There should be no
+  difference in the output between the two algorithms.
+  Moreover, the original UniFrac algorithm only outperforms
+  this implementation of fast-UniFrac if the datasets are
+  so small (approximated by the value of
+  \code{ntaxa(physeq) * nsamples(physeq)}) that the
+  difference in time is inconsequential (less than 1
+  second). In practice it does not appear that this
+  parameter should have ever been set to \code{FALSE}, and
+  therefore the original UniFrac implementation perhaps
+  never should have been supported here. For legacy code
+  support the option is now deprecated here (the
+  implementation was an internal function, anyway) and the
+  \code{fast} option will remain for one release cycle
+  before being removed completely.}
 }
 \value{
   a sample-by-sample distance matrix, suitable for NMDS,
