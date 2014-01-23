@@ -399,7 +399,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# taxonomic designation at this particular taxonomic rank.
 	tax <- tax[ !(tax %in% bad_empty) ]
 	
-	# Define the species cliques to loop through
+	# Define the OTU cliques to loop through
 	spCliques <- tapply(names(tax), factor(tax), list)
 	
 	# Successively merge taxa in physeq.
