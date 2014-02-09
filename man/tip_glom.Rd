@@ -1,0 +1,72 @@
+\name{tip_glom}
+\alias{tip_glom}
+\title{Agglomerate closely-related taxa using single-linkage clustering.}
+\usage{
+  tip_glom(physeq, h = 0.2, hcfun = agnes, ...)
+}
+\arguments{
+  \item{physeq}{(Required). A \code{\link{phyloseq-class}},
+  containing a phylogenetic tree. Alternatively, a
+  phylogenetic tree \code{\link[ape]{phylo}} will also
+  work.}
+
+  \item{h}{(Optional). Numeric scalar of the height where
+  the tree should be cut. This refers to the tree resulting
+  from hierarchical clustering of
+  \code{\link[ape]{cophenetic.phylo}(phy_tree(physeq))},
+  not necessarily the original phylogenetic tree,
+  \code{phy_tree(physeq)}. Default value is \code{0.2}.
+  Note that this argument used to be named
+  \code{speciationMinLength}, before this function/method
+  was rewritten.}
+
+  \item{hcfun}{(Optional). A function. The (agglomerative,
+  hierarchical) clustering function to use. Good examples
+  are \code{\link[cluster]{agnes}} and
+  \code{\link[stats]{hclust}}. The default is
+  \code{\link[cluster]{agnes}}.}
+
+  \item{...}{(Optional). Additional named arguments to pass
+  to \code{hcfun}.}
+}
+\value{
+  An instance of the \code{\link{phyloseq-class}}. Or
+  alternatively, a \code{\link{phylo}} object if the
+  \code{physeq} argument was just a tree. In the
+  expected-use case, the number of OTUs will be fewer (see
+  \code{\link{ntaxa}}), after merging OTUs that are related
+  enough to be called the same OTU.
+}
+\description{
+  All tips of the tree separated by a cophenetic distance
+  smaller than \code{h} will be agglomerated into one taxa
+  using \code{\link{merge_taxa}}.
+}
+\details{
+  Can be used to create a non-trivial OTU Table, if a
+  phylogenetic tree is available.
+
+  For now, a simple, ``greedy'', single-linkage clustering
+  is used. In future releases it should be possible to
+  specify different clustering approaches available in
+  \code{R}, in particular, complete-linkage clustering
+  appears to be used more commonly for OTU clustering
+  applications.
+}
+\examples{
+data("esophagus")
+plot_tree(esophagus, label.tips="taxa_names", size="abundance", title="Before tip_glom()")
+plot_tree(tip_glom(esophagus, h=0.2), label.tips="taxa_names", size="abundance", title="After tip_glom()")
+}
+\seealso{
+  \code{\link{merge_taxa}}
+
+  \code{\link[cluster]{agnes}}
+
+  \code{\link[stats]{hclust}}
+
+  \code{\link[ape]{cophenetic.phylo}}
+
+  \code{\link[ape]{phylo}}
+}
+

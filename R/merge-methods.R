@@ -275,12 +275,16 @@ setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function
 #'  If \code{length(eqtaxa) < 2}, then the object \code{x} will be returned
 #'  safely unchanged. 
 #' 
-#' @param archetype The index of \code{eqtaxa} indicating the species 
-#'   that should be kept (default is 1) to represent the summed/merged group
-#'   of species/taxa/OTUs. 
-#'   If archetype is not an index or index-name in \code{eqtaxa}, the
-#'   first will be used, and the value in archetype will be used 
-#'   as the index-name for the new species.
+#' @param archetype (Optional). A single-length numeric or character.
+#'  The index of \code{eqtaxa}, or OTU ID,
+#'  indicating the species that should be kept to represent
+#'  the summed/merged group of species/taxa/OTUs. 
+#'  The default is to use the OTU with the largest count total 
+#'  if counts are available, or to use \code{1}
+#'  (the first OTU in \code{eqtaxa}) otherwise.
+#'  If \code{archetype} is not a valid index or index-name in \code{eqtaxa},
+#'  the first will be used, and the value in archetype will be used 
+#'  as the index-name for the new species.
 #'
 #' @return The object, \code{x}, in its original class, but with the specified
 #'   species merged into one entry in all relevant components.
@@ -313,7 +317,7 @@ merge_taxa.indices.internal = function(x, eqtaxa, archetype){
 		archetype = eqtaxa[as.integer(archetype[1L])]
 		if( is.character(archetype) ){
 			# If archetype is now an OTU name, find the index and assign to keepIndex		
-			keepIndex = which(taxa_names(x) %in% archetype[1L])	
+			keepIndex = which(taxa_names(x) == archetype[1L])	
 		} else {
 			# Otherwise, assume it is a taxa index, and assign to keepIndex
 			keepIndex = as.integer(archetype)
@@ -343,7 +347,9 @@ merge_taxa.indices.internal = function(x, eqtaxa, archetype){
 ################################################################################
 #' @aliases merge_taxa,phyloseq-method
 #' @rdname merge_taxa-methods
-setMethod("merge_taxa", "phyloseq", function(x, eqtaxa, archetype=1L){
+setMethod("merge_taxa", "phyloseq", function(x, eqtaxa,
+    archetype=eqtaxa[which.max(taxa_sums(x)[eqtaxa])]){
+  
 	comp_list   <- splat.phyloseq.objects(x)
 	merged_list <- lapply(comp_list, merge_taxa, eqtaxa, archetype)
 	# the element names can wreak havoc on do.call
@@ -361,7 +367,9 @@ setMethod("merge_taxa", "sample_data", function(x, eqtaxa, archetype=1L){
 ###############################################################################
 #' @aliases merge_taxa,otu_table-method
 #' @rdname merge_taxa-methods
-setMethod("merge_taxa", "otu_table", function(x, eqtaxa, archetype=1L){
+setMethod("merge_taxa", "otu_table", function(x, eqtaxa,
+    archetype=eqtaxa[which.max(taxa_sums(x)[eqtaxa])]){
+  
 	if( length(eqtaxa) < 2 ){
 		return(x)
 	}
