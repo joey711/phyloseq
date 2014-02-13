@@ -336,3 +336,18 @@ test_that("Results of .tar.gz and .zip should be identical", {
   expect_identical(sample_data(tarps), sample_data(zipps))
   expect_identical(otu_table(tarps), otu_table(zipps))
 })
+################################################################################
+# import_usearch_uc
+################################################################################
+usearchfile = system.file("extdata", "usearch.uc.gz", package="phyloseq")
+OTU1 = import_usearch_uc(usearchfile, chunkSize=500)
+OTU2 = import_usearch_uc(usearchfile, chunkSize=11)
+test_that("import_usearch_uc: Results from two different chunk-sizes are identical", {  
+  expect_identical(OTU1, OTU2)
+})
+test_that("import_usearch_uc: Properly omit entries from failed search", {  
+  ucLines = readLines(usearchfile)
+  expect_identical( sum(OTU1), (length(ucLines) - length(grep("*", ucLines, fixed=TRUE))) )
+  expect_identical( sum(OTU2), (length(ucLines) - length(grep("*", ucLines, fixed=TRUE))) )
+})
+################################################################################

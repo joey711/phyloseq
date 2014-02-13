@@ -1,3 +1,15 @@
+CHANGES IN VERSION 1.7.17
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Added `import_usearch_uc`
+
+		Added first-time support for usearch “.uc” style output table.
+			Addresses Issue 286, importing from UPARSE.
+			https://github.com/joey711/phyloseq/issues/286
+			Further feedback on performance, use-cases, should be posted there. 
+
 CHANGES IN VERSION 1.7.16
 -------------------------
 
