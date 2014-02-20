@@ -23,13 +23,16 @@
   2}, then the object \code{x} will be returned safely
   unchanged.}
 
-  \item{archetype}{The index of \code{eqtaxa} indicating
-  the species that should be kept (default is 1) to
-  represent the summed/merged group of species/taxa/OTUs.
-  If archetype is not an index or index-name in
-  \code{eqtaxa}, the first will be used, and the value in
-  archetype will be used as the index-name for the new
-  species.}
+  \item{archetype}{(Optional). A single-length numeric or
+  character. The index of \code{eqtaxa}, or OTU ID,
+  indicating the species that should be kept to represent
+  the summed/merged group of species/taxa/OTUs. The default
+  is to use the OTU with the largest count total if counts
+  are available, or to use \code{1} (the first OTU in
+  \code{eqtaxa}) otherwise. If \code{archetype} is not a
+  valid index or index-name in \code{eqtaxa}, the first
+  will be used, and the value in archetype will be used as
+  the index-name for the new species.}
 }
 \value{
   The object, \code{x}, in its original class, but with the

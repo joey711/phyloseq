@@ -2,13 +2,13 @@
 
 # [phyloseq](http://joey711.github.com/phyloseq/)
 
-## Pre-submission article on microbiome normalization
+## Article on Improved Microbiome Analysis
 
-New version, as of December 12th, 2013:
+McMurdie and Holmes (2014)
+[Waste Not, Want Not: Why Rarefying Microbiome Data is Statistically Inadmissible](http://arxiv.org/abs/1310.0424)
+PLoS Computational Biology *in press*
 
-[Waste Not, Want Not: Why Rarefying Microbiome Data is Inadmissible](http://arxiv.org/abs/1310.0424)
-
-(2013) Submitted. Available ahead of acceptance.
+(2013) Presubmission versions ahead of acceptance:
 [PDF version 2](http://arxiv.org/pdf/1310.0424v2.pdf),
 [PDF version 1](http://arxiv.org/pdf/1310.0424v1.pdf)
 

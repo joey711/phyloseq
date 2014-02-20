@@ -49,14 +49,14 @@
 \description{
   This method merges species that have the same taxonomy at
   a certain taxaonomic rank. Its approach is analogous to
-  \code{tip_glom}, but uses categorical data instead of a
-  tree. In principal, other categorical data known for all
-  taxa could also be used in place of taxonomy, but for the
-  moment, this must be stored in the \code{taxonomyTable}
-  of the data. Also, columns/ranks to the right of the rank
-  chosen to use for agglomeration will be replaced with
-  \code{NA}, because they should be meaningless following
-  agglomeration.
+  \code{\link{tip_glom}}, but uses categorical data instead
+  of a tree. In principal, other categorical data known for
+  all taxa could also be used in place of taxonomy, but for
+  the moment, this must be stored in the
+  \code{taxonomyTable} of the data. Also, columns/ranks to
+  the right of the rank chosen to use for agglomeration
+  will be replaced with \code{NA}, because they should be
+  meaningless following agglomeration.
 }
 \examples{
 # data(GlobalPatterns)

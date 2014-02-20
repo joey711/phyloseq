@@ -126,8 +126,7 @@ sigtabgen$Phylum = factor(as.character(sigtabgen$Phylum), levels=names(x))
 x = tapply(sigtabgen$log2FoldChange, sigtabgen$Genus, function(x) max(x))
 x = sort(x, TRUE)
 sigtabgen$Genus = factor(as.character(sigtabgen$Genus), levels=names(x))
-ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, fill=Phylum)) + 
-  geom_bar(stat = "identity", position = "dodge", color = "black") +
+ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, fill=Phylum)) + geom_point(size=6) + 
   theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
 ```
 

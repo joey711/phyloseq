@@ -1,3 +1,59 @@
+CHANGES IN VERSION 1.7.18
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Fix minor bug that prohibited parallel execution of weighted UniFrac
+
+CHANGES IN VERSION 1.7.17
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Added `import_usearch_uc`
+
+		Added first-time support for usearch “.uc” style output table.
+			Addresses Issue 286, importing from UPARSE.
+			https://github.com/joey711/phyloseq/issues/286
+			Further feedback on performance, use-cases, should be posted there. 
+
+CHANGES IN VERSION 1.7.16
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Fixed minor bug affecting legend-order in `plot_network`
+		Issue 288, 
+		https://github.com/joey711/phyloseq/issues/288
+
+CHANGES IN VERSION 1.7.15
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `tip_glom` now uses standard R clustering tools, and takes their arguments
+		documentation and tests updated to reflect the change
+		much simpler, faster
+
+	- `merge_taxa` now uses abundance to determine the achetype by default. Previously arbitrary.
+
+CHANGES IN VERSION 1.7.14
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Minor change in mixture model vignette, revised graphic
+
+CHANGES IN VERSION 1.7.13
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Deprecated originalUniFrac() internal function
+		old (original) unifrac algorithm no longer supported. 
+		Addresses Issue 66:
+		https://github.com/joey711/phyloseq/issues/66
+
 CHANGES IN VERSION 1.7.12
 -------------------------
 

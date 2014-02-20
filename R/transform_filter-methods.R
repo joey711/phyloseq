@@ -231,7 +231,7 @@ rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 #' Agglomerate closely-related taxa using single-linkage clustering.
 #' 
 #' All tips of the tree separated by a cophenetic distance smaller than 
-#' \code{speciationMinLength} will be agglomerated into one taxa using \code{merge_taxa}.
+#' \code{h} will be agglomerated into one taxa using \code{\link{merge_taxa}}.
 #' 
 #' Can be used to create a non-trivial OTU Table, if a phylogenetic tree is available.
 #'
@@ -240,228 +240,72 @@ rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 #' in particular, complete-linkage clustering appears to be used more commonly for OTU
 #' clustering applications.
 #'
-#' @usage tip_glom(tree, OTU, speciationMinLength=0.02)
+#' @param physeq (Required). A \code{\link{phyloseq-class}},
+#'  containing a phylogenetic tree. 
+#'  Alternatively, a phylogenetic tree \code{\link[ape]{phylo}} will also work.
 #'
-#' @param tree \code{\link{phyloseq-class}}, containing an OTU Table and
-#'  phylogenetic tree. If, alternatively, \code{tree} is a \code{\link{phylo-class}},
-#'  then \code{OTU} is required.
+#' @param h (Optional). Numeric scalar of the height where the tree should be cut.
+#' This refers to the tree resulting from hierarchical clustering
+#' of \code{\link[ape]{cophenetic.phylo}(phy_tree(physeq))},
+#' not necessarily the original phylogenetic tree, \code{phy_tree(physeq)}.
+#' Default value is \code{0.2}. 
+#' Note that this argument used to be named \code{speciationMinLength},
+#' before this function/method was rewritten.
+#' 
+#' @param hcfun (Optional). A function. 
+#'  The (agglomerative, hierarchical) clustering function to use.
+#'  Good examples are
+#'  \code{\link[cluster]{agnes}} and \code{\link[stats]{hclust}}.
+#'  The default is \code{\link[cluster]{agnes}}.
+#'  
+#' @param ... (Optional). Additional named arguments to pass
+#'  to \code{hcfun}. 
 #'
-#' @param OTU An otu_table object. Optional. Ignored if \code{tree} is a 
-#'  \code{\link{phyloseq-class}} object. If \code{tree} is a \code{phylo}
-#'  object and \code{OTU} is provided, then return will be an \code{phyloseq}
-#'  object. 
+#' @return An instance of the \code{\link{phyloseq-class}}.
+#'  Or alternatively, a \code{\link{phylo}} object if the
+#'  \code{physeq} argument was just a tree.
+#'  In the expected-use case, the number of OTUs will be fewer
+#'  (see \code{\link{ntaxa}}),
+#'  after merging OTUs that are related enough to be called
+#'  the same OTU. 
 #'
-#' @param speciationMinLength The minimum branch length that separates taxa. All
-#' tips of the tree separated by a cophenetic distance smaller than 
-#' \code{speciationMinLength} will be agglomerated. Default is 0.02
+#' @seealso 
+#' 
+#' \code{\link{merge_taxa}}
+#' 
+#' \code{\link[cluster]{agnes}}
+#' 
+#' \code{\link[stats]{hclust}}
+#' 
+#' \code{\link[ape]{cophenetic.phylo}}
+#' 
+#' \code{\link[ape]{phylo}}
 #'
-#' @return An object of class \code{phyloseq}. Output class matches
-#' the class of \code{tree}, unless it is a \code{phylo} object, in
-#' which case \code{tip_glom} returns an \code{phyloseq} object.
+#' @importFrom cluster agnes
 #'
-#' @rdname tip_glom-methods
-#' @docType methods
 #' @export
 #'
 #' @examples 
-#' data(esophagus); ntaxa(esophagus); plot(phy_tree(esophagus))
-#' phy_tree(esophagus)$edge.length
-#' x3 <- tip_glom(esophagus, speciationMinLength = 0.20)
-#' ntaxa(x3); plot(phy_tree(x3))
-setGeneric("tip_glom", function(tree, OTU, speciationMinLength=0.02) standardGeneric("tip_glom"))
-#' @rdname tip_glom-methods
-#' @aliases tip_glom,phylo,otu_table-method
-setMethod("tip_glom", signature("phylo", "otu_table"), function(tree, OTU, speciationMinLength=0.02){
-	# dispatch as the combined-object (phyloseq-class), auto coherence.
-	tip_glom( phyloseq(OTU, tree), speciationMinLength=speciationMinLength)
-})
-#' @rdname tip_glom-methods
-#' @aliases tip_glom,phyloseq,ANY-method
-setMethod("tip_glom", signature("phyloseq"), function(tree, speciationMinLength=0.02){
-	tip_glom.internal(tree, speciationMinLength=speciationMinLength)
-})
-#' @rdname tip_glom-methods
-#' @aliases tip_glom,phylo,ANY-method
-setMethod("tip_glom", signature("phylo"), function(tree, speciationMinLength=0.02){
-	tip_glom.internal(tree, speciationMinLength=speciationMinLength)
-})
-################################################################################
-#' Internal function for tiplgom.
-#' 
-#' Internal function, users should use the S4 method \code{\link{tip_glom}}.
-#' Tree can be a \code{\link{phyloseq-class}} that contains a phylogenetic tree, 
-#' This is because \code{\link{merge_taxa}} can
-#' handle all the relevant objects, as can \code{\link{getTipDistMatrix}}.
-#' Create Non-trivial OTU table, by agglomerating nearby tips.
-#' tip_glom.internal is called by the S4 \code{tip_glom} methods. It is useful if 
-#' a motivated user wants to see the internals of the implementation. By design
-#' it lacks explicit object handling. Use \code{\link{tip_glom}} instead.
-#'
-#' @param tree An object of class \code{phylo}, or \code{phyloseq} 
-#'
-#' @param speciationMinLength The minimum branch length that separates taxa. All
-#' tips of the tree separated by a cophenetic distance smaller than 
-#' \code{speciationMinLength} will be agglomerated.
-#'
-#' @return An object of class \code{phylo}, or \code{phyloseq}.
-#'  Output class matches the class of \code{tree}.
-#'
-#' @seealso tip_glom
-#' @importFrom igraph graph.adjacency
-#' @importFrom igraph get.edgelist
-#' @keywords internal
-tip_glom.internal <- function(tree, speciationMinLength){
-	# Create adjacency matrix, where tips are adjacent
-	# if their distance is below the threshold speciationMinLength
-	tipAdjacent <- (getTipDistMatrix( tree ) < speciationMinLength)
-	# Define igraph object based on the tree-tip adjacenecy matrix
-	ig          <- graph.adjacency(tipAdjacent, diag=FALSE)
-	# Define the species cliques to loop through
-	spCliques   <- edgelist2clique( get.edgelist(ig) )
-	# successively merge
-	for( i in 1:length(spCliques)){
-		tree <- merge_taxa(tree, spCliques[[i]])
-	}
-	return(tree)
+#' data("esophagus")
+#' plot_tree(esophagus, label.tips="taxa_names", size="abundance", title="Before tip_glom()")
+#' plot_tree(tip_glom(esophagus, h=0.2), label.tips="taxa_names", size="abundance", title="After tip_glom()")
+tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
+  dd = as.dist(cophenetic.phylo(phy_tree(physeq)))
+  psclust = cutree(as.hclust(hcfun(dd, ...)), h=h)
+  cliques = levels(factor(psclust))[tapply(psclust, factor(psclust), function(x){length(x)>1})]
+  # For each clique, merge taxa in it...
+  for( i in cliques){
+    physeq = merge_taxa(physeq, eqtaxa=names(psclust)[psclust == i])
+  }
+  return(physeq)
 }
-#################################################################
-#' An internal wrapper function on \code{\link[ape]{cophenetic.phylo}}
-#' 
-#' This is useful for determining tips that should be combined.
-#' 
-#' @param tree \code{phylo}
-#' 
-#' @param byRootFraction Should the distance be calculated according to
-#' fractional distance to the root? If \code{FALSE}, the distance is
-#' instead the patristic distance as calculated by cophenetic.phylo. 
-#' Default \code{FALSE}.
-#' 
-#' @return character matrix. First column is the complete match, followed by
-#'   one for each capture group
-#' 
-#' @seealso tip_glom
-#' @keywords internal
-#' @importFrom ape cophenetic.phylo
-#' @aliases gettipdistmatrix getTipDistMatrix
-setGeneric("getTipDistMatrix", function(tree, byRootFraction=FALSE) standardGeneric("getTipDistMatrix"))
-setMethod("getTipDistMatrix", signature("phylo"), function(tree, byRootFraction=FALSE){
-	pairwiseSpecDists = cophenetic(tree)
-	# If byRootFraction is true, normalize the cophenetic distances
-	# according to the mean root age.
-	if( byRootFraction ){
-		# Want to normalize pairwise tip distances by their mean distance to root
-		# start with tipAges
-		tipAges = node_ages(tree)[which(tree$edge[, 2] %in% 1:length(tree$tip.label))]
-		names(tipAges) = tree$tip.label
-		###### Want Mmean to be a matrix of the mean pairwise root-distance b/w each tip-pair
-		Mmean = matrix(NA, length(tipAges), length(tipAges),
-			dimnames=list(names(tipAges), names(tipAges))) 	
-		means = combn(tipAges, 2, mean)
-		ind = combn(length(tipAges), 2)
-		for(i in 1:ncol(ind)){Mmean[ind[1, i], ind[2, i]] <- means[i]}
-		for(i in 1:ncol(ind)){Mmean[ind[2, i], ind[1, i]] <- means[i]}
-		diag(Mmean) <- tipAges
-		# take the ratio of spec distances to the mean
-		fracDists = pairwiseSpecDists / Mmean
-		return(fracDists)
-	} else {
-		return(pairwiseSpecDists)
-	}
-})
-setMethod("getTipDistMatrix", signature("phyloseq"), function(tree, byRootFraction=FALSE){
-	getTipDistMatrix( phy_tree(tree) )
-})
-gettipdistmatrix <- getTipDistMatrix
-################################################################################
-#' Convert edgelist hash-table to clique list
-#'
-#' Agglomerating function to convert an edgelist -- which is a 2-column table
-#' of vertices where each row represents an edge -- to a list of cliques,
-#' in which each clique is represented by a character vector of the vertex labels
-#' of the vertices that are members of the clique. This algorithm is perfectly
-#' greedy, such that the only requirement for inclusion in a clique is an edge
-#' to any of the other members of that clique.
-#'
-#' @usage edgelist2clique(EdgeList)
-#'
-#' @param EdgeList a 2-column table of vertices where each row represents an edge. 
-#'
-#' @return A list, where each element is a character vector of tips that should
-#' are in the same clique.
-#'
-#' @keywords internal
-#' @examples #
-#' # edgelist2clique(get.edgelist(ig))
-edgelist2clique = function(EdgeList){
-	# initialize list of globs
-	glob	= vector(mode="list")
-	
-	for (i in 1:nrow(EdgeList) ){
-		# initialize for each loop a 'skip' variable, to avoid later tests if answer already found.
-		skip	= FALSE
-		# check entries in list, glob, for membership in already-forming glob
-		thislink	= unlist(EdgeList[i,1:2])
-		# identify which, if any, globs have contig of interest already in them
-		# OLD WAY 1
-		# glob1	= which(sapply(sapply(glob,function(globi,ctig){which(ctig==globi)},ctig=thislink[1]),length)>0)
-		# glob2	= which(sapply(sapply(glob,function(globi,ctig){which(ctig==globi)},ctig=thislink[2]),length)>0)
-		# better way
-		glob1 = which(vapply(glob, function(glb,vertex){vertex %in% glb}, TRUE, thislink[1]))
-		glob2 = which(vapply(glob, function(glb,vertex){vertex %in% glb}, TRUE, thislink[2]))
-		# grep is actually slower
-		# glob1 = grep(thislink[1], glob, fixed=TRUE)
-		# glob2 = grep(thislink[2], glob, fixed=TRUE)
-	
-		## Now series of if-tests to decide where and how to glob.
-		# if both contigs are already in same globs, skip
-		if( !skip & length(glob1)>0 & length(glob2)>0 ){
-			if( glob1==glob2 ){
-				# skip remaining tests, only.
-				skip = TRUE	
-			}
-		}
-		# if both contigs are already in different globs, join both globs
-		if( !skip & length(glob1)>0 & length(glob2)>0 ){
-			if( glob1!=glob2 ){
-				# join globs at end	
-				glob	= c(glob,list(c(glob[[glob1]],glob[[glob2]])))
-				# remove old globs
-				glob	= glob[-c(glob1,glob2)]
-				# skip remaining tests.
-				skip = TRUE	
-			}
-		}
-		# if only contig 1 is in a glob, add Contig 2 to that glob
-		if( !skip & length(glob1)>0 & length(glob2)==0){
-			# add Contig 2 to glob1	
-			glob[[glob1]]	= c(glob[[glob1]],thislink[2])
-			# skip remaining tests.
-			skip = TRUE	
-		}
-		# if only Contig 2 is in a glob, add contig 1 to that glob
-		if( !skip & length(glob2)>0 & length(glob1)==0 ){
-			# add Contig 1 to glob2	
-			glob[[glob2]]	= c(glob[[glob2]],thislink[1])
-			# skip remaining tests.
-			skip = TRUE		
-		}
-		# all else, form new glob
-		if( !skip & length(glob1)==0 & length(glob2)==0 ){
-			# add Contig 1 and Contig 2 as vector in new glob.
-			glob	= c(glob,list(thislink))
-		}
-	}
-	return(glob)
-}
-################################################################################
-################################################################################
 ################################################################################
 ################################################################################
 #' Agglomerate taxa of the same type.
 #'
 #' This method merges species that have the same taxonomy at a certain 
 #' taxaonomic rank. 
-#' Its approach is analogous to \code{tip_glom}, but uses categorical data
+#' Its approach is analogous to \code{\link{tip_glom}}, but uses categorical data
 #' instead of a tree. In principal, other categorical data known for all taxa
 #' could also be used in place of taxonomy,
 #' but for the moment, this must be stored in the \code{taxonomyTable}
@@ -555,7 +399,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# taxonomic designation at this particular taxonomic rank.
 	tax <- tax[ !(tax %in% bad_empty) ]
 	
-	# Define the species cliques to loop through
+	# Define the OTU cliques to loop through
 	spCliques <- tapply(names(tax), factor(tax), list)
 	
 	# Successively merge taxa in physeq.

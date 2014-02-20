@@ -200,13 +200,13 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	if( !is.null(physeq) ){
 		extraData <- NULL
 		if( type == "samples" & !is.null(sample_data(physeq, FALSE)) ){
-			extraData <- sample_data(physeq)[as.character(vertDF$value), ]
+			extraData = data.frame(sample_data(physeq))[as.character(vertDF$value), , drop=FALSE]
 		} else if( type == "taxa" & !is.null(tax_table(physeq, FALSE)) ){
-			extraData <- tax_table(physeq)[as.character(vertDF$value), ]
+			extraData =   data.frame(tax_table(physeq))[as.character(vertDF$value), , drop=FALSE]
 		}
 		# Only mod vertDF if extraData exists
 		if( !is.null(extraData) ){
-			vertDF <- data.frame(vertDF, extraData) 			
+			vertDF <- data.frame(vertDF, extraData)
 		}
 	}
 
