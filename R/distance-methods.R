@@ -139,7 +139,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 			return(c(method.list))
 		}		
 	}
-
+  
 	# Define the function call to build
 	if( method %in% phyloseq_methods ){
 		if( method == "unifrac"){ return(UniFrac(physeq, ...)) }
@@ -708,33 +708,33 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	tree <- phy_tree(physeq)
 
 	# Some important checks.
-    if( is.null(tree$edge.length) ) {
-        stop("Tree has no branch lengths, cannot compute UniFrac")
-    }
-    if( !is.rooted(tree) ) {
-        stop("Rooted phylogeny required for UniFrac calculation")
-    }
-
+	if( is.null(tree$edge.length) ) {
+	  stop("Tree has no branch lengths, cannot compute UniFrac")
+	}
+	if( !is.rooted(tree) ) {
+	  stop("Rooted phylogeny required for UniFrac calculation")
+	}
+	
 	### Some parallel-foreach housekeeping.    
-    # If user specifies not-parallel run (the default), register the sequential "back-end"
-    if( !parallel ){ registerDoSEQ() }
+	# If user specifies not-parallel run (the default), register the sequential "back-end"
+	if( !parallel ){ registerDoSEQ() }
     
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(sample_names(OTU), 2, simplify=FALSE)
-    # initialize UniFracMat with NAs
-    UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
-    # define the rows/cols of UniFracMat with the sample names (rownames)    
-    rownames(UniFracMat) <- sample_names(OTU)
-    colnames(UniFracMat) <- sample_names(OTU)
+	spn <- combn(sample_names(OTU), 2, simplify=FALSE)
+	# initialize UniFracMat with NAs
+	UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
+	# define the rows/cols of UniFracMat with the sample names (rownames)    
+	rownames(UniFracMat) <- sample_names(OTU)
+	colnames(UniFracMat) <- sample_names(OTU)
 
 	# Make sure OTU is in species-are-rows orientation
 	if( !taxa_are_rows(OTU) ){OTU <- t(OTU)}    
-   	# Enforce that tree and otu_table indices are the same order, 
-   	# by re-ordering OTU, if needed
+	# Enforce that tree and otu_table indices are the same order, 
+	# by re-ordering OTU, if needed
 	if( !all(rownames(OTU) == taxa_names(tree)) ){
-		OTU <- OTU[taxa_names(tree), ]
+	  OTU <- OTU[taxa_names(tree), ]
 	}
-
+	
 	########################################
 	# Build the requisite matrices as defined 
 	# in the Fast UniFrac paper.
@@ -748,11 +748,11 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 		dimnames=list(edge_index=edges, sample_names=sample_names(OTU)))
 
 	# loop over each edge in the tree. Parallel version.
-  edge_array_list <- foreach( edge = edges, .packages="phyloseq") %dopar% {		
+  edge_array_list <- foreach( edge=edges, .packages="phyloseq") %dopar% {		
 		# get the associated node in order to call internal2tips(). node number, n:
 		n <- tree$edge[edge, 2]
 		# get subset of tips (species) that descend from this branch
-		edgeDescendants <- internal2tips_self(tree, n, return.names = TRUE)
+		edgeDescendants <- phyloseq:::internal2tips_self(tree, n, return.names=TRUE)
 		# sum the descendants of this branch for every sample, assign to edge array (list)
 		return( apply(OTU[edgeDescendants, ], 2, sum) )
 	}
