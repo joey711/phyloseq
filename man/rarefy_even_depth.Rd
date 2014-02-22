@@ -114,9 +114,14 @@
 data("esophagus")
 esorepT = rarefy_even_depth(esophagus, replace=TRUE)
 esorepF = rarefy_even_depth(esophagus, replace=FALSE)
-data("GlobalPatterns")
-GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
-GPrepF = rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE)
+sample_sums(esophagus)
+sample_sums(esorepT)
+sample_sums(esorepF)
+## NRun Manually: Too slow!
+# data("GlobalPatterns")
+# GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
+## Actually just this one is slow
+# system.time(GPrepF <- rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE))
 }
 \seealso{
   \code{\link{sample}}

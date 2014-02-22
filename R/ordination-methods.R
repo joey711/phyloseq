@@ -551,18 +551,13 @@ setMethod("rda.phyloseq", "phyloseq", function(X){
 #' @importFrom cluster pam
 #' @export
 #' @examples
-#' # Load and process data
 #' data("soilrep")
-#' soilr = rarefy_even_depth(soilrep, rngseed=888)
-#' print(soilr)
-#' sample_variables(soilr)
-#' # Ordination
-#' sord  = ordinate(soilr, "DCA")
-#' # Gap Statistic
-#' gs = gapstat_ord(sord, axes=1:4, verbose=FALSE)
-#' # Evaluate results with plots, etc.
+#' sord  = ordinate(soilrep, "PCoA", "bray")
+#' # Evaluate axes with scree plot
 #' plot_scree(sord)
-#' plot_ordination(soilr, sord,  color="Treatment")
+#' # Gap Statistic
+#' gs = gapstat_ord(sord, axes=1:3, verbose=FALSE)
+#' # plot_ordination(soilrep, sord,  color="Treatment")
 #' plot_clusgap(gs)
 #' print(gs, method="Tibs2001SEmax")
 gapstat_ord = function(ord, axes=c(1:2), type="sites", 

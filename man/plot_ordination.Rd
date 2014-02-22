@@ -99,50 +99,24 @@
 \description{
   There are many useful examples of phyloseq ordination
   graphics in the
-  \href{http://joey711.github.com/phyloseq/plot_ordination-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq
   online tutorials}. Convenience wrapper for plotting
   ordination results as a \code{ggplot2}-graphic, including
   additional annotation in the form of shading, shape,
   and/or labels of sample variables.
 }
 \examples{
+# See other examples at
+# http://joey711.github.io/phyloseq/plot_ordination-examples
 data(GlobalPatterns)
-# Need to clean the zeros from GlobalPatterns:
-GP <- prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
-# Define a human-associated versus non-human binary variable:
-sample_data(GP)$human <- get_variable(GP, "SampleType") \%in\% c("Feces", "Mock", "Skin", "Tongue")
-# Get the names of the most-abundant
-top.TaxaGroup <- sort(
-tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
-decreasing = TRUE)
-top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-# Now prune further, to just the most-abundant phyla
-GP <- subset_taxa(GP, Phylum \%in\% names(top.TaxaGroup))
-topsp <- names(sort(taxa_sums(GP), TRUE)[1:200])
-GP1   <- prune_taxa(topsp, GP)
-GP.dpcoa <- ordinate(GP1, "DPCoA")
-plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
-# Customize with ggplot2 layers added directly to output
-library("ggplot2")
-plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
-p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape="human")
-print(p)
-# library("ggplot2")
-# p + geom_line() + geom_point(size=5)
-# plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum") + geom_line() + geom_point(size=5)
-plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
-plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
-plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
-plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
-plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
-plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
-plot_ordination(GP1, GP.dpcoa, type="scree")
+GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
+gp_bray_pcoa = ordinate(GP, "CCA", "bray")
+plot_ordination(GP, gp_bray_pcoa, "samples", color="SampleType")
 }
 \seealso{
-  The examples on the phyloseq wiki page for
-  \code{plot_ordination} show many more examples:
-
-  \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+  Many more examples are included in the
+  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq
+  online tutorials}.
 
   Also see the general wrapping function:
 

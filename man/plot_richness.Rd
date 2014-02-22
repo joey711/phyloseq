@@ -85,7 +85,7 @@
 \description{
   There are many useful examples of alpha-diversity
   graphics in the
-  \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_richness-examples}{phyloseq
   online tutorials}. This function estimates a number of
   alpha-diversity metrics using the
   \code{\link{estimate_richness}} function, and returns a
@@ -113,7 +113,7 @@
 }
 \examples{
 ## There are many more interesting examples at the phyloseq online tutorials.
-## http://joey711.github.com/phyloseq/plot_richness-examples
+## http://joey711.github.io/phyloseq/plot_richness-examples
 data("soilrep")
 plot_richness(soilrep, measures=c("InvSimpson", "Fisher"))
 plot_richness(soilrep, "Treatment", "warmed", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
@@ -129,7 +129,7 @@ plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSim
   \code{\link[vegan]{diversity}}
 
   There are many more interesting examples at the
-  \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_richness-examples}{phyloseq
   online tutorials}.
 }
 

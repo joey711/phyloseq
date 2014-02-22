@@ -8,7 +8,7 @@
 #' Generic plot defaults for phyloseq.
 #'
 #' There are many useful examples of phyloseq graphics functions in the
-#' \href{http://joey711.github.com/phyloseq/}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq}{phyloseq online tutorials}.
 #' The specific plot type is chosen according to available non-empty slots.
 #' This is mainly for syntactic convenience and quick-plotting. See links below
 #' for some examples of available graphics tools available in the
@@ -28,7 +28,7 @@
 #'  are present.
 #' 
 #' @seealso 
-#'  \href{https://github.com/joey711/phyloseq/wiki/Graphics-Examples}{phyloseq graphics examples (wiki)}.
+#'  \href{http://joey711.github.io/phyloseq/tutorials-index.html}{phyloseq frontpage tutorials}.
 #'
 #'  \code{\link{plot_ordination}}
 #'  \code{\link{plot_heatmap}}
@@ -63,7 +63,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' Plot a network using ggplot2 (represent microbiome)
 #'
 #' There are many useful examples of phyloseq network graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_network-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_network-examples}{phyloseq online tutorials}.
 #' A custom plotting function for displaying networks
 #' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
 #' The network itself should be represented using
@@ -253,7 +253,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' Plot alpha diversity, flexibly with ggplot2
 #'
 #' There are many useful examples of alpha-diversity graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 #' This function estimates a number of alpha-diversity metrics using the 
 #' \code{\link{estimate_richness}} function,
 #' and returns a \code{ggplot} plotting object. 
@@ -352,14 +352,14 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  \code{\link[vegan]{diversity}}
 #'
 #' There are many more interesting examples at the
-#' \href{http://joey711.github.com/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 #'
 #' @import ggplot2
 #' @import reshape2
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
-#' ## http://joey711.github.com/phyloseq/plot_richness-examples
+#' ## http://joey711.github.io/phyloseq/plot_richness-examples
 #' data("soilrep")
 #' plot_richness(soilrep, measures=c("InvSimpson", "Fisher"))
 #' plot_richness(soilrep, "Treatment", "warmed", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
@@ -482,7 +482,7 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 #' General ordination plotter based on ggplot2.
 #'
 #' There are many useful examples of phyloseq ordination graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_ordination-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq online tutorials}.
 #' Convenience wrapper for plotting ordination results as a 
 #' \code{ggplot2}-graphic, including
 #' additional annotation in the form of shading, shape, and/or labels of
@@ -575,10 +575,8 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 #'  the ordination result for the specified axes.
 #' 
 #' @seealso 
-#'  The examples on the phyloseq wiki page for \code{plot_ordination} show 
-#'  many more examples:
-#'
-#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'  Many more examples are included in the 
+#'  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq online tutorials}.
 #'
 #' Also see the general wrapping function:
 #'
@@ -587,37 +585,12 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 #' @import ggplot2
 #' @export
 #' @examples 
+#' # See other examples at
+#' # http://joey711.github.io/phyloseq/plot_ordination-examples
 #' data(GlobalPatterns)
-#' # Need to clean the zeros from GlobalPatterns:
-#' GP <- prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
-#' # Define a human-associated versus non-human binary variable:
-#' sample_data(GP)$human <- get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
-#' # Get the names of the most-abundant
-#' top.TaxaGroup <- sort(
-#'    tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum, na.rm = TRUE),
-#'    decreasing = TRUE)
-#' top.TaxaGroup <- top.TaxaGroup[top.TaxaGroup > 1*10^6]
-#' # Now prune further, to just the most-abundant phyla
-#' GP <- subset_taxa(GP, Phylum %in% names(top.TaxaGroup))
-#' topsp <- names(sort(taxa_sums(GP), TRUE)[1:200])
-#' GP1   <- prune_taxa(topsp, GP)
-#' GP.dpcoa <- ordinate(GP1, "DPCoA")
-#' plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum")
-#' # Customize with ggplot2 layers added directly to output
-#' library("ggplot2")
-#' plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType") + geom_line() + geom_point(size=5)
-#' p <- plot_ordination(GP1, GP.dpcoa, type="samples", color="SampleType", shape="human")
-#' print(p)
-#' # library("ggplot2")
-#' # p + geom_line() + geom_point(size=5)
-#' # plot_ordination(GP1, GP.dpcoa, type="taxa", color="Phylum") + geom_line() + geom_point(size=5)
-#' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum", label="SampleType")
-#' plot_ordination(GP1, GP.dpcoa, type="biplot", shape="Phylum")
-#' plot_ordination(GP1, GP.dpcoa, type="biplot", color="Phylum")
-#' plot_ordination(GP1, GP.dpcoa, type="biplot", label="Phylum")
-#' plot_ordination(GP1, GP.dpcoa, type="split", color="Phylum", label="SampleType")
-#' plot_ordination(GP1, GP.dpcoa, type="split", color="SampleType", shape="Phylum", label="SampleType")
-#' plot_ordination(GP1, GP.dpcoa, type="scree")
+#' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
+#' gp_bray_pcoa = ordinate(GP, "CCA", "bray")
+#' plot_ordination(GP, gp_bray_pcoa, "samples", color="SampleType")
 plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
 	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
 
@@ -851,7 +824,7 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' according to a threshold and method. The meaning of the threshold depends
 #' upon the method. See argument description below.
 #' There are many useful examples of phyloseq ordination graphics in the
-#' \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/subset_ord_plot-examples}{phyloseq online tutorials}.
 #'
 #' @usage subset_ord_plot(p, threshold=0.05, method="farthest")
 #' 
@@ -899,7 +872,7 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #'  the ordination result according to previously-specified parameters.
 #' 
 #' @seealso 
-#'  \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq online tutorial} for this function.
+#'  \href{http://joey711.github.io/phyloseq/subset_ord_plot-examples}{phyloseq online tutorial} for this function.
 #'
 #'  \code{\link{plot_ordination}}
 #'
@@ -907,7 +880,7 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #' @export
 #' @examples 
 #' ## See the online tutorials.
-#' ## http://joey711.github.com/phyloseq/subset_ord_plot-examples
+#' ## http://joey711.github.io/phyloseq/subset_ord_plot-examples
 subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 	threshold <- threshold[1] # ignore all but first threshold value.
 	method    <- method[1] # ignore all but first string.
@@ -964,36 +937,22 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #'
 #'  \code{\link{distance}}
 #' 
-#'  The examples on the phyloseq wiki page for \code{plot_ordination} show 
-#'  many more examples:
-#'
-#' \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
+#'  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq online tutorials}
 #'
 #' @import ggplot2
 #' @export
 #' @examples
 #' # First load and trim a dataset
-#' data(GlobalPatterns)
-#' GP = prune_taxa(taxa_sums(GlobalPatterns)>0, GlobalPatterns)
-#' # Define a human-associated versus non-human categorical variable, and add new human variable to sample data:
-#' sample_data(GP)$human = factor( get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue") )
-#' # # filtering
-#' # Remove taxa not seen more than 3 times in at least 20% of the samples
-#' gp  = filter_taxa(GP, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
-#' # Standardize abundances to the median sequencing depth
-#' gpr = transform_sample_counts(gp, function(x, total=median(sample_sums(gp))) round(total * (x / sum(x))) )
-#' # Let's use Coefficient of Variation for filtering, arbitrary cutoff of 3.0
-#' gprf = filter_taxa(gpr, function(x) sd(x)/mean(x) > 3L, TRUE)
-#' # For a somewhat readable number of taxa on display, let's subset to just Bacteroidetes for some plots
-#' gprfb = subset_taxa(gprf, Phylum=="Bacteroidetes")
+#' data("GlobalPatterns")
+#' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
 #' # Test plots (preforms ordination in-line, then makes scree plot)
-#' plot_scree(ordinate(gprfb, "DPCoA", "bray"))
-#' plot_scree(ordinate(gprfb, "PCoA", "bray"))
-#' plot_scree(ordinate(gprfb, "NMDS", "bray")) # Empty return with message
-#' plot_scree(ordinate(gprfb ~ SampleType, "CCA"))
-#' plot_scree(ordinate(gprfb ~ SampleType, "RDA")) 
-#' plot_scree(ordinate(gprfb, "DCA"))
-#' plot_ordination(gprfb, ordinate(gprfb, "DCA"), type="scree")
+#' plot_scree(ordinate(GP, "DPCoA", "bray"))
+#' plot_scree(ordinate(GP, "PCoA", "bray"))
+#' plot_scree(ordinate(GP, "NMDS", "bray")) # Empty return with message
+#' plot_scree(ordinate(GP ~ SampleType, "CCA"))
+#' plot_scree(ordinate(GP ~ SampleType, "RDA")) 
+#' plot_scree(ordinate(GP, "DCA"))
+#' plot_ordination(GP, ordinate(GP, "DCA"), type="scree")
 plot_scree = function(ordination, title=NULL){
 	# Use get_eigenvalue method dispatch. It always returns a numeric vector.
 	x = extract_eigenvalue(ordination)
@@ -1136,7 +1095,7 @@ psmelt = function(physeq){
 #' A flexible, informative barplot phyloseq data
 #'
 #' There are many useful examples of phyloseq barplot graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
 #' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
 #'  graphic object
 #' that can be saved or further modified with additional layers, options, etc.
@@ -1182,7 +1141,7 @@ psmelt = function(physeq){
 #'  as the default \code{\link[base]{print}}/\code{\link[methods]{show}} method.
 #'
 #' @seealso 
-#'  \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
+#'  \href{http://joey711.github.io/phyloseq/plot_bar-examples}{phyloseq online tutorials}.
 #'
 #'  \code{\link{psmelt}}
 #'
@@ -2085,7 +2044,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' Plot a phylogenetic tree with optional annotations
 #'
 #' There are many useful examples of phyloseq tree graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #' This function is intended to facilitate easy graphical investigation of 
 #' the phylogenetic tree, as well as sample data. Note that for phylogenetic
 #' sequencing of samples with large richness, some of the options in this 
@@ -2226,7 +2185,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' \url{https://github.com/gjuggler/ggphylo}
 #'
 #' There are many useful examples of phyloseq tree graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #'
 #' @author Paul McMurdie, relying on supporting code from
 #'  Gregory Jordan \email{gjuggler@@gmail.com}
@@ -2239,12 +2198,12 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' # # Using plot_tree() with the esophagus dataset.
 #' # # Please note that many more interesting examples are shown
 #' # # in the online tutorials"
-#' # # http://joey711.github.com/phyloseq/plot_tree-examples
+#' # # http://joey711.github.io/phyloseq/plot_tree-examples
 #' data(esophagus)
-#' plot_tree(esophagus)
-#' plot_tree(esophagus, color="samples")
-#' plot_tree(esophagus, size="abundance")
-#' plot_tree(esophagus, size="abundance", color="samples")
+#' # plot_tree(esophagus)
+#' # plot_tree(esophagus, color="samples")
+#' # plot_tree(esophagus, size="abundance")
+#' # plot_tree(esophagus, size="abundance", color="samples")
 #' plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
 	color=NULL, shape=NULL, size=NULL,
@@ -2345,7 +2304,7 @@ RadialTheta <- function(pos){
 #' Create an ecologically-organized heatmap using ggplot2 graphics
 #'
 #' There are many useful examples of phyloseq heatmap graphics in the
-#' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' In a 2010 article in BMC Genomics, Rajaram and Oono show describe an 
 #' approach to creating a heatmap using ordination methods to organize the 
 #' rows and columns instead of (hierarchical) cluster analysis. In many cases
@@ -2501,7 +2460,7 @@ RadialTheta <- function(pos){
 #'  NeatMap--non-clustering heat map alternatives in R. BMC Bioinformatics, 11, 45.
 #'
 #' Please see further examples in the 
-#' \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
+#' \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' 
 #' @importFrom vegan scores
 #' @import scales 
