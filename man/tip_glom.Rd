@@ -55,6 +55,8 @@
 }
 \examples{
 data("esophagus")
+# for speed
+esophagus = prune_taxa(taxa_names(esophagus)[1:25], esophagus)
 plot_tree(esophagus, label.tips="taxa_names", size="abundance", title="Before tip_glom()")
 plot_tree(tip_glom(esophagus, h=0.2), label.tips="taxa_names", size="abundance", title="After tip_glom()")
 }

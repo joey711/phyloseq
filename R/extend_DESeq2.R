@@ -5,6 +5,9 @@
 #' to the relevant \code{\link[DESeq2]{DESeqDataSet}} object, which can then be
 #' tested in the negative binomial generalized linear model framework
 #' of the \code{\link[DESeq2]{DESeq}} function in DESeq2 package.
+#' See the
+#' \href{http://joey711.github.io/phyloseq-extensions}{phyloseq-extensions}
+#' tutorials for more details.
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}}.
 #'  Must have a \code{\link{sample_data}} component.
@@ -30,6 +33,13 @@
 #' @return A \code{\link[DESeq2]{DESeqDataSet}} object.
 #' 
 #' @seealso
+#' 
+#' \code{vignette("phyloseq-mixture-models")}
+#' 
+#' The 
+#' \href{http://joey711.github.io/phyloseq-extensions}{phyloseq-extensions}
+#' tutorials.
+#' 
 #'  \code{\link[DESeq2]{DESeq}}
 #'  
 #'  \code{\link[DESeq2]{results}}
@@ -39,28 +49,10 @@
 #' @importFrom DESeq2 DESeqDataSetFromMatrix
 #'  
 #' @examples
-#'  ### Load and process data.
-#' data("enterotype")
-#' # Transform back to counts from samples, 
-#' # assume that the smallest non-zero value, snzv, in each sample is equal to 1.
-#' entcount = transform_sample_counts(enterotype, function(x){
-#'    snzv = min(x[x > 0])
-#'    return(round(x/snzv))
-#' })
-#' # Remove the odd "-1" and "Bacteria" garbage genera that includes all the unannotated sequences
-#' # (almost certainly a mixture of many genera and noise)
-#' entcount = prune_taxa(!taxa_names(entcount) %in% c("-1", "Bacteria"), entcount)
-#' # Subset to just illumina samples
-#' entill = subset_samples(entcount, SeqTech == "Illumina")
-#' dds = phyloseq_to_deseq2(entill, ~ Enterotype)
-#' # The DESeq() and results() methods come from DESeq2-package
-#' library("DESeq2")
-#' dds = DESeq(dds, fitType="local")
-#' # The default multiple-inference correction is BH, already occurred in DESeq
-#' res = results(dds)
-#' res = res[order(res$padj, na.last=NA), ]
-#' # Print the results for OTUs with adjusted-P above 0.05
-#' print(res[(res$padj < 0.05), ])
+#'  # Check out the vignette phyloseq-mixture-models for more details.
+#'  # vignette("phyloseq-mixture-models")
+#'  data(soilrep)
+#'  phyloseq_to_deseq2(soilrep, ~warmed)
 phyloseq_to_deseq2 = function(physeq, design, ...){
   # Need to add check here for missing sample_data
   if( is.null(sample_data(physeq, FALSE)) ){

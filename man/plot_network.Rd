@@ -79,7 +79,7 @@
 \description{
   There are many useful examples of phyloseq network
   graphics in the
-  \href{http://joey711.github.com/phyloseq/plot_network-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_network-examples}{phyloseq
   online tutorials}. A custom plotting function for
   displaying networks using advanced
   \code{\link[ggplot2]{ggplot}}2 formatting. The network

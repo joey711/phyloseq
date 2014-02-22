@@ -50,7 +50,7 @@
 \description{
   There are many useful examples of phyloseq barplot
   graphics in the
-  \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_bar-examples}{phyloseq
   online tutorials}. This function wraps \code{ggplot2}
   plotting, and returns a \code{ggplot2} graphic object
   that can be saved or further modified with additional
@@ -69,7 +69,7 @@ plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Family)
 # See additional examples in the plot_bar online tutorial. Link above.
 }
 \seealso{
-  \href{http://joey711.github.com/phyloseq/plot_bar-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_bar-examples}{phyloseq
   online tutorials}.
 
   \code{\link{psmelt}}

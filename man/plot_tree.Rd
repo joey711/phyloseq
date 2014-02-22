@@ -126,7 +126,7 @@
 \description{
   There are many useful examples of phyloseq tree graphics
   in the
-  \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq
   online tutorials}. This function is intended to
   facilitate easy graphical investigation of the
   phylogenetic tree, as well as sample data. Note that for
@@ -165,12 +165,12 @@
 # # Using plot_tree() with the esophagus dataset.
 # # Please note that many more interesting examples are shown
 # # in the online tutorials"
-# # http://joey711.github.com/phyloseq/plot_tree-examples
+# # http://joey711.github.io/phyloseq/plot_tree-examples
 data(esophagus)
-plot_tree(esophagus)
-plot_tree(esophagus, color="samples")
-plot_tree(esophagus, size="abundance")
-plot_tree(esophagus, size="abundance", color="samples")
+# plot_tree(esophagus)
+# plot_tree(esophagus, color="samples")
+# plot_tree(esophagus, size="abundance")
+# plot_tree(esophagus, size="abundance", color="samples")
 plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 }
 \author{
@@ -188,7 +188,7 @@ plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 
   There are many useful examples of phyloseq tree graphics
   in the
-  \href{http://joey711.github.com/phyloseq/plot_tree-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq
   online tutorials}.
 }
 
