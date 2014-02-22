@@ -132,7 +132,7 @@
 \description{
   There are many useful examples of phyloseq heatmap
   graphics in the
-  \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq
   online tutorials}. In a 2010 article in BMC Genomics,
   Rajaram and Oono show describe an approach to creating a
   heatmap using ordination methods to organize the rows and
@@ -232,7 +232,7 @@ plot_heatmap(gpac, sample.label="SampleType", taxa.label="Family", taxa.order="F
   heat map alternatives in R. BMC Bioinformatics, 11, 45.
 
   Please see further examples in the
-  \href{http://joey711.github.com/phyloseq/plot_heatmap-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq
   online tutorials}.
 }
 

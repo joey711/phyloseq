@@ -56,15 +56,15 @@
   meaning of the threshold depends upon the method. See
   argument description below. There are many useful
   examples of phyloseq ordination graphics in the
-  \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/subset_ord_plot-examples}{phyloseq
   online tutorials}.
 }
 \examples{
 ## See the online tutorials.
-## http://joey711.github.com/phyloseq/subset_ord_plot-examples
+## http://joey711.github.io/phyloseq/subset_ord_plot-examples
 }
 \seealso{
-  \href{http://joey711.github.com/phyloseq/subset_ord_plot-examples}{phyloseq
+  \href{http://joey711.github.io/phyloseq/subset_ord_plot-examples}{phyloseq
   online tutorial} for this function.
 
   \code{\link{plot_ordination}}

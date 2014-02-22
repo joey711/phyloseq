@@ -108,9 +108,14 @@
 #' data("esophagus")
 #' esorepT = rarefy_even_depth(esophagus, replace=TRUE)
 #' esorepF = rarefy_even_depth(esophagus, replace=FALSE)
-#' data("GlobalPatterns")
-#' GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
-#' GPrepF = rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE)
+#' sample_sums(esophagus)
+#' sample_sums(esorepT)
+#' sample_sums(esorepF)
+#' ## NRun Manually: Too slow!
+#' # data("GlobalPatterns")
+#' # GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
+#' ## Actually just this one is slow
+#' # system.time(GPrepF <- rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE))
 rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 															rngseed=FALSE, replace=TRUE, trimOTUs=TRUE, verbose=TRUE){
 	
@@ -287,6 +292,8 @@ rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 #'
 #' @examples 
 #' data("esophagus")
+#' # for speed
+#' esophagus = prune_taxa(taxa_names(esophagus)[1:25], esophagus)
 #' plot_tree(esophagus, label.tips="taxa_names", size="abundance", title="Before tip_glom()")
 #' plot_tree(tip_glom(esophagus, h=0.2), label.tips="taxa_names", size="abundance", title="After tip_glom()")
 tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
