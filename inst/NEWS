@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.7.20
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- No user-visible changes. All future compatibility changes.
+
+BUG FIXES
+
+	- Unit test changes to work with upcoming R release and new testthat version. 
+
 CHANGES IN VERSION 1.7.19
 -------------------------
 

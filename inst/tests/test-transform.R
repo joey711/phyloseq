@@ -25,10 +25,8 @@ test_that("Can transform_sample_counts on phyloseq with either orientation", {
   expect_false(is.null(eso2), "eso2 is NULL, valid phyloseq construction failed.")
   expect_is(eso1, "phyloseq", "class of eso1 is not phyloseq")
   expect_is(eso2, "phyloseq", "class of eso2 is not phyloseq")
-  expect_equal(ntaxa(esophagus), ntaxa(eso1), 
-  						 "ntaxa eso1 doesn't match original after transformation.")
-  expect_equal(ntaxa(esophagus), ntaxa(eso2), 
-              "ntaxa eso2 doesn't match original after transformation.")
+  expect_equal(ntaxa(esophagus), ntaxa(eso1), info="ntaxa eso1 doesn't match original after transformation.")
+  expect_equal(ntaxa(esophagus), ntaxa(eso2), info="ntaxa eso2 doesn't match original after transformation.")
 })
 
 test_that("Test transform_sample_counts edge-cases", {
@@ -74,29 +72,29 @@ test_that("Test transform_sample_counts numerical result accuracy", {
   es = esophagus
   # addition
   es1 = transform_sample_counts(es, function(x) x + 1)
-  expect_equal(otu_table(es1), otu_table(es) + 1, tolerance=0.1, "addition fail")
+  expect_equal(otu_table(es1), otu_table(es) + 1, tolerance=0.1, info="addition fail")
   # multiplication
 	es1 = transform_sample_counts(es, function(x) x * 2.5)
-	expect_equal(otu_table(es1), otu_table(es) * 2.5, tolerance=0.1, "multiplication fail")
+	expect_equal(otu_table(es1), otu_table(es) * 2.5, tolerance=0.1, info="multiplication fail")
   # element-wise exponentiation
 	es1 = transform_sample_counts(es, function(x) x ^ 2.5)
-	expect_equal(otu_table(es1), otu_table(es) ^ 2.5, tolerance=0.1, "exponentiation fail")
+	expect_equal(otu_table(es1), otu_table(es) ^ 2.5, tolerance=0.1, info="exponentiation fail")
   # logarithm
 	es1 = transform_sample_counts(es, function(x) log(x+10) )
-	expect_equal(otu_table(es1), log(otu_table(es) + 10), tolerance=0.1, "logarithm fail")  
+	expect_equal(otu_table(es1), log(otu_table(es) + 10), tolerance=0.1, info="logarithm fail")  
   # Prune to a small subset. Need a test where "by-sample" matters. E.g. rank
   es  = prune_taxa(taxa_names(es)[1:5], esophagus)
 	es1 = transform_sample_counts(es, rank)
   ans = c(5, 2, 4, 2, 2, 5, 2.5, 4, 2.5, 1, 5, 1.5, 1.5, 3.5, 3.5)
   ans = otu_table(matrix(ans, ntaxa(es), nsamples(es), FALSE,
                          list(taxa_names(es), sample_names(es))), taxa_are_rows=TRUE)
-	expect_equal(otu_table(es1), ans, tolerance=0.1, "rank fail")
+	expect_equal(otu_table(es1), ans, tolerance=0.1, info="rank fail")
   # test where "by-sample" matters, after transpose
 	es  = prune_taxa(taxa_names(esophagus)[1:5], t(esophagus))
 	es1 = transform_sample_counts(es, rank)
 	ans = c(5, 2, 4, 2, 2, 5, 2.5, 4, 2.5, 1, 5, 1.5, 1.5, 3.5, 3.5)
 	ans = otu_table(matrix(ans, nsamples(es), ntaxa(es), TRUE,
 	                       list(sample_names(es), taxa_names(es))), taxa_are_rows=FALSE)
-	expect_equal(otu_table(es1), ans, tolerance=0.1, "rank fail")
+	expect_equal(otu_table(es1), ans, tolerance=0.1, info="rank fail")
 })
 
