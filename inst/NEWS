@@ -1,3 +1,18 @@
+CHANGES IN VERSION 1.7.21
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Updated `import_qiime` doc to emphasize it is intended for legacy QIIME files.
+
+	- Much faster and mem-efficient import of legacy QIIME and usearch files.
+
+	- Uses data.table syntax to better manage import of large files.
+
+	- Entire HMPv35 now imports in about 1 minute, low risk of mem-swap.
+
+	- Added dependency to data.table
+
 CHANGES IN VERSION 1.7.20
 -------------------------
 

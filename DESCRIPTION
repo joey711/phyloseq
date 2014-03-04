@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.7.20
-Date: 2014-02-21
+Version: 1.7.21
+Date: 2014-03-03
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -17,6 +17,7 @@ Imports:
     biom (>= 0.3.9),
     Biostrings (>= 2.28.0),
     cluster (>= 1.14.4),
+    data.table (>= 1.8.10),
     DESeq2 (>= 1.0.19),
     foreach (>= 1.4),
     ggplot2 (>= 0.9.3.1),
