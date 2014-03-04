@@ -264,19 +264,18 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	}
 
 	if( !is.null(treefilename) ){
-		if( verbose ){
-			cat("Processing phylogenetic tree...", fill=TRUE)
-		}
-		if( inherits(treefilename, "phylo") ){
+		if(verbose){cat("Processing phylogenetic tree...\n", treefilename, "...\n")}
+		if(inherits(treefilename, "phylo")){
 			# If argument is already a tree, don't read, just assign.
 			tree = treefilename
 		} else {
+      # If it is not a tree, assume file and attempt to import.
 			# NULL is silently returned if tree is not read properly.
-			tree <- read_tree(treefilename, ...)		
+			tree <- read_tree(treefilename, ...)
 		}
 		# Add to argument list or warn
 		if( is.null(tree) ){
-			warning("treefilename failed import. It not included.")
+			warning("treefilename failed import. It will not be included.")
 		} else {
 			argumentlist <- c(argumentlist, list(tree) )
 		}
@@ -524,7 +523,7 @@ import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime,
   # Check for commented lines, starting with line 1.
   # The deepest commented line (largest n) is assumed to have header information.
   skipLines = max(which(substr(x[1:25L], 1, 1)=="#"))-1L
-  if(verbose){cat("Header is on line", skipLines, " \n")}
+  if(verbose){cat("Header is on line", (skipLines + 1L), " \n")}
   if(verbose){cat("Converting input file to a table...\n")}
   x = fread(input=paste0(x, collapse="\n"), sep="\t", header=TRUE, skip=skipLines)
   if(verbose){cat("Defining OTU table... \n")}
