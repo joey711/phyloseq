@@ -2,8 +2,8 @@
 \alias{import_usearch_uc}
 \title{Import usearch table format (\code{.uc}) to OTU table}
 \usage{
-  import_usearch_uc(ucfile, chunkSize = 1e+07, colRead = 9,
-  colOTU = 10, readDelimiter = "_")
+  import_usearch_uc(ucfile, colRead = 9, colOTU = 10,
+  readDelimiter = "_", verbose = TRUE)
 }
 \arguments{
   \item{ucfile}{(Required). A file location character
@@ -12,22 +12,6 @@
   passed directly to \code{\link{read.table}}. Please see
   its \code{file} argument documentation for further links
   and details.}
-
-  \item{chunkSize}{(Optional). Numeric. The number of rows
-  of the table to process at one time. The total number of
-  rows in the file should not be an even multiple of this
-  value. This parameter is provided purely to improve
-  performance by allowing you to avoid memory-swaps when
-  importing a large \code{ucfile}. You should set this
-  value as large as possible without using all of the RAM
-  availabe to your system. The reason this is a potential
-  issue is that there should be a row-entry in the
-  \code{ucfile} for every read that you processed with
-  \code{usearch}. For modern and future datasets this is
-  expected to number in the hundreds of millions to
-  billions of entries. The default \code{chunkSize} is
-  \code{1E7}, corresponding to 10-million entries processed
-  from the file at a time, in order.}
 
   \item{colRead}{(Optional). Numeric. The column index in
   the uc-table file that holds the read IDs. The default
@@ -43,6 +27,10 @@
   demultiplexed read ID of your sequence file. The default
   is plain underscore, which in this \code{\link{regex}}
   context is \code{"_"}.}
+
+  \item{verbose}{(Optional). A \code{\link{logical}}.
+  Default is \code{TRUE}. Should progresss messages be
+  \code{\link{cat}}ted to standard out?}
 }
 \description{
   UPARSE is an algorithm for OTU-clustering implemented

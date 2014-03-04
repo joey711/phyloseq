@@ -132,7 +132,7 @@ test_that("Test ordering", {
 	
 	expect_that(identical(taxa_names(otu_table(e4)), taxa_names(tax_table(e4))), is_false())
 	expect_that(identical(sample_names(otu_table(e4)), sample_names(sample_data(e4))), is_false())
-	e4 = index_reorder(e4, "both")
+	e4 = phyloseq:::index_reorder(e4, "both")
 	expect_that(identical(taxa_names(otu_table(e4)), taxa_names(tax_table(e4))), is_true())
 	expect_that(identical(sample_names(otu_table(e4)), sample_names(sample_data(e4))), is_true())	
 })

@@ -85,7 +85,7 @@ mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
 trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
 rs_file <- system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
 
-t0 <- import_qiime(otufile, mapfile, trefile, rs_file, showProgress=FALSE)
+t0 <- import_qiime(otufile, mapfile, trefile, rs_file, verbose=FALSE)
 test_that("Class of import result is phyloseq-class", {
 	expect_that(t0, is_a("phyloseq"))
 })
@@ -97,13 +97,6 @@ test_that("Classes of components are as expected", {
 	expect_that(phy_tree(t0), is_a("phylo"))		
 	expect_that(refseq(t0), is_a("DNAStringSet"))
 })
-
-test_that("Changing the chunk.size does not affect resulting tables", {
-	t1 <- import_qiime(otufile, mapfile, trefile, rs_file, chunk.size=300L, showProgress=FALSE)
-	t2 <- import_qiime(otufile, mapfile, trefile, rs_file, chunk.size=13L, showProgress=FALSE)
-	expect_that(t0, is_equivalent_to(t1))
-	expect_that(t1, is_equivalent_to(t2))
-})	
 
 test_that("Features of the abundance data are consistent, match known values", {
 	expect_that(sum(taxa_sums(t0)), equals(1269671L))
@@ -118,10 +111,12 @@ test_that("Features of the abundance data are consistent, match known values", {
 
 test_that("Features of the taxonomy table match expected values", {
 	expect_that(length(rank_names(t0)), equals(7L))
-	expect_that(rank_names(t0), equals(c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")))
+	expect_equal(rank_names(t0), 
+               c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"))
 	tax53 = as(tax_table(t0), "matrix")[53, ]
 	expect_that(tax53, is_equivalent_to(c("Bacteria", "Proteobacteria", "Deltaproteobacteria",
-		"Desulfovibrionales", "Desulfomicrobiaceae", "Desulfomicrobium", "Desulfomicrobiumorale")))	
+		"Desulfovibrionales", "Desulfomicrobiaceae", 
+    "Desulfomicrobium", "Desulfomicrobiumorale")))	
 })
 ################################################################################
 # parse function tests - note, these are also used by import_biom
@@ -340,14 +335,14 @@ test_that("Results of .tar.gz and .zip should be identical", {
 # import_usearch_uc
 ################################################################################
 usearchfile = system.file("extdata", "usearch.uc.gz", package="phyloseq")
-OTU1 = import_usearch_uc(usearchfile, chunkSize=500)
-OTU2 = import_usearch_uc(usearchfile, chunkSize=11)
-test_that("import_usearch_uc: Results from two different chunk-sizes are identical", {  
-  expect_identical(OTU1, OTU2)
-})
+OTU1 = import_usearch_uc(usearchfile)
 test_that("import_usearch_uc: Properly omit entries from failed search", {  
   ucLines = readLines(usearchfile)
   expect_identical( sum(OTU1), (length(ucLines) - length(grep("*", ucLines, fixed=TRUE))) )
-  expect_identical( sum(OTU2), (length(ucLines) - length(grep("*", ucLines, fixed=TRUE))) )
+  expect_identical( nrow(OTU1), 37L)
+  expect_identical( nrow(OTU1), nsamples(OTU1))
+  expect_identical( ncol(OTU1), ntaxa(OTU1))
+  expect_identical( ncol(OTU1), 33L)
+  expect_equivalent(colSums(OTU1)[1:6], c(6, 1, 2, 1, 1, 1))
 })
 ################################################################################
