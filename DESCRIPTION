@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.7.21
-Date: 2014-03-03
+Version: 1.7.22
+Date: 2014-03-10
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools

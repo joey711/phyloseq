@@ -183,3 +183,65 @@ test_that("plot_richness/estimate_richness: fisher.alpha", {
   expect_is(p123123 <- plot_richness(GlobalPatterns, measures="Fisher"), "ggplot")
   expect_equivalent(levels(p123123$data$variable), "Fisher")
 })
+################################################################################
+# Test psmelt properly protects against various name collisions
+################################################################################
+test_that("psmelt properly protects against various name collisions", {
+  data("GlobalPatterns")
+  gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
+  ps1 = NULL
+  gp1 = gp.ch
+  # type-1a conflict, Abundance
+  sample_data(gp1)$Abundance <- paste0("Sa-", 1:nsamples(gp1))
+  expect_warning(ps1 <- psmelt(gp1))
+  expect_equal(colnames(ps1)[1:3], c("OTU", "Sample", "Abundance"))
+  expect_equal(dim(ps1), c(546L, 18L))
+  expect_true("sample_Abundance" %in% colnames(ps1))
+  # A different type-1a conflict, OTU
+  ps1 = NULL
+  gp1 = gp.ch
+  sample_data(gp1)$OTU <- paste0("Sa-", 1:nsamples(gp1))
+  expect_warning(ps1 <- psmelt(gp1))
+  expect_equal(colnames(ps1)[1:3], c("OTU", "Sample", "Abundance"))
+  expect_equal(dim(ps1), c(546L, 18L))
+  expect_true("sample_OTU" %in% colnames(ps1))
+  # A different type-1a conflict, Sample
+  ps1 = NULL
+  gp1 = gp.ch
+  sample_data(gp1)$Sample <- paste0("Sa-", 1:nsamples(gp1))
+  expect_warning(ps1 <- psmelt(gp1))
+  expect_equal(colnames(ps1)[1:3], c("OTU", "Sample", "Abundance"))
+  expect_equal(dim(ps1), c(546L, 18L))
+  expect_true("sample_Sample" %in% colnames(ps1))  
+  # type-1b conflict. rank_names conflict with special variables
+  ps1 = NULL
+  gp1 = gp.ch
+  tax_table(gp1) <- cbind(tax_table(gp1), Sample=paste0("ta", taxa_names(gp1)))
+  expect_warning(ps1 <- psmelt(gp1))
+  expect_equal(colnames(ps1)[1:3], c("OTU", "Sample", "Abundance"))
+  expect_equal(dim(ps1), c(546L, 18L))
+  expect_true("taxa_Sample" %in% colnames(ps1))  
+  # type-2 conflict. Variable collision between rank_names and sample_data
+  ps1 = NULL
+  gp1 = gp.ch
+  tax_table(gp1) <- cbind(tax_table(gp1), Primer=paste0("ta", taxa_names(gp1)))
+  expect_warning(ps1 <- psmelt(gp1))
+  expect_equal(colnames(ps1)[1:3], c("OTU", "Sample", "Abundance"))
+  expect_equal(dim(ps1), c(546L, 18L))
+  expect_true("sample_Primer" %in% colnames(ps1)) 
+  # All conflict types at once.
+  ps1 = NULL
+  gp1 = gp.ch
+  sample_data(gp1)$Abundance <- paste0("Sa-", 1:nsamples(gp1))  
+  sample_data(gp1)$OTU <- paste0("Sa-", 1:nsamples(gp1))
+  sample_data(gp1)$Sample <- paste0("Sa-", 1:nsamples(gp1))
+  tax_table(gp1) <- cbind(tax_table(gp1), Sample=paste0("ta", taxa_names(gp1)))
+  tax_table(gp1) <- cbind(tax_table(gp1), Primer=paste0("ta", taxa_names(gp1)))
+  expect_warning(ps1 <- psmelt(gp1))
+  expect_equal(colnames(ps1)[1:3], c("OTU", "Sample", "Abundance"))
+  expect_equal(dim(ps1), c(546L, 22L))
+  newvars = c("sample_OTU", "sample_Sample", "sample_Abundance",
+              "sample_Primer", "taxa_Sample")
+  expect_true(all(newvars %in% colnames(ps1)))   
+})
+################################################################################
