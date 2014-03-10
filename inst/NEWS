@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.7.22
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Revised psmelt to automatically modify data column-name conflicts, with warning
+
+	- Udpated `psmelt` doc to formally notify users of these potential conflicts.
+
+	- This solves Issue 307: https://github.com/joey711/phyloseq/issues/307
+
 CHANGES IN VERSION 1.7.21
 -------------------------
 

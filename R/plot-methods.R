@@ -1008,19 +1008,38 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' Melt phyloseq data object into large data.frame
 #'
 #' The psmelt function is a specialized melt function for melting phyloseq objects
-#' (instances of the phyloseq class), usually for the purpose of graphics production
-#' in ggplot2-based phyloseq-generated graphics. It relies heavily on the 
-#' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions. Note that
-#' ``melted'' phyloseq data is stored much less efficiently, and so RAM storage
-#' issues could arise with a smaller dataset
+#' (instances of the phyloseq class), usually for producing graphics
+#' with \code{\link{ggplot2}}. \code{psmelt} relies heavily on the 
+#' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions.
+#' The naming conventions used in downstream phyloseq graphics functions
+#' have reserved the following variable names that should not be used
+#' as the names of \code{\link{sample_variables}}
+#' or taxonomic \code{\link{rank_names}}.
+#' These reserved names are \code{c("Sample", "Abundance", "OTU")}.
+#' Also, you should not have identical names for 
+#' sample variables and taxonomic ranks.
+#' That is, the intersection of the output of the following two functions
+#' \code{\link{sample_variables}}, \code{\link{rank_names}}
+#' should be an empty vector
+#' (e.g. \code{intersect(sample_variables(physeq), rank_names(physeq))}).
+#' All of these potential name collisions are checked-for
+#' and renamed automtically with a warning. 
+#' However, if you (re)name your variables accordingly ahead of time,
+#' it will reduce confusion and eliminate the warnings.
+#' 
+#' Note that
+#' ``melted'' phyloseq data is stored much less efficiently,
+#' and so RAM storage issues could arise with a smaller dataset
 #' (smaller number of samples/OTUs/variables) than one might otherwise expect.
-#' For average-sized datasets, however, this should not be a problem.
+#' For common sizes of graphics-ready datasets, however,
+#' this should not be a problem.
 #' Because the number of OTU entries has a large effect on the RAM requirement,
-#' methods to reduce the number of separate OTU entries, for instance by
-#' agglomerating based on phylogenetic distance using \code{\link{tipglom}},
+#' methods to reduce the number of separate OTU entries -- 
+#' for instance by agglomerating OTUs based on phylogenetic distance
+#' using \code{\link{tipglom}} --
 #' can help alleviate RAM usage problems.
-#' This function is made user-accessible for flexibility, but is also used 
-#' extensively by plot functions in phyloseq.
+#' This function is made user-accessible for flexibility,
+#' but is also used extensively by plot functions in phyloseq.
 #'
 #' @usage psmelt(physeq)
 #'
@@ -1053,42 +1072,81 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' p = p + geom_bar(color="black", stat="identity", position="stack")
 #' print(p)
 psmelt = function(physeq){
-	
-	# enforce orientation
-	otutab = otu_table(physeq)
-	if( !taxa_are_rows(otutab) ){
-		otutab = t(otutab)	
-	}
-	mot <- as(otutab, "matrix")
-	mdf <- melt(mot)
-	colnames(mdf)[1] = "OTU"
-	colnames(mdf)[2] = "Sample"
-		
-	# Merge the sample data.frame if present
-	if( !is.null(sample_data(physeq, FALSE)) ){
-		sdf = data.frame(sample_data(physeq))
-		sdf$Sample = sample_names(physeq)
-		# merge the sample-data and the melted otu table
-		mdf = merge(mdf, sdf, by.x="Sample")
-	}
-
-	# Next merge taxonomy data
-	if( !is.null(tax_table(physeq, FALSE)) ){
-	  TT = tax_table(physeq)
-	  # First, remove any empty columns (all NA)
-	  TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
+  # type-1a conflict: between sample_data 
+  # and reserved psmelt variable names
+  reservedVarnames = c("Sample", "Abundance", "OTU")
+  type1aconflict = intersect(reservedVarnames, sample_variables(physeq))
+  if( length(type1aconflict) > 0 ){
+    wh1a = which(sample_variables(physeq) %in% type1aconflict)
+    new1a = paste0("sample_", sample_variables(physeq)[wh1a])
+    # First warn about the change
+    warning("The sample variables: \n",
+            paste(sample_variables(physeq)[wh1a], collapse=", "), 
+            "\n have been renamed to: \n",
+            paste0(new1a, collapse=", "), "\n",
+            "to avoid conflicts with special phyloseq plot attribute names.")
+    # Rename the sample variables.
+    colnames(sample_data(physeq))[wh1a] <- new1a
+  }
+  # type-1b conflict: between tax_table
+  # and reserved psmelt variable names
+  type1bconflict = intersect(reservedVarnames, rank_names(physeq))
+  if( length(type1bconflict) > 0 ){
+    wh1b = which(rank_names(physeq) %in% type1bconflict)
+    new1b = paste0("taxa_", rank_names(physeq)[wh1b])
+    # First warn about the change
+    warning("The rank names: \n",
+            paste(rank_names(physeq)[wh1b], collapse=", "), 
+            "\n have been renamed to: \n",
+            paste0(new1b, collapse=", "), "\n",
+            "to avoid conflicts with special phyloseq plot attribute names.")
+    # Rename the conflicting taxonomic ranks
+    colnames(tax_table(physeq))[wh1b] <- new1b
+  }
+  # type-2 conflict: internal between tax_table and sample_data
+  type2conflict = intersect(sample_variables(physeq), rank_names(physeq))
+  if( length(type2conflict) > 0 ){
+    wh2 = which(sample_variables(physeq) %in% type2conflict)
+    new2 = paste0("sample_", sample_variables(physeq)[wh2])
+    # First warn about the change
+    warning("The sample variables: \n",
+            paste0(sample_variables(physeq)[wh2], collapse=", "), 
+            "\n have been renamed to: \n",
+            paste0(new2, collapse=", "), "\n",
+            "to avoid conflicts with taxonomic rank names.")
+    # Rename the sample variables
+    colnames(sample_data(physeq))[wh2] <- new2
+  }
+  # enforce OTU table orientation
+  otutab = otu_table(physeq)
+  if( !taxa_are_rows(otutab) ){
+    otutab = t(otutab)  
+  }
+  mot <- as(otutab, "matrix")
+  mdf <- melt(mot)
+  colnames(mdf)[1] <- "OTU"
+  colnames(mdf)[2] <- "Sample"
+  # Merge the sample data.frame if present
+  if( !is.null(sample_data(physeq, FALSE)) ){
+    sdf = data.frame(sample_data(physeq))
+    sdf$Sample <- sample_names(physeq)
+    # merge the sample-data and the melted otu table
+    mdf = merge(mdf, sdf, by.x="Sample")
+  }
+  # Next merge taxonomy data
+  if( !is.null(tax_table(physeq, FALSE)) ){
+    TT = tax_table(physeq)
+    # First, remove any empty columns (all NA)
+    TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
     # Now add to the "psmelt" data.frame
-		tdf = data.frame(TT, OTU=taxa_names(physeq))
-		mdf = merge(mdf, tdf, by.x="OTU")	
-	}
-	
-	# Annotate the "value" column as the measured OTU "Abundance"
-	colnames(mdf)[colnames(mdf)=="value"] = "Abundance"
-	
-	# Sort the entries by abundance
-	mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
-		
-	return(mdf)
+    tdf = data.frame(TT, OTU=taxa_names(physeq))
+    mdf = merge(mdf, tdf, by.x="OTU")	
+  }
+  # Annotate the "value" column as the measured OTU "Abundance"
+  colnames(mdf)[colnames(mdf)=="value"] <- "Abundance"
+  # Sort the entries by abundance
+  mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
+  return(mdf)
 }
 ################################################################################
 ################################################################################
