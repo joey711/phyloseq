@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.7.23
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Refactor `plot_ordination` to be more stable, error less and give informative warnings.
+
+	- Expect no critical API changes. Some errors now informative warnings with useful auto-changes to parameters.
+
+	- The `type='biplot'` option no longer hard-specifies a discrete color scale. Available default pallette should work.
+
+	- For `type='biplot'`, the non-variable (Taxa or Sample) label will always appear first in a discrete legend.
+
 CHANGES IN VERSION 1.7.22
 -------------------------
 
