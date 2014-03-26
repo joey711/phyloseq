@@ -685,6 +685,9 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
     # Add id.type label
     specDF$id.type <- "Taxa"
     siteDF$id.type <- "Samples"
+    # But what if the axis variables differ b/w them?
+    # Coerce specDF to match samples (siteDF) axis names
+    colnames(specDF)[1:2] <- colnames(siteDF)[1:2]
     # Merge the two data frames together for joint plotting.
     DF = merge(specDF, siteDF, all=TRUE)
     # Replace NA with "samples" or "taxa", where appropriate (factor/character)
@@ -718,8 +721,8 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
     }
   }
   # Grab the ordination axis names from the plot data frame (as strings)
-  x = names(DF)[1]
-  y = names(DF)[2]   
+  x = colnames(DF)[1]
+  y = colnames(DF)[2]   
   # Mapping section
   if( ncol(DF) <= 2){
     # If there is nothing to map, enforce simple mapping.
@@ -2778,51 +2781,4 @@ plot_clusgap = function(clusgap, title="Gap Statistic results"){
 	p = p + ggtitle(title)
 	return(p)
 }
-
-
 ################################################################################
-################################################################################
-#' A flexible, informative timeseries plot for phyloseq data
-#'
-#' This function wraps \code{ggplot2} plotting, and returns a \code{ggplot2}
-#'  graphic object
-#' that can be saved or further modified with additional layers, options, etc.
-#' The main purpose of this function is to quickly and easily create informative
-#' summary graphics of the differences in taxa abundance between samples in
-#' an experiment.
-#'
-#' @usage plot_bar(physeq, x="Age", y="Abundance", color=NULL)
-#'
-#' @param physeq (Required). A \code{\link{phyloseq-class}}.
-#'
-#' @param x (Required). A character string.
-#' The variable which corresponds to time.
-#'
-#' @param y (Optional). A character string.
-#'  The variable in the melted-data that should be mapped to the y-axis.
-#'  By default this will be \code{"Abundance"}, in order to
-#'  quantitatively display the abundance values for each OTU/group.
-#'  However, alternative variables could be used instead,
-#'  producing a very different, though possibly still informative, plot.
-#'  See \code{\link{psmelt}}, \code{\link{melt}},
-#'  and \code{\link{ggplot}} for more details.
-#'
-#' @param  color(Optional). A character string. Indicates which sample variable
-#'  should be used to map to the color of the splines.
-#'  The default is \code{NULL}, resulting in a gray fill for all bar segments.
-#'
-#' @import ggplot2
-#' @export
-#'
-#' @examples
-#' data("enterotypes")
-#' glom <- tax_glom(enterotypes, taxrank='Genus')
-#' plot_timeseries(glom, y='Abundance', x='Age', color='Enterotype')
-#'
-plot_timeseries <- function(g, x=NULL, y=NULL, color=NULL) {
-  mdf <- psmelt(g)
-
-  p <- ggplot(mdf, aes_string(y='Abundance', x=x, color=color)) + geom_smooth()
-
-  return(p)
-}

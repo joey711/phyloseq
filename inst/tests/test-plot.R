@@ -4,7 +4,7 @@
 library("phyloseq"); library("testthat"); library("ggplot2")
 data("GlobalPatterns")
 # Subset to small dataset for quicker testing
-GP <- prune_taxa(taxa_sums(GlobalPatterns)>10000, GlobalPatterns)
+GP <- prune_taxa(tail(names(sort(taxa_sums(GlobalPatterns))), 50), GlobalPatterns)
 
 # Pretend GP doesn't have sample_data or tax_table
 GP.tax <- tax_table(GP)
@@ -162,6 +162,116 @@ test_that("plot_ordination: Some additional formats and warnings.", {
   expect_that(print(p9), is_a("list"))
 })
 
+test_that("plot_ordination: CAP method", {
+  # Works with a named formula argument
+  GP.ord.cap1 = ordinate(GP, method="CAP", distance="bray", formula=~SampleType)
+  expect_is(GP.ord.cap1, "capscale")
+  # Works without naming the formula argument
+  GP.ord.cap2 = ordinate(GP, method="CAP", distance="bray", ~SampleType)
+  expect_is(GP.ord.cap2, "capscale")
+  expect_equivalent(GP.ord.cap1, GP.ord.cap2)  
+  # Works with precomputed distance matrix
+  Dist = distance(GP, "bray", type="samples")
+  GP.ord.cap3 = ordinate(physeq=GP, method="CAP", distance=Dist, ~SampleType)
+  expect_is(GP.ord.cap3, "capscale")
+  # Can't expect equivalent b/c pre-computed distance
+  # won't carryover any species/taxa scores.
+  #expect_equivalent(GP.ord.cap1, GP.ord.cap3)
+  GP.ord.cap = ordinate(GP, method="CAP", distance="bray", formula=~SampleType)
+  expect_is(GP.ord.cap, "capscale")
+  expect_is(p4 <- plot_ordination(GP, GP.ord.cap, type="TaXa",
+                                  color="Phylum", title="p4"), "ggplot")
+  expect_is(p5 <- plot_ordination(GP, GP.ord.cap, type="samPle", 
+                                  color="SampleType", title="p5"), "ggplot")
+  expect_is(p6 <- plot_ordination(GP, GP.ord.cap, type="biplot",
+                                  color="SampleType", title="p6"), "ggplot")
+  expect_is(p7 <- plot_ordination(GP, GP.ord.cap, type="biplot", label="X.SampleID",
+                                  color="SampleType", title="p7"), "ggplot")
+  expect_is(p7b <- plot_ordination(GP, GP.ord.cap, type="biplot", label="X.SampleID",
+                                   color=NULL, title="p7b"), "ggplot")
+  expect_is(p7c <- plot_ordination(GP, GP.ord.cap, type="biplot",
+                                   label="Phylum", color=NULL, title="p7c"), "ggplot")
+  expect_is(p7d <- plot_ordination(GP, GP.ord.cap, type="biplot", label="Phylum",
+                                   color="SampleType", title="p7d"), "ggplot")
+  expect_is(p8 <- plot_ordination(GP, GP.ord.cap, type="scree", label="X.SampleID",
+                                  color="SampleType", title="p8"), "ggplot")
+  expect_is(p9 <- plot_ordination(GP, GP.ord.cap, type=" sPlit __ ", label="Phylum",
+                                  color="SampleType", title="p8"), "ggplot")
+  expect_that(print(p4), is_a("list"))
+  expect_that(print(p5), is_a("list"))
+  expect_that(print(p6), is_a("list"))
+  expect_that(print(p7), is_a("list"))
+  expect_that(print(p7b), is_a("list"))
+  expect_that(print(p7c), is_a("list"))
+  expect_that(print(p7d), is_a("list"))
+  expect_that(print(p8), is_a("list"))
+  expect_that(print(p9), is_a("list"))
+})
+
+# Constrained CCA / RDA
+test_that("plot_ordination: CAP method", {
+  # Constrained RDA and CCA both work.
+  GP.ord.cca = ordinate(GP, "CCA", NULL, formula=~SampleType)
+  expect_is(GP.ord.cca, "cca")
+  GP.ord.rda = ordinate(GP, "RDA", NULL, formula=~SampleType)
+  expect_is(GP.ord.rda, "rda")
+  # Test plotting CCA
+  expect_is(p4 <- plot_ordination(GP, GP.ord.cca, type="TaXa",
+                                  color="Phylum", title="p4"), "ggplot")
+  expect_is(p5 <- plot_ordination(GP, GP.ord.cca, type="samPle", 
+                                  color="SampleType", title="p5"), "ggplot")
+  expect_is(p6 <- plot_ordination(GP, GP.ord.cca, type="biplot",
+                                  color="SampleType", title="p6"), "ggplot")
+  expect_is(p7 <- plot_ordination(GP, GP.ord.cca, type="biplot", label="X.SampleID",
+                                  color="SampleType", title="p7"), "ggplot")
+  expect_is(p7b <- plot_ordination(GP, GP.ord.cca, type="biplot", label="X.SampleID",
+                                   color=NULL, title="p7b"), "ggplot")
+  expect_is(p7c <- plot_ordination(GP, GP.ord.cca, type="biplot",
+                                   label="Phylum", color=NULL, title="p7c"), "ggplot")
+  expect_is(p7d <- plot_ordination(GP, GP.ord.cca, type="biplot", label="Phylum",
+                                   color="SampleType", title="p7d"), "ggplot")
+  expect_is(p8 <- plot_ordination(GP, GP.ord.cca, type="scree", label="X.SampleID",
+                                  color="SampleType", title="p8"), "ggplot")
+  expect_is(p9 <- plot_ordination(GP, GP.ord.cca, type=" sPlit __ ", label="Phylum",
+                                  color="SampleType", title="p8"), "ggplot")
+  expect_that(print(p4), is_a("list"))
+  expect_that(print(p5), is_a("list"))
+  expect_that(print(p6), is_a("list"))
+  expect_that(print(p7), is_a("list"))
+  expect_that(print(p7b), is_a("list"))
+  expect_that(print(p7c), is_a("list"))
+  expect_that(print(p7d), is_a("list"))
+  expect_that(print(p8), is_a("list"))
+  expect_that(print(p9), is_a("list"))
+  # Repeat test-plotting RDA
+  expect_is(p4 <- plot_ordination(GP, GP.ord.rda, type="TaXa",
+                                  color="Phylum", title="p4"), "ggplot")
+  expect_is(p5 <- plot_ordination(GP, GP.ord.rda, type="samPle", 
+                                  color="SampleType", title="p5"), "ggplot")
+  expect_is(p6 <- plot_ordination(GP, GP.ord.rda, type="biplot",
+                                  color="SampleType", title="p6"), "ggplot")
+  expect_is(p7 <- plot_ordination(GP, GP.ord.rda, type="biplot", label="X.SampleID",
+                                  color="SampleType", title="p7"), "ggplot")
+  expect_is(p7b <- plot_ordination(GP, GP.ord.rda, type="biplot", label="X.SampleID",
+                                   color=NULL, title="p7b"), "ggplot")
+  expect_is(p7c <- plot_ordination(GP, GP.ord.rda, type="biplot",
+                                   label="Phylum", color=NULL, title="p7c"), "ggplot")
+  expect_is(p7d <- plot_ordination(GP, GP.ord.rda, type="biplot", label="Phylum",
+                                   color="SampleType", title="p7d"), "ggplot")
+  expect_is(p8 <- plot_ordination(GP, GP.ord.rda, type="scree", label="X.SampleID",
+                                  color="SampleType", title="p8"), "ggplot")
+  expect_is(p9 <- plot_ordination(GP, GP.ord.rda, type=" sPlit __ ", label="Phylum",
+                                  color="SampleType", title="p8"), "ggplot")
+  expect_that(print(p4), is_a("list"))
+  expect_that(print(p5), is_a("list"))
+  expect_that(print(p6), is_a("list"))
+  expect_that(print(p7), is_a("list"))
+  expect_that(print(p7b), is_a("list"))
+  expect_that(print(p7c), is_a("list"))
+  expect_that(print(p7d), is_a("list"))
+  expect_that(print(p8), is_a("list"))
+  expect_that(print(p9), is_a("list"))
+})
 ################################################################################
 # Other plot function tests...
 ################################################################################

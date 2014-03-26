@@ -1,3 +1,24 @@
+CHANGES IN VERSION 1.7.24
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Added support for [Partial] Constrained Analysis of Principal Coordinates (CAP).
+
+		- A supported/documented option in `ordinate`, supported by `plot_ordination`.
+
+		- This solves [Issue 312](https://github.com/joey711/phyloseq/issues/312).
+
+	- The `ordinate` function now takes an explicit `formula` argument. 
+
+		- This facilitates reliable contrained ordination calls for:
+
+			- CAP (this commit)
+
+			- RDA (partial redundancy analysis)
+
+			- CCA (constrained correspondence analysis)
+
 CHANGES IN VERSION 1.7.23
 -------------------------
 
