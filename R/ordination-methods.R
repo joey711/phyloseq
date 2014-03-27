@@ -148,17 +148,35 @@
 #' @importFrom vegan metaMDS
 #' @importFrom vegan wisconsin
 #' @importFrom vegan decostand
-#' @importFrom ape pcoa
+#' @importFrom ape pcoa 
 #' @export
 #' @examples
 #' # See http://joey711.github.io/phyloseq/plot_ordination-examples
-#' # For many more examples.
+#' # for many more examples.
 #' # plot_ordination(GP, ordinate(GP, "DCA"), "samples", color="SampleType")
 ordinate = function(physeq, method="DCA", distance="bray", formula=NULL, ...){
-	# The table of currently-supported methods
+  # If `physeq` is a formula, post deprecated notice, attempt to convert and dispatch
+  if( inherits(physeq, "formula") ){
+    .Deprecated(msg=paste0("First argument, `physeq`, as formula is deprecated.\n",
+                           "There is now an explicit `formula` argument.\n",
+                           "Please revise method call accordingly."))
+    # Create the new formula, RHS-only
+    formchar = as.character(physeq)
+    # Error if only RHS. Formula-first syntax required both sides.
+    if(length(formchar) < 3){
+      stop("Need both sides of formula in this deprecated syntax... Revisit ordinate() documentation / examples.")
+    }
+    # Replace with (presumed) phyloseq object.
+    physeq <- get(as.character(physeq)[2])
+    # Create the new formula, RHS-only. 
+    newFormula = as.formula(paste0("~", formchar[length(formchar)]))  
+    # Dispatch to (hopefully) ordinate,phyloseq
+    return(ordinate(physeq, method=method, distance=distance, formula=newFormula, ...))
+  }
+	# Define table of currently-supported methods
 	method_table <- c("DCA", "CCA", "RDA", "CAP", "DPCoA", "NMDS", "MDS", "PCoA")
 	# List supported method names to user, if requested.
-	if(class(physeq) == "character"){
+	if( inherits(physeq, "character") ){
 		if( physeq=="help" ){
 			cat("Available arguments to methods:\n")
 			print(c(method_table))
@@ -173,6 +191,10 @@ ordinate = function(physeq, method="DCA", distance="bray", formula=NULL, ...){
 			cat("or a character string matching \"help\" or \"list\". \n")			
 		}	
 	}
+  # Final check that `physeq` is a phyloseq or otu_table class
+  if( !inherits(physeq, "phyloseq") & !inherits(physeq, "otu_table") ){
+    stop("Expected a phyloseq object or otu_table object.")
+  }
 	# # Start with methods that don't require 
 	# #  additional distance calculation. (distance argument ignored)
 	# DCA
@@ -218,7 +240,6 @@ ordinate = function(physeq, method="DCA", distance="bray", formula=NULL, ...){
 		return(metaMDS(ps.dist))
 	}	
 }
-################################################################################
 ################################################################################
 #' Calculate Double Principle Coordinate Analysis (DPCoA) 
 #' using phylogenetic distance
@@ -567,12 +588,7 @@ veganifyOTU <- function(physeq){
 #' # http://joey711.github.io/phyloseq/plot_ordination-examples
 #' data(GlobalPatterns)
 #' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
-#' # # capscale
-#' ordcap = capscale.phyloseq(GP ~ SampleType, "bray")
-#' ordcap2 = ordinate(GP~SampleType, "CAP", "bray")
-#' ordcap3 = capscale.phyloseq(GP ~ SampleType, distance(GP, "bray"))
-#' identical(ordcap, ordcap2)
-#' identical(ordcap, ordcap3)
+#' ordcap = ordinate(GP, "CAP", "bray", ~SampleType)
 #' plot_ordination(GP, ordcap, "samples", color="SampleType")
 setGeneric("capscale.phyloseq", function(physeq, formula, distance, ...){
   data = data.frame(sample_data(physeq, FALSE), stringsAsFactors=FALSE)

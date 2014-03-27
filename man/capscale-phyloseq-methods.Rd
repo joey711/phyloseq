@@ -52,12 +52,7 @@
 # http://joey711.github.io/phyloseq/plot_ordination-examples
 data(GlobalPatterns)
 GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
-# # capscale
-ordcap = capscale.phyloseq(GP ~ SampleType, "bray")
-ordcap2 = ordinate(GP~SampleType, "CAP", "bray")
-ordcap3 = capscale.phyloseq(GP ~ SampleType, distance(GP, "bray"))
-identical(ordcap, ordcap2)
-identical(ordcap, ordcap3)
+ordcap = ordinate(GP, "CAP", "bray", ~SampleType)
 plot_ordination(GP, ordcap, "samples", color="SampleType")
 }
 \seealso{

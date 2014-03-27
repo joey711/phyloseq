@@ -16,7 +16,23 @@ GP.otu <- otu_table(GP)
 # Try ordination
 GP.ord <- ordinate(GP.otu, "DCA")
 
+# test_that encapsulation makes it difficult to fully test the formula / get()
+# step in the formula conversion, but that deprecated workaround is
+# still included and will hopefully bridge the gap for users switching
+# from previous formula-first use-cases, where the left-hand side of
+# the formula specified the phyloseq-data
+#test_that("plot_ordination: formula-first should give a deprecation warning", {
+# expect_warning(GP.ord.cap <- ordinate(GP~SampleType, "CAP"))
+# expect_warning(GP.ord.cca <- ordinate(GP~SampleType, "CCA"))
+# expect_warning(GP.ord.rda <- ordinate(GP~SampleType, "RDA"))
+# # But it still works.
+# expect_is(GP.ord.cap, "capscale")
+# expect_is(GP.ord.cca, "cca")
+# expect_is(GP.ord.rda, "rda")
+
+
 test_that("plot_ordination: Naked otu_table results in warning, but no error", {
+  expect_is(GP.ord, "decorana")
 	# samples-only
 	expect_that(plot_ordination(GP.otu, GP.ord, "samples"), gives_warning())
 	# species. 

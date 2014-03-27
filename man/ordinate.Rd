@@ -124,7 +124,7 @@
 }
 \examples{
 # See http://joey711.github.io/phyloseq/plot_ordination-examples
-# For many more examples.
+# for many more examples.
 # plot_ordination(GP, ordinate(GP, "DCA"), "samples", color="SampleType")
 }
 \seealso{

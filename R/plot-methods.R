@@ -946,9 +946,14 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' # Test plots (preforms ordination in-line, then makes scree plot)
 #' plot_scree(ordinate(GP, "DPCoA", "bray"))
 #' plot_scree(ordinate(GP, "PCoA", "bray"))
-#' plot_scree(ordinate(GP, "NMDS", "bray")) # Empty return with message
-#' plot_scree(ordinate(GP ~ SampleType, "CCA"))
-#' plot_scree(ordinate(GP ~ SampleType, "RDA")) 
+#' # Empty return with message
+#' plot_scree(ordinate(GP, "NMDS", "bray"))
+#' # Constrained ordinations
+#' plot_scree(ordinate(GP, "CCA", formula=~SampleType))
+#' plot_scree(ordinate(GP, "RDA", formula=~SampleType)) 
+#' plot_scree(ordinate(GP, "CAP", formula=~SampleType)) 
+#' # Deprecated example of constrained ordination (emits a warning)
+#' #plot_scree(ordinate(GP ~ SampleType, "RDA")) 
 #' plot_scree(ordinate(GP, "DCA"))
 #' plot_ordination(GP, ordinate(GP, "DCA"), type="scree")
 plot_scree = function(ordination, title=NULL){
