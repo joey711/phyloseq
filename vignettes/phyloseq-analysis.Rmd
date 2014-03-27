@@ -389,20 +389,26 @@ In this figure we've used the `threshold` parameter to omit all but phyla accoun
 
 #### Double Principle Coordinate Analysis (DPCoA)
 
-Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523), using the using the `DPCoA()` function in phyloseq, as well as the "biplot" option for `plot_ordination(). For a description that includes an applied example using the "enterotype" dataset and comparison with UniFrac/PCoA, see Fukuyama et al~\cite{fukuyama2012com. 
+Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523), using the using the `ordinate()` function in phyloseq, as well as the "biplot" option for `plot_ordination(). For a description that includes an applied example using the "enterotype" dataset and comparison with UniFrac/PCoA, see Fukuyama et al~\cite{fukuyama2012com. 
 
 ```{r GPdpcoa01}
-GP.dpcoa <- DPCoA(GP)
-# GP.dpcoa <- ordinate(GP, "DPCoA") # Alternative; ordinate() function
-pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot",
-     color="SampleType", shape="Phylum")
+GP.dpcoa <- ordinate(GP, "DPCoA") 
+pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot", color="SampleType", shape="Phylum")
 shape.fac <- pdpcoa$data[, deparse(pdpcoa$mapping$shape)]
 man.shapes <- c(19, 21:25)
-names(man.shapes) <- c("samples", levels(shape.fac)[levels(shape.fac)!="samples"])
+names(man.shapes) <- c("Samples", levels(shape.fac)[levels(shape.fac)!="Samples"])
 p2dpcoa <- pdpcoa + scale_shape_manual(values=man.shapes)
 ```
 
 A biplot representation of a Double Principal Coordinate Analysis (DPCoA), on a simplified version of the "Global Patterns" dataset with only the most abundant 200 OTUs included.
+
+```{r GPdpcoa02}
+# Show just Samples or just Taxa
+plot_ordination(GP, GP.dpcoa, type="taxa", shape="Phylum")
+plot_ordination(GP, GP.dpcoa, type="samples", color="SampleType")
+# Split
+plot_ordination(GP, GP.dpcoa, type="split", color="SampleType", shape="Phylum")
+```
 
 
 ### Distance Methods

@@ -367,9 +367,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
-                          scales="free_y", nrow=1, shsi=NULL, measures=NULL){
-
-  #library("reshape2"); library("vegan"); data("soilrep"); physeq=soilrep; x="samples"; color=NULL; shape=NULL; title=NULL; scales="free_y"; nrow=1; shsi=NULL; measures=NULL  
+                          scales="free_y", nrow=1, shsi=NULL, measures=NULL){ 
   
   # Calculate the relevant alpha-diversity measures
   erDF = estimate_richness(physeq, split=TRUE, measures=measures)
@@ -533,15 +531,9 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 #'  or
 #'  taxonomic rank
 #'  (among the set returned by \code{rank_names(physeq)}).
-#'  
-#'  Alternatively, if \code{type} indicates a single-plot 
-#'  (\code{"samples"} or \code{"species"}), then
-#'  it is also possible to supply a custom vector with length equal to
-#'  the relevant number of samples or species
-#'  (\code{nsamples(physeq)} or \code{ntaxa(physeq)}).
 #' 
-#'  Finally,
-#'  The color scheme is chosen automatically by \code{link{ggplot}},
+#'  Note that the color scheme is chosen automatically
+#'  by \code{link{ggplot}},
 #'  but it can be modified afterward with an additional layer using
 #'  \code{\link[ggplot2]{scale_color_manual}}.
 #'
@@ -591,200 +583,207 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 #' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
 #' gp_bray_pcoa = ordinate(GP, "CCA", "bray")
 #' plot_ordination(GP, gp_bray_pcoa, "samples", color="SampleType")
-plot_ordination <- function(physeq, ordination, type="samples", axes=c(1, 2),
-	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
-
-	if(class(physeq)!="phyloseq"){
-		warning("Full functionality requires physeq be phyloseq-class with multiple components.")
-	}
-	official_types = c("sites", "species", "biplot", "split", "scree")
-	if(type == "samples"){type <- "sites"} # vegan compatibility with phyloseq
-	if(type == "taxa"){type <- "species"} # vegan compatibility with phyloseq
-	if( !type %in% official_types ){
-		warning("type argument not supported. type set to \"samples\".")
-		type = "sites"
-	}
-	if( type %in% c("scree") ){
-		# Stop early by passing to plot_scree() if "scree" was chosen as a type
-		return( plot_scree(ordination, title=title) )
-	}
-
-	# Build data.frame:
-	if( type %in% c("sites", "species") ){
-		# Because of the way scores()/coord are bound first in DF, the first two axes should
-		# always be x and y, respectively. This is also contingent on the "choices" argument
-		# to scores() working properly		
-		DF <- ord.plot.DF.internal(physeq, ordination, type, axes)
-		# Add, any custom-supplied plot-mapped variables
-		if( length(color) > 1 ){
-			DF$color <- color
-			names(DF)[names(DF)=="color"] <- deparse(substitute(color))
-			color <- deparse(substitute(color))
-		}
-		if( length(shape) > 1 ){
-			DF$shape <- shape
-			names(DF)[names(DF)=="shape"] <- deparse(substitute(shape))
-			shape <- deparse(substitute(shape))
-		}	
-		if( length(label) > 1 ){
-			DF$label <- label
-			names(DF)[names(DF)=="label"] <- deparse(substitute(label))
-			label <- deparse(substitute(label))
-		}
-		x <- names(DF)[1]
-		y <- names(DF)[2]			
-	} else if( type %in% c("split", "biplot") ){
-		# Define DFs
-		specDF <- ord.plot.DF.internal(physeq, ordination, type="species", axes)
-		siteDF <- ord.plot.DF.internal(physeq, ordination, type="sites", axes)
-		# Define x-label and y-label before merge, use sample-axis names (arbitrary)
-		names(specDF)[1] <- x <- names(siteDF)[1] # "x-axis"
-		names(specDF)[2] <- y <- names(siteDF)[2] # "y-axis"
-		# Add id.type label
-		specDF$id.type <- "taxa"
-		siteDF$id.type <- "samples"
-		# Merge the two data.frame together, for joint plotting.
-		DF <- merge(specDF, siteDF, all=TRUE)
-		# Replace NA with "samples" or "taxa", where appropriate (factor/character)
-		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "samples") }
-		if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "taxa") }
-		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "samples") }
-		if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "taxa") }		
-	}
-	
-	# In case user wants the plot-DF for some other purpose, return early
-	if(justDF){return(DF)}
-
-	# If there is nothing to map (data.frame only has two columns), just return simple plot
-	if(ncol(DF)<=2){
-		ord_map <- aes_string(x=x, y=y)
-		p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
-		return(p)
-	}
-	
-	# Mapping section
-	if( type %in% c("sites", "species", "split") ){
-		ord_map <- aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
-	} else if(type=="biplot"){
-		# biplot, id.type must map to color or size. Only color if none specified.
-		if( is.null(color) ){
-			ord_map <- aes_string(x=x, y=y, color="id.type",
-							shape=shape, na.rm=TRUE)
-		} else {
-			ord_map <- aes_string(x=x, y=y, size="id.type",
-							color=color, shape=shape, na.rm=TRUE)
-		}
-	}
-
-	# Plot-building section
-	p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
-	
-	# split/facet color and shape can be anything in one or other.
-	if( type=="split" ){
-		# split-option requires a facet_wrap
-		p <- p + facet_wrap(~id.type, nrow=1)
-	}
-	
-	# If biplot, adjust scales
-	if( type=="biplot" ){	
-		if( is.null(color) ){
-			# Rename color title in legend.
-			p <- update_labels(p, list(colour = "type")) #p + scale_color_discrete(name="type")
-		} else {
-			# Check if variable is discrete. 
-			if( is.discrete(DF[, color]) ){
-				# The following function reproduces ggplot2's default color scale.
-				# From: http://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
-				gg_color_hue <- function(n) {
-					hues = seq(15, 375, length=n+1)
-					hcl(h=hues, l=65, c=100)[1:n]
-				}
-				colvals <- gg_color_hue(length(levels(as(DF[, color], "factor"))))
-				names(colvals) <- levels(as(DF[, color], "factor"))
-				# Now make the taxa or samples dark grey
-				colvals[names(colvals) %in% c("samples", "taxa")] <- "grey45"
-				# Now add the manually re-scaled layer with taxa/samples as grey
-				p <- p + scale_colour_manual(values=colvals)
-			}
-			# Adjust size so that samples are bigger than taxa by default.
-			p <- p + scale_size_manual("type", values=c(samples=5, taxa=2))		
-		}
-	}
-
-	# Add the text labels
-	if( !is.null(label) ){
-		label_map <- aes_string(x=x, y=y, label=label, na.rm=TRUE)
-		p = p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
-					size=2, vjust=1.5, na.rm=TRUE)
-	}
-
-	# Optionally add a title to the plot
-	if( !is.null(title) ){
-		p = p + ggtitle(title)
-	}
-
-	# Add fraction variability to axis labels, if available
-	if( length(extract_eigenvalue(ordination)[axes]) > 0 ){
-		# Only attempt to add fraction variability
-		# if extract_eigenvalue returns something
+plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
+                            color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
+  if(length(color) > 1){
+    warning("The `color` variable argument should have length equal to 1.",
+            "Taking first value.")
+    color = color[[1]][1]
+  }
+  if(length(shape) > 1){
+    warning("The `shape` variable argument should have length equal to 1.",
+            "Taking first value.")
+    shape = shape[[1]][1]
+  }
+  if(length(label) > 1){
+    warning("The `label` variable argument should have length equal to 1.",
+            "Taking first value.")
+    label = label[[1]][1]
+  }
+  official_types = c("sites", "species", "biplot", "split", "scree")
+  if(!inherits(physeq, "phyloseq")){
+    if(inherits(physeq, "character")){
+      if(physeq=="list"){
+        return(official_types)
+      }
+    } 
+    warning("Full functionality requires `physeq` be phyloseq-class",
+            "with multiple components.")
+  }
+  # Catch typos and synonyms
+  type = gsub("^.*site[s]*.*$", "sites", type, ignore.case=TRUE)
+  type = gsub("^.*sample[s]*.*$", "sites", type, ignore.case=TRUE)
+  type = gsub("^.*species.*$", "species", type, ignore.case=TRUE)
+  type = gsub("^.*taxa.*$", "species", type, ignore.case=TRUE)
+  type = gsub("^.*OTU[s]*.*$", "species", type, ignore.case=TRUE)
+  type = gsub("^.*biplot[s]*.*$", "biplot", type, ignore.case=TRUE)
+  type = gsub("^.*split[s]*.*$", "split", type, ignore.case=TRUE)
+  type = gsub("^.*scree[s]*.*$", "scree", type, ignore.case=TRUE)
+  # If type argument is not supported...
+  if( !type %in% official_types ){
+    warning("type argument not supported. `type` set to 'samples'.\n",
+            "See `plot_ordination('list')`")
+    type = "sites"
+  }
+  if( type %in% c("scree") ){
+    # Stop early by passing to plot_scree() if "scree" was chosen as a type
+    return( plot_scree(ordination, title=title) )
+  }
+  # Initialize plotting data frames.
+  DF = NULL
+  siteDF = NULL
+  specDF = NULL
+  if( type %in% c("species", "split", "biplot") ){
+    specDF <- data.frame(scores(ordination, choices=axes, display="species"), 
+                         stringsAsFactors=FALSE)
+    if( length(specDF) < 2 ){
+      specDF <- NULL
+      warning("The `scores` method failed to acquire taxa/OTU/species coordinates \n",
+              "from the provided ordination. \n",
+              "Changing `type` variable to samples/sites in case this solves problem.")
+      type <- "sites"
+    }
+  }
+  if( type %in% c("sites", "split", "biplot") ){
+    siteDF = data.frame(scores(ordination, choices=axes, display="sites"),
+                        stringsAsFactors=FALSE)
+    if( length(siteDF) < 2 ){
+      siteDF <- NULL
+      warning("The `scores` method failed to acquire sample/sites coordinates \n",
+              "from the provided ordination. \n",
+              "Changing `type` variable to 'taxa' in case this solves problem.")
+      type <- "species"
+      specDF = data.frame(scores(ordination, choices=axes, display="species"),
+                          stringsAsFactors=FALSE)
+    }
+  }
+  if( length(siteDF) < 2 & length(specDF) < 2 ){
+    stop("The `scores` method failed to acquire any coordinates ", 
+         "from the provided ordination. \n",
+         "Please check your ordination and try again.")
+  }
+  # samples covariate data frame, `sdf`
+  sdf = NULL
+  sdf = data.frame(access(physeq, slot="sam_data"), stringsAsFactors=FALSE)
+  if( length(sdf) > 0 & length(siteDF) >= 2 ){
+    # The first two axes should always be x and y, the ordination axes.
+    siteDF = cbind(siteDF, sdf[rownames(siteDF), ])
+  }
+  # taxonomy data frame `tdf`
+  tdf = NULL
+  tdf = data.frame(access(physeq, slot="tax_table"), stringsAsFactors=FALSE)
+  if( length(tdf) > 0 & !is.null(specDF) ){
+    # The first two axes should always be x and y, the ordination axes.
+    specDF = cbind(specDF, tdf[rownames(specDF), ])
+  }
+  # Define the main plot data frame, `DF`
+  if( type == "sites" ){
+    DF = siteDF
+  } else if( type == "species" ){
+    DF = specDF
+  } else if( type %in% c("split", "biplot") ){
+    # Add id.type label
+    specDF$id.type <- "Taxa"
+    siteDF$id.type <- "Samples"
+    # But what if the axis variables differ b/w them?
+    # Coerce specDF to match samples (siteDF) axis names
+    colnames(specDF)[1:2] <- colnames(siteDF)[1:2]
+    # Merge the two data frames together for joint plotting.
+    DF = merge(specDF, siteDF, all=TRUE)
+    # Replace NA with "samples" or "taxa", where appropriate (factor/character)
+    if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "Samples") }
+    if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "Taxa") }
+    if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Samples") }
+    if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Taxa") }    
+  }
+  # In case user wants the plot-DF for some other purpose, return early
+  if(justDF){return(DF)}
+  # Check variable availability before defining mapping.
+  if(!is.null(color)){ 
+    if(!color %in% names(DF)){
+      warning("Color variable was not found in the available data you provided.",
+              "No color mapped.")
+      color <- NULL
+    }
+  }
+  if(!is.null(shape)){ 
+    if(!shape %in% names(DF)){
+      warning("Shape variable was not found in the available data you provided.",
+              "No shape mapped.")
+      shape <- NULL
+    }
+  }
+  if(!is.null(label)){ 
+    if(!label %in% names(DF)){
+      warning("Label variable was not found in the available data you provided.",
+              "No label mapped.")
+      label <- NULL
+    }
+  }
+  # Grab the ordination axis names from the plot data frame (as strings)
+  x = colnames(DF)[1]
+  y = colnames(DF)[2]   
+  # Mapping section
+  if( ncol(DF) <= 2){
+    # If there is nothing to map, enforce simple mapping.
+    message("No available covariate data to map on the points for this plot `type`")
+    ord_map = aes_string(x=x, y=y)
+  } else if( type %in% c("sites", "species", "split") ){
+    ord_map = aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
+  } else if(type=="biplot"){
+    # biplot, `id.type` should try to map to color and size. Only size if color specified.
+    if( is.null(color) ){
+      ord_map = aes_string(x=x, y=y, size="id.type", color="id.type", shape=shape, na.rm=TRUE)
+    } else {
+      ord_map = aes_string(x=x, y=y, size="id.type", color=color, shape=shape, na.rm=TRUE)
+    }
+  }
+  # Plot-building section
+  p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
+  # split/facet color and shape can be anything in one or other.
+  if( type=="split" ){
+    # split-option requires a facet_wrap
+    p <- p + facet_wrap(~id.type, nrow=1)
+  }
+  # If biplot, adjust scales
+  if( type=="biplot" ){	
+    if( is.null(color) ){
+      # Rename color title in legend.
+      p <- update_labels(p, list(colour="Ordination Type")) 
+    } 
+    # Adjust size so that samples are bigger than taxa by default.
+    p <- p + scale_size_manual("type", values=c(Samples=5, Taxa=2))
+  }
+  # Add text labels to points
+  if( !is.null(label) ){
+    label_map <- aes_string(x=x, y=y, label=label, na.rm=TRUE)
+    p = p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
+                      size=2, vjust=1.5, na.rm=TRUE)
+  }
+  # Optionally add a title to the plot
+  if( !is.null(title) ){
+    p = p + ggtitle(title)
+  }
+  # Add fraction variability to axis labels, if available
+  if( length(extract_eigenvalue(ordination)[axes]) > 0 ){
+    # Only attempt to add fraction variability
+    # if extract_eigenvalue returns something
     eigvec = extract_eigenvalue(ordination)
-		# Fraction variability, fracvar
-		fracvar = eigvec[axes] / sum(eigvec)
-		# Percent variability, percvar
-		percvar = round(100*fracvar, 1)
-		# The string to add to each axis label, strivar
-		# Start with the curent axis labels in the plot
-		strivar = as(c(p$label$x, p$label$y), "character")
-		# paste the percent variability string at the end
-		strivar = paste0(strivar, "   [", percvar, "%]")
-		# Update the x-label and y-label
-		p = p + xlab(strivar[1]) + ylab(strivar[2])
-	}
-	
-	# Return the ggplot object
-	return(p)
+    # Fraction variability, fracvar
+    fracvar = eigvec[axes] / sum(eigvec)
+    # Percent variability, percvar
+    percvar = round(100*fracvar, 1)
+    # The string to add to each axis label, strivar
+    # Start with the curent axis labels in the plot
+    strivar = as(c(p$label$x, p$label$y), "character")
+    # paste the percent variability string at the end
+    strivar = paste0(strivar, "   [", percvar, "%]")
+    # Update the x-label and y-label
+    p = p + xlab(strivar[1]) + ylab(strivar[2])
+  }
+  # Return the ggplot object
+  return(p)
 }
-################################################################################
-# Define the ord.plot.DF.internal
-################################################################################
-#' @keywords internal
-ord.plot.DF.internal <- function(physeq, ordination, type="sites", axes=c(1, 2)){
-
-	coord <- scores(ordination, choices=axes, display=type)
-	# coord row.names index order should match physeq. Enforce.
-	if( type == "species" ){
-		coord <- coord[taxa_names(physeq), ]
-	} else if(type == "sites"){
-		coord <- coord[sample_names(physeq), ]		
-	}
-	
-	# If there is supplemental data, add it, else, return coord
-	supp <- NULL
-	# Define supplemental data. Use explicit accessor to avoid constructor options.
-	if( !is.null(access(physeq, "sam_data")) & type == "sites"){
-		supp  <- sample_data(physeq) # Supplemental data, samples
-	} else if( !is.null(access(physeq, "tax_table")) & type == "species"){
-		supp  <- tax_table(physeq) # Supplemental data, taxa
-	}
-	if( is.null(supp) ){
-		DF <- coord
-	} else {
-		# Check that coord and supp have same indices. 
-		if( !setequal(row.names(coord), row.names(supp)) ){
-			stop("Ordination and supplementary data indices differ on the following:\n.",
-				setdiff(row.names(coord), row.names(supp)))
-		}
-		# Combine for plotting data.frame
-		DF <- data.frame(coord, supp)		
-	}
-
-	# Enforce DF class as data.frame.
-	# Important in cases where no merging happens, scores may return a matrix, and then ggplot() fails.
-	if( class(DF) != "data.frame"){ DF <- data.frame(DF) }
-	
-	return(DF)		
-}
-################################################################################
 ################################################################################
 # Remove NA elements from data.frame prior to plotting
 # Remove NA level from factor
@@ -807,16 +806,15 @@ rm.na.phyloseq <- function(DF, key.var){
 rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 	# If all of the map.var values for samples/species are NA, replace with id.type.rp
 	if( all(is.na(DF[DF$id.type==id.type.rp, map.var])) ){
-		# If discrete, coerce to character, convert to factor, replace
+		# If discrete, coerce to character, convert to factor, replace, relevel.
 		if( is.discrete(DF[, map.var]) ){
 			temp.vec <- as(DF[, map.var], "character")
 			temp.vec[is.na(temp.vec)] <- id.type.rp
-			DF[, map.var] <- factor(temp.vec)
+			DF[, map.var] <- relevel(factor(temp.vec), id.type.rp)
 		}
 	}
 	return(DF)
 }
-################################################################################
 ################################################################################
 #' Subset points from an ordination-derived ggplot
 #'
@@ -948,9 +946,14 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' # Test plots (preforms ordination in-line, then makes scree plot)
 #' plot_scree(ordinate(GP, "DPCoA", "bray"))
 #' plot_scree(ordinate(GP, "PCoA", "bray"))
-#' plot_scree(ordinate(GP, "NMDS", "bray")) # Empty return with message
-#' plot_scree(ordinate(GP ~ SampleType, "CCA"))
-#' plot_scree(ordinate(GP ~ SampleType, "RDA")) 
+#' # Empty return with message
+#' plot_scree(ordinate(GP, "NMDS", "bray"))
+#' # Constrained ordinations
+#' plot_scree(ordinate(GP, "CCA", formula=~SampleType))
+#' plot_scree(ordinate(GP, "RDA", formula=~SampleType)) 
+#' plot_scree(ordinate(GP, "CAP", formula=~SampleType)) 
+#' # Deprecated example of constrained ordination (emits a warning)
+#' #plot_scree(ordinate(GP ~ SampleType, "RDA")) 
 #' plot_scree(ordinate(GP, "DCA"))
 #' plot_ordination(GP, ordinate(GP, "DCA"), type="scree")
 plot_scree = function(ordination, title=NULL){
@@ -973,7 +976,7 @@ plot_scree = function(ordination, title=NULL){
 		# Force the order to be same as original in x
 		p = p + scale_x_discrete(limits = names(x))
 		# Orient the x-labels for space.
-		p = p + theme(axis.text.x = element_text(angle = 90))
+		p = p + theme(axis.text.x=element_text(angle=90, vjust=0.5))
 		# Optionally add a title to the plot
 		if( !is.null(title) ){
 			p <- p + ggtitle(title)
@@ -1008,19 +1011,38 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' Melt phyloseq data object into large data.frame
 #'
 #' The psmelt function is a specialized melt function for melting phyloseq objects
-#' (instances of the phyloseq class), usually for the purpose of graphics production
-#' in ggplot2-based phyloseq-generated graphics. It relies heavily on the 
-#' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions. Note that
-#' ``melted'' phyloseq data is stored much less efficiently, and so RAM storage
-#' issues could arise with a smaller dataset
+#' (instances of the phyloseq class), usually for producing graphics
+#' with \code{\link{ggplot2}}. \code{psmelt} relies heavily on the 
+#' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions.
+#' The naming conventions used in downstream phyloseq graphics functions
+#' have reserved the following variable names that should not be used
+#' as the names of \code{\link{sample_variables}}
+#' or taxonomic \code{\link{rank_names}}.
+#' These reserved names are \code{c("Sample", "Abundance", "OTU")}.
+#' Also, you should not have identical names for 
+#' sample variables and taxonomic ranks.
+#' That is, the intersection of the output of the following two functions
+#' \code{\link{sample_variables}}, \code{\link{rank_names}}
+#' should be an empty vector
+#' (e.g. \code{intersect(sample_variables(physeq), rank_names(physeq))}).
+#' All of these potential name collisions are checked-for
+#' and renamed automtically with a warning. 
+#' However, if you (re)name your variables accordingly ahead of time,
+#' it will reduce confusion and eliminate the warnings.
+#' 
+#' Note that
+#' ``melted'' phyloseq data is stored much less efficiently,
+#' and so RAM storage issues could arise with a smaller dataset
 #' (smaller number of samples/OTUs/variables) than one might otherwise expect.
-#' For average-sized datasets, however, this should not be a problem.
+#' For common sizes of graphics-ready datasets, however,
+#' this should not be a problem.
 #' Because the number of OTU entries has a large effect on the RAM requirement,
-#' methods to reduce the number of separate OTU entries, for instance by
-#' agglomerating based on phylogenetic distance using \code{\link{tipglom}},
+#' methods to reduce the number of separate OTU entries -- 
+#' for instance by agglomerating OTUs based on phylogenetic distance
+#' using \code{\link{tipglom}} --
 #' can help alleviate RAM usage problems.
-#' This function is made user-accessible for flexibility, but is also used 
-#' extensively by plot functions in phyloseq.
+#' This function is made user-accessible for flexibility,
+#' but is also used extensively by plot functions in phyloseq.
 #'
 #' @usage psmelt(physeq)
 #'
@@ -1053,42 +1075,81 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' p = p + geom_bar(color="black", stat="identity", position="stack")
 #' print(p)
 psmelt = function(physeq){
-	
-	# enforce orientation
-	otutab = otu_table(physeq)
-	if( !taxa_are_rows(otutab) ){
-		otutab = t(otutab)	
-	}
-	mot <- as(otutab, "matrix")
-	mdf <- melt(mot)
-	colnames(mdf)[1] = "OTU"
-	colnames(mdf)[2] = "Sample"
-		
-	# Merge the sample data.frame if present
-	if( !is.null(sample_data(physeq, FALSE)) ){
-		sdf = data.frame(sample_data(physeq))
-		sdf$Sample = sample_names(physeq)
-		# merge the sample-data and the melted otu table
-		mdf = merge(mdf, sdf, by.x="Sample")
-	}
-
-	# Next merge taxonomy data
-	if( !is.null(tax_table(physeq, FALSE)) ){
-	  TT = tax_table(physeq)
-	  # First, remove any empty columns (all NA)
-	  TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
+  # type-1a conflict: between sample_data 
+  # and reserved psmelt variable names
+  reservedVarnames = c("Sample", "Abundance", "OTU")
+  type1aconflict = intersect(reservedVarnames, sample_variables(physeq))
+  if( length(type1aconflict) > 0 ){
+    wh1a = which(sample_variables(physeq) %in% type1aconflict)
+    new1a = paste0("sample_", sample_variables(physeq)[wh1a])
+    # First warn about the change
+    warning("The sample variables: \n",
+            paste(sample_variables(physeq)[wh1a], collapse=", "), 
+            "\n have been renamed to: \n",
+            paste0(new1a, collapse=", "), "\n",
+            "to avoid conflicts with special phyloseq plot attribute names.")
+    # Rename the sample variables.
+    colnames(sample_data(physeq))[wh1a] <- new1a
+  }
+  # type-1b conflict: between tax_table
+  # and reserved psmelt variable names
+  type1bconflict = intersect(reservedVarnames, rank_names(physeq))
+  if( length(type1bconflict) > 0 ){
+    wh1b = which(rank_names(physeq) %in% type1bconflict)
+    new1b = paste0("taxa_", rank_names(physeq)[wh1b])
+    # First warn about the change
+    warning("The rank names: \n",
+            paste(rank_names(physeq)[wh1b], collapse=", "), 
+            "\n have been renamed to: \n",
+            paste0(new1b, collapse=", "), "\n",
+            "to avoid conflicts with special phyloseq plot attribute names.")
+    # Rename the conflicting taxonomic ranks
+    colnames(tax_table(physeq))[wh1b] <- new1b
+  }
+  # type-2 conflict: internal between tax_table and sample_data
+  type2conflict = intersect(sample_variables(physeq), rank_names(physeq))
+  if( length(type2conflict) > 0 ){
+    wh2 = which(sample_variables(physeq) %in% type2conflict)
+    new2 = paste0("sample_", sample_variables(physeq)[wh2])
+    # First warn about the change
+    warning("The sample variables: \n",
+            paste0(sample_variables(physeq)[wh2], collapse=", "), 
+            "\n have been renamed to: \n",
+            paste0(new2, collapse=", "), "\n",
+            "to avoid conflicts with taxonomic rank names.")
+    # Rename the sample variables
+    colnames(sample_data(physeq))[wh2] <- new2
+  }
+  # enforce OTU table orientation
+  otutab = otu_table(physeq)
+  if( !taxa_are_rows(otutab) ){
+    otutab = t(otutab)  
+  }
+  mot <- as(otutab, "matrix")
+  mdf <- melt(mot)
+  colnames(mdf)[1] <- "OTU"
+  colnames(mdf)[2] <- "Sample"
+  # Merge the sample data.frame if present
+  if( !is.null(sample_data(physeq, FALSE)) ){
+    sdf = data.frame(sample_data(physeq))
+    sdf$Sample <- sample_names(physeq)
+    # merge the sample-data and the melted otu table
+    mdf = merge(mdf, sdf, by.x="Sample")
+  }
+  # Next merge taxonomy data
+  if( !is.null(tax_table(physeq, FALSE)) ){
+    TT = tax_table(physeq)
+    # First, remove any empty columns (all NA)
+    TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
     # Now add to the "psmelt" data.frame
-		tdf = data.frame(TT, OTU=taxa_names(physeq))
-		mdf = merge(mdf, tdf, by.x="OTU")	
-	}
-	
-	# Annotate the "value" column as the measured OTU "Abundance"
-	colnames(mdf)[colnames(mdf)=="value"] = "Abundance"
-	
-	# Sort the entries by abundance
-	mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
-		
-	return(mdf)
+    tdf = data.frame(TT, OTU=taxa_names(physeq))
+    mdf = merge(mdf, tdf, by.x="OTU")	
+  }
+  # Annotate the "value" column as the measured OTU "Abundance"
+  colnames(mdf)[colnames(mdf)=="value"] <- "Abundance"
+  # Sort the entries by abundance
+  mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
+  return(mdf)
 }
 ################################################################################
 ################################################################################
@@ -2725,5 +2786,4 @@ plot_clusgap = function(clusgap, title="Gap Statistic results"){
 	p = p + ggtitle(title)
 	return(p)
 }
-################################################################################
 ################################################################################

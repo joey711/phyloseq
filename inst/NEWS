@@ -1,3 +1,63 @@
+CHANGES IN VERSION 1.7.24
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Added support for [Partial] Constrained Analysis of Principal Coordinates (CAP).
+
+		- A supported/documented option in `ordinate`, supported by `plot_ordination`.
+
+		- This solves [Issue 312](https://github.com/joey711/phyloseq/issues/312).
+
+	- The `ordinate` function now takes an explicit `formula` argument. 
+
+		- This facilitates reliable contrained ordination calls for:
+
+			- CAP (this commit)
+
+			- RDA (partial redundancy analysis)
+
+			- CCA (constrained correspondence analysis)
+
+CHANGES IN VERSION 1.7.23
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Refactor `plot_ordination` to be more stable, error less and give informative warnings.
+
+	- Expect no critical API changes. Some errors now informative warnings with useful auto-changes to parameters.
+
+	- The `type='biplot'` option no longer hard-specifies a discrete color scale. Available default pallette should work.
+
+	- For `type='biplot'`, the non-variable (Taxa or Sample) label will always appear first in a discrete legend.
+
+CHANGES IN VERSION 1.7.22
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Revised psmelt to automatically modify data column-name conflicts, with warning
+
+	- Udpated `psmelt` doc to formally notify users of these potential conflicts.
+
+	- This solves Issue 307: https://github.com/joey711/phyloseq/issues/307
+
+CHANGES IN VERSION 1.7.21
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Updated `import_qiime` doc to emphasize it is intended for legacy QIIME files.
+
+	- Much faster and mem-efficient import of legacy QIIME and usearch files.
+
+	- Uses data.table syntax to better manage import of large files.
+
+	- Entire HMPv35 now imports in about 1 minute, low risk of mem-swap.
+
+	- Added dependency to data.table
+
 CHANGES IN VERSION 1.7.20
 -------------------------
 

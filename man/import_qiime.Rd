@@ -1,12 +1,12 @@
 \name{import_qiime}
 \alias{import_qiime}
-\title{Import function to read files created by the QIIME pipeline.}
+\title{Import function to read the now legacy-format QIIME OTU table.}
 \usage{
-  import_qiime(otufilename=NULL, mapfilename=NULL,
-  treefilename=NULL, refseqfilename=NULL,
-  refseqFunction=readDNAStringSet, refseqArgs=NULL,
-  parseFunction=parse_taxonomy_qiime, showProgress=TRUE,
-  chunk.size=1000L, ...)
+  import_qiime(otufilename = NULL, mapfilename = NULL,
+  treefilename = NULL, refseqfilename = NULL,
+  refseqFunction = readDNAStringSet, refseqArgs = NULL,
+  parseFunction = parse_taxonomy_qiime, verbose = TRUE,
+  ...)
 }
 \arguments{
   \item{otufilename}{(Optional). A character string
@@ -15,9 +15,9 @@
   tab-delimited, as produced by QIIME under default output
   settings. Default value is \code{NULL}.}
 
-  \item{mapfilename}{(Optional). The QIIME map file
-  required for processing pyrosequencing tags in QIIME as
-  well as some of the post-clustering analysis. This is a
+  \item{mapfilename}{(Optional). The QIIME map file is
+  required for processing barcoded primers in QIIME as well
+  as some of the post-clustering analysis. This is a
   required input file for running QIIME. Its strict
   formatting specification should be followed for correct
   parsing by this function. Default value is \code{NULL}.}
@@ -92,17 +92,9 @@
   prefixes, if any, as that is a common format of the
   taxonomy string produced by QIIME.}
 
-  \item{showProgress}{(Optional). A logical. Indicates
-  whether import progress/status should be printed to the
-  terminal. Default value is \code{TRUE}, meaning the
-  progress will be shown.}
-
-  \item{chunk.size}{(Optional). Positive integer. Default
-  is \code{1000L}. This is the number of lines to be read
-  and processed at a time, passed directly to the
-  \code{\link{import_qiime_otu_tax}} function. A lower
-  value helps control memory-fault, but slows down the
-  import.}
+  \item{verbose}{(Optional). A \code{\link{logical}}.
+  Default is \code{TRUE}. Should progresss messages be
+  \code{\link{cat}}ted to standard out?}
 
   \item{...}{Additional arguments passed to
   \code{\link{read_tree}}}
@@ -111,17 +103,27 @@
   A \code{\link{phyloseq-class}} object.
 }
 \description{
-  QIIME produces several files that can be analyzed in the
-  phyloseq-package, including especially an OTU file that
-  typically contains both OTU-abundance and taxonomic
-  identity information. The map-file is also an important
-  input to QIIME that stores sample covariates, converted
-  naturally to the \code{\link{sample_data-class}}
-  component data type in the phyloseq-package. QIIME may
-  also produce a phylogenetic tree with a tip for each OTU,
-  which can also be imported by this function.
+  QIIME produces several files that can be directly
+  imported by the \code{\link{phyloseq-package}}.
+  Originally, QIIME produced its own custom format table
+  that contained both OTU-abundance and taxonomic identity
+  information. This function is still included in phyloseq
+  mainly to accommodate these now-outdated files. Recent
+  versions of QIIME store output in the biom-format, an
+  emerging file format standard for microbiome data. If
+  your data is in the biom-format, if it ends with a
+  \code{.biom} file name extension, then you should use the
+  \code{\link{import_biom}} function instead.
 }
 \details{
+  Other related files include the mapping-file that
+  typically stores sample covariates, converted naturally
+  to the \code{\link{sample_data-class}} component data
+  type in the phyloseq-package. QIIME may also produce a
+  phylogenetic tree with a tip for each OTU, which can also
+  be imported specified here or imported separately using
+  \code{\link{read_tree}}.
+
   See \url{"http://www.qiime.org/"} for details on using
   QIIME. While there are many complex dependencies, QIIME
   can be downloaded as a pre-installed linux virtual
@@ -137,7 +139,7 @@
 otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
 trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
-import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
+import_qiime(otufile, mapfile, trefile)
 }
 \references{
   \url{http://qiime.org/}
@@ -160,6 +162,8 @@ import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
   \code{\link{merge_phyloseq}}
 
   \code{\link{read_tree}}
+
+  \code{\link{read_tree_greengenes}}
 
   \code{\link[Biostrings]{XStringSet-io}}
 }

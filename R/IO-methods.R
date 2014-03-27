@@ -18,7 +18,7 @@
 #'  Current options are \code{c("mothur", "pyrotagger", "QIIME", "RDP")}, and
 #'  only the first letter is necessary.
 #'
-#' @param ... (Required). Additional arguments providing file paths, and possible
+#' @param ... (Required). Additional named arguments providing file paths, and possible
 #'  other paramaters to the desired tool-specific import function.
 #'
 #' @return In most cases a \code{\link{phyloseq-class}} will be returned, though
@@ -28,6 +28,10 @@
 #'  given the provided arguments and pipeline/tool.
 #'
 #' @seealso 
+#' 
+#' For BIOM format, see:
+#' \code{\link{import_biom}}
+#' 
 #' For mothur, see:
 #' \code{\link{import_mothur}}
 #' 
@@ -39,31 +43,29 @@
 #' For PyroTagger, see:
 #' \code{\link{import_pyrotagger_tab}}
 #'
-#' For QIIME, see:
+#' For QIIME legacy format, see:
 #' \code{\link{import_qiime}}
-#'
-#' For BIOM format, see:
-#' \code{\link{import_biom}}
 #' 
 #' For RDP pipeline, see:
 #' \code{\link{import_RDP_cluster}}
 #'
 #' \code{\link{import_RDP_otu}}
 #' 
-#' @references 
+#' @references  
+#'
+#' BIOM: \url{http://www.biom-format.org/}
+#' 
 #' mothur: \url{http://www.mothur.org/wiki/Main_Page}
 #'
 #' PyroTagger: \url{http://pyrotagger.jgi-psf.org/}
 #'
 #' QIIME: \url{http://qiime.org/}
 #'
-#' BIOM: \url{http://www.biom-format.org/}
-#'
 #' RDP pipeline: \url{http://pyro.cme.msu.edu/index.jsp}
 #' 
 #' @export
 #' @examples
-#'  ## import("QIIME", otufilename=myOtuTaxFilePath, mapfilename=myMapFilePath)
+#'  ## See documentation of a specific import function
 import <- function(pipelineName, ...){
 	# Reduce pipelineName to just its first letter, as all are different
 	pipelineName <- substr(pipelineName, 1, 1)
@@ -91,16 +93,27 @@ import <- function(pipelineName, ...){
 	}
 }
 ################################################################################
-#' Import function to read files created by the QIIME pipeline.
+#' Import function to read the now legacy-format QIIME OTU table.
 #'
-#' QIIME produces several files that can be analyzed in the phyloseq-package, 
-#' including especially an OTU file that typically contains both OTU-abundance
-#' and taxonomic identity information. The map-file is also an important input
-#' to QIIME that stores sample covariates, converted naturally to the 
+#' QIIME produces several files that can be directly imported by
+#' the \code{\link{phyloseq-package}}.
+#' Originally, QIIME produced its own custom format table
+#' that contained both OTU-abundance
+#' and taxonomic identity information.
+#' This function is still included in phyloseq mainly to accommodate these
+#' now-outdated files. Recent versions of QIIME store output in the
+#' biom-format, an emerging file format standard for microbiome data.
+#' If your data is in the biom-format, if it ends with a \code{.biom}
+#' file name extension, then you should use the \code{\link{import_biom}}
+#' function instead.
+#' 
+#' Other related files include
+#' the mapping-file that typically stores sample covariates,
+#' converted naturally to the 
 #' \code{\link{sample_data-class}} component data type in the phyloseq-package. 
 #' QIIME may also produce a
-#' phylogenetic tree with a tip for each OTU, which can also be imported by this
-#' function.
+#' phylogenetic tree with a tip for each OTU, which can also be imported
+#' specified here or imported separately using \code{\link{read_tree}}.
 #' 
 #' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
 #' many complex dependencies, QIIME can be downloaded as a pre-installed 
@@ -110,19 +123,17 @@ import <- function(pipelineName, ...){
 #' a typical run of the QIIME pipeline. See the main \emph{phyloseq} vignette for an 
 #' example of where ot find the relevant files in the output directory. 
 #'
-#' @usage import_qiime(otufilename=NULL, mapfilename=NULL,
-#'  treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
-#'  parseFunction=parse_taxonomy_qiime, showProgress=TRUE, chunk.size=1000L, ...)
-#'
-#' @param otufilename (Optional). A character string indicating the file location of the OTU file.
-#' The combined OTU abundance and taxonomic identification file,
-#' tab-delimited, as produced by QIIME under default output settings.
+#' @param otufilename (Optional). A character string indicating 
+#'  the file location of the OTU file.
+#'  The combined OTU abundance and taxonomic identification file, 
+#'  tab-delimited, as produced by QIIME under default output settings.
 #'  Default value is \code{NULL}. 
 #' 
-#' @param mapfilename (Optional). The QIIME map file required for processing pyrosequencing tags
-#' in QIIME as well as some of the post-clustering analysis. This is a required
-#' input file for running QIIME. Its strict formatting specification should be
-#' followed for correct parsing by this function.
+#' @param mapfilename (Optional). The QIIME map file is required
+#'  for processing barcoded primers in QIIME
+#'  as well as some of the post-clustering analysis. This is a required
+#'  input file for running QIIME. Its strict formatting specification should be
+#'  followed for correct parsing by this function.
 #'  Default value is \code{NULL}. 
 #'
 #' @param treefilename (Optional). Default value is \code{NULL}. 
@@ -186,15 +197,11 @@ import <- function(pipelineName, ...){
 #'  specialized for splitting the \code{";"}-delimited strings and also 
 #'  attempting to interpret greengenes prefixes, if any, as that is a common
 #'  format of the taxonomy string produced by QIIME.
-#'
-#' @param showProgress (Optional). A logical. 
-#'  Indicates whether import progress/status should be printed to the terminal.
-#'  Default value is \code{TRUE}, meaning the progress will be shown. 
-#'
-#' @param chunk.size (Optional). Positive integer. Default is \code{1000L}.
-#'  This is the number of lines to be read and processed at a time,
-#'  passed directly to the \code{\link{import_qiime_otu_tax}} function.
-#'  A lower value helps control memory-fault, but slows down the import.
+#'  
+#' @param verbose (Optional). A \code{\link{logical}}.
+#'  Default is \code{TRUE}. 
+#'  Should progresss messages
+#'  be \code{\link{cat}}ted to standard out?
 #'
 #' @param ... Additional arguments passed to \code{\link{read_tree}}
 #'
@@ -207,6 +214,8 @@ import <- function(pipelineName, ...){
 #' \code{\link{merge_phyloseq}}
 #' 
 #' \code{\link{read_tree}}
+#' 
+#' \code{\link{read_tree_greengenes}}
 #'
 #' \code{\link[Biostrings]{XStringSet-io}}
 #'
@@ -227,16 +236,17 @@ import <- function(pipelineName, ...){
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 #'  mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
 #'  trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
-#'  import_qiime(otufile, mapfile, trefile, showProgress=FALSE)
+#'  import_qiime(otufile, mapfile, trefile)
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
-	treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
-	parseFunction=parse_taxonomy_qiime, showProgress=TRUE, chunk.size=1000L, ...){
+	treefilename=NULL, refseqfilename=NULL, 
+  refseqFunction=readDNAStringSet, refseqArgs=NULL,
+	parseFunction=parse_taxonomy_qiime, verbose=TRUE, ...){
 
 	# initialize the argument-list for phyloseq. Start empty.
 	argumentlist <- list()
 
 	if( !is.null(mapfilename) ){	
-		if( showProgress==TRUE ){
+		if( verbose ){
 			cat("Processing map file...", fill=TRUE)
 		}
 		QiimeMap     <- import_qiime_sample_data(mapfilename)
@@ -244,43 +254,43 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	}
 
 	if( !is.null(otufilename) ){
-		if( showProgress==TRUE ){
+		if( verbose ){
 			cat("Processing otu/tax file...", fill=TRUE)
 		}		
-		otutax <- import_qiime_otu_tax(otufilename, parseFunction, FALSE, chunk.size, showProgress)
+		otutax <- import_qiime_otu_tax(otufilename, parseFunction, verbose=verbose)
 		otutab <- otu_table(otutax$otutab, TRUE)
-		tax_table <- tax_table(otutax$tax_table)
-		argumentlist <- c(argumentlist, list(otutab), list(tax_table) )
+		taxtab <- tax_table(otutax$taxtab)
+		argumentlist <- c(argumentlist, list(otutab), list(taxtab) )
 	}
 
 	if( !is.null(treefilename) ){
-		if( showProgress==TRUE ){
-			cat("Processing phylogenetic tree...", fill=TRUE)
-		}
-		if( inherits(treefilename, "phylo") ){
+		if(verbose){cat("Processing phylogenetic tree...\n", treefilename, "...\n")}
+		if(inherits(treefilename, "phylo")){
 			# If argument is already a tree, don't read, just assign.
 			tree = treefilename
 		} else {
+      # If it is not a tree, assume file and attempt to import.
 			# NULL is silently returned if tree is not read properly.
-			tree <- read_tree(treefilename, ...)		
+			tree <- read_tree(treefilename, ...)
 		}
 		# Add to argument list or warn
 		if( is.null(tree) ){
-			warning("treefilename failed import. It not included.")
+			warning("treefilename failed import. It will not be included.")
 		} else {
 			argumentlist <- c(argumentlist, list(tree) )
 		}
 	}
 	
 	if( !is.null(refseqfilename) ){
-		if( showProgress==TRUE ){
+		if( verbose ){
 			cat("Processing Reference Sequences...", fill=TRUE)
 		}
 		if( inherits(refseqfilename, "XStringSet") ){
 			# If argument is already a XStringSet, don't read, just assign.
 			refseq = refseqfilename
 		} else {
-			# call refseqFunction and read refseqfilename, either with or without additional args
+			# call refseqFunction and read refseqfilename, 
+      # either with or without additional args
 			if( !is.null(refseqArgs) ){
 				refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
 			} else {
@@ -431,15 +441,16 @@ read_tree_greengenes = function(treefile){
   return(tree)
 }
 ################################################################################
-#' Import a QIIME-formatted otu-tax file into a list of two matrices.
+#' Import now legacy-format QIIME OTU table as a list of two matrices.
 #'
-#' QIIME produces several files that can be analyzed in the phyloseq-package, 
-#' including especially an OTU file that typically contains both OTU-abundance
-#' and taxonomic identity information.   
-#' 
-#' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
-#' many complex dependencies, QIIME can be downloaded as a pre-installed 
-#' linux virtual machine that runs ``off the shelf''. 
+#' Now a legacy-format, older versions of QIIME
+#' produced an OTU file that typically contains both OTU-abundance
+#' and taxonomic identity information in a tab-delimted table.
+#' If your file ends with the extension \code{.biom}, or if you happen to know
+#' that it is a biom-format file, or if you used default settings in a version
+#' of QIIME of \code{1.7} or greater,
+#' then YOU SHOULD USE THE BIOM-IMPORT FUNCTION instead, 
+#' \code{\link{import_biom}}.
 #'
 #' This function uses chunking to perform both the reading and parsing in blocks 
 #' of optional size,
@@ -454,8 +465,6 @@ read_tree_greengenes = function(treefile){
 #' a switch to a sparse matrix representation of the abundance
 #' -- which is typically well-suited to this data -- might provide a solution.
 #'
-#' @usage import_qiime_otu_tax(file, parseFunction=parse_taxonomy_qiime, parallel=FALSE, chunk.size=1000, verbose=TRUE)
-#'
 #' @param file (Required). The path to the qiime-formatted file you want to
 #'  import into R. Can be compressed (e.g. \code{.gz}, etc.), though the
 #'  details may be OS-specific. That is, Windows-beware.
@@ -467,6 +476,11 @@ read_tree_greengenes = function(treefile){
 #'  attempting to interpret greengenes prefixes, if any, as that is a common
 #'  format of the taxonomy string produced by QIIME.
 #'
+#' @param verbose (Optional). A \code{\link{logical}}.
+#'  Default is \code{TRUE}. 
+#'  Should progresss messages
+#'  be \code{\link{cat}}ted to standard out?
+#'
 #' @param parallel (Optional). Logical. Should the parsing be performed in 
 #'  parallel?. Default is \code{FALSE}. Only a few steps are actually 
 #'  parallelized, and for most datasets it will actually be faster and 
@@ -474,22 +488,12 @@ read_tree_greengenes = function(treefile){
 #'  Also, to get any benefit at all, you will need to register a 
 #'  parallel ``backend'' through one of the backend packages supported
 #'  by the \code{\link{foreach-package}}.
-#'
-#' @param chunk.size (Optional). Positive integer. Default is \code{1000L}.
-#'  This is the number of lines to be read and processed at a time. In many
-#'  cases this will have a much larger effect on speed and efficiency than
-#'  the setting for \code{parallel}. If you set this value too large, you
-#'  risk a memory fault. If you set it too low, you risk a very slow
-#'  parsing process.
-#'
-#' @param verbose (Optional). Logical. Default is \code{TRUE}. 
-#'  Should status updates of the parsing process be printed to screen?
-#'
+#'  
 #' @return A list of two matrices. \code{$otutab} contains the OTU Table
-#'  as a numeric matrix, while \code{$tax_table} contains a character matrix
+#'  as a numeric matrix, while \code{$taxtab} contains a character matrix
 #'  of the taxonomy assignments.
 #'
-#' @import foreach
+#' @importFrom data.table fread
 #' @importFrom plyr llply
 #'
 #' @seealso
@@ -500,100 +504,50 @@ read_tree_greengenes = function(treefile){
 #' \code{\link{phyloseq}}
 #' 
 #' \code{\link{import_qiime}}
-#'  
-#' \code{\link{import_qiime_otu_tax}}
-#'  
+#' 
+#' \code{\link{read_tree}}
+#' 
+#' \code{\link{read_tree_greengenes}}
+#' 
 #' \code{\link{import_env_file}}
+#' 
 #' @export
 #' @examples
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 #'  import_qiime_otu_tax(otufile)
-import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime, parallel=FALSE, chunk.size=1000L, verbose=TRUE){
-
-	### Some parallel-foreach housekeeping.    
-    # If user specifies not-parallel run (the default), register the sequential "back-end"
-    if( !parallel ){ registerDoSEQ() }
-
-	# Check for commented lines, starting with line 1.
-	# The deepest commented line (largest n) is assumed to have header information.
-	n <- 1L
-	header      <- readLines(file, n)
-	stillHeader <- identical(substr(header[1], 1, 1), "#")
-	while( stillHeader ){
-		# Check again if this is a commented line
-		n <- n + 1
-		header      <- strsplit(readLines(file, n)[[n]], "\t", TRUE)[[1]]
-		stillHeader <- identical(substr(header[1], 1, 1), "#")
-		# Read the header portion of file up to the line
-		# that contains the "Consensus Lineage" label
-		stillHeader <- stillHeader & !any(c("Consensus Lineage", "Consensus", "Lineage") %in% header)
-	}
-
-	# Remove the first and last values (strings "#OTU ID" and "Consensus Lineage", respectively)
-	# to get the sample names from the header
-	sampleNames <- header[-length(header)][-1]
-
-	if(verbose) cat("\nReading and parsing file in chunks ... Could take some time. Please be patient...", fill=TRUE)
-	if(verbose) cat("\nBuilding OTU Table in chunks. Each chunk is one dot.", fill=TRUE)
-	
-	# Initialize taxstring, you will just build it up and parse it at once after the loop.
-	taxstring <- character(0)
-	
-	# Initialize the empty matrix to build-up as you go.
-	otutab <- matrix(NA_integer_, nrow=0, ncol=length(sampleNames))
-	
-	# Loop while chunk is as big as chunk.size
-	chunking_otu <- TRUE
-	while( chunking_otu ){
-		# optionally print chunk indicator
-		if(verbose) cat(".")
-			
-		# Define the chunk
-		taxa.scan <- scan(file, as.list(header), skip=n, quiet=TRUE, sep="\t", multi.line=FALSE, nmax=chunk.size)
-		
-		# Store the taxa-names and taxonomy-string separately.
-		taxaNames <- taxa.scan[[1]]
-		taxstring <- c(taxstring, taxa.scan[[length(taxa.scan)]])
-
-		# Trim taxa.scan to just abundance values, and name by sample
-		taxa.scan <- taxa.scan[-length(header)][-1]
-		names(taxa.scan) <- sampleNames	
-		
-		# Parse otu_table. 
-		otutab.chunk <- foreach( i=sampleNames, .combine=cbind) %dopar%  {as.numeric(taxa.scan[[i]])}
-		colnames(otutab.chunk) <- sampleNames 
-		rownames(otutab.chunk) <- taxaNames	
-		
-		# Add to otutab
-		otutab <- rbind(otutab, otutab.chunk)
-		
-		# Control loop. Either stop, or calculate new n.
-		if( length(taxa.scan[[1]]) < chunk.size ){ 
-			chunking_otu <- FALSE
-		} else {
-			# Calculate the new start position, n
-			n <- n + chunk.size
-		}
-	}
-
-	# Remove taxa.scan to clear memory usage. Call garbage collection right away.
-	rm(taxa.scan)
-	garbage.collection <- gc(FALSE)
-	
-	if(verbose) cat("Building Taxonomy Table...", fill=TRUE)
-	
-	# # # # # Explicit foreach loops lost the competition (by a lot) to llply
-	# Split into "jagged" list (vectors of different lengths)
-	taxlist = llply(taxstring, parseFunction, .parallel=parallel)
-	# Add OTU names to list element names
-	names(taxlist) <- rownames(otutab)
-	# Build the tax table from the jagged list.	
-	tax_table <- build_tax_table(taxlist)
-
+import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime,
+                                 verbose=TRUE, parallel=FALSE){
+  if(verbose){cat("Reading file into memory prior to parsing...\n")}
+  x = readLines(file)
+  if(verbose){cat("Detecting first header line...\n")}
+  # Check for commented lines, starting with line 1.
+  # The deepest commented line (largest n) is assumed to have header information.
+  skipLines = max(which(substr(x[1:25L], 1, 1)=="#"))-1L
+  if(verbose){cat("Header is on line", (skipLines + 1L), " \n")}
+  if(verbose){cat("Converting input file to a table...\n")}
+  x = fread(input=paste0(x, collapse="\n"), sep="\t", header=TRUE, skip=skipLines)
+  if(verbose){cat("Defining OTU table... \n")}
+  taxstring = x$`Consensus Lineage`
+  # This pops the taxonomy (Consensus Lineage) column, in-place statement
+  x[, `Consensus Lineage`:=NULL]
+  # Store the OTU names, you will pop the column
+  OTUnames = x$`#OTU ID`
+  # This pops the OTUID column, in-place statement
+  x[, `#OTU ID`:=NULL]
+  x <- as(x, "matrix")
+  rownames(x) <- OTUnames
+  rm(OTUnames)
+  if(verbose){cat("Parsing taxonomy table...\n")}
+  # Split into "jagged" list (vectors of different lengths)
+  taxlist = llply(taxstring, parseFunction, .parallel=parallel)
+  # Add OTU names to list element names
+  names(taxlist) <- rownames(x)
+  # Build the tax table from the jagged list.  
+  taxtab <- build_tax_table(taxlist)
 	# Call garbage collection one more time. Lots of unneeded stuff.
 	garbage.collection <- gc(FALSE)
-	return(list(otutab=otutab, tax_table=tax_table))
-
+  # Return the named list
+	return(list(otutab=x, taxtab=taxtab))
 }
 ################################################################################
 ################################################################################
@@ -1828,7 +1782,7 @@ import_biom <- function(BIOMfilename,
 	########################################
 	# Need to check if taxonomy information is empty (minimal BIOM file)
 	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
-	  tax_table <- NULL
+	  taxtab <- NULL
   } else {
     # parse once each character vector, save as a list
     taxlist = lapply(x$rows, function(i){
@@ -2259,83 +2213,6 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 	}
 }
 ################################################################################
-# A general wrapper for reading and parsing large delimited table files 
-# in user-specified ``chunks''.
-# Named arguments to \code{read.table} are passed along,
-# as well as a separate optional list of named arguments to the
-# user-specified parsing function.
-# To be of much use, the user-specifed parsing function should take a
-# table chunk that has been processed by \code{read.table},
-# and return an object that is much smaller in RAM.
-# The main purpose of this wrapper is to allow control over peak RAM for
-# functions that are intended to read files of widely-varying sizes
-# that might force the system into memory-swap.
-# Rather than read the entire file all at once, it is read and processed
-# in chunks, one after another.
-#
-# Arguments:
-# 
-# file - The file that is going to be processed by  \code{read.table}.
-# parseFunction - The function used to process each table chunk.
-# skip - the number of lines to skip before the table
-# chunkSize - the number of lines to read in at a time
-# verbose - Whether to print updates on processing to standard out.
-# pfargs - additional named arguments passed to parseFunction. Should be a list.
-# ... - additional arguments passed directly to `read.table`
-#'
-#' @keywords internal
-chunk_table = function(file, parseFunction, skip=0, chunkSize=1E7, verbose=TRUE, pfargs=NULL, ...){
-  
-  chunkSize = as.integer(chunkSize)
-  # send to standard out a warning about the job progress, and how to track it.
-  if(verbose){
-    cat("\n Reading and parsing file in chunks ...
-        Could take some time. Please be patient...", fill=TRUE)
-  }
-  if(verbose){
-    cat("\n Building OTU Table in chunks.
-        Each chunk is one dot.", fill=TRUE)
-  }
-  # Initialize the output list and starting line
-  n = skip
-  output_list = vector("list")
-  # Loop while chunk is as big as chunkSize
-  stillChunking = TRUE
-  while( stillChunking ){
-    # optionally print chunk indicator
-    if(verbose){ cat(".") }
-    # Define the chunk
-    chunk = read.table(file, nrows=chunkSize, skip=n, ...)
-    # Parse the current chunk. Pass additional variables. 
-    #output_list = c(output_list, list(parseFunction(chunk)))
-    output_list = c(output_list, list(do.call(parseFunction, c(list(chunk), pfargs))) )
-    # Control loop. Either stop, or calculate new n.
-    if( nrow(chunk) < chunkSize ){ 
-      stillChunking <- FALSE
-    } else {
-      # Calculate the new start position, n
-      n = n + chunkSize
-    }
-  }
-  # Remove chunk_scan to clear memory usage. Call garbage collection right away.
-  rm(chunk)
-  garbage.collection <- gc(FALSE)
-  return(output_list) 
-  }
-################################################################################
-# Define the parsing function for usearch .uc chunks.
-#  
-#' @keywords internal
-parse_uc_table = function(uctab, colRead=9, colOTU=10, readDelimiter="\\_"){
-  x = uctab[, c(colRead, colOTU)]
-  # Remove missing value entries. Means there was no database match.
-  # Assumes that they have already been flagged as missing by the upstream read.table options.
-  x <- x[!is.na(x[, 2]), ]
-  # Process sequence label to be sample label only
-  x[, 1] <- gsub(paste0(readDelimiter, ".+$"), "", x[, 1])
-  return(x)
-}
-################################################################################
 #' Import usearch table format (\code{.uc}) to OTU table
 #' 
 #' UPARSE is an algorithm for OTU-clustering implemented within usearch.
@@ -2363,30 +2240,19 @@ parse_uc_table = function(uctab, colRead=9, colOTU=10, readDelimiter="\\_"){
 #' and it is also assumed that the delimiter between sample-name and read
 #' in the read-name entries is a single \code{"_"}.
 #' 
-#' @param ucfile (Required). A file location character string or \code{\link{connection}}
+#' @param ucfile (Required). A file location character string 
+#'  or \code{\link{connection}}
 #'  corresponding to the file that contains the usearch output table.
 #'  This is passed directly to \code{\link{read.table}}.
-#'  Please see its \code{file} argument documentation for further links and details.
+#'  Please see its \code{file} argument documentation for further
+#'  links and details.
 #' 
-#' @param chunkSize (Optional). Numeric.
-#'  The number of rows of the table to process at one time.
-#'  The total number of rows in the file should not be an even multiple of this value.
-#'  This parameter is provided purely to improve performance by allowing you
-#'  to avoid memory-swaps when importing a large \code{ucfile}.
-#'  You should set this value as large as possible without
-#'  using all of the RAM availabe to your system. 
-#'  The reason this is a potential issue is that there should be a row-entry
-#'  in the \code{ucfile} for every read that you processed with \code{usearch}.
-#'  For modern and future datasets this is expected to number in the
-#'  hundreds of millions to billions of entries.
-#'  The default \code{chunkSize} is \code{1E7},
-#'  corresponding to 10-million entries processed from the file at a time, in order.
-#' 
-#' @param colRead (Optional). Numeric. The column index in the uc-table file that holds
-#'  the read IDs.
+#' @param colRead (Optional). Numeric. The column index in the uc-table 
+#'  file that holds the read IDs.
 #'  The default column index is \code{9}.
 #' 
-#' @param colOTU (Optional). Numeric. The column index in the uc-table file that holds OTU IDs.
+#' @param colOTU (Optional). Numeric. The column index in the uc-table 
+#'  file that holds OTU IDs.
 #'  The default column index is \code{10}.
 #'   
 #' @param readDelimiter (Optional). An R \code{\link{regex}} as a character string.
@@ -2394,7 +2260,14 @@ parse_uc_table = function(uctab, colRead=9, colOTU=10, readDelimiter="\\_"){
 #'  from the original ID in the demultiplexed read ID of your sequence file.
 #'  The default is plain underscore, which in this \code{\link{regex}} context
 #'  is \code{"_"}.
+#'  
+#' @param verbose (Optional). A \code{\link{logical}}.
+#'  Default is \code{TRUE}. 
+#'  Should progresss messages
+#'  be \code{\link{cat}}ted to standard out?
 #' 
+#' @importFrom data.table fread
+#' @importFrom data.table setnames
 #' @export
 #' @seealso \code{\link{import}}
 #' 
@@ -2405,19 +2278,30 @@ parse_uc_table = function(uctab, colRead=9, colOTU=10, readDelimiter="\\_"){
 #' @examples
 #' usearchfile <- system.file("extdata", "usearch.uc.gz", package="phyloseq")
 #' import_usearch_uc(usearchfile)
-import_usearch_uc <- function(ucfile, chunkSize=1E7, colRead=9, colOTU=10, readDelimiter="_"){
-  # Define the arguments to the parse function
-  pfargs = list(colRead=colRead, colOTU=colOTU, readDelimiter=readDelimiter)
-  # A star (`*`) means no database match. Remove these entries.
-  rtargs = list(ucfile, parse_uc_table, pfargs=pfargs,
-                sep="\t", colClasses="character", na.strings=c("", "*"),
-                header=FALSE, comment.char="", stringsAsFactors=FALSE)
-  x = do.call(chunk_table, c(list(chunkSize=chunkSize), rtargs))
-  cat("Done streaming file.
-          Now tabulating counts...", fill=TRUE)
-  x <- do.call(rbind, x)
-  x <- as(table(x[, 1], x[, 2]), "matrix")
-  return(otu_table(x, taxa_are_rows=FALSE))
+import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
+                              readDelimiter="_", verbose=TRUE){
+  if(verbose){cat("Reading `ucfile` into memory and parsing into table \n")}
+  x = fread(paste0(readLines(ucfile), collapse="\n"), 
+            sep="\t", header=FALSE, colClasses="character", 
+            na.strings=c("*", '*', "NA","N/A",""))
+  colNames = colnames(x)
+  colNames[c(colRead, colOTU)] <- c("read", "OTU")
+  setnames(x, colNames)
+  NrawEntries = nrow(x)
+  if(verbose){
+    cat("Initially read", NrawEntries, "entries. \n")
+    cat("... Now removing unassigned OTUs (* or NA)... \n")
+  }
+  #x = subset(x, !is.na(OTU))
+  x = x[!is.na(x$OTU), ]
+  if(verbose){
+    cat("Removed", NrawEntries - nrow(x), "entries that had no OTU assignment. \n")
+    cat("A total of", nrow(x), "will be assigned to the OTU table.\n")
+  }
+  # Process sequence label to be sample label only
+  x$read <- gsub(paste0(readDelimiter, ".+$"), "", x$read) 
+  # Convert long (melted) table into a sample-by-OTU OTU table, and return
+  return(otu_table(as(table(x$read, x$OTU), "matrix"), taxa_are_rows=FALSE))
 }
 ################################################################################
 ################################################################################

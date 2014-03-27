@@ -52,13 +52,7 @@
   taxonomic rank (among the set returned by
   \code{rank_names(physeq)}).
 
-  Alternatively, if \code{type} indicates a single-plot
-  (\code{"samples"} or \code{"species"}), then it is also
-  possible to supply a custom vector with length equal to
-  the relevant number of samples or species
-  (\code{nsamples(physeq)} or \code{ntaxa(physeq)}).
-
-  Finally, The color scheme is chosen automatically by
+  Note that the color scheme is chosen automatically by
   \code{link{ggplot}}, but it can be modified afterward
   with an additional layer using
   \code{\link[ggplot2]{scale_color_manual}}.}

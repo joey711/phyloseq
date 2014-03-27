@@ -12,9 +12,9 @@
   "pyrotagger", "QIIME", "RDP")}, and only the first letter
   is necessary.}
 
-  \item{...}{(Required). Additional arguments providing
-  file paths, and possible other paramaters to the desired
-  tool-specific import function.}
+  \item{...}{(Required). Additional named arguments
+  providing file paths, and possible other paramaters to
+  the desired tool-specific import function.}
 }
 \value{
   In most cases a \code{\link{phyloseq-class}} will be
@@ -37,20 +37,22 @@
   method-name, and the arguments are passed along as-is.
 }
 \examples{
-## import("QIIME", otufilename=myOtuTaxFilePath, mapfilename=myMapFilePath)
+## See documentation of a specific import function
 }
 \references{
+  BIOM: \url{http://www.biom-format.org/}
+
   mothur: \url{http://www.mothur.org/wiki/Main_Page}
 
   PyroTagger: \url{http://pyrotagger.jgi-psf.org/}
 
   QIIME: \url{http://qiime.org/}
 
-  BIOM: \url{http://www.biom-format.org/}
-
   RDP pipeline: \url{http://pyro.cme.msu.edu/index.jsp}
 }
 \seealso{
+  For BIOM format, see: \code{\link{import_biom}}
+
   For mothur, see: \code{\link{import_mothur}}
 
   Separate tools for mothur are also:
@@ -60,9 +62,7 @@
 
   For PyroTagger, see: \code{\link{import_pyrotagger_tab}}
 
-  For QIIME, see: \code{\link{import_qiime}}
-
-  For BIOM format, see: \code{\link{import_biom}}
+  For QIIME legacy format, see: \code{\link{import_qiime}}
 
   For RDP pipeline, see: \code{\link{import_RDP_cluster}}
 

@@ -16,22 +16,41 @@
 \description{
   The psmelt function is a specialized melt function for
   melting phyloseq objects (instances of the phyloseq
-  class), usually for the purpose of graphics production in
-  ggplot2-based phyloseq-generated graphics. It relies
-  heavily on the \code{\link[reshape2]{melt}} and
-  \code{\link{merge}} functions. Note that ``melted''
-  phyloseq data is stored much less efficiently, and so RAM
-  storage issues could arise with a smaller dataset
-  (smaller number of samples/OTUs/variables) than one might
-  otherwise expect. For average-sized datasets, however,
+  class), usually for producing graphics with
+  \code{\link{ggplot2}}. \code{psmelt} relies heavily on
+  the \code{\link[reshape2]{melt}} and \code{\link{merge}}
+  functions. The naming conventions used in downstream
+  phyloseq graphics functions have reserved the following
+  variable names that should not be used as the names of
+  \code{\link{sample_variables}} or taxonomic
+  \code{\link{rank_names}}. These reserved names are
+  \code{c("Sample", "Abundance", "OTU")}. Also, you should
+  not have identical names for sample variables and
+  taxonomic ranks. That is, the intersection of the output
+  of the following two functions
+  \code{\link{sample_variables}}, \code{\link{rank_names}}
+  should be an empty vector (e.g.
+  \code{intersect(sample_variables(physeq),
+  rank_names(physeq))}). All of these potential name
+  collisions are checked-for and renamed automtically with
+  a warning. However, if you (re)name your variables
+  accordingly ahead of time, it will reduce confusion and
+  eliminate the warnings.
+}
+\details{
+  Note that ``melted'' phyloseq data is stored much less
+  efficiently, and so RAM storage issues could arise with a
+  smaller dataset (smaller number of
+  samples/OTUs/variables) than one might otherwise expect.
+  For common sizes of graphics-ready datasets, however,
   this should not be a problem. Because the number of OTU
   entries has a large effect on the RAM requirement,
-  methods to reduce the number of separate OTU entries, for
-  instance by agglomerating based on phylogenetic distance
-  using \code{\link{tipglom}}, can help alleviate RAM usage
-  problems. This function is made user-accessible for
-  flexibility, but is also used extensively by plot
-  functions in phyloseq.
+  methods to reduce the number of separate OTU entries --
+  for instance by agglomerating OTUs based on phylogenetic
+  distance using \code{\link{tipglom}} -- can help
+  alleviate RAM usage problems. This function is made
+  user-accessible for flexibility, but is also used
+  extensively by plot functions in phyloseq.
 }
 \examples{
 data("GlobalPatterns")
