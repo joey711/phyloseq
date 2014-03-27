@@ -1,58 +1,43 @@
 \docType{methods}
 \name{cca.phyloseq}
 \alias{cca.phyloseq}
-\alias{cca.phyloseq,formula-method}
 \alias{cca.phyloseq,otu_table-method}
-\alias{cca.phyloseq,phyloseq-method}
+\alias{cca.phyloseq,phyloseq,formula-method}
+\alias{cca.phyloseq,phyloseq,NULL-method}
 \alias{rda.phyloseq}
-\alias{rda.phyloseq,formula-method}
-\alias{rda.phyloseq,otu_table-method}
-\alias{rda.phyloseq,phyloseq-method}
-\title{Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.}
-\usage{
-  cca.phyloseq(X, ...)
-
-  rda.phyloseq(X, ...)
-}
+\title{Constrained Correspondence Analysis and Redundancy Analysis.}
 \arguments{
-  \item{X}{(Required). A \code{\link{formula}}, specifying
-  the input. No need to directly access components.
-  \code{cca.phyloseq} understands where to find the
-  abundance table and sample data. Alternatively, \code{X}
-  can be an \code{\link{otu_table-class}} or
-  \code{\link{phyloseq-class}} (without the \code{~}
-  signifying a formula), in which case an unconstrained
-  ordination is performed.}
+  \item{physeq}{(Required). Phylogenetic sequencing data
+  (\code{\link{phyloseq-class}}). The data on which you
+  want to perform the ordination.}
 
-  \item{...}{(Optional). E.g. \code{data=DF}, where
-  \code{DF} is a \code{data.frame} containing information
-  equivalent to a \code{sample_data} object / component.
-  Only necessary if complex object does not already contain
-  \code{sample_data} or you are keeping the data separate
-  for some reason.}
+  \item{formula}{(Optional). A \code{\link{formula}},
+  specifying the contraining variable(s) format, with
+  variable names corresponding to \code{\link{sample_data}}
+  (RHS) from within \code{physeq}.}
+
+  \item{method}{(Optional). A single
+  \code{\link{character}} string, specifying \code{"RDA"}
+  or \code{"CCA"}. Default is \code{"CCA"}.}
+
+  \item{...}{(Optional). Additional named arguments passed
+  to \code{\link[vegan]{capscale}}.}
 }
 \value{
   same output as \code{\link[vegan]{cca}} or
   \code{\link[vegan]{rda}}, respectively.
 }
 \description{
-  A formula is main input to \code{\link[vegan]{cca}}. This
-  complicates dispatch based on object signature. A new
-  method with a separate name is defined instead.
+  This is the internal function that simplifies getting
+  phyloseq data into the constrained ordination functions,
+  \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.
+  Unlike \code{\link[phyloseq]{capscale.phyloseq}}, the
+  formula argument to these methods is optional, and
+  results in an unconstrained ordination.
 }
 \examples{
 #
-# data(GlobalPatterns)
-# # For RDA, use thresholded-rank
-# ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
-# # RDA
-# modr <- rda.phyloseq(ex4 ~ SampleType)
-# # CCA
-# modc <- cca.phyloseq(GlobalPatterns ~ SampleType)
-# plot_ordination(GlobalPatterns, modr, "biplot")
-# plot_ordination(GlobalPatterns, modc, "biplot")
-# # Perform unconstrained ordination
-# mod1 <- cca.phyloseq(GlobalPatterns)
+# cca.phyloseq(physeq, formula, method, ...)
 }
 \seealso{
   \code{\link{plot_ordination}}, \code{\link[vegan]{rda}},

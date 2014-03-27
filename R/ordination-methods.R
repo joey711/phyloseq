@@ -6,8 +6,6 @@
 #' \code{ordinate("help")} or \code{ordinate("list")} for the currently
 #' supported method options.
 #'
-#' @usage ordinate(physeq, method="DCA", distance="unifrac", ...)
-#'
 #' @param physeq (Required). Phylogenetic sequencing data
 #'  (\code{\link{phyloseq-class}}). The data on which you want to perform the
 #'  the ordination. In general, these methods will be based in some fashion on
@@ -24,34 +22,39 @@
 #' @param method (Optional). A character string. Default is \code{"DCA"}.
 #'
 #'  Currently supported method options are:
-#' \code{c("DCA", "CCA", "RDA", "DPCoA", "NMDS", "MDS", "PCoA")}
+#' \code{c("DCA", "CCA", "RDA", "CAP", "DPCoA", "NMDS", "MDS", "PCoA")}
 #'
 #' \describe{
-#'     \item{DCA}{Performs detrended correspondence analysis using \code{\link{decorana}}}
-#'     \item{CCA}{Performs correspondence analysis, or optionally, constrained correspondence
-#'           analysis (a.k.a. canonical correspondence analysis), via \code{\link[vegan]{cca}}
-#'          }
-#'     \item{RDA}{Performs redundancy analysis, or optionally principal components analysis,
-#'           via \code{\link[vegan]{rda}}
-#'          }
+#'     \item{DCA}{Performs detrended correspondence analysis using\code{\link{decorana}}}
+#'     \item{CCA}{Performs correspondence analysis, 
+#'           or optionally, constrained correspondence analysis
+#'           (a.k.a. canonical correspondence analysis), 
+#'           via \code{\link[vegan]{cca}}}
+#'     \item{RDA}{Performs redundancy analysis, or optionally 
+#'           principal components analysis, via \code{\link[vegan]{rda}}}
+#'     \item{CAP}{[Partial] Constrained Analysis of Principal Coordinates 
+#'           or distance-based RDA, via \code{\link[vegan]{capscale}}.
+#'           See \code{\link[phyloseq]{capscale.phyloseq}} for more details.
+#'           In particular, a \code{\link{formula}} argument must be provided.} 
 #'     \item{DPCoA}{Performs Double Principle Coordinate Analysis using a 
-#'           (corrected, if necessary) phylogenetic/patristic distance between species. The
-#'           calculation is performed by \code{\link{DPCoA}}(), which ultimately uses
+#'           (corrected, if necessary) phylogenetic/patristic distance
+#'           between species. The calculation is performed by 
+#'           \code{\link{DPCoA}}(), which ultimately uses
 #'           \code{\link[ade4]{dpcoa}} after making the appropriate 
-#'           accessions/corrections of the data.
-#'          }
+#'           accessions/corrections of the data.}
 #'     \item{NMDS}{Performs Non-metric MultiDimenstional Scaling of a sample-wise 
 #'           ecological distance matrix onto a user-specified number of axes, \code{k}.
 #'           By default, \code{k=2}, but this can be modified as a supplementary argument.
 #'           This method is ultimately carried out by \code{\link{metaMDS}} after the 
-#'           appropriate accessions and distance calculations. Because \code{metaMDS} includes
-#'           its own distance calculation wrappers to \code{\link[vegan]{vegdist}}, and these provide
-#'           additional functionality in the form of species scores, \code{ordinate} will
-#'           pass-on the \code{distance} argument to \code{metaMDS} if it is among the 
-#'           supported \code{vegdist} methods. However, all distance methods supported by
-#'           \code{\link{distance}} are supported here, including \code{"unifrac"}
-#'           (the default) and \code{"DPCoA"}.
-#'          }
+#'           appropriate accessions and distance calculations.
+#'           Because \code{metaMDS} includes its own distance 
+#'           calculation wrappers to \code{\link[vegan]{vegdist}}, and these provide
+#'           additional functionality in the form of species scores,
+#'           \code{ordinate} will pass-on the \code{distance} 
+#'           argument to \code{metaMDS} if it is among the 
+#'           supported \code{vegdist} methods. However, all distance methods
+#'           supported by \code{\link{distance}} are supported here,
+#'           including \code{"unifrac"} (the default) and \code{"DPCoA"}.}
 #'     \item{MDS/PCoA}{Performs principal coordinate analysis 
 #'           (also called principle coordinate decomposition, 
 #'           multidimensional scaling (MDS), or classical scaling)
@@ -62,8 +65,9 @@
 #'          }	
 #'	}
 #' 
-#' @param distance (Optional). A character string matching a 
-#'  \code{\link{distance}} method; or, alternatively, 
+#' @param distance (Optional). A character string. Default is \code{"bray"}.
+#'  The name of a supported \code{\link{distance}} method; 
+#'  or, alternatively, 
 #'  a pre-computed \code{\link{dist}}-class object.
 #'  This argument is only utilized
 #'  if a distance matrix is required by the ordination method specified by the
@@ -75,6 +79,16 @@
 #'  abbreviations. User-specified custom distance equations should also work,
 #'  e.g. \code{"(A+B-2*J)/(A+B)"}. 
 #'  See \code{\link{distance}} for more details, examples.
+#' 
+#' @param formula (Optional). A model \code{\link{formula}}.
+#'  Only relevant for certain ordination methods.
+#'  The left hand side is ignored, defined by 
+#'  the \code{physeq} and \code{distance} arguemnts.
+#'  The right hand side gives the constraining variables,
+#'  and conditioning variables can be given 
+#'  within a special function \code{Condition}.
+#'  See \code{\link[vegan]{cca}} or \code{\link[vegan]{capscale}}
+#'  for examples/details.
 #' 
 #' @param ... (Optional). Additional arguments to supporting functions. For 
 #'  example, the additional argument \code{weighted=TRUE} would be passed on
@@ -94,6 +108,8 @@
 #'  function, \code{\link{plot_ordination}}.
 #' 
 #' @seealso 
+#'  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{The plot_ordination Tutorial}
+#' 
 #'  Related component ordination functions described within phyloseq:
 #'
 #'  \code{\link{DPCoA}}
@@ -101,7 +117,7 @@
 #'  Described/provided by other packages:
 #' 
 #'  \code{\link{cca}}/\code{\link{rda}}, \code{\link{decorana}}, \code{\link{metaMDS}}, 
-#'  \code{\link{pcoa}}
+#'  \code{\link{pcoa}}, \code{\link[vegan]{capscale}}
 #'
 #'  NMDS and MDS/PCoA both operate on distance matrices, typically based on some
 #'  pairwise comparison of the microbiomes in an experiment/project. There are
@@ -114,7 +130,7 @@
 #'  function. It can be 
 #'  thought of as a distance / dissimilarity-index companion function for
 #'  \code{ordinate}, and indeed the distance options provided to \code{ordinate}
-#'  simply passed on to \code{\link{distance}}.
+#'  are often simply passed on to \code{\link{distance}}.
 #'
 #'  A good quick summary of ordination is provided in the introductory vignette
 #'  for vegan:
@@ -132,51 +148,35 @@
 #' @importFrom vegan metaMDS
 #' @importFrom vegan wisconsin
 #' @importFrom vegan decostand
-#' @importFrom ape pcoa
+#' @importFrom ape pcoa 
 #' @export
 #' @examples
-#' # # Take a subset of the GP dataset for quicker computation of examples
-#' # data(GlobalPatterns)
-#' # # Keep top 200 species
-#' # topsp <- names(sort(taxa_sums(GlobalPatterns), TRUE)[1:200])
-#' # GP    <- prune_taxa(topsp, GlobalPatterns)
-#' # # Subset further to top 5 phyla
-#' # top5ph <- sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), decreasing=TRUE)[1:5]
-#' # GP     <- subset_taxa(GP, Phylum %in% names(top5ph)) 
-#' # # 
-#' # # Examples performing ordination with NMDS. Default distance is unweighted UniFrac
-#' # GP.NMDS.UF.ord   <- ordinate(GP, "NMDS")
-#' # GP.NMDS.wUF.ord  <- ordinate(GP, "NMDS", "unifrac", weighted=TRUE)
-#' # GP.NMDS.Bray.ord <- ordinate(GP, "NMDS", "bray")
-#' # # 
-#' # # # An example plot with default, or manually-defined shapes
-#' # (p <- plot_ordination(GP, GP.NMDS.Bray.ord, "biplot", color="SampleType", shape="Phylum"))
-#' # # define manual shape scale:
-#' # man.shapes <- 21:25
-#' # names(man.shapes) <- c(get_taxa_unique(GP, "Phylum"))
-#' # man.shapes <- c(samples=19, man.shapes)
-#' # p + scale_shape_manual(value=man.shapes)
-#' # # 
-#' # # An example of constrained ordination
-#' # GP.cca <- ordinate(GP~SampleType, "CCA")
-#' # # 
-#' # # Run-through "quick" plot examples of the other ordination options currently supported
-#' # # Only showing "samples" in these examples, but "species" options supported for some methods
+#' # See http://joey711.github.io/phyloseq/plot_ordination-examples
+#' # for many more examples.
 #' # plot_ordination(GP, ordinate(GP, "DCA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "CCA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP~SampleType, "CCA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "RDA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP~SampleType, "RDA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "DPCoA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "MDS"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "PCoA"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "NMDS"), "samples", color="SampleType")
-#' # plot_ordination(GP, ordinate(GP, "NMDS", "w"), "samples", color="SampleType")
-ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
-	# The table of currently-supported methods
-	method_table <- c("DCA", "CCA", "RDA", "DPCoA", "NMDS", "MDS", "PCoA")
+ordinate = function(physeq, method="DCA", distance="bray", formula=NULL, ...){
+  # If `physeq` is a formula, post deprecated notice, attempt to convert and dispatch
+  if( inherits(physeq, "formula") ){
+    .Deprecated(msg=paste0("First argument, `physeq`, as formula is deprecated.\n",
+                           "There is now an explicit `formula` argument.\n",
+                           "Please revise method call accordingly."))
+    # Create the new formula, RHS-only
+    formchar = as.character(physeq)
+    # Error if only RHS. Formula-first syntax required both sides.
+    if(length(formchar) < 3){
+      stop("Need both sides of formula in this deprecated syntax... Revisit ordinate() documentation / examples.")
+    }
+    # Replace with (presumed) phyloseq object.
+    physeq <- get(as.character(physeq)[2])
+    # Create the new formula, RHS-only. 
+    newFormula = as.formula(paste0("~", formchar[length(formchar)]))  
+    # Dispatch to (hopefully) ordinate,phyloseq
+    return(ordinate(physeq, method=method, distance=distance, formula=newFormula, ...))
+  }
+	# Define table of currently-supported methods
+	method_table <- c("DCA", "CCA", "RDA", "CAP", "DPCoA", "NMDS", "MDS", "PCoA")
 	# List supported method names to user, if requested.
-	if(class(physeq) == "character"){
+	if( inherits(physeq, "character") ){
 		if( physeq=="help" ){
 			cat("Available arguments to methods:\n")
 			print(c(method_table))
@@ -191,37 +191,32 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 			cat("or a character string matching \"help\" or \"list\". \n")			
 		}	
 	}
-
-	# Define an internal function for accessing and orienting the OTU table
-	# in a fashion suitable for vegan functions
-	veganify <- function(physeq){
-		OTU <- otu_table(physeq)
-		if( taxa_are_rows(OTU) ){ OTU <- t(OTU) }
-		return( as(OTU, "matrix") )
-	}
-
+  # Final check that `physeq` is a phyloseq or otu_table class
+  if( !inherits(physeq, "phyloseq") & !inherits(physeq, "otu_table") ){
+    stop("Expected a phyloseq object or otu_table object.")
+  }
 	# # Start with methods that don't require 
 	# #  additional distance calculation. (distance argument ignored)
 	# DCA
 	if( method == "DCA" ){
-		return( decorana(veganify(physeq), ...) )
+		return( decorana(veganifyOTU(physeq), ...) )
 	}
-	# CCA
-	if( method == "CCA" ){
-		return( cca.phyloseq(physeq, ...) )
+	# CCA / RDA
+	if( method %in% c("CCA", "RDA") ){
+	  return(cca.phyloseq(physeq, formula, method, ...))
 	}
-	# RDA
-	if( method == "RDA" ){
-		return( rda.phyloseq(physeq, ...) )
+	# CAP
+	if( method == "CAP" ){
+    # Call/return with do.call
+	  return(capscale.phyloseq(physeq, formula, distance, ...))
 	}
 	# DPCoA
 	if( method == "DPCoA" ){
 		return( DPCoA(physeq, ...) )
-	}	
-
+	}  
 	# # Now resort to methods that do require a separate distance/dist-calc
 	# Define ps.dist. Check the class of distance argument is character or dist
-	if( class(distance) == "dist" ){
+	if( inherits(distance, "dist") ){
 		ps.dist <- distance
 	} else if( class(distance) == "character" ){
 		# There are some special options for NMDS/metaMDS if distance-method
@@ -231,12 +226,11 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 		"mountford", "raup" , "binomial", "chao")			
 		# NMDS with vegdist-method to include species		
 		if(method == "NMDS" & distance %in% vegdist_methods){
-			return(metaMDS(veganify(physeq), distance, ...))
+			return(metaMDS(veganifyOTU(physeq), distance, ...))
 		}
 		# Calculate distance with handoff to distance()
 		ps.dist <- distance(physeq, distance, ...)
 	}
-
 	# Vanilla MDS/PCoA
 	if( method %in% c("PCoA", "MDS")){
 		return(pcoa(ps.dist))
@@ -246,7 +240,6 @@ ordinate <- function(physeq, method="DCA", distance="unifrac", ...){
 		return(metaMDS(ps.dist))
 	}	
 }
-################################################################################
 ################################################################################
 #' Calculate Double Principle Coordinate Analysis (DPCoA) 
 #' using phylogenetic distance
@@ -372,28 +365,31 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 # Whether-or-not to transpose needs to be a check, based on the 
 #   "taxa_are_rows" slot value
 ################################################################################
-#' Wrapper for \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.
-#'
-#' A formula is main input to \code{\link[vegan]{cca}}. This complicates dispatch based
-#' on object signature. A new method with a separate name is defined instead.
-#'
-#' @usage cca.phyloseq(X, ...)
+#' Constrained Correspondence Analysis and Redundancy Analysis.
 #' 
-#' @param X (Required). A \code{\link{formula}}, specifying the input.
-#'  No need to directly access components.
-#'  \code{cca.phyloseq} understands where to find the abundance table
-#'  and sample data. Alternatively, \code{X} can be an 
-#'  \code{\link{otu_table-class}} or \code{\link{phyloseq-class}} (without
-#'  the \code{~} signifying a formula), in which case an unconstrained ordination
-#'  is performed. 
+#' This is the internal function that simplifies getting phyloseq data
+#' into the constrained ordination functions, 
+#' \code{\link[vegan]{cca}} and \code{\link[vegan]{rda}}.
+#' Unlike \code{\link[phyloseq]{capscale.phyloseq}}, the formula argument
+#' to these methods is optional, and results in an unconstrained ordination.
+#' 
+#' @param physeq (Required). Phylogenetic sequencing data
+#'  (\code{\link{phyloseq-class}}).
+#'  The data on which you want to perform the ordination. 
+#' 
+#' @param formula (Optional). A \code{\link{formula}}, 
+#'  specifying the contraining variable(s) format,
+#'  with variable names corresponding to \code{\link{sample_data}} (RHS)
+#'  from within \code{physeq}.
+#'  
+#' @param method (Optional). A single \code{\link{character}} string,
+#' specifying \code{"RDA"} or \code{"CCA"}. Default is \code{"CCA"}.
 #'
-#' @param ... (Optional). E.g. \code{data=DF}, where \code{DF} is a \code{data.frame}
-#'  containing information equivalent to
-#'  a \code{sample_data} object / component. Only necessary if complex object
-#'  does not already contain \code{sample_data} or you are keeping the data 
-#'  separate for some reason.
+#' @param ... (Optional). Additional named arguments passed to 
+#'  \code{\link[vegan]{capscale}}.
 #'
-#' @return same output as \code{\link[vegan]{cca}} or \code{\link[vegan]{rda}}, respectively.
+#' @return same output as \code{\link[vegan]{cca}} 
+#'  or \code{\link[vegan]{rda}}, respectively.
 #'
 #' @seealso \code{\link{plot_ordination}},
 #'  \code{\link[vegan]{rda}}, \code{\link[vegan]{cca}}
@@ -404,102 +400,59 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #'
 #' @keywords internal
 #' @examples #
-#' # data(GlobalPatterns)
-#' # # For RDA, use thresholded-rank
-#' # ex4  <- transform_sample_counts(GlobalPatterns, threshrankfun(500))
-#' # # RDA
-#' # modr <- rda.phyloseq(ex4 ~ SampleType)
-#' # # CCA
-#' # modc <- cca.phyloseq(GlobalPatterns ~ SampleType)
-#' # plot_ordination(GlobalPatterns, modr, "biplot")
-#' # plot_ordination(GlobalPatterns, modc, "biplot")
-#' # # Perform unconstrained ordination
-#' # mod1 <- cca.phyloseq(GlobalPatterns)
-setGeneric("cca.phyloseq", function(X, ...) standardGeneric("cca.phyloseq"))
-################################################################################
-#' @importFrom vegan cca
-#' @aliases cca.phyloseq,formula-method
-#' @rdname cca-rda-phyloseq-methods
-setMethod("cca.phyloseq", "formula", function(X, data=NULL){
-	physeq <- get( as.character(X)[2] )
-	OTU    <- otu_table( physeq )
-	if( taxa_are_rows(OTU) ){
-		OTU <- t(as(OTU, "matrix"))
-	} else {
-		OTU <- as(OTU, "matrix")
-	}
-	# Create the new formula
-	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
-	# If an alternative table is not provided, assume it is from the sample_data slot
-	if( is.null(data) ){
-		data <- data.frame(sample_data(physeq))
-	}
-	# Good idea to qualify, as ade4 also has a conflicting "cca"
-	# and might be a dependency in the future.	
-	cca(newFormula, data=data)	
+#' # cca.phyloseq(physeq, formula, method, ...)
+setGeneric("cca.phyloseq", function(physeq, formula=NULL, method="CCA", ...){
+  standardGeneric("cca.phyloseq")
 })
-################################################################################
+#' @importFrom vegan cca
+#' @importFrom vegan rda
+#' @aliases cca.phyloseq,phyloseq,formula-method
+#' @rdname cca-rda-phyloseq-methods
+setMethod("cca.phyloseq", signature=c("phyloseq", "formula"), 
+function(physeq, formula, method="CCA", ...){
+  data = data.frame(sample_data(physeq, FALSE), stringsAsFactors=FALSE)
+  if( length(data) < 1 ){
+    stop("`physeq` argument must include non-empty `sample_data`")
+  }
+	OTU = veganifyOTU(physeq)
+	# Create new formula. Left-hand side is ignored.
+	formchar = as.character(formula)
+	newFormula = as.formula(paste0("OTU ~ ", formchar[length(formchar)]))
+	# Note that ade4 also has a conflicting "cca" function.
+  # You don't import ade4::cca to avoid the conflict.
+  if(method=="CCA"){
+    return(cca(newFormula, data=data))
+  } else if(method=="RDA"){
+    return(rda(newFormula, data=data))
+  } else {
+    warning("Unsupported `method` argument. Must be 'RDA' or 'CCA'")
+    return(NULL)
+  }
+})
 #' @importFrom vegan cca
 #' @aliases cca.phyloseq,otu_table-method
 #' @rdname cca-rda-phyloseq-methods
-setMethod("cca.phyloseq", "otu_table", function(X){
-	if( taxa_are_rows(X) ){
-		X <- t(as(X, "matrix"))
+setMethod("cca.phyloseq", signature="otu_table",
+          function(physeq, formula=NULL, method="CCA", ...){
+  # OTU table by itself indicates an unconstrained ordination is requested.
+  # Formula argument is ignored.
+	if(method=="CCA"){
+	  return(cca(veganifyOTU(physeq)))
+	} else if(method=="RDA"){
+	  return(rda(veganifyOTU(physeq)))
 	} else {
-		X <- as(X, "matrix")
+	  warning("Unsupported `method` argument. Must be 'RDA' or 'CCA'")
+    return(NULL)
 	}
-	# Good idea to qualify, as ade4 also has a conflicting "cca"
-	# and might be a dependency in the future.
-	cca(X)	
 })
-################################################################################
 #' @importFrom vegan cca
-#' @aliases cca.phyloseq,phyloseq-method
+#' @aliases cca.phyloseq,phyloseq,NULL-method
 #' @rdname cca-rda-phyloseq-methods
-setMethod("cca.phyloseq", "phyloseq", function(X){
-	cca.phyloseq(otu_table(X))
-})
-################################################################################
-#' @keywords internal
-#' @usage rda.phyloseq(X, ...)
-#' @importFrom vegan rda
-#' @rdname cca-rda-phyloseq-methods
-#' @aliases cca.phyloseq rda.phyloseq
-setGeneric("rda.phyloseq", function(X, ...) standardGeneric("rda.phyloseq"))
-#' @aliases rda.phyloseq,formula-method
-#' @rdname cca-rda-phyloseq-methods
-setMethod("rda.phyloseq", "formula", function(X, data=NULL){
-	physeq <- get( as.character(X)[2] )
-	OTU    <- otu_table( physeq )
-	if( taxa_are_rows(OTU) ){
-		OTU <- as(t(OTU), "matrix")
-	} else {
-		OTU <- as(OTU, "matrix")
-	}
-	# Create the new formula
-	newFormula = as.formula(paste("OTU", as.character(X)[3], sep=" ~ "))
-	# If an alternative table is not provided, assume it is from the sample_data slot
-	if( is.null(data) ){
-		data <- data.frame(sample_data(physeq))
-	}
-	rda(newFormula, data=data)	
-})
-################################################################################
-#' @aliases rda.phyloseq,otu_table-method
-#' @rdname cca-rda-phyloseq-methods
-setMethod("rda.phyloseq", "otu_table", function(X){
-	if( taxa_are_rows(X) ){
-		X <- t(as(X, "matrix"))
-	} else {
-		X <- as(X, "matrix")
-	}
-	rda(X)	
-})
-################################################################################
-#' @aliases rda.phyloseq,phyloseq-method
-#' @rdname cca-rda-phyloseq-methods
-setMethod("rda.phyloseq", "phyloseq", function(X){
-	rda.phyloseq(otu_table(X))
+setMethod("cca.phyloseq", signature=c("phyloseq", "NULL"), 
+function(physeq, formula, method="CCA", ...){
+  # Absence of a formula (NULL) indicates unconstrained ordination.
+  # Access otu_table, and dispatch.
+  return(cca.phyloseq(otu_table(physeq), NULL, method, ...))
 })
 ################################################################################
 #' Estimate the gap statistic on an ordination result
@@ -574,4 +527,118 @@ gapstat_ord = function(ord, axes=c(1:2), type="sites",
 	# cluster::clusGap
 	return(clusGap(x[, axes], FUNcluster, K.max, ...))
 }
+################################################################################
+# Define an internal function for accessing and orienting the OTU table
+# in a fashion suitable for vegan functions
+# @keywords internal
+veganifyOTU <- function(physeq){
+  if(taxa_are_rows(physeq)){physeq <- t(physeq)}
+  return(as(otu_table(physeq), "matrix"))
+}
+################################################################################
+#' Constrained Analysis of Principal Coordinates, \code{\link[vegan]{capscale}}.
+#'
+#' See \code{\link[vegan]{capscale}} for details. A formula is main input.
+#' 
+#' @param physeq (Required). Phylogenetic sequencing data
+#'  (\code{\link{phyloseq-class}}).
+#'  The data on which you want to perform the ordination. 
+#' 
+#' @param formula (Required). A \code{\link{formula}}, specifying the input.
+#'  No need to directly access components. \code{capscale.phyloseq} understands 
+#'  where to find the abundance table (LHS) and \code{\link{sample_data}} (RHS)
+#'  from within the phyloseq object. 
+#'
+#' @param distance (Required). A \code{\link{character}} string, specifying
+#'  the name of the dissimilarity (or distance) method supported by
+#'  the phyloseq \code{\link[phyloseq]{distance}} function.
+#'  Alternatively, a pre-computed \code{\link{dist}}-object can be provided here,
+#'  in which case it supersedes any use of the \code{\link{otu_table}}
+#'  in your phyloseq object.
+#'  
+#'  Note that \code{\link[vegan]{capscale}} 
+#'  with Euclidean distances will be identical to \code{\link[vegan]{rda}}
+#'  in eigenvalues and in site, species, and biplot scores
+#'  (except for possible sign reversal). However, it makes no sense to use 
+#'  \code{\link[vegan]{capscale}} with Euclidean distances, 
+#'  since direct use of \code{\link[vegan]{rda}} is much more efficient
+#'  (and supported in the \code{\link{ordinate}} function with \code{method=="RDA"})
+#'  Even with non-Euclidean dissimilarities,
+#'  the rest of the analysis will be metric and linear.
+#'
+#' @param ... (Optional). Additional named arguments passed to 
+#'  \code{\link[vegan]{capscale}}.
+#'
+#' @return Ordination object defined by \code{\link[vegan]{capscale}}.
+#'
+#' @seealso
+#'  \code{\link{plot_ordination}}
+#' 
+#'  \code{\link[vegan]{rda}}
+#'  
+#'  \code{\link[vegan]{capscale}}
+#'
+#' @aliases capscale.phyloseq
+#' @rdname capscale-phyloseq-methods
+#' @docType methods
+#' @importFrom vegan capscale
+#' @keywords internal
+#' @examples 
+#' # See other examples at
+#' # http://joey711.github.io/phyloseq/plot_ordination-examples
+#' data(GlobalPatterns)
+#' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
+#' ordcap = ordinate(GP, "CAP", "bray", ~SampleType)
+#' plot_ordination(GP, ordcap, "samples", color="SampleType")
+setGeneric("capscale.phyloseq", function(physeq, formula, distance, ...){
+  data = data.frame(sample_data(physeq, FALSE), stringsAsFactors=FALSE)
+  if( length(data) < 1 ){
+    stop("`physeq` argument must include non-empty `sample_data`")
+  }
+  standardGeneric("capscale.phyloseq")
+})
+#' @importFrom vegan capscale
+#' @aliases capscale.phyloseq,phyloseq,formula-method
+#' @rdname capscale-phyloseq-methods
+setMethod("capscale.phyloseq", c("phyloseq", "formula", "dist"),
+function(physeq, formula, distance, ...){
+  data = data.frame(sample_data(physeq), stringsAsFactors=FALSE)
+  # Convert formula to character vector, compute on language.
+  formchar = as.character(formula)  
+  newFormula = as.formula(paste0("distance ~ ", formchar[length(formchar)]))
+  return(capscale(formula=newFormula, data=data, ...))
+})
+#' @importFrom vegan capscale
+#' @aliases capscale.phyloseq,phyloseq,formula,character-method
+#' @rdname capscale-phyloseq-methods
+setMethod("capscale.phyloseq", c("phyloseq", "formula", "character"),
+function(physeq, formula, distance, ...){
+  data = data.frame(sample_data(physeq), stringsAsFactors=FALSE)
+  # The goal here is to process the distance identifier string
+  # and dispatch accordingly.
+  if( length(distance) != 1 ){
+    warning("`distance` was unexpected length. \n",
+            " `distance` argument should be a single character string",
+            " or dist matrix. \n",
+            "Attempting to use first element only.")
+  }
+  distance <- distance[1]
+  if(!distance %in% unlist(distance("list"))){
+    # distance must be among the supported distance options
+    # (which is a superset of vegdist).
+    stop("The distance method you specified is not supported by phyloseq")
+  }
+  # Convert formula to character vector, compute on language.
+  formchar = as.character(formula)
+  if(distance %in% distance("list")$vegdist){
+    # If it is among the vegdist distances, pass it along to vegan::capscale
+    OTU = veganifyOTU(physeq)
+    newFormula = as.formula(paste0("OTU ~ ", formchar[length(formchar)]))
+    return(capscale(formula=newFormula, data=data, distance=distance, ...))
+  } else {
+    # Else calculate the distance matrix here, and dispatch.
+    distance <- distance(physeq=physeq, method=distance, type="samples")
+    return(capscale.phyloseq(physeq, formula, distance, ...))
+  }
+})
 ################################################################################

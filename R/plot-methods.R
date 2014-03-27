@@ -685,6 +685,9 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
     # Add id.type label
     specDF$id.type <- "Taxa"
     siteDF$id.type <- "Samples"
+    # But what if the axis variables differ b/w them?
+    # Coerce specDF to match samples (siteDF) axis names
+    colnames(specDF)[1:2] <- colnames(siteDF)[1:2]
     # Merge the two data frames together for joint plotting.
     DF = merge(specDF, siteDF, all=TRUE)
     # Replace NA with "samples" or "taxa", where appropriate (factor/character)
@@ -718,8 +721,8 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
     }
   }
   # Grab the ordination axis names from the plot data frame (as strings)
-  x = names(DF)[1]
-  y = names(DF)[2]   
+  x = colnames(DF)[1]
+  y = colnames(DF)[2]   
   # Mapping section
   if( ncol(DF) <= 2){
     # If there is nothing to map, enforce simple mapping.
@@ -943,9 +946,14 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' # Test plots (preforms ordination in-line, then makes scree plot)
 #' plot_scree(ordinate(GP, "DPCoA", "bray"))
 #' plot_scree(ordinate(GP, "PCoA", "bray"))
-#' plot_scree(ordinate(GP, "NMDS", "bray")) # Empty return with message
-#' plot_scree(ordinate(GP ~ SampleType, "CCA"))
-#' plot_scree(ordinate(GP ~ SampleType, "RDA")) 
+#' # Empty return with message
+#' plot_scree(ordinate(GP, "NMDS", "bray"))
+#' # Constrained ordinations
+#' plot_scree(ordinate(GP, "CCA", formula=~SampleType))
+#' plot_scree(ordinate(GP, "RDA", formula=~SampleType)) 
+#' plot_scree(ordinate(GP, "CAP", formula=~SampleType)) 
+#' # Deprecated example of constrained ordination (emits a warning)
+#' #plot_scree(ordinate(GP ~ SampleType, "RDA")) 
 #' plot_scree(ordinate(GP, "DCA"))
 #' plot_ordination(GP, ordinate(GP, "DCA"), type="scree")
 plot_scree = function(ordination, title=NULL){
@@ -2778,5 +2786,4 @@ plot_clusgap = function(clusgap, title="Gap Statistic results"){
 	p = p + ggtitle(title)
 	return(p)
 }
-################################################################################
 ################################################################################

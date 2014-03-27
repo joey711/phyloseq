@@ -179,6 +179,21 @@ phylo <- structure(list(), class = "phylo")
 #' @exportClass phylo
 setOldClass("phylo")
 ################################################################################
+#' An S4 placeholder for the basic \code{\link[stats]{dist}}ance matrix class.
+#'
+#' See the \code{\link[ape]{ape}} package for details about this type of
+#' representation of a phylogenetic tree. It is used throught ape.
+#'
+#' @seealso
+#'  \code{\link[stats]{dist}}
+#'  
+#'  \code{\link{setOldClass}}
+#'
+#' @name dist-class
+#' @rdname dist-class
+#' @exportClass dist
+setOldClass("dist")
+################################################################################
 #' Method for fixing problems with phylo-class trees in phyloseq
 #' 
 #' For now this only entails replacing each missing (\code{NA}) branch-length

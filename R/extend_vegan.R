@@ -30,7 +30,6 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
 	return( coords[, choices] )
 }
 ################################################################################
-################################################################################
 # Extend vegdist for phyloseq classes
 ################################################################################
 # \code{\link[vegan]{vegdist}} wrapper for phyloseq classes

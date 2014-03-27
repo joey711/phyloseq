@@ -1,0 +1,66 @@
+\docType{methods}
+\name{capscale.phyloseq}
+\alias{capscale.phyloseq}
+\alias{capscale.phyloseq,phyloseq,formula-method}
+\alias{capscale.phyloseq,phyloseq,formula,character-method}
+\title{Constrained Analysis of Principal Coordinates, \code{\link[vegan]{capscale}}.}
+\arguments{
+  \item{physeq}{(Required). Phylogenetic sequencing data
+  (\code{\link{phyloseq-class}}). The data on which you
+  want to perform the ordination.}
+
+  \item{formula}{(Required). A \code{\link{formula}},
+  specifying the input. No need to directly access
+  components. \code{capscale.phyloseq} understands where to
+  find the abundance table (LHS) and
+  \code{\link{sample_data}} (RHS) from within the phyloseq
+  object.}
+
+  \item{distance}{(Required). A \code{\link{character}}
+  string, specifying the name of the dissimilarity (or
+  distance) method supported by the phyloseq
+  \code{\link[phyloseq]{distance}} function. Alternatively,
+  a pre-computed \code{\link{dist}}-object can be provided
+  here, in which case it supersedes any use of the
+  \code{\link{otu_table}} in your phyloseq object.
+
+  Note that \code{\link[vegan]{capscale}} with Euclidean
+  distances will be identical to \code{\link[vegan]{rda}}
+  in eigenvalues and in site, species, and biplot scores
+  (except for possible sign reversal). However, it makes no
+  sense to use \code{\link[vegan]{capscale}} with Euclidean
+  distances, since direct use of \code{\link[vegan]{rda}}
+  is much more efficient (and supported in the
+  \code{\link{ordinate}} function with
+  \code{method=="RDA"}) Even with non-Euclidean
+  dissimilarities, the rest of the analysis will be metric
+  and linear.}
+
+  \item{...}{(Optional). Additional named arguments passed
+  to \code{\link[vegan]{capscale}}.}
+}
+\value{
+  Ordination object defined by
+  \code{\link[vegan]{capscale}}.
+}
+\description{
+  See \code{\link[vegan]{capscale}} for details. A formula
+  is main input.
+}
+\examples{
+# See other examples at
+# http://joey711.github.io/phyloseq/plot_ordination-examples
+data(GlobalPatterns)
+GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
+ordcap = ordinate(GP, "CAP", "bray", ~SampleType)
+plot_ordination(GP, ordcap, "samples", color="SampleType")
+}
+\seealso{
+  \code{\link{plot_ordination}}
+
+  \code{\link[vegan]{rda}}
+
+  \code{\link[vegan]{capscale}}
+}
+\keyword{internal}
+
