@@ -1075,16 +1075,26 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' p = p + geom_bar(color="black", stat="identity", position="stack")
 #' print(p)
 psmelt = function(physeq){
+  # Access covariate names from object, if present
+  if(!inherits(physeq, "phyloseq")){
+    rankNames = NULL
+    sampleVars = NULL
+  } else {
+    # Still might be NULL, but attempt access
+    rankNames = rank_names(physeq, FALSE)
+    sampleVars = sample_variables(physeq, FALSE) 
+  }
+  # Define reserved names
+  reservedVarnames = c("Sample", "Abundance", "OTU")  
   # type-1a conflict: between sample_data 
   # and reserved psmelt variable names
-  reservedVarnames = c("Sample", "Abundance", "OTU")
-  type1aconflict = intersect(reservedVarnames, sample_variables(physeq))
-  if( length(type1aconflict) > 0 ){
-    wh1a = which(sample_variables(physeq) %in% type1aconflict)
-    new1a = paste0("sample_", sample_variables(physeq)[wh1a])
+  type1aconflict = intersect(reservedVarnames, sampleVars)
+  if(length(type1aconflict) > 0){
+    wh1a = which(sampleVars %in% type1aconflict)
+    new1a = paste0("sample_", sampleVars[wh1a])
     # First warn about the change
     warning("The sample variables: \n",
-            paste(sample_variables(physeq)[wh1a], collapse=", "), 
+            paste(sampleVars[wh1a], collapse=", "), 
             "\n have been renamed to: \n",
             paste0(new1a, collapse=", "), "\n",
             "to avoid conflicts with special phyloseq plot attribute names.")
@@ -1093,13 +1103,13 @@ psmelt = function(physeq){
   }
   # type-1b conflict: between tax_table
   # and reserved psmelt variable names
-  type1bconflict = intersect(reservedVarnames, rank_names(physeq))
-  if( length(type1bconflict) > 0 ){
-    wh1b = which(rank_names(physeq) %in% type1bconflict)
-    new1b = paste0("taxa_", rank_names(physeq)[wh1b])
+  type1bconflict = intersect(reservedVarnames, rankNames)
+  if(length(type1bconflict) > 0){
+    wh1b = which(rankNames %in% type1bconflict)
+    new1b = paste0("taxa_", rankNames[wh1b])
     # First warn about the change
     warning("The rank names: \n",
-            paste(rank_names(physeq)[wh1b], collapse=", "), 
+            paste(rankNames[wh1b], collapse=", "), 
             "\n have been renamed to: \n",
             paste0(new1b, collapse=", "), "\n",
             "to avoid conflicts with special phyloseq plot attribute names.")
@@ -1107,46 +1117,48 @@ psmelt = function(physeq){
     colnames(tax_table(physeq))[wh1b] <- new1b
   }
   # type-2 conflict: internal between tax_table and sample_data
-  type2conflict = intersect(sample_variables(physeq), rank_names(physeq))
-  if( length(type2conflict) > 0 ){
-    wh2 = which(sample_variables(physeq) %in% type2conflict)
-    new2 = paste0("sample_", sample_variables(physeq)[wh2])
+  type2conflict = intersect(sampleVars, rankNames)
+  if(length(type2conflict) > 0){
+    wh2 = which(sampleVars %in% type2conflict)
+    new2 = paste0("sample_", sampleVars[wh2])
     # First warn about the change
     warning("The sample variables: \n",
-            paste0(sample_variables(physeq)[wh2], collapse=", "), 
+            paste0(sampleVars[wh2], collapse=", "), 
             "\n have been renamed to: \n",
             paste0(new2, collapse=", "), "\n",
             "to avoid conflicts with taxonomic rank names.")
     # Rename the sample variables
     colnames(sample_data(physeq))[wh2] <- new2
   }
-  # enforce OTU table orientation
+  # Enforce OTU table orientation. Redundant-looking step
+  # supports "naked" otu_table as `physeq` input.
   otutab = otu_table(physeq)
-  if( !taxa_are_rows(otutab) ){
-    otutab = t(otutab)  
-  }
-  mot <- as(otutab, "matrix")
-  mdf <- melt(mot)
+  if(!taxa_are_rows(otutab)){otutab <- t(otutab)}
+  # Melt the OTU table: wide form to long form table
+  mdf = melt(as(otutab, "matrix"), value.name="Abundance")
   colnames(mdf)[1] <- "OTU"
   colnames(mdf)[2] <- "Sample"
+  # Row and Col names are coerced to integer or factor if possible.
+  # Do not want this. Coerce these to character.
+  # e.g. `OTU` should always be discrete, even if OTU ID values can be coerced to integer
+  mdf$OTU <- as.character(mdf$OTU)
+  mdf$Sample <- as.character(mdf$Sample)
   # Merge the sample data.frame if present
-  if( !is.null(sample_data(physeq, FALSE)) ){
-    sdf = data.frame(sample_data(physeq))
+  if(!is.null(sampleVars)){
+    sdf = data.frame(sample_data(physeq), stringsAsFactors=FALSE)
     sdf$Sample <- sample_names(physeq)
     # merge the sample-data and the melted otu table
-    mdf = merge(mdf, sdf, by.x="Sample")
+    mdf <- merge(mdf, sdf, by.x="Sample")
   }
-  # Next merge taxonomy data
-  if( !is.null(tax_table(physeq, FALSE)) ){
-    TT = tax_table(physeq)
-    # First, remove any empty columns (all NA)
-    TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
-    # Now add to the "psmelt" data.frame
-    tdf = data.frame(TT, OTU=taxa_names(physeq))
-    mdf = merge(mdf, tdf, by.x="OTU")	
+  # Next merge taxonomy data, if present
+  if(!is.null(rankNames)){
+    TT = access(physeq, "tax_table")
+    # Remove any empty columns (all NA)
+    TT <- TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
+    # Now add to the "psmelt" output data.frame, `mdf`
+    tdf = data.frame(TT, OTU=taxa_names(physeq), stringsAsFactors=FALSE)
+    mdf <- merge(mdf, tdf, by.x="OTU")
   }
-  # Annotate the "value" column as the measured OTU "Abundance"
-  colnames(mdf)[colnames(mdf)=="value"] <- "Abundance"
   # Sort the entries by abundance
   mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]
   return(mdf)

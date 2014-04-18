@@ -2276,32 +2276,34 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' \code{\link{import_qiime}}
 #' 
 #' @examples
-#' usearchfile <- system.file("extdata", "usearch.uc.gz", package="phyloseq")
+#' usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
 #' import_usearch_uc(usearchfile)
 import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
-                              readDelimiter="_", verbose=TRUE){
+                               readDelimiter="_", verbose=TRUE){
   if(verbose){cat("Reading `ucfile` into memory and parsing into table \n")}
-  x = fread(paste0(readLines(ucfile), collapse="\n"), 
-            sep="\t", header=FALSE, colClasses="character", 
-            na.strings=c("*", '*', "NA","N/A",""))
-  colNames = colnames(x)
-  colNames[c(colRead, colOTU)] <- c("read", "OTU")
-  setnames(x, colNames)
+  # fread is one of the fastest and most-efficient importers for R.
+  # It creates a data.table object, suitable for large size objects
+  x = fread(ucfile, sep="\t", header=FALSE, na.strings=c("*", '*', "NA","N/A",""),
+            select=c(colRead, colOTU), colClasses="character", showProgress=TRUE)
+  setnames(x, c("read", "OTU"))
   NrawEntries = nrow(x)
   if(verbose){
     cat("Initially read", NrawEntries, "entries. \n")
     cat("... Now removing unassigned OTUs (* or NA)... \n")
   }
-  #x = subset(x, !is.na(OTU))
-  x = x[!is.na(x$OTU), ]
+  x = x[!is.na(OTU), ]
   if(verbose){
     cat("Removed", NrawEntries - nrow(x), "entries that had no OTU assignment. \n")
     cat("A total of", nrow(x), "will be assigned to the OTU table.\n")
   }
   # Process sequence label to be sample label only
-  x$read <- gsub(paste0(readDelimiter, ".+$"), "", x$read) 
+  x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)] 
   # Convert long (melted) table into a sample-by-OTU OTU table, and return
-  return(otu_table(as(table(x$read, x$OTU), "matrix"), taxa_are_rows=FALSE))
+  OTU <- as(table(x$sample, x$OTU), "matrix")
+  #   system.time({setkey(x, OTU, sample)
+  #              OTU2 <- dcast.data.table(x, sample ~ OTU, fun.aggregate=length, fill=0L)
+  #              })
+  return(otu_table(OTU, taxa_are_rows=FALSE))
 }
 ################################################################################
 ################################################################################
