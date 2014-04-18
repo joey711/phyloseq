@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.9.1
+-------------------------
+
+BUG FIXES
+
+	- Bug in `psmelt` causing unnecessary error for phyloseq datasets with empty components.
+
+	- Solves Issue 319: https://github.com/joey711/phyloseq/issues/313
+
 CHANGES IN VERSION 1.7.24
 -------------------------
 
