@@ -334,7 +334,7 @@ test_that("Results of .tar.gz and .zip should be identical", {
 ################################################################################
 # import_usearch_uc
 ################################################################################
-usearchfile = system.file("extdata", "usearch.uc.gz", package="phyloseq")
+usearchfile = system.file("extdata", "usearch.uc", package="phyloseq")
 OTU1 = import_usearch_uc(usearchfile)
 test_that("import_usearch_uc: Properly omit entries from failed search", {  
   ucLines = readLines(usearchfile)

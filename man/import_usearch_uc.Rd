@@ -60,7 +60,7 @@
   in the read-name entries is a single \code{"_"}.
 }
 \examples{
-usearchfile <- system.file("extdata", "usearch.uc.gz", package="phyloseq")
+usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
 import_usearch_uc(usearchfile)
 }
 \seealso{
