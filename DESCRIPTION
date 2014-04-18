@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.7.24
-Date: 2014-03-24
+Version: 1.9.0
+Date: 2014-04-18
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -29,7 +29,7 @@ Imports:
     scales (>= 0.2.3),
     vegan (>= 2.0.10)
 Depends:
-    R (>= 3.0.0)
+    R (>= 3.1.0)
 Suggests:
     genefilter (>= 1.42.0),
     testthat (>= 0.7.1),
