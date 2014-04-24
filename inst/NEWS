@@ -1,3 +1,28 @@
+CHANGES IN VERSION 1.9.3
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Massive Revision to plot_tree()
+
+	- `plot_tree` now uses the `psmelt` function
+
+		- All covariates are available for aesthetic mapping.
+
+	- `plot_tree` substantial speed improvement
+
+		- Uses native ape-package C code for tree computation
+
+		- Efficient `data.table` consolidated graphic data passed to ggplot2
+
+	- `tree_layout` - new, user-accessible function
+
+		- for building alternative trees from phyloseq data.
+
+	- Foundation for solving Issue 313
+
+		- https://github.com/joey711/phyloseq/issues/313
+
 CHANGES IN VERSION 1.9.2
 -------------------------
 

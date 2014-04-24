@@ -1264,484 +1264,154 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 ################################################################################
 ################################################################################
 # plot_tree section.  
-# Includes core code borrowed with-permission from and attribution to the
-# ggphylo package available (only) on GitHub
 ################################################################################
 ################################################################################
-#' Extracts the parent node index for the given node. 
+#' Returns a data table defining the line segments of a phylogenetic tree.
 #'
-#' Returns -1 if the node is root.
-#' Return the index of the node directly above the given node.
-#' Returns -1 if the given node is root.
+#' This function takes a \code{\link{phylo}} or \code{\link{phyloseq-class}} object
+#' and returns a list of two \code{\link{data.table}}s suitable for plotting
+#' a phylogenetic tree with \code{\link[ggplot2]{ggplot}}2.
+#' 
+#' @param phy (Required). The \code{\link{phylo}} or \code{\link{phyloseq-class}}
+#'  object (which must contain a \code{\link{phylo}}genetic tree)
+#'  that you want to converted to \code{\link{data.table}}s
+#'  suitable for plotting with \code{\link[ggplot2]{ggplot}}2.
 #'
-#' @param phylo, input phylo object
-#' @param node, integer index of the node whose parent is desired
-#' @return integer, the index of the parent node or -1 if the given node is root.
+#' @param ladderize (Optional). Boolean or character string (either
+#'  \code{FALSE}, \code{TRUE}, or \code{"left"}).
+#'  Default is \code{FALSE} (no ladderization).
+#'  This parameter specifies whether or not to \code{\link[ape]{ladderize}} the tree 
+#'  (i.e., reorder nodes according to the depth of their enclosed
+#'  subtrees) prior to plotting.
+#'  This tends to make trees more aesthetically pleasing and legible in
+#'  a graphical display.
+#'  When \code{TRUE} or \code{"right"}, ``right'' ladderization is used.
+#'  When set to \code{FALSE}, no ladderization is applied.
+#'  When set to \code{"left"}, the reverse direction
+#'  (``left'' ladderization) is applied.
+#'  
+#' @return
+#'  A list of two \code{\link{data.table}}s, containing respectively 
+#'  a \code{data.table} of edge segment coordinates, named \code{edgeDT},
+#'  and a \code{data.table} of vertical connecting segments, named \code{vertDT}.
+#'  See \code{example} below for a simple demonstration.
 #' 
 #' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
+#' An early example of this functionality was borrowed directly, with permission,
+#' from the package called \code{ggphylo}, 
+#' released on GitHub at:
 #' \url{https://github.com/gjuggler/ggphylo}
-#'
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
+#' by its author Gregory Jordan \email{gjuggler@@gmail.com}.
+#' That original phyloseq internal function, \code{tree.layout}, has been
+#' completely replaced by this smaller and much faster user-accessible 
+#' function that utilizes performance enhancements from standard 
+#' \code{\link{data.table}} magic as well as \code{\link{ape-package}}
+#' internal C code.
 #' 
-#' @keywords internal
-tree.parent.node <- function(phylo, node) {
-  edge.index <- which(phylo$edge[,2]==node)
-  node <- phylo$edge[edge.index,1]
-  if (length(node)==0) {
-    node <- -1
-  }
-  return(node)
-}
-################################################################################
-#' Extracts the length of the branch above the given node.
-#'
-#' Returns 0 if the node is root.
-#' 
-#' @param phylo input phylo object
-#' @param node integer, the node's index
-#' @return numeric, the branch length of the edge leading to the given node.
-#' May be NA.
-#' 
-#' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @keywords internal
-tree.branch.length <- function(phylo, node) {
-  edge.index <- which(phylo$edge[,2]==node)
-  if (is.null(phylo$edge.length)) {
-    return(NA)
-  }
-  bl <- phylo$edge.length[edge.index]
-  if (length(bl)==0) {
-    bl <- 0
-  }
-  return(bl)
-}
-################################################################################
-#' Return a list of a node's children.
-#'
-#' Returns a list (not a vector!) of the node indices of the given
-#' node's direct children. Returns (-1, -1) if the given node is a leaf.
-#'
-#' @param phylo, input phylo object
-#' @param node, integer index of the node to test
-#' @return list, a list containing the integer indices 
-#' of the nodes directly beneath the given node.
-#' 
-#' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @keywords internal
-tree.child.nodes <- function(phylo, node) {
-  edge.indices <- which(phylo$edge[,1]==node)
-  edge.indices <- sort(edge.indices)
-  nodes <- phylo$edge[edge.indices,2]
-  if (length(nodes)==0) {
-    nodes <- list(c(-1,-1))
-  } else {
-    nodes <- list(nodes)
-  }
-  return(list(nodes))
-}
-################################################################################
-#' @keywords internal
-is.standard.layout <- function(x) {
-  any(x %in% c('default', 'radial'))
-}
-################################################################################
-#' Return length to root from node.
-#'
-#' Returns the length from the tree root to the given node. The input
-#'  node can either be input as a node index or a node label.
-#' 
-#' @param phylo input phylo object
-#' @param node integer or character. When integer, the node index; when character, the node label
-#' @return numeric, the total branch length separating the tree root and the given node.
-#' 
-#' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @keywords internal
-tree.length.to.root <- function(phylo, node) {
-  tip.index <- node
-  if (is.character(node)) {
-    tip.index <- which(phylo$tip.label==node)
-  }
-  cur.node.b <- tip.index
-
-  p.edges <- phylo$edge
-  p.lengths <- phylo$edge.length
-
-  if(is.null(p.lengths)) {
-    p.lengths <- rep(1, length(p.edges[,1]))
-  }
-
-  length <- 0
-  while(length(which(p.edges[,2]==cur.node.b)) > 0) {
-    cur.edge.index <- which(p.edges[,2]==cur.node.b)
-    cur.edge.length <- p.lengths[cur.edge.index]
-    if (length(cur.edge.length) == 0 || is.na(cur.edge.length)) {
-      cur.edge.length <- 0
-    }
-    length <- length + cur.edge.length
-    cur.node.a <- p.edges[cur.edge.index,1]
-    cur.node.b <- cur.node.a # Move up to the next edge
-  }
-  return(length)
-}
-################################################################################
-#' Convert tree tags into data.frame columns
-#' 
-#' Given a \code{\link{phylo}} object and a data frame, transform all
-#' the tags from the tree into columns of the data frame. Rows of the
-#' data frame are linked to the tree via a required 'node' column, which
-#' must contain integer indices of the associated node.
-#'
-#' This function is similar to the tree.as.data.frame method, but not
-#' exactly the same. It is used internally by the tree.layout
-#' function.
-#' 
-#' @param phylo, input phylo object
-#' @param df, data.frame with a 'node' column corresponding to integer indices
-#' of tree nodes.
-#' @return df, a copy of the input data frame, with tags added as new columns
-#'
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @keywords internal
-tags.into.df <- function(phylo, df) {
-  all.tags <- c()
-
-  for (i in 1:nrow(df)) {
-    row <- df[i,]
-    node <- row$node
-    tags <- tree.get.tags(phylo, node)
-    for (j in 1:length(tags)) {
-      all.tags <- c(all.tags, names(tags)[j])
-    }
-  }
-  all.tags <- unique(all.tags)
-
-  df[, all.tags] <- 0
-
-  for (i in 1:nrow(df)) {
-    row <- df[i,]
-    node <- row$node
-    tags <- tree.get.tags(phylo, node)
-
-    for (j in 1:length(tags)) {
-      key <- names(tags)[j]
-      val <- tags[j]
-      df[i, key] <- val
-    }
-  }
-  return(df)
-}
-################################################################################
-#' Retrieves a list of all tags for the given node.
-#'
-#' @param phylo input phylo object
-#' @param node the node index for the desired tags
-#' @return list containing all tags associated with this node, if tags exist; empty list otherwise.
-#'
-#' @examples
-#' # tree <- tree.read('((a,b[&&NHX:foo=bar]),c);')
-#' # tree.get.tags(tree, tree.node.with.label(tree, 'b')) # foo => bar
-#' # 
-#' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @keywords internal
-tree.get.tags <- function(phylo, node) {
-  if (!tree.has.tags(phylo)) {
-    return(list())
-  }
-  
-  tags <- phylo$.tags[[node]]
-  #print(paste(label(phylo, node), tags))
-  if (is.null(tags) || is.na(tags)) {
-    return(list())
-  } else {
-    return(tags)
-  }
-}
-################################################################################
-#' Determines whether the given phylo object contains tags or not.
-#'
-#' @param phylo input phylo object
-#' @return boolean, indicating this phylo has tags (TRUE) or doesn't (FALSE).
-#' 
-#' @examples
-#' # tree.has.tags(tree.read('((a,b[&&NHX:foo=bar]),c);')) # TRUE
-#' # tree.has.tags(tree.read('((a,b),c);')) # FALSE
-#' # 
-#' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @keywords internal
-tree.has.tags <- function(phylo) {
-  !is.null(phylo$.tags)
-}
-################################################################################
-#' Returns a data frame defining segments to draw the phylogenetic tree.
-#'
-#' This internal function is borrowed directly from the \code{ggphylo} package
-#' available on GitHub: \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @seealso
-#' This code is borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
-#' 
-#' @author Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @importFrom plyr rbind.fill
 #' @importFrom ape ladderize
-#'
-#' @keywords internal
-tree.layout <- function(
-  phylo,
-  layout = 'default',
-  layout.ancestors = FALSE,
-  ladderize=FALSE,
-  align.seq.names = NA
-) {
-
-	if (ladderize != FALSE) {
-		if (ladderize == 'left') {
-			phylo <- ladderize(phylo, FALSE)
-		} else {
-			phylo <- ladderize(phylo, TRUE)
-		}
-	}
-
-  # Number of nodes and leaves.
-  n.nodes <- length(phylo$tip.label)+phylo$Nnode
-  n.leaves <- length(phylo$tip.label)
-
-  t.labels <- phylo$tip.label
-  n.labels <- ((n.leaves+1):n.nodes)
-  if (!is.null(phylo$node.label)) {
-    n.labels <- phylo$node.label
+#' @importFrom ape reorder.phylo
+#' @importFrom data.table data.table
+#' @importFrom data.table setkey
+#' @export
+#' @examples
+#' library("ggplot2")
+#' data("esophagus")
+#' phy = phy_tree(esophagus)
+#' phy <- ape::root(phy, "65_2_5", resolve.root=TRUE)
+#' treeSegs0 = tree_layout(phy)
+#' treeSegs1 = tree_layout(esophagus)
+#' edgeMap = aes(x=xleft, xend=xright, y=y, yend=y)
+#' vertMap = aes(x=x, xend=x, y=vmin, yend=vmax)
+#' p0 = ggplot(treeSegs0$edgeDT, edgeMap) + geom_segment() + geom_segment(vertMap, data=treeSegs0$vertDT)
+#' p1 = ggplot(treeSegs1$edgeDT, edgeMap) + geom_segment() + geom_segment(vertMap, data=treeSegs1$vertDT)
+#' print(p0)
+#' print(p1)
+#' plot_tree(esophagus, "treeonly")
+#' plot_tree(esophagus, "treeonly", ladderize="left")
+tree_layout = function(phy, ladderize=FALSE){
+  if(inherits(phy, "phyloseq")){
+    phy = phy_tree(phy)
   }
-
-  # Create the skeleton data frame.
-  # node     - Nodes with IDs 1 to N
-  # x, y     - These will contain the x and y coords after the pending layout procedure.
-  # label    - The first n.leaves nodes are the labeled tips
-  # is.leaf  - Store is-leaf boolean for convenience
-  # parent   - Contain the ID of the current node's parent
-  # children - List of IDs of the current node's children
-  # branch.length - Contains the branch lengths
-  df <- data.frame(node     = c(1:n.nodes),
-                   angle    = 0,
-                   x        = 0,
-                   y        = 0,
-                   label    = c(t.labels, n.labels),
-                   is.leaf  = c(rep(TRUE, n.leaves), rep(FALSE, n.nodes-n.leaves)),
-                   parent   = 0,                                                     
-                   children = 0,                                                  
-                   branch.length = 0
-		)
-
-  # Collect the parents, children, and branch lengths for each node
-  parent <- c()
-  bl <- c()
-  children <- list()
-  event.count <- c()
-  for (i in 1:nrow(df)) {
-    node <- df[i,]$node
-    parent <- c(parent, tree.parent.node(phylo, node))
-    bl <- c(bl, tree.branch.length(phylo, node))
-    children <- c(children, tree.child.nodes(phylo, node))
+  if(!inherits(phy, "phylo")){
+    stop("tree missing or invalid. Please check `phy` argument and try again.")
   }
-  df$parent <- parent
-  df$branch.length <- bl
-  df$children <- children
-
-  # Start the layout procedure by equally spacing the leaves in the y-dimension.
-  # ape uses the edge ordering to indicate the plot position.
-  # So we assign starting y-values according to the rank of each tip's location in
-  # the edge vector.
-  leaf.nodes <- which(df$is.leaf == TRUE)
-  leaf.node.edge.indices <- match(leaf.nodes, phylo$edge[,2])
-  df[df$is.leaf==TRUE,]$y <- rank(leaf.node.edge.indices)
-
-  found.any.internal.node.sequences <- FALSE
-
-  if (is.standard.layout(layout)) {
-    # For each leaf: travel up towards the root, laying out each internal node along the way.
-    for (i in 1:n.leaves) {
-      cur.node <- i
-      while (length(cur.node) > 0 && cur.node != -1) {
-        df[cur.node, 'angle'] <- 0
-
-        # We always use branch lengths: x-position is simply the length to the root.
-        df[cur.node,]$x <- tree.length.to.root(phylo,cur.node)
-
-        # The y-position for internal nodes is the mean of the y-position of all children.
-        children <- unlist(df[cur.node,]$children)
-        if (length(children) > 0 && children[1] != -1) {
-          child.y.sum <- 0
-          for (i in 1:length(children)) {
-            child.index <- children[i]
-            cur.y <- df[child.index,]$y
-            child.y.sum <- child.y.sum + cur.y
-          }
-          df[cur.node, ]$y <- (child.y.sum) / length(children)
-        }
-
-        # Try to find the index of this node in the alignment names.
-        if (!is.na(align.seq.names)) {
-          lbl <- df[cur.node,]$label
-          index.in.names <- which(align.seq.names == lbl | align.seq.names %in% c(paste('Node',lbl),
-					          paste('Root node',lbl)))
-          if (length(index.in.names)>0) {
-            df[cur.node,]$y <- index.in.names
-            if (!df[cur.node,]$is.leaf) {
-              found.any.internal.node.sequences <- TRUE
-            }
-          }
-        }
-
-        cur.node <- unlist(df[cur.node,]$parent)
-      }
-    }
+  if(is.null(phy$edge.length)){
+    # If no edge lengths, set them all to value of 1 (dendrogram).
+    phy$edge.length <- rep(1L, times=nrow(phy$edge))
   }
-
-	if (layout == 'unrooted') {
-	# Not currently supported option.
-	# 
-    # # See http://code.google.com/p/phylowidget/source/browse/trunk/PhyloWidget/src/org/phylowidget/render/LayoutUnrooted.java
-    # # For unrooted layout, we start from the root.
-    # layout.f <- function(node, lo, hi) {
-      # cur.enclosed <- tree.leaves.beneath(phylo, node)
-      # cur.x <- df[node, 'x']
-      # cur.y <- df[node, 'y']
-
-      # children <- unlist(df[node, ]$children)
-      # if (length(children) > 0 && children[1] != -1) {
-        # cur.angle <- lo
-        # for (i in 1:length(children)) {
-          # child.node <- children[i]
-          # child.enclosed <- tree.leaves.beneath(phylo, child.node)
-          # child.ratio <- child.enclosed / cur.enclosed
-          # child.bl <- tree.branch.length(phylo, child.node)
-
-          # arc.size <- (hi - lo) * child.ratio
-          # mid.angle <- cur.angle + arc.size / 2
-          
-          # child.x <- cur.x + cos(mid.angle) * child.bl
-          # child.y <- cur.y + sin(mid.angle) * child.bl
-
-          # df[child.node, 'x'] <<- child.x
-          # df[child.node, 'y'] <<- child.y
-          # df[child.node, 'angle'] <<- mid.angle / (2*pi) * 360
-
-          # layout.f(child.node, cur.angle, cur.angle+arc.size)
-          # cur.angle <- cur.angle + arc.size          
-        # }        
-      # }      
-    # }
-    
-    # layout.f(tree.get.root(phylo), 0, 2 * pi)
-  }
-
-  df$dir <- 'none'
-
-  # We have a data frame with each node positioned.
-  # Now we go through and make two line segments for each node (for a 'square corner' type tree plot).
-  line.df <- data.frame()
-  for (i in 1:nrow(df)) {
-    row <- df[i,]            # Data frame row for the current node.
-    if (row$parent == -1) {
-      next; # Root node!
-    }
-    p.row <- df[row$parent,] # Data frame row for the parent node.
-
-    if (is.standard.layout(layout) && !(layout.ancestors && found.any.internal.node.sequences)) {
-      horiz.line <- data.frame(
-                               node=row$node,
-                               y=row$y,
-                               yend=row$y,
-                               x=row$x,
-                               xend=p.row$x,
-                               label=row$label,   
-                               dir='up',
-                               branch.length=row$branch.length
-                               )
-      vert.line <- data.frame(
-                               node=row$node,
-                               y=row$y,
-                               yend=p.row$y,
-                               x=p.row$x,
-                               xend=p.row$x,
-                               label=row$label,
-                               dir='across',
-                               branch.length=row$branch.length
-      )
-      line.df <- rbind(line.df, horiz.line, vert.line)
+  # Perform ladderizing, if requested
+  if(ladderize != FALSE){
+    if(ladderize == "left"){
+      phy <- ladderize(phy, FALSE)
+    } else if(ladderize==TRUE | ladderize=="right"){
+      phy <- ladderize(phy, TRUE)
     } else {
-      up.line <- data.frame(
-                               node=row$node,
-                               y=row$y,
-                               yend=p.row$y,
-                               x=row$x,
-                               xend=p.row$x,
-                               label=row$label,
-                               dir='up',
-                               branch.length=row$branch.length
-                               )
-      line.df <- rbind(line.df, up.line)
+      stop("You did not specify a supported option for argument `ladderize`.")
     }
   }
-
-  line.df <- tags.into.df(phylo, line.df)
-  df <- tags.into.df(phylo, df)
-  # Remove weird list-of-lists from the nodes data frame.
-  df$children <- NULL
-
-  label.df <- df
-  line.df$type <- 'line'
-  df$type <- 'node'
-  label.df$type <- 'label'
-
-  internal.label.df <- subset(label.df, is.leaf==FALSE)
-  internal.label.df$type <- 'internal.label'
-
-  label.df <- subset(label.df, is.leaf==TRUE)  
-
-  all.df <- rbind.fill(line.df, df, label.df, internal.label.df)
-  all.df
+  # 'z' is the tree in postorder order used in calls to .C
+  # Descending order of left-hand side of edge (the ancestor to the node)
+  z = reorder.phylo(phy, order="postorder")
+  # Initialize some characteristics of the tree.
+  Nedge = nrow(phy$edge)[1]
+  Nnode = phy$Nnode
+  Ntip = length(phy$tip.label)
+  ROOT = Ntip + 1
+  TIPS = phy$edge[(phy$edge[, 2] <= Ntip), 2]
+  NODES = (ROOT):(Ntip + Nnode)
+  nodelabels = phy$node.label
+  # Define the horizontal positions by depth to root, `xx`
+  ape_node_depth_edge_length <- function(Ntip, Nnode, edge, Nedge, edge.length){
+    .C(ape:::node_depth_edgelength, PACKAGE="ape", as.integer(Ntip),
+       as.integer(Nnode), as.integer(edge[, 1]),
+       as.integer(edge[, 2]), as.integer(Nedge),
+       as.double(edge.length), double(Ntip + Nnode))[[7]]
+  }
+  # Pass to ape's internal horizontal position function, in C, using the re-ordered phylo object.
+  #xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
+  xx = ape_node_depth_edge_length(Ntip, Nnode, z$edge, Nedge, z$edge.length)
+  # Alternative call in R only...
+  # xx = double(Ntip + Nnode)
+  # system.time(sapply(Nedge:1, function(i, phy){xx[phy$edge[i, 2]] <<- xx[phy$edge[i, 1]] + phy$edge.length[i]}, phy))
+  # Initialize `yy`, before passing to ape internal function in C.
+  yy <- numeric(Ntip + Nnode)
+  yy[TIPS] <- 1:Ntip
+  # Define the ape_node_height wrapping function
+  ape_node_height <- function(Ntip, Nnode, edge, Nedge, yy){
+    .C(ape:::node_height, PACKAGE="ape",
+       as.integer(Ntip), as.integer(Nnode),
+       as.integer(edge[, 1]), as.integer(edge[, 2]),
+       as.integer(Nedge), as.double(yy))[[6]]
+  }
+  # The call in ape
+  #yy <- .nodeHeight(Ntip, Nnode, z$edge, Nedge, yy)
+  yy <- ape_node_height(Ntip, Nnode, z$edge, Nedge, yy)
+  # Initialize an edge data.table 
+  # Don't set key, order matters
+  edgeDT = data.table(phy$edge, edge.length=phy$edge.length, OTU=NA_character_)
+  # Add tip.labels if present
+  if(!is.null(phy$tip.label)){
+    # Initialize OTU, set node (V2) as key, assign taxa_names as OTU label
+    edgeDT[, OTU:=NA_character_]
+    setkey(edgeDT, V2)
+    edgeDT[V2 <= Ntip, OTU:=phy$tip.label]
+  }
+  # Add the mapping for each edge defined in `xx` and `yy` 
+  edgeDT[, xleft:=xx[V1]]
+  edgeDT[, xright:=xx[V2]]
+  edgeDT[, y:=yy[V2]]
+  # Next define vertical segments
+  vertDT = edgeDT[, list(x=xleft[1], vmin=min(y), vmax=max(y)), by=V1, mult="last"]
+  if(!is.null(phy$node.label)){
+    # Add non-root node labels to edgeDT
+    edgeDT[V2 > ROOT, x:=xright]
+    edgeDT[V2 > ROOT, label:=phy$node.label[-1]]
+    # Add root label (first node label) to vertDT
+    setkey(vertDT, V1)
+    vertDT[J(ROOT), y:=mean(c(vmin, vmax))]
+    vertDT[J(ROOT), label:=phy$node.label[1]]
+  }
+  return(list(edgeDT=edgeDT, vertDT=vertDT))
 }
 ################################################################################
 # Define an internal function for determining what the text-size should be
@@ -1756,182 +1426,14 @@ manytextsize <- function(n, mins=0.5, maxs=4, B=6, D=100){
 	return(s)
 }
 ################################################################################
-# Define an internal function for mapping phyloseq data variables to melted.tip
-#' @keywords internal
-treeMapVar2Tips <- function(melted.tip, physeq, variate){
-	# If variate is tax_table-variable: Map tax_table-variable to melted.tip
-	if( variate %in% rank_names(physeq, FALSE) ){
-		# Add relevant tax_table column.
-		x <- as(tax_table(physeq), "matrix")[, variate, drop=TRUE]
-		names(x) <- taxa_names(physeq)
-		return( x[as(melted.tip$taxa_names, "character")] )
-	}
-	# If variate is sampleMap-variable: Map sample-variable to melted.tip
-	if( variate %in% sample_variables(physeq, FALSE) ){
-		x <- as.vector(data.frame(sample_data(physeq))[, variate])
-		names(x) <- sample_names(physeq)				
-		return( x[as(melted.tip$variable, "character")] )
-	}	
-}
-################################################################################
-# The "tree only" setting. Simple. No annotations.
-#' @keywords internal
-#' @import ggplot2
-plot_tree_only <- function(tdf){
-	# build tree lines
-	p <- ggplot(subset(tdf, type == "line")) + geom_segment(aes(x=x, y=y, xend=xend, yend=yend))
-	# Return ggplot object
-	return(p)
-}
-################################################################################
-# The "sampledodge" plot_tree subset function.
-# Assumes the tree data.frame, tdf, has already been built and is third argument.
-#' @keywords internal
-#' @import ggplot2
-#' @import reshape2 
-#' @import scales
-#' @importFrom plyr aaply
-#' @importFrom plyr ddply
-plot_tree_sampledodge <- function(physeq, p, tdf, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing){
-								
-	# Get the subset of tdf for just the tips (leaves)
-	speciesDF <- subset(tdf, type=="label")
-	
-	# Add abundance data for each species
-	# # First, re-order speciesDF ensure match with otu_table
-	rownames(speciesDF) <- as(speciesDF$label, "character")
-	speciesDF <- speciesDF[taxa_names(physeq), ]
-	# # subset speciesDF to just what you need for tip plotting
-	speciesDF <- data.frame(speciesDF[, c("x", "y")], taxa_names=rownames(speciesDF))
-	
-	# # Make the 0-values NA so they're not plotted. 
-	OTU 		<- as(otu_table(physeq), "matrix") # Coerce to matrix.
-	if(!taxa_are_rows(physeq)){OTU <- t(OTU)} # Enforce orientation.
-	OTU[OTU==0] <- NA
-	
-	# # Now add abundance table
-	speciesDF 	<- cbind(speciesDF, OTU)
-	
-	# # Now melt to just what you need for adding to plot
-	melted.tip <- melt(speciesDF, id.vars=c("x", "y", "taxa_names"))
-	
-	# Determine the horizontal adjustment index for each point
-	h.adj <- aaply(OTU, 1, function(j){ 1:length(j) - cumsum(is.na(j)) - 1 })
-	# Add to melted data.frame (melted.tip) - uses melt.array
-	melted.tip$h.adj.index <- melt(h.adj)$value
-	
-	# the amount to adjust the horizontal coordinate space
-	x.spacer.base    <- base.spacing * max(melted.tip$x)
-	melted.tip$x.spacer.base <- x.spacer.base
-	melted.tip$x.adj <- (melted.tip$h.adj.index * melted.tip$x.spacer.base)
-	
-	# Remove the NA values (the samples that had no individuals of a particular species)
-	melted.tip <- subset(melted.tip, !is.na(value))
-	if( nrow(melted.tip)==0L ){
-		stop("The number of rows of tip data.frame has dropped to 0 after rm NA values")		
-	}
-
-	# Build the tip-label portion of the melted.tip data.frame, if needed.
-	if( !is.null(label.tips) ){
-		if( label.tips == "taxa_names" ){
-			melted.tip$tipLabels <- melted.tip[, "taxa_names"]
-		} else {
-			melted.tip$tipLabels <- treeMapVar2Tips(melted.tip, physeq, label.tips)
-		}
-	} 	
-
-	# color-map handling. Names "variable", "value" have specieal meaning.	
-	if( !is.null(color) ){
-		if( color %in% c("sample_names", "samples") ){
-			color <- "variable"
-		} else {
-			melted.tip$color <- treeMapVar2Tips(melted.tip, physeq, color)
-			names(melted.tip)[names(melted.tip)=="color"] <- color # rename to name of color variable
-		}
-	}
-
-	# shape-map handling. Names "variable", "value" have specieal meaning.	
-	if( !is.null(shape) ){
-		if( shape %in% c("sample_names", "samples") ){
-			shape <- "variable"
-		} else if( !is.null(shape) ){
-			melted.tip$shape <- treeMapVar2Tips(melted.tip, physeq, shape)
-			names(melted.tip)[names(melted.tip)=="shape"] <- shape # rename to name of shape variable
-		}
-	}
-	
-	# size-map handling. Names "abundance", "variable", "value" have special meaning.
-	ab_labels = c("abundance", "Abundance", "abund")
-	if( !is.null(size) ){	
-		if( size %in% ab_labels ){
-			size = "value"
-		} else {
-			melted.tip$size <- treeMapVar2Tips(melted.tip, physeq, size)
-			names(melted.tip)[names(melted.tip)=="size"] <- size # rename to name of size variable
-		}
-	}
-		
-	# The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
-	tip.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", color=color, fill=color, shape=shape, size=size)
-	
-	# Add the new point layer.
-	p <- p + geom_point(tip.map, data=melted.tip, na.rm=TRUE)
-
-	# Optionally-add abundance value label to each point.
-	# This size needs to match point size.
-	if( any(melted.tip$value >= min.abundance[1]) ){
-		if( is.null(size) ){
-			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y", label="value")
-			p <- p + geom_text( point.label.map, data=subset(melted.tip, value>=min.abundance[1]), size=1, na.rm=TRUE)
-		} else {
-			point.label.map <- aes_string(x="x + x.adj + x.spacer.base", y="y",
-				label="value", size=paste("0.025*", size, sep=""))
-			p <- p + geom_text( point.label.map, angle=45, hjust=0,
-						data=subset(melted.tip, value>=min.abundance[1]), na.rm=TRUE)
-		}
-	}
-
-	# If indicated, add the species labels to the right of points.
-	if( !is.null(label.tips) ){
-		# melted.tip.far has only one row per tip,
-		# the farthest horiz. adjusted position (one for each taxa)
-		melted.tip.far <- ddply(melted.tip, "taxa_names", function(df){
-			df[df$h.adj.index == max(df$h.adj.index), , drop=FALSE]
-		})
-		# Create the tip-label aesthetic map.
-		label.map <- aes(x=x + x.adj + 2*x.spacer.base, y=y, label=tipLabels)
-		# Add labels layer to plotting object.
-		p <- p + geom_text(label.map, data=melted.tip.far, size=I(text.size), hjust=0, na.rm=TRUE)
-	}
-	
-	# Adjust point size transform
-	if( !is.null(size) ){
-		p <- p + scale_size_continuous(trans=log_trans(sizebase))
-	}
-	
-	# Update legend-name of color or shape or size
-	if( identical(color, "variable") ){
-		p <- update_labels(p, list(colour = "Samples"))
-	}
-	if( identical(shape, "variable") ){
-		p <- update_labels(p, list(shape  = "Samples"))
-	}
-	if( identical(size, "value") ){
-		p <- update_labels(p, list(size = "Abundance"))
-	}
-			
-	return(p)		
-}
-################################################################################
 # Return TRUE if the nodes of the tree in the phyloseq object provided are unlabeled.
 #' @keywords internal
 nodesnotlabeled = function(physeq){
-	if( is.null(phy_tree(physeq, FALSE)) ){
-		warning("There is no phylogenetic tree in the object you have provided. Try phy_tree(physeq) to see.")
+	if(is.null(phy_tree(physeq, FALSE))){
+		warning("There is no phylogenetic tree in the object you have provided. Try `phy_tree(physeq)` to see.")
 		return(TRUE)
 	} else {
-		return( is.null(phy_tree(physeq)$node.label) | length(phy_tree(physeq)$node.label)==0L )
+		return(is.null(phy_tree(physeq)$node.label) | length(phy_tree(physeq)$node.label)==0L)
 	}
 }
 # A quick test function to decide how nodes should be labeled by default, if at all.
@@ -1939,8 +1441,10 @@ nodesnotlabeled = function(physeq){
 #' @keywords internal
 howtolabnodes = function(physeq){
 	if(!nodesnotlabeled(physeq)){
+    # If the nodes are labeled, use a version of this function, taking into account `ntaxa`.
 		return(nodeplotdefault(manytextsize(ntaxa(physeq))))
 	} else {
+    # Else, use `nodeplotblank`, which returns the ggplot object as-is.
 		return(nodeplotblank)
 	}
 }
@@ -2055,7 +1559,7 @@ nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
 		bootmid = subset(nodelabdf, boot > lowcthresh & boot < highthresh)
 		# Label the high-confidence nodes with a point.
 		if( nrow(boottop)>0L ){
-			p = p + geom_point(data = boottop, aes(x=x, y=y), na.rm=TRUE)
+			p = p + geom_point(mapping=aes(x=x, y=y), data=boottop, na.rm=TRUE)
 		}
 		# Label the remaining bootstrap values as text at the nodes.
 		if( nrow(bootmid)>0L ){
@@ -2109,7 +1613,8 @@ nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
 #' nodeplotdefault(3, -0.4)
 nodeplotdefault = function(size=2L, hjust=-0.2){
 	function(p, nodelabdf){
-		p = p + geom_text(data=nodelabdf, aes(x=x, y=y, label=label), size=size, hjust=hjust, na.rm=TRUE)
+		p = p + geom_text(mapping=aes(x=x, y=y, label=label), data=nodelabdf,
+                      size=size, hjust=hjust, na.rm=TRUE)
 		return(p)
 	}
 }
@@ -2177,14 +1682,20 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #'
 #' @param color (Optional). Character string. Default \code{NULL}.
 #'  The name of the variable in \code{physeq} to map to point color.
+#'  Supported options here also include the reserved special variables
+#'  of \code{\link{psmelt}}.
 #' 
 #' @param shape (Optional). Character string. Default \code{NULL}.
 #'  The name of the variable in \code{physeq} to map to point shape.
+#'  Supported options here also include the reserved special variables
+#'  of \code{\link{psmelt}}.
 #'
 #' @param size (Optional). Character string. Default \code{NULL}.
 #'  The name of the variable in \code{physeq} to map to point size.
 #'  A special argument \code{"abundance"} is reserved here and scales
 #'  point size using abundance in each sample on a log scale.
+#'  Supported options here also include the reserved special variables
+#'  of \code{\link{psmelt}}.
 #'
 #' @param min.abundance (Optional). Numeric. 
 #'  The minimum number of individuals required to label a point
@@ -2227,13 +1738,18 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #'  shrink this value.
 #'
 #' @param ladderize (Optional). Boolean or character string (either
-#'  \code{FALSE}, \code{TRUE}, or \code{"left"}). Default is \code{FALSE}.
+#'  \code{FALSE}, \code{TRUE}, or \code{"left"}).
+#'  Default is \code{FALSE}.
 #'  This parameter specifies whether or not to \code{\link[ape]{ladderize}} the tree 
 #'  (i.e., reorder nodes according to the depth of their enclosed
-#'  subtrees) prior to plotting. When set to \code{TRUE}, the default
-#'  ladderization (``right'' ladderization) is used; when set to
-#'  \code{FALSE}, no ladderization is performed; when set to \code{"left"},
-#'  the reverse direction (``left'' ladderization) is applied.
+#'  subtrees) prior to plotting.
+#'  This tends to make trees more aesthetically pleasing and legible in
+#'  a graphical display.
+#'  When \code{TRUE} or \code{"right"}, ``right'' ladderization is used.
+#'  When set to \code{FALSE}, no ladderization is applied.
+#'  When set to \code{"left"}, the reverse direction
+#'  (``left'' ladderization) is applied.
+#'  This argument is passed on to \code{\link{tree_layout}}.
 #'
 #' @param plot.margin (Optional). Numeric. Default is \code{0.2}.
 #'  Should be positive.
@@ -2245,6 +1761,14 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #'
 #' @param title (Optional). Default \code{NULL}. Character string.
 #'  The main title for the graphic.
+#'  
+#' @param treetheme (Optional).
+#'  A custom \code{\link{ggplot}}2 \code{\link[ggplot2]{theme}} layer
+#'  to use for the tree. Supplants any default theme layers 
+#'  used within the function.
+#'  A value of \code{NULL} uses a default, minimal-annotations theme. 
+#'  If anything other than a them or \code{NULL}, the current global ggplot2
+#'  theme will result.
 #'
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
@@ -2260,12 +1784,10 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' There are many useful examples of phyloseq tree graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #'
-#' @author Paul McMurdie, relying on supporting code from
-#'  Gregory Jordan \email{gjuggler@@gmail.com}
-#' 
-#' @import reshape2
 #' @import scales
 #' @import ggplot2
+#' @importFrom data.table setkey
+#' @importFrom data.table setkeyv
 #' @export
 #' @examples
 #' # # Using plot_tree() with the esophagus dataset.
@@ -2274,90 +1796,153 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' # # http://joey711.github.io/phyloseq/plot_tree-examples
 #' data(esophagus)
 #' # plot_tree(esophagus)
-#' # plot_tree(esophagus, color="samples")
-#' # plot_tree(esophagus, size="abundance")
-#' # plot_tree(esophagus, size="abundance", color="samples")
+#' # plot_tree(esophagus, color="Sample")
+#' # plot_tree(esophagus, size="Abundance")
+#' # plot_tree(esophagus, size="Abundance", color="samples")
+#' plot_tree(esophagus, size="Abundance", color="Sample", base.spacing=0.03)
+################################################################################
 #' plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
-plot_tree <- function(physeq, method="sampledodge", nodelabf=NULL,
-	color=NULL, shape=NULL, size=NULL,
-	min.abundance=Inf, label.tips=NULL, text.size=NULL,
-	sizebase=5, base.spacing = 0.02,
-	ladderize=FALSE, plot.margin=0.2, title=NULL){
-
-	# Test that physeq has tree, top-level test.
-	if( is.null(phy_tree(physeq, FALSE)) ){
-		stop("There is no phylogenetic tree in the object you have provided. Try phy_tree(physeq) to see.")
-	}
-
-	# Create the tree data.frame
-	tdf <- tree.layout(phy_tree(physeq), ladderize=ladderize)
-
-	# "Naked" unannotated tree built in ggplot2 no matter what. Lines only.
-	p <- plot_tree_only(tdf)
-	
-	# If no text.size given, calculate it from number of tips ("species", aka taxa)
-	# This is very fast. No need to worry about whether text is printed or not. DRY.
-	if( is.null(text.size) ){
-		text.size <- manytextsize(ntaxa(physeq))
-	}
-
-	# Tip annotation section.
-	#
-	# Annotate dodged sample points, and other fancy tip labels
-	if( method == "sampledodge" ){
-		p <- plot_tree_sampledodge(physeq, p, tdf, color, shape, size, min.abundance, 
-				label.tips, text.size, sizebase, base.spacing)
-	}
-
-	# Node label section.
-	# 
-	# If no nodelabf ("node label function") given, ask internal function to pick one.
-	# Is NULL by default, meaning will dispatch to howtolabnodes to select function.
-	# For no node labels, the "dummy" function nodeplotnot will return tree plot 
-	# object, p, as-is, unmodified.
-	if( is.null(nodelabf) ){
-		nodelabf = howtolabnodes(physeq)
-	}
-	# Subset data.frame to just the internal nodes (not leaves).
-	nodelabdf = subset(tdf, is.leaf == FALSE & type == "node")
-	# Use the provided/inferred node label function to add the node labels layer(s)
-	p = nodelabf(p, nodelabdf)
-	
-	# Plot margins. 
-	#
-	# Adjust the tree graphic plot margins.
-	# Helps to manually ensure that graphic elements aren't clipped,
-	# especially when there are long tip labels.
-	if( method == "sampledodge" ){
-		min.x <- min(tdf$x, p$layers[[2]]$data$x, na.rm=TRUE)
-		max.x <- max(tdf$x, p$layers[[2]]$data$x, na.rm=TRUE)
-	} else {
-		min.x <- min(tdf$x, na.rm=TRUE)
-		max.x <- max(tdf$x, na.rm=TRUE)
-	}
-	if (plot.margin > 0) {
-		max.x <- max.x * (1.0 + plot.margin)
-	} 
-	p <- p + scale_x_continuous(limits=c(min.x, max.x))	
-	
-	# Themeing section.
-	#
-	# Theme-ing: Blank theming 
-	# Should open this up as function-argument also.
-	p <- p + theme(axis.ticks = element_blank(),
-			axis.title.x=element_blank(), axis.text.x=element_blank(),
-			axis.title.y=element_blank(), axis.text.y=element_blank(),
-			panel.background = element_blank(),
-			panel.grid.minor = element_blank(),			
-			panel.grid.major = element_blank()
-			)
-	
-	# Optionally add a title to the plot
-	if( !is.null(title) ){
-		p <- p + ggtitle(title)
-	}
-	
-	return(p)
+plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
+                       color=NULL, shape=NULL, size=NULL,
+                       min.abundance=Inf, label.tips=NULL, text.size=NULL,
+                       sizebase=5, base.spacing = 0.02,
+                       ladderize=FALSE, plot.margin=0.2, title=NULL,
+                       treetheme=NULL){
+  if( is.null(phy_tree(physeq, FALSE)) ){
+    stop("There is no phylogenetic tree in the object you have provided.\n",
+         "Try phy_tree(physeq) to see for yourself.")
+  }
+  if(!inherits(physeq, "phyloseq")){
+    # If only a phylogenetic tree, then only tree available to overlay.
+    method <- "treeonly"
+  }
+  # Create the tree data.table
+  treeSegs <- tree_layout(phy_tree(physeq), ladderize=ladderize)
+  edgeMap = aes(x=xleft, xend=xright, y=y, yend=y)
+  vertMap = aes(x=x, xend=x, y=vmin, yend=vmax)
+  # Initialize phylogenetic tree.
+  # Naked, lines-only, unannotated tree as first layers. Edge (horiz) first, then vertical.
+  p = ggplot(data=treeSegs$edgeDT) + geom_segment(edgeMap) + 
+    geom_segment(vertMap, data=treeSegs$vertDT)
+  # If no text.size given, calculate it from number of tips ("species", aka taxa)
+  # This is very fast. No need to worry about whether text is printed or not.
+  if(is.null(text.size)){
+    text.size <- manytextsize(ntaxa(physeq))
+  }
+  # Add the species labels to the right.
+  if(!is.null(label.tips) & method!="sampledodge"){
+    # If method is sampledodge, then labels are added to the right of points, later.
+    # Add labels layer to plotting object.
+    p <- p + geom_text(aes(x=xright, y=y, label=OTU), data=treeSegs$edgeDT[!is.na(OTU), ],
+                       size=I(text.size), hjust=-0.1, na.rm=TRUE)
+  }
+  # Node label section.
+  # 
+  # If no nodelabf ("node label function") given, ask internal function to pick one.
+  # Is NULL by default, meaning will dispatch to `howtolabnodes` to select function.
+  # For no node labels, the "dummy" function `nodeplotblank` will return tree plot 
+  # object, p, as-is, unmodified.
+  if(is.null(nodelabf)){
+    nodelabf = howtolabnodes(physeq)
+  }
+  #### set node `y` as the mean of the vertical segment
+  # Use the provided/inferred node label function to add the node labels layer(s)
+  # Non-root nodes first
+  p = nodelabf(p, treeSegs$edgeDT[!is.na(label), ])
+  # Add root label (if present)
+  p = nodelabf(p, treeSegs$vertDT[!is.na(label), ])
+  # Theme specification
+  if(is.null(treetheme)){
+    # If NULL, then use the default tree theme.
+    treetheme <- theme(axis.ticks = element_blank(),
+                       axis.title.x=element_blank(), axis.text.x=element_blank(),
+                       axis.title.y=element_blank(), axis.text.y=element_blank(),
+                       panel.background = element_blank(),
+                       panel.grid.minor = element_blank(),      
+                       panel.grid.major = element_blank())   
+  }
+  if(inherits(treetheme, "theme")){
+    # If a theme, add theme layer to plot. 
+    # For all other cases, skip this, which will cause default theme to be used
+    p <- p + treetheme
+  }
+  # Optionally add a title to the plot
+  if(!is.null(title)){
+    p <- p + ggtitle(title)
+  }  
+  if(method!="sampledodge"){
+    # If anything but a sampledodge tree, return now without further decorations.
+    return(p)
+  }
+  ########################################
+  # Sample Dodge Section
+  # Special words, c("Sample", "Abundance", "OTU")
+  # See psmelt()
+  ########################################
+  # Initialize the species/taxa/OTU data.table
+  specDT = treeSegs$edgeDT[!is.na(OTU), ]
+  # Merge with psmelt() result, to make all co-variables available
+  specDT = merge(x=specDT, y=data.table(psmelt(physeq), key="OTU"), by="OTU")
+  # Remove 0 Abundance value entries
+  specDT <- specDT[Abundance > 0, ]
+  # Set key. Changes `specDT` in place. OTU is first key, always.
+  if( !is.null(color) | !is.null(shape) | !is.null(size) ){
+    # If color, shape, or size is chosen, setkey by those as well
+    setkeyv(specDT, col=c("OTU", color, shape, size))
+  } else {
+    # Else, set key by OTU and sample name. 
+    setkey(specDT, OTU, Sample)
+  }
+  # Add sample-dodge horizontal adjustment index. In-place data.table assignment
+  specDT[, h.adj.index := 1:length(xright), by=OTU]
+  # `base.spacing` is a user-input parameter.
+  # The sampledodge step size is based on this and the max `x` value
+  specDT[, xdodge := xright + h.adj.index * base.spacing * max(xright, na.rm=TRUE)]
+  # The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
+  tip.map <- aes_string(x="xdodge", y="y",
+                        color=color, fill=color,
+                        shape=shape, size=size)
+  p <- p + geom_point(tip.map, data=specDT, na.rm=TRUE)
+  # Adjust point size transform
+  if( !is.null(size) ){
+    p <- p + scale_size_continuous(trans=log_trans(sizebase))
+  }  
+  # Optionally-add abundance value label to each point.
+  # User controls this by the `min.abundance` parameter.
+  # A value of `Inf` implies no labels.
+  if( any(specDT$Abundance >= min.abundance[1]) ){
+    pointlabdf = specDT[Abundance>=min.abundance[1], ]
+    p <- p + geom_text(mapping=aes(xdodge, y, label=Abundance),
+                       data=pointlabdf, size=text.size, na.rm=TRUE)
+  }
+  # If indicated, add the species labels to the right of dodged points.
+  if(!is.null(label.tips)){
+    # labdf has only one row per tip, the farthest horizontal
+    # adjusted position (one for each taxa)
+    specDT[, xfartiplab:=max(xdodge), by=OTU]
+    labdf = specDT[, max(xdodge), by=OTU]
+    setnames(labdf, "V1", "xdodge")
+    labdf <- specDT[labdf, , mult="last"]
+    # Create the tip-label aesthetic map.
+    label.map <- aes_string(x="xfartiplab", y="y", label=label.tips)
+    # Add labels layer to plotting object.
+    p <- p + geom_text(label.map, data=labdf, size=I(text.size), 
+                       hjust=-0.1, na.rm=TRUE)
+  } 
+  # Plot margins. 
+  # Adjust the tree graphic plot margins.
+  # Helps to manually ensure that graphic elements aren't clipped,
+  # especially when there are long tip labels.
+  min.x <- -0.01 # + specDT[, min(c(xleft))]
+  max.x <- specDT[, max(xright, na.rm=TRUE)]
+  if("xdodge" %in% names(specDT)){
+    max.x <- specDT[, max(xright, xdodge, na.rm=TRUE)]
+  }
+  if(plot.margin > 0){
+    max.x <- max.x * (1.0 + plot.margin)
+  } 
+  p <- p + scale_x_continuous(limits=c(min.x, max.x))  
+  return(p)
 }
 ################################################################################
 ################################################################################
