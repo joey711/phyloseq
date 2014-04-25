@@ -2,11 +2,12 @@
 \alias{plot_tree}
 \title{Plot a phylogenetic tree with optional annotations}
 \usage{
-  plot_tree(physeq, method="sampledodge", nodelabf=NULL,
-  color=NULL, shape=NULL, size=NULL, min.abundance=Inf,
-  label.tips=NULL, text.size=NULL, sizebase=5,
-  base.spacing=0.02, ladderize=FALSE, plot.margin=0.2,
-  title=NULL)
+  plot_tree(physeq, method = "sampledodge", nodelabf =
+  NULL, color = NULL, shape = NULL, size = NULL,
+  min.abundance = Inf, label.tips = NULL, text.size = NULL,
+  sizebase = 5, base.spacing = 0.02, ladderize = FALSE,
+  plot.margin = 0.2, title = NULL, treetheme = NULL,
+  justify = "jagged")
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
@@ -133,6 +134,14 @@
   default, minimal-annotations theme. If anything other
   than a them or \code{NULL}, the current global ggplot2
   theme will result.}
+
+  \item{justify}{(Optional). A character string indicating
+  the type of justification to use on dodged points and tip
+  labels. A value of \code{"jagged"}, the default, results
+  in these tip-mapped elements being spaced as close to the
+  tips as possible without gaps. Currently, any other value
+  for \code{justify} results in a left-justified
+  arrangement of both labels and points.}
 }
 \value{
   A \code{\link{ggplot}}2 plot.
@@ -161,19 +170,11 @@
   possible.
 }
 \details{
-  This function received a development contribution from
-  the work of Gregory Jordan for the \code{ggphylo}
-  package, which provides tools for rendering a
-  phylogenetic tree in \code{\link{ggplot2}} graphics. That
-  package is not currently available from CRAN or
-  Bioconductor, but is available in development (roughly
-  ``beta'') form from GitHub. Furthermore, although
-  \code{ggphylo} awesomely supports radial and unrooted
-  trees, \code{plot_tree} currently only supports
-  ``standard'' square-horizontal trees. Additional support
-  for these types of features (like radial trees) is
-  planned. Send us development feedback if this is a
-  feature you really want to have soon.
+  This function received an early development contribution
+  from the work of Gregory Jordan via
+  \href{https://github.com/gjuggler/ggphylo}{the ggphylo
+  package}. \code{plot_tree} has since been re-written. For
+  details see \code{\link{tree_layout}}.
 }
 \examples{
 # # Using plot_tree() with the esophagus dataset.
@@ -190,12 +191,6 @@ plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 }
 \seealso{
   \code{\link{plot.phylo}}
-
-  This function is a special use-case that relies on code
-  borrowed directly, with permission, from the
-  not-yet-officially-released package, \code{ggphylo},
-  currently only available from GitHub at:
-  \url{https://github.com/gjuggler/ggphylo}
 
   There are many useful examples of phyloseq tree graphics
   in the

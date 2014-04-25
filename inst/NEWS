@@ -15,13 +15,17 @@ USER-VISIBLE CHANGES
 
 		- Efficient `data.table` consolidated graphic data passed to ggplot2
 
+		- Additional arguments: `treetheme` and `justify`
+
 	- `tree_layout` - new, user-accessible function
 
 		- for building alternative trees from phyloseq data.
 
-	- Foundation for solving Issue 313
+	- Foundation for solving Issue 313 and Issue 331
 
 		- https://github.com/joey711/phyloseq/issues/313
+
+		- https://github.com/joey711/phyloseq/issues/331
 
 CHANGES IN VERSION 1.9.2
 -------------------------

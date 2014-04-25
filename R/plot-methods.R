@@ -1636,20 +1636,10 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' feature of the data. One of the goals of the \code{\link{phyloseq-package}}
 #' is to make the determination of these features/settings as easy as possible.
 #'
-#' This function received a development contribution from the work of 
-#' Gregory Jordan for the \code{ggphylo} package, which provides tools for 
-#' rendering a phylogenetic tree in \code{\link{ggplot2}} graphics. That package
-#' is not currently available from CRAN or Bioconductor, but is available 
-#' in development (roughly ``beta'') form from GitHub. 
-#' Furthermore, although \code{ggphylo} awesomely supports radial and unrooted trees, 
-#' \code{plot_tree} currently only supports ``standard'' square-horizontal trees.
-#' Additional support for these types of features (like radial trees)
-#' is planned. Send us development feedback if this is a feature you really
-#' want to have soon.
-#'
-#' @usage plot_tree(physeq, method="sampledodge", nodelabf=NULL, color=NULL, shape=NULL, size=NULL,
-#'  min.abundance=Inf, label.tips=NULL, text.size=NULL, sizebase=5, base.spacing=0.02,
-#' 	ladderize=FALSE, plot.margin=0.2, title=NULL)
+#' This function received an early development contribution from the work of 
+#' Gregory Jordan via \href{https://github.com/gjuggler/ggphylo}{the ggphylo package}.
+#' \code{plot_tree} has since been re-written.
+#' For details see \code{\link{tree_layout}}.
 #'
 #' @param physeq (Required). The data about which you want to 
 #'  plot and annotate a phylogenetic tree, in the form of a
@@ -1769,17 +1759,19 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #'  A value of \code{NULL} uses a default, minimal-annotations theme. 
 #'  If anything other than a them or \code{NULL}, the current global ggplot2
 #'  theme will result.
+#'  
+#' @param justify (Optional). A character string indicating the
+#'  type of justification to use on dodged points and tip labels. 
+#'  A value of \code{"jagged"}, the default, results in 
+#'  these tip-mapped elements being spaced as close to the tips as possible
+#'  without gaps. 
+#'  Currently, any other value for \code{justify} results in
+#'  a left-justified arrangement of both labels and points.
 #'
 #' @return A \code{\link{ggplot}}2 plot.
 #' 
 #' @seealso
 #'  \code{\link{plot.phylo}}
-#'
-#' This function is a special use-case that relies 
-#' on code borrowed directly, with permission, from the
-#' not-yet-officially-released package, \code{ggphylo}, currently only
-#' available from GitHub at:
-#' \url{https://github.com/gjuggler/ggphylo}
 #'
 #' There are many useful examples of phyloseq tree graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
@@ -1807,7 +1799,23 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
                        min.abundance=Inf, label.tips=NULL, text.size=NULL,
                        sizebase=5, base.spacing = 0.02,
                        ladderize=FALSE, plot.margin=0.2, title=NULL,
-                       treetheme=NULL){
+                       treetheme=NULL, justify="jagged"){
+  ########################################
+  # Support mis-capitalization of reserved variable names in color, shape, size
+  # This helps, for instance, with backward-compatibility where "abundance"
+  # was the reserved variable name for mapping OTU abundance entries
+  fix_reserved_vars = function(aesvar){
+    aesvar <- gsub("^abundance[s]{0,}$", "Abundance", aesvar, ignore.case=TRUE)
+    aesvar <- gsub("^OTU[s]{0,}$", "OTU", aesvar, ignore.case=TRUE)
+    aesvar <- gsub("^taxa_name[s]{0,}$", "OTU", aesvar, ignore.case=TRUE)
+    aesvar <- gsub("^sample[s]{0,}$", "Sample", aesvar, ignore.case=TRUE)
+    return(aesvar)
+  }
+  if(!is.null(label.tips)){label.tips <- fix_reserved_vars(label.tips)}
+  if(!is.null(color)){color <- fix_reserved_vars(color)}
+  if(!is.null(shape)){shape <- fix_reserved_vars(shape)}
+  if(!is.null(size) ){size  <- fix_reserved_vars(size)} 
+  ########################################
   if( is.null(phy_tree(physeq, FALSE)) ){
     stop("There is no phylogenetic tree in the object you have provided.\n",
          "Try phy_tree(physeq) to see for yourself.")
@@ -1833,8 +1841,22 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
   if(!is.null(label.tips) & method!="sampledodge"){
     # If method is sampledodge, then labels are added to the right of points, later.
     # Add labels layer to plotting object.
-    p <- p + geom_text(aes(x=xright, y=y, label=OTU), data=treeSegs$edgeDT[!is.na(OTU), ],
-                       size=I(text.size), hjust=-0.1, na.rm=TRUE)
+    labelDT = treeSegs$edgeDT[!is.na(OTU), ]
+    if(!is.null(tax_table(object=physeq, errorIfNULL=FALSE))){
+      # If there is a taxonomy available, merge it with the label data.table
+      taxDT = data.table(tax_table(physeq), OTU=taxa_names(physeq), key="OTU")
+      # Merge with taxonomy.
+      labelDT = merge(x=labelDT, y=taxDT, by="OTU")
+    }
+    if(justify=="jagged"){
+      # Tip label aesthetic mapping.
+      # Aesthetics can be NULL, and that aesthetic gets ignored.
+      labelMap <- aes_string(x="xright", y="y", label=label.tips, color=color)
+    } else {
+      # The left-justified version of tip-labels.
+      labelMap <- aes_string(x="max(xright, na.rm=TRUE)", y="y", label=label.tips, color=color)
+    }
+    p <- p + geom_text(labelMap, data=labelDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
   }
   # Node label section.
   # 
@@ -1880,29 +1902,37 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
   # See psmelt()
   ########################################
   # Initialize the species/taxa/OTU data.table
-  specDT = treeSegs$edgeDT[!is.na(OTU), ]
+  dodgeDT = treeSegs$edgeDT[!is.na(OTU), ]
   # Merge with psmelt() result, to make all co-variables available
-  specDT = merge(x=specDT, y=data.table(psmelt(physeq), key="OTU"), by="OTU")
-  # Remove 0 Abundance value entries
-  specDT <- specDT[Abundance > 0, ]
-  # Set key. Changes `specDT` in place. OTU is first key, always.
+  dodgeDT = merge(x=dodgeDT, y=data.table(psmelt(physeq), key="OTU"), by="OTU")
+  if(justify=="jagged"){
+    # Remove 0 Abundance value entries now, not later, for jagged.
+    dodgeDT <- dodgeDT[Abundance > 0, ]    
+  }
+  # Set key. Changes `dodgeDT` in place. OTU is first key, always.
   if( !is.null(color) | !is.null(shape) | !is.null(size) ){
     # If color, shape, or size is chosen, setkey by those as well
-    setkeyv(specDT, col=c("OTU", color, shape, size))
+    setkeyv(dodgeDT, cols=c("OTU", color, shape, size))
   } else {
     # Else, set key by OTU and sample name. 
-    setkey(specDT, OTU, Sample)
+    setkey(dodgeDT, OTU, Sample)
   }
   # Add sample-dodge horizontal adjustment index. In-place data.table assignment
-  specDT[, h.adj.index := 1:length(xright), by=OTU]
+  dodgeDT[, h.adj.index := 1:length(xright), by=OTU]
   # `base.spacing` is a user-input parameter.
   # The sampledodge step size is based on this and the max `x` value
-  specDT[, xdodge := xright + h.adj.index * base.spacing * max(xright, na.rm=TRUE)]
+  if(justify=="jagged"){
+    dodgeDT[, xdodge:=(xright + h.adj.index * base.spacing * max(xright, na.rm=TRUE))]
+  } else {
+    # Left-justified version, `xdodge` always starts at the max of all `xright` values.
+    dodgeDT[, xdodge := max(xright, na.rm=TRUE) + h.adj.index * base.spacing * max(xright, na.rm=TRUE)]
+    # zeroes removed only after all sample points have been mapped.
+    dodgeDT <- dodgeDT[Abundance > 0, ]
+  }
   # The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
-  tip.map <- aes_string(x="xdodge", y="y",
-                        color=color, fill=color,
+  dodgeMap <- aes_string(x="xdodge", y="y", color=color, fill=color,
                         shape=shape, size=size)
-  p <- p + geom_point(tip.map, data=specDT, na.rm=TRUE)
+  p <- p + geom_point(dodgeMap, data=dodgeDT, na.rm=TRUE)
   # Adjust point size transform
   if( !is.null(size) ){
     p <- p + scale_size_continuous(trans=log_trans(sizebase))
@@ -1910,33 +1940,40 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
   # Optionally-add abundance value label to each point.
   # User controls this by the `min.abundance` parameter.
   # A value of `Inf` implies no labels.
-  if( any(specDT$Abundance >= min.abundance[1]) ){
-    pointlabdf = specDT[Abundance>=min.abundance[1], ]
+  if( any(dodgeDT$Abundance >= min.abundance[1]) ){
+    pointlabdf = dodgeDT[Abundance>=min.abundance[1], ]
     p <- p + geom_text(mapping=aes(xdodge, y, label=Abundance),
                        data=pointlabdf, size=text.size, na.rm=TRUE)
   }
   # If indicated, add the species labels to the right of dodged points.
   if(!is.null(label.tips)){
-    # labdf has only one row per tip, the farthest horizontal
+    # `tiplabDT` has only one row per tip, the farthest horizontal
     # adjusted position (one for each taxa)
-    specDT[, xfartiplab:=max(xdodge), by=OTU]
-    labdf = specDT[, max(xdodge), by=OTU]
-    setnames(labdf, "V1", "xdodge")
-    labdf <- specDT[labdf, , mult="last"]
-    # Create the tip-label aesthetic map.
-    label.map <- aes_string(x="xfartiplab", y="y", label=label.tips)
+    tiplabDT = dodgeDT
+    tiplabDT[, xfartiplab:=max(xdodge), by=OTU]
+    tiplabDT <- tiplabDT[h.adj.index==1, .SD, by=OTU]
+    if(!is.null(color)){
+      if(color %in% sample_variables(physeq, errorIfNULL=FALSE)){
+        color <- NULL
+      }
+    }
+    labelMap <- NULL
+    if(justify=="jagged"){
+      labelMap <- aes_string(x="xfartiplab", y="y", label=label.tips, color=color)
+    } else {
+      labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)", y="y", label=label.tips, color=color)
+    }
     # Add labels layer to plotting object.
-    p <- p + geom_text(label.map, data=labdf, size=I(text.size), 
-                       hjust=-0.1, na.rm=TRUE)
+    p <- p + geom_text(labelMap, tiplabDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
   } 
   # Plot margins. 
   # Adjust the tree graphic plot margins.
   # Helps to manually ensure that graphic elements aren't clipped,
   # especially when there are long tip labels.
-  min.x <- -0.01 # + specDT[, min(c(xleft))]
-  max.x <- specDT[, max(xright, na.rm=TRUE)]
-  if("xdodge" %in% names(specDT)){
-    max.x <- specDT[, max(xright, xdodge, na.rm=TRUE)]
+  min.x <- -0.01 # + dodgeDT[, min(c(xleft))]
+  max.x <- dodgeDT[, max(xright, na.rm=TRUE)]
+  if("xdodge" %in% names(dodgeDT)){
+    max.x <- dodgeDT[, max(xright, xdodge, na.rm=TRUE)]
   }
   if(plot.margin > 0){
     max.x <- max.x * (1.0 + plot.margin)
