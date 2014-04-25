@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.9.4
+-------------------------
+
+BUG FIXES
+
+	- `rarefy_even_depth()` function no longer enforces an orientation.
+
+	- It used to always coerce to OTU-by-sample orientation.
+
+	- Solves Issue 320 https://github.com/joey711/phyloseq/issues/320
+
 CHANGES IN VERSION 1.9.3
 -------------------------
 

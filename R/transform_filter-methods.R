@@ -189,6 +189,9 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
       newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
     }
   }
+  # If the OTU table was transposed before rarefaction, transpose it
+  # back to the way it was in the original physeq object.
+  if(!taxa_are_rows(physeq)){newsub <- t(newsub)}
 	return(newsub)
 }
 ################################################################################
