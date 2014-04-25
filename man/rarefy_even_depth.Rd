@@ -67,19 +67,24 @@
   recent popularity. Our justifications for using
   alternative approaches to address disparities in library
   sizes have been made available as
-  \href{http://arxiv.org/abs/1310.0424}{an article in the
-  quantitative-biology sub-arXiv} ahead of peer-reviewed
-  publication. See \code{\link{phyloseq_to_deseq2}} for a
-  recommended alternative to rarefying. Nevertheless, for
-  comparison and demonstration, the rarefying procedure is
-  implemented here in good faith and with options we hope
-  are useful. This function uses the standard R
+  \href{http://dx.plos.org/10.1371/journal.pcbi.1003531}{an
+  article in PLoS Computational Biology}. See
+  \code{\link{phyloseq_to_deseq2}} for a recommended
+  alternative to rarefying directly supported in the
+  phyloseq package, as well as
+  \href{http://joey711.github.io/waste-not-supplemental/}{the
+  supplemental materials for the PLoS-CB article} and
+  \href{http://joey711.github.io/phyloseq-extensions}{the
+  phyloseq extensions repository on GitHub}. Nevertheless,
+  for comparison and demonstration, the rarefying procedure
+  is implemented here in good faith and with options we
+  hope are useful. This function uses the standard R
   \code{\link{sample}} function to resample from the
-  abundance values in the \code{otu_table} component of the
-  first argument, \code{physeq}. Often one of the major
-  goals of this procedure is to achieve parity in total
-  number of counts between samples, as an alternative to
-  other formal normalization procedures, which is why a
+  abundance values in the \code{\link{otu_table}} component
+  of the first argument, \code{physeq}. Often one of the
+  major goals of this procedure is to achieve parity in
+  total number of counts between samples, as an alternative
+  to other formal normalization procedures, which is why a
   single value for the \code{sample.size} is expected. This
   kind of resampling can be performed with and without
   replacement, with replacement being the more
@@ -92,7 +97,7 @@
 }
 \details{
   This approach is sometimes mistakenly called
-  "rarefaction", which
+  ``rarefaction'', which
   \href{http://en.wikipedia.org/wiki/Rarefaction}{in
   physics refers to a form of wave decompression;} but in
   this context, ecology, the term refers to a
