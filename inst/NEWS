@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.9.5
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `microbio_me_qiime` function now handles string study number for first argument.
+
+		This is in addition to numeric study number, already supported.
+
+
 CHANGES IN VERSION 1.9.4
 -------------------------
 
