@@ -335,6 +335,16 @@ test_that("plot_richness: Standard plots work", {
   expect_equivalent(levels(p$data$variable), c("Observed", "Chao1"))
 })
 
+test_that("plot_richness: sortby argument works correctly", {
+  data("soilrep")
+  p = plot_richness(soilrep)
+  expect_is(p, "ggplot")
+  p = plot_richness(soilrep, sortby="Treatment") #sample data
+  expect_is(p, "ggplot")
+  p = plot_richness(soilrep, sortby="Chao1") #sample data
+  expect_is(p, "ggplot")
+})
+
 test_that("plot_richness/estimate_richness: fisher.alpha", {
   data("GlobalPatterns")
   data("soilrep")

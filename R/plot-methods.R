@@ -341,6 +341,10 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  Values must be among those supported:
 #'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
+#' @param sortby (Optional). Default is \code{NULL}, meaning that samples will be displayed
+#'  in alphabetical order. Alternatively, you can specify one of the sample data columns or
+#'  one of the richness metrics specified by "measures".
+#'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
 #' 
@@ -366,9 +370,9 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' data("GlobalPatterns")
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
-#' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3,sortbyobserved=TRUE)
+#' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3, sortby = "Chao1")
 plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
-                          scales="free_y", nrow=1, shsi=NULL, measures=NULL, sortbyobserved=FALSE){ 
+                          scales="free_y", nrow=1, shsi=NULL, measures=NULL, sortby=NULL){ 
   
   # Calculate the relevant alpha-diversity measures
   erDF = estimate_richness(physeq, split=TRUE, measures=measures)
@@ -451,16 +455,17 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
 	# map variables
 	richness_map <- aes_string(x=x, y="value", color=color, shape=shape)		
 	
-  #sort prior to plotting
-  if( sortbyobserved == TRUE){
-    #use levels from ordered dataframe as discrete x-scale
-    ob <- mdf[ mdf$variable == 'Observed', ]
-    ob <- transform(ob, samples = reorder(samples,value)) 
-    p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE) + scale_x_discrete(limits=levels(ob$samples))
+  # Sort by Column
+  if( !is.null(sortby)){
+   if(sortby %in% names(DF)){
+      # DF has sample_data and richness measurements
+      DF <- transform(DF, samples = reorder(samples, DF[, sortby ] )) 
+      p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE) + scale_x_discrete(limits=levels(DF$samples))    
+    }else {print("This is an invalid value for sortby. sortby must be a distance measure or sample_data column")}
   }else{
-    # Make the ggplot.
-    p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)
-  }
+  # Make the ggplot.
+  p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)
+}
   
   # Add error bars if mdf$se is not all NA
   if( any(!is.na(mdf[, "se"])) ){
