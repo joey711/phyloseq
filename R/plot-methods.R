@@ -341,9 +341,11 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  Values must be among those supported:
 #'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 #'
-#' @param sortby (Optional). Default is \code{NULL}, meaning that samples will be displayed
-#'  in alphabetical order. Alternatively, you can specify one of the sample data columns or
-#'  one of the richness metrics specified by "measures".
+#' @param sortby (Optional). A character string subset of \code{measures} argument.
+#'  Sort x-indices by the mean of one or more \code{measures},
+#'  if x-axis is mapped to a discrete variable.
+#'  Default is \code{NULL}, implying that a discrete-value horizontal axis
+#'  will use default sorting, usually alphabetic. 
 #'
 #' @return A \code{\link{ggplot}} plot object summarizing
 #'  the richness estimates, and their standard error.
@@ -360,6 +362,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'
 #' @import ggplot2
 #' @import reshape2
+#' @importFrom plyr is.discrete
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
@@ -371,9 +374,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3, sortby = "Chao1")
-plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
+plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
                           scales="free_y", nrow=1, shsi=NULL, measures=NULL, sortby=NULL){ 
-  
   # Calculate the relevant alpha-diversity measures
   erDF = estimate_richness(physeq, split=TRUE, measures=measures)
   # Measures may have been renamed in `erDF`. Replace it with the name from erDF
@@ -382,7 +384,6 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
   ses = colnames(erDF)[grep("^se\\.", colnames(erDF))]
   # Remove any S.E. from `measures`
   measures = measures[!measures %in% ses]
-  
 	# Make the plotting data.frame.
   # This coerces to data.frame, required for reliable output from reshape2::melt()
   if( !is.null(sample_data(physeq, errorIfNULL=FALSE)) ){
@@ -392,12 +393,10 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
     # If no sample data, leave it out.
     DF <- data.frame(erDF)
   }
-	
 	if( !"samples" %in% colnames(DF) ){
 	  # If there is no "samples" variable in DF, add it
 		DF$samples <- sample_names(physeq)
 	}
-	
 	# sample_names used to be default, and should also work.
 	# #backwardcompatibility
 	if( !is.null(x) ){
@@ -408,12 +407,10 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
     # If x was NULL for some reason, set it to "samples"
 	  x <- "samples"
 	}
-  
 	# melt to display different alpha-measures separately
 	mdf = melt(DF, measure.vars=measures)
   # Initialize the se column. Helpful even if not used.
   mdf$se <- NA_integer_
-
   if( length(ses) > 0 ){
     ## Merge s.e. into one "se" column
     # Define conversion vector, `selabs`
@@ -432,7 +429,6 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
     # prune the redundant columns
     mdf <- mdf[, -which(colnames(mdf) %in% c(selabs, "wse"))]
   }
-
   ## Interpret measures
   # If not provided (default), keep all 
   if( !is.null(measures) ){
@@ -441,51 +437,50 @@ plot_richness <- function(physeq, x="samples", color=NULL, shape=NULL, title=NUL
       mdf <- mdf[as.character(mdf$variable) %in% measures, ]
     } else {
       # Else, print warning about bad option choice for measures, keeping all.
-      warning("Argument to `measures` not supported. All alpha-diversity measures included in plot.")
+      warning("Argument to `measures` not supported. All alpha-diversity measures (should be) included in plot.")
     }
   }
-  
 	if( !is.null(shsi) ){
     # Deprecated:
     # If shsi is anything but NULL, print a warning about its being deprecated
 		warning("shsi no longer supported option in plot_richness. Please use `measures` instead")
 	}
-	
-  
 	# map variables
-	richness_map <- aes_string(x=x, y="value", color=color, shape=shape)		
-	
-  # Sort by Column
-  if( !is.null(sortby)){
-   if(sortby %in% names(DF)){
-      # DF has sample_data and richness measurements
-      DF <- transform(DF, samples = reorder(samples, DF[, sortby ] )) 
-      p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE) + scale_x_discrete(limits=levels(DF$samples))    
-    }else {print("This is an invalid value for sortby. sortby must be a distance measure or sample_data column")}
-  }else{
+	richness_map = aes_string(x=x, y="value", colour=color, shape=shape)
   # Make the ggplot.
-  p <- ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)
-}
-  
+  p = ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)
+  # Address sortby argument
+  if(!is.null(sortby)){
+    if(!all(sortby %in% levels(mdf$variable))){
+      warning("`sortby` argument not among `measures`. Ignored.")
+    }
+    if(!is.discrete(mdf[, x])){
+      warning("`sortby` argument provided, but `x` not a discrete variable. `sortby` is ignored.")
+    }
+    if(all(sortby %in% levels(mdf$variable)) & is.discrete(mdf[, x])){
+      # Replace x-factor with same factor that has levels re-ordered according to `sortby`
+      wh.sortby = which(mdf$variable %in% sortby)
+      mdf[, x] <- factor(mdf[, x],
+                         levels = names(sort(tapply(X = mdf[wh.sortby, "value"],
+                                                    INDEX = mdf[wh.sortby, x],
+                                                    mean,
+                                                    na.rm=TRUE, simplify = TRUE))))
+    }
+  }
   # Add error bars if mdf$se is not all NA
   if( any(!is.na(mdf[, "se"])) ){
     p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.1) 
   }
-
   # Rotate horizontal axis labels, and adjust
 	p = p + theme(axis.text.x=element_text(angle=-90, vjust=0.5, hjust=0))
-	
 	# Add y-label 
 	p = p + ylab('Alpha Diversity Measure') 
-
   # Facet wrap using user-options
 	p = p + facet_wrap(~variable, nrow=nrow, scales=scales)
-		
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
 		p <- p + ggtitle(title)
 	}
-	
 	return(p)
 }
 ################################################################################
