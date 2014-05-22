@@ -445,11 +445,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
     # If shsi is anything but NULL, print a warning about its being deprecated
 		warning("shsi no longer supported option in plot_richness. Please use `measures` instead")
 	}
-	# map variables
-	richness_map = aes_string(x=x, y="value", colour=color, shape=shape)
-  # Make the ggplot.
-  p = ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)
-  # Address sortby argument
+  # Address `sortby` argument
   if(!is.null(sortby)){
     if(!all(sortby %in% levels(mdf$variable))){
       warning("`sortby` argument not among `measures`. Ignored.")
@@ -467,6 +463,10 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
                                                     na.rm=TRUE, simplify = TRUE))))
     }
   }
+  # Define variable mapping
+  richness_map = aes_string(x=x, y="value", colour=color, shape=shape)
+  # Make the ggplot.
+  p = ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)  
   # Add error bars if mdf$se is not all NA
   if( any(!is.na(mdf[, "se"])) ){
     p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.1) 
