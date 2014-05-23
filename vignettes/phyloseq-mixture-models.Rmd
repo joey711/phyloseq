@@ -3,7 +3,7 @@
 %\VignetteIndexEntry{phyloseq and DESeq2 on Colorectal Cancer Data}
 -->
 `r library("knitr")`
-`r opts_chunk$set(cache=FALSE, fig.width=9)`
+`r opts_chunk$set(cache=FALSE, fig.width=9, message=FALSE, warning=FALSE)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # Example using Negative Binomial in Microbiome Differential Abundance Testing
@@ -26,8 +26,7 @@ Study Abstract:	The tumor microenvironment of colorectal carcinoma is a complex 
 Start by loading phyloseq.
 
 ```{r load-phyloseq, message=FALSE, warning=FALSE}
-library("phyloseq")
-packageVersion("phyloseq")
+library("phyloseq"); packageVersion("phyloseq")
 ```
 
 Defined file path, and import the published OTU count data into R.
@@ -66,15 +65,14 @@ head(sample_data(kostic)$DIAGNOSIS, 25)
 First load DESeq2.
 
 ```{r deseq2, message=FALSE, warning=FALSE}
-library("DESeq2")
-packageVersion("DESeq2")
+library("DESeq2"); packageVersion("DESeq2")
 ```
 
 The following two lines actually do all the complicated DESeq2 work. The function `phyloseq_to_deseq2` converts your phyloseq-format microbiome data into a `DESeqDataSet` with dispersions estimated, using the experimental design formula, also shown (the `~DIAGNOSIS` term). The `DESeq` function does the rest of the testing, in this case with default testing framework, but you can actually use alternatives. 
 
 ```{r run-deseq2}
 diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
-diagdds = DESeq(diagdds)#, fitType="local")
+diagdds = DESeq(diagdds, fitType="local")
 ```
 Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
 
@@ -126,7 +124,7 @@ sigtabgen$Phylum = factor(as.character(sigtabgen$Phylum), levels=names(x))
 x = tapply(sigtabgen$log2FoldChange, sigtabgen$Genus, function(x) max(x))
 x = sort(x, TRUE)
 sigtabgen$Genus = factor(as.character(sigtabgen$Genus), levels=names(x))
-ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, fill=Phylum)) + geom_point(size=6) + 
+ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, color=Phylum)) + geom_point(size=6) + 
   theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
 ```
 
