@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.9.6
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- New `sortby` argument in `plot_richness` function.
+
+	- Sort discrete x by one or more alpha-diversity measures
+
+	- Solves [Issue 342](https://github.com/joey711/phyloseq/issues/342)
+
+	- Resolves/merges [Pull 343](https://github.com/joey711/phyloseq/pull/343) 
+
 CHANGES IN VERSION 1.9.5
 -------------------------
 
@@ -6,7 +19,6 @@ USER-VISIBLE CHANGES
 	- `microbio_me_qiime` function now handles string study number for first argument.
 
 		This is in addition to numeric study number, already supported.
-
 
 CHANGES IN VERSION 1.9.4
 -------------------------
