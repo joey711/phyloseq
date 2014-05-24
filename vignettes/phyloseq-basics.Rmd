@@ -3,7 +3,7 @@
 %\VignetteIndexEntry{phyloseq basics vignette}
 -->
 `r library("knitr")`
-`r opts_chunk$set(cache=FALSE, fig.width=9)`
+`r opts_chunk$set(cache=FALSE, fig.width=9, message=FALSE, warning=FALSE)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # Basic storage, access, and manipulation of phylogenetic sequencing data with *phyloseq*
