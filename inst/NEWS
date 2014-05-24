@@ -1,11 +1,22 @@
+CHANGES IN VERSION 1.9.8
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `mt` includes other corrections, FDR by default.
+
+	- Resolves [Issue 59](https://github.com/joey711/phyloseq/issues/59)
+
 CHANGES IN VERSION 1.9.7
 -------------------------
 
 BUG FIXES
 
-	- Resolves [Issue 347](https://github.com/joey711/phyloseq/issues/347) 
+	- Now requires ggplot2 version 1.0.0
 
-	- Resolves/merges [Pull 343](https://github.com/joey711/phyloseq/pull/343) 
+	- Fixes bug in which ggplot 1.0 breaks in a phyloseq vignette 
+
+	- Resolves [Issue 347](https://github.com/joey711/phyloseq/issues/347) 
 
 CHANGES IN VERSION 1.9.6
 -------------------------
