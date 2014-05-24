@@ -3,7 +3,7 @@
 %\VignetteIndexEntry{phyloseq analysis vignette}
 -->
 `r library("knitr")`
-`r opts_chunk$set(cache=TRUE, fig.width=9)`
+`r opts_chunk$set(cache=FALSE, fig.width=9, message=FALSE, warning=FALSE)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # Vignette for phyloseq: Analysis of high-throughput microbiome census data
@@ -117,7 +117,7 @@ GP.chl <- subset_taxa(GP, Phylum=="Chlamydiae")
 And now we will create the tree graphic form this subset of [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107), shading by the "`SampleType" variable, which indicates the environment category from which the microbiome samples originated.  The following command also takes the option of labeling the number of individuals observed in each sample (if at all) of each taxa. The symbols are slightly enlarged as the number of individuals increases.
 
 ```{r GP-chl-tree, fig.width=15, fig.height=7, message=FALSE, warning=FALSE}
-plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance")
+plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="Abundance")
 ```
 Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the "Global Patterns" dataset([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)).
 
@@ -274,8 +274,8 @@ Scree plot of the PCoA used to create Figure 5 from the "Global Patterns" articl
 Next, we will reproduce Figure 5 from the "Global Patterns" article([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)), but separating the three axes into 2 plots using `plot_ordination()`.
 
 ```{r GPfig5ax1213}
-(p12 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", color="SampleType") +
-  geom_line() + geom_point(size=5) + scale_colour_hue(legend = FALSE) )
+(p12 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", color="SampleType") + 
+  geom_point(size=5) + geom_path() + scale_colour_hue(guide = FALSE) )
 (p13 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", axes=c(1, 3),
   color="SampleType") + geom_line() + geom_point(size=5) )
 ```
@@ -345,7 +345,7 @@ We will now investigate further this top-level structure of the data, using an a
 ```{r GPCAspecplot0}
 p1  <- plot_ordination(GP, gpca, "species", color="Phylum")
 (p1 <- ggplot(p1$data, p1$mapping) + geom_point(size=5, alpha=0.5) + 
-  facet_wrap(~Phylum) + scale_colour_hue(legend = FALSE) )
+  facet_wrap(~Phylum) +  scale_colour_hue(guide = FALSE) )
 ```
 
 Species plot of the "Global Patterns" correspondence analysis first two axes, with each phylum on a different panel ("facet"). Only the most abundant 5 phyla among the most abundant 200 taxa (cumulative, all samples) are included. Arbitrary reduction, for computational efficiency of example.
@@ -354,7 +354,7 @@ Let's try drawing the figure again, only this time summarizing the species point
 
 ```{r GPCAspecplotTopo0}
 (p3 <- ggplot(p1$data, p1$mapping) + geom_density2d() +
-  facet_wrap(~Phylum) + scale_colour_hue(legend = FALSE) )
+  facet_wrap(~Phylum) +  scale_colour_hue(guide = FALSE) )
 ```
 Redrawn figure, which is severely overplotted, as a 2-dimensional species-density topographic map, faceted in the same way.
 
@@ -369,7 +369,7 @@ mdf <- melt(p1$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")],
 LF <- subset(mdf, variable=="CA2" & value < -1.0)
 # build plot: boxplot summaries of each CA-axis, with labels
 p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
-  facet_wrap(~variable, 2) + scale_colour_hue(legend = FALSE) +
+  facet_wrap(~variable, 2) + scale_colour_hue(guide = FALSE) +
   theme_bw() + theme( axis.text.x = element_text(angle = -90, hjust = 0) )
 # Add the text label layer, and render ggplot graphic
 (p <- p + geom_text(aes(Phylum, value+0.1, color=Phylum, label=Family), 
@@ -485,7 +485,7 @@ data(enterotype)
 # Filter samples that don't have Enterotype classification.
 x <- subset_samples(enterotype, !is.na(Enterotype))
 # Calculate the multiple-inference-adjusted P-values
-ent.p.table <- mt(x, "Enterotype", test="f")
+ent.p.table <- mt(x, "Enterotype", test="f", B=1000)
 print(head(ent.p.table, 10))
 ```
 

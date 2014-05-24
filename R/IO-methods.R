@@ -2042,14 +2042,15 @@ build_tax_table = function(taxlist){
 #' @param zipftp (Required). A character string that is the full URL
 #'  path to a zipped file that follows the file naming conventions used by 
 #'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
-#'  Alternatively, you can simply provide the study number,
-#'  as a single-length \code{\link{numeric}},
-#'  and this function will complete the remainder of the ftp URL hosted at
+#'  Alternatively, you can simply provide the study number
+#'  as a single \code{\link{integer}} or other single-length vector
+#'  that can be \code{\link{coerce}}d to an integer;
+#'  this function will complete the remainder of the ftp URL hosted at
 #'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
 #'  For example, instead of the full URL string, 
-#'  \code{"ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip"}, you could simply provide \code{494} as the `zipftp` argument.
-#'  Note that this is internally dispatching based on the class,
-#'  so \code{"494"} will not work (just leave off the quotes for study number-only).
+#'  \code{"ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip"},
+#'  you could simply provide \code{494} or \code{"494"}
+#'  as the first (`zipftp`) argument.
 #'  
 #'  @param ext (Optional). A \code{\link{character}} string of the expected
 #'   file extension, which also indicates the compression type,
@@ -2118,7 +2119,7 @@ build_tax_table = function(taxlist){
 microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengenes, ...){
 	# Define naming convention
 	front = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_"	
-	if( inherits(zipftp, "numeric") ){
+	if( !is.na(as.integer(zipftp)) ){
 		# If study number instead of string,
 		# create the ftp URL using ext and convention
 		back  = paste0("_split_library_seqs_and_mapping", ext)

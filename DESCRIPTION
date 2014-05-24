@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.9.2
-Date: 2014-04-18
+Version: 1.9.8
+Date: 2014-05-23
 Title: Handling and analysis of high-throughput microbiome
     census data.
 Description: phyloseq provides a set of classes and tools
@@ -20,7 +20,7 @@ Imports:
     data.table (>= 1.9.2),
     DESeq2 (>= 1.4.0),
     foreach (>= 1.4.2),
-    ggplot2 (>= 0.9.3.1),
+    ggplot2 (>= 1.0.0),
     igraph (>= 0.6.5.2),
     methods (>= 3.1.0),
     multtest (>= 2.16.0),

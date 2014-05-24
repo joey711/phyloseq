@@ -4,7 +4,7 @@
 \usage{
   plot_richness(physeq, x = "samples", color = NULL, shape
   = NULL, title = NULL, scales = "free_y", nrow = 1, shsi =
-  NULL, measures = NULL)
+  NULL, measures = NULL, sortby = NULL)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}},
@@ -77,6 +77,13 @@
   measure names. Values must be among those supported:
   \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson",
   "InvSimpson", "Fisher")}.}
+
+  \item{sortby}{(Optional). A character string subset of
+  \code{measures} argument. Sort x-indices by the mean of
+  one or more \code{measures}, if x-axis is mapped to a
+  discrete variable. Default is \code{NULL}, implying that
+  a discrete-value horizontal axis will use default
+  sorting, usually alphabetic.}
 }
 \value{
   A \code{\link{ggplot}} plot object summarizing the
@@ -120,6 +127,7 @@ plot_richness(soilrep, "Treatment", "warmed", measures=c("Chao1", "ACE", "InvSim
 data("GlobalPatterns")
 plot_richness(GlobalPatterns, x="SampleType", measures=c("InvSimpson"))
 plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
+plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3, sortby = "Chao1")
 }
 \seealso{
   \code{\link{estimate_richness}}

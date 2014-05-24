@@ -10,14 +10,16 @@
 #' as a normalization procedure, despite its recent popularity.
 #' Our justifications for using alternative approaches to address
 #' disparities in library sizes have been made available as 
-#' \href{http://arxiv.org/abs/1310.0424}{an article in the quantitative-biology sub-arXiv}
-#' ahead of peer-reviewed publication.
-#' See \code{\link{phyloseq_to_deseq2}} for a recommended alternative to rarefying.
+#' \href{http://dx.plos.org/10.1371/journal.pcbi.1003531}{an article in PLoS Computational Biology}.
+#' See \code{\link{phyloseq_to_deseq2}} for a recommended alternative to rarefying
+#' directly supported in the phyloseq package, as well as
+#' \href{http://joey711.github.io/waste-not-supplemental/}{the supplemental materials for the PLoS-CB article}
+#' and \href{http://joey711.github.io/phyloseq-extensions}{the phyloseq extensions repository on GitHub}.
 #' Nevertheless, for comparison and demonstration, the rarefying procedure is implemented
 #' here in good faith and with options we hope are useful.
 #' This function uses the standard R \code{\link{sample}} function to 
 #' resample from the abundance values 
-#' in the \code{otu_table} component of the first argument,
+#' in the \code{\link{otu_table}} component of the first argument,
 #' \code{physeq}.
 #' Often one of the major goals of this procedure is to achieve parity in 
 #' total number of counts between samples, as an alternative to other formal
@@ -30,7 +32,7 @@
 #' before invoking this function, or, alternatively, that you 
 #' explicitly provide a single positive integer argument as \code{rngseed}.
 #'
-#' This approach is sometimes mistakenly called "rarefaction", which
+#' This approach is sometimes mistakenly called ``rarefaction'', which
 #' \href{http://en.wikipedia.org/wiki/Rarefaction}{in physics refers to a form of wave decompression;}
 #' but in this context, ecology, the term refers to a
 #' \href{http://en.wikipedia.org/wiki/Rarefaction_(ecology)}{repeated sampling procedure to assess species richness},
@@ -187,6 +189,9 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
       newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
     }
   }
+  # If the OTU table was transposed before rarefaction, transpose it
+  # back to the way it was in the original physeq object.
+  if(!taxa_are_rows(physeq)){newsub <- t(newsub)}
 	return(newsub)
 }
 ################################################################################

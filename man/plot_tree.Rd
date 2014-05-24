@@ -2,11 +2,12 @@
 \alias{plot_tree}
 \title{Plot a phylogenetic tree with optional annotations}
 \usage{
-  plot_tree(physeq, method="sampledodge", nodelabf=NULL,
-  color=NULL, shape=NULL, size=NULL, min.abundance=Inf,
-  label.tips=NULL, text.size=NULL, sizebase=5,
-  base.spacing=0.02, ladderize=FALSE, plot.margin=0.2,
-  title=NULL)
+  plot_tree(physeq, method = "sampledodge", nodelabf =
+  NULL, color = NULL, shape = NULL, size = NULL,
+  min.abundance = Inf, label.tips = NULL, text.size = NULL,
+  sizebase = 5, base.spacing = 0.02, ladderize = FALSE,
+  plot.margin = 0.2, title = NULL, treetheme = NULL,
+  justify = "jagged")
 }
 \arguments{
   \item{physeq}{(Required). The data about which you want
@@ -44,17 +45,21 @@
 
   \item{color}{(Optional). Character string. Default
   \code{NULL}. The name of the variable in \code{physeq} to
-  map to point color.}
+  map to point color. Supported options here also include
+  the reserved special variables of \code{\link{psmelt}}.}
 
   \item{shape}{(Optional). Character string. Default
   \code{NULL}. The name of the variable in \code{physeq} to
-  map to point shape.}
+  map to point shape. Supported options here also include
+  the reserved special variables of \code{\link{psmelt}}.}
 
   \item{size}{(Optional). Character string. Default
   \code{NULL}. The name of the variable in \code{physeq} to
   map to point size. A special argument \code{"abundance"}
   is reserved here and scales point size using abundance in
-  each sample on a log scale.}
+  each sample on a log scale. Supported options here also
+  include the reserved special variables of
+  \code{\link{psmelt}}.}
 
   \item{min.abundance}{(Optional). Numeric. The minimum
   number of individuals required to label a point with the
@@ -102,11 +107,13 @@
   Default is \code{FALSE}. This parameter specifies whether
   or not to \code{\link[ape]{ladderize}} the tree (i.e.,
   reorder nodes according to the depth of their enclosed
-  subtrees) prior to plotting. When set to \code{TRUE}, the
-  default ladderization (``right'' ladderization) is used;
-  when set to \code{FALSE}, no ladderization is performed;
-  when set to \code{"left"}, the reverse direction
-  (``left'' ladderization) is applied.}
+  subtrees) prior to plotting. This tends to make trees
+  more aesthetically pleasing and legible in a graphical
+  display. When \code{TRUE} or \code{"right"}, ``right''
+  ladderization is used. When set to \code{FALSE}, no
+  ladderization is applied. When set to \code{"left"}, the
+  reverse direction (``left'' ladderization) is applied.
+  This argument is passed on to \code{\link{tree_layout}}.}
 
   \item{plot.margin}{(Optional). Numeric. Default is
   \code{0.2}. Should be positive. This defines how much
@@ -119,6 +126,22 @@
 
   \item{title}{(Optional). Default \code{NULL}. Character
   string. The main title for the graphic.}
+
+  \item{treetheme}{(Optional). A custom
+  \code{\link{ggplot}}2 \code{\link[ggplot2]{theme}} layer
+  to use for the tree. Supplants any default theme layers
+  used within the function. A value of \code{NULL} uses a
+  default, minimal-annotations theme. If anything other
+  than a them or \code{NULL}, the current global ggplot2
+  theme will result.}
+
+  \item{justify}{(Optional). A character string indicating
+  the type of justification to use on dodged points and tip
+  labels. A value of \code{"jagged"}, the default, results
+  in these tip-mapped elements being spaced as close to the
+  tips as possible without gaps. Currently, any other value
+  for \code{justify} results in a left-justified
+  arrangement of both labels and points.}
 }
 \value{
   A \code{\link{ggplot}}2 plot.
@@ -147,19 +170,11 @@
   possible.
 }
 \details{
-  This function received a development contribution from
-  the work of Gregory Jordan for the \code{ggphylo}
-  package, which provides tools for rendering a
-  phylogenetic tree in \code{\link{ggplot2}} graphics. That
-  package is not currently available from CRAN or
-  Bioconductor, but is available in development (roughly
-  ``beta'') form from GitHub. Furthermore, although
-  \code{ggphylo} awesomely supports radial and unrooted
-  trees, \code{plot_tree} currently only supports
-  ``standard'' square-horizontal trees. Additional support
-  for these types of features (like radial trees) is
-  planned. Send us development feedback if this is a
-  feature you really want to have soon.
+  This function received an early development contribution
+  from the work of Gregory Jordan via
+  \href{https://github.com/gjuggler/ggphylo}{the ggphylo
+  package}. \code{plot_tree} has since been re-written. For
+  details see \code{\link{tree_layout}}.
 }
 \examples{
 # # Using plot_tree() with the esophagus dataset.
@@ -168,23 +183,14 @@
 # # http://joey711.github.io/phyloseq/plot_tree-examples
 data(esophagus)
 # plot_tree(esophagus)
-# plot_tree(esophagus, color="samples")
-# plot_tree(esophagus, size="abundance")
-# plot_tree(esophagus, size="abundance", color="samples")
+# plot_tree(esophagus, color="Sample")
+# plot_tree(esophagus, size="Abundance")
+# plot_tree(esophagus, size="Abundance", color="samples")
+plot_tree(esophagus, size="Abundance", color="Sample", base.spacing=0.03)
 plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
-}
-\author{
-  Paul McMurdie, relying on supporting code from Gregory
-  Jordan \email{gjuggler@gmail.com}
 }
 \seealso{
   \code{\link{plot.phylo}}
-
-  This function is a special use-case that relies on code
-  borrowed directly, with permission, from the
-  not-yet-officially-released package, \code{ggphylo},
-  currently only available from GitHub at:
-  \url{https://github.com/gjuggler/ggphylo}
 
   There are many useful examples of phyloseq tree graphics
   in the

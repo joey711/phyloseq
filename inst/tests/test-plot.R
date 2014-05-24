@@ -335,6 +335,29 @@ test_that("plot_richness: Standard plots work", {
   expect_equivalent(levels(p$data$variable), c("Observed", "Chao1"))
 })
 
+test_that("plot_richness: sortby argument works correctly", {
+  data("soilrep")
+  # sortby must be among the `measures`.
+  # Should throw warning if not, but still produce a plot.
+  expect_warning({p1 <- plot_richness(soilrep, sortby="Treatment")})  
+  expect_is(p1, "ggplot")
+  # sortby is only relevant if `x` argument is discrete.
+  # Should throw warning if not, but still produce a plot.
+  # First add dummy numeric sample variable
+  sample_data(soilrep)$dummy <- runif(nsamples(soilrep))
+  expect_warning({p2 <- plot_richness(soilrep, x="dummy", sortby="Chao1")})
+  expect_is(p2, "ggplot")
+  # Default `x` is "samples", always discrete
+  p3 = plot_richness(soilrep, sortby="Chao1")
+  expect_equivalent(levels(p3$data$samples)[1:5],
+                    c("a_C137", "a_C145", "a_C126", "a_C156", "a_C139"))
+  expect_is(p3, "ggplot")
+  # Make sure the discrete aggregation sort gets the order correct as well.
+  p4 = plot_richness(soilrep, x="Treatment", sortby="Simpson") 
+  expect_equivalent(levels(p4$data$Treatment), c("UC", "WC", "WU", "UU"))
+  expect_is(p4, "ggplot")
+})
+
 test_that("plot_richness/estimate_richness: fisher.alpha", {
   data("GlobalPatterns")
   data("soilrep")

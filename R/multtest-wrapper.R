@@ -1,9 +1,11 @@
 ####################################################################################
 # # # # Avoiding full import of multtest to mitigate potential conflicts
 ####################################################################################
-#' Multiple testing of taxa abundance acccording to sample categories/classes
+#' Multiple testing of taxa abundance according to sample categories/classes
 #'
-#' @usage mt(physeq, classlabel, minPmaxT="minP", ...)
+#' Please note that it is up to you to perform any necessary 
+#' normalizing / standardizing transformations prior to these tests.
+#' See for instance \code{\link{transform_sample_counts}}. 
 #'
 #' @param physeq (Required). \code{\link{otu_table-class}} or \code{\link{phyloseq-class}}.
 #'  In this multiple testing framework, different taxa correspond to variables
@@ -24,7 +26,13 @@
 #'  for other options and formal details.
 #'
 #' @param minPmaxT (Optional). Character string. \code{"mt.minP"} or \code{"mt.maxT"}.
-#'  Default is to use \code{\link[multtest]{mt.minP}}.
+#'  Default is to use \code{"\link[multtest]{mt.minP}"}.
+#'  
+#' @param method (Optional). Additional multiple-hypthesis correction methods.
+#'  A character vector from the set \code{\link[stats]{p.adjust.methods}}.
+#'  Default is \code{"fdr"}, for the Benjamini and Hochberg (1995) method
+#'  to control False Discovery Rate (FDR). This argument is passed on to
+#'  \code{\link[stats]{p.adjust}}, please see that documentation for more details.
 #' 
 #' @param ... (Optional). Additional arguments, forwarded to
 #'  \code{\link[multtest]{mt.maxT}} or \code{\link[multtest]{mt.minP}}
@@ -32,7 +40,13 @@
 #' @return A dataframe with components specified in the documentation for
 #'  \code{\link[multtest]{mt.maxT}} or \code{\link[multtest]{mt.minP}}, respectively.
 #'
-#' @seealso \code{\link[multtest]{mt.maxT}}, \code{\link[multtest]{mt.minP}}
+#' @seealso
+#' 
+#' \code{\link[multtest]{mt.maxT}}
+#' 
+#' \code{\link[multtest]{mt.minP}}
+#' 
+#' \code{\link[stats]{p.adjust}}
 #'
 #' @rdname mt-methods
 #' @docType methods
@@ -40,24 +54,27 @@
 #'
 #' @importFrom multtest mt.maxT
 #' @importFrom multtest mt.minP
+#' @importFrom stats p.adjust
+#' @importFrom stats p.adjust.methods
 #'
-#' @examples #
+#' @examples
 #' ## # Simple example, testing genera that sig correlate with Enterotypes
-#' ## data(enterotype)
-#' ## # Filter samples that don't have Enterotype
-#' ## x <- subset_samples(enterotype, !is.na(Enterotype))
-#' ## # (the taxa are at the genera level in this dataset)
-#' ## mt(x, "Enterotype", test="f")
+#' data(enterotype)
+#' # Filter samples that don't have Enterotype
+#' x <- subset_samples(enterotype, !is.na(Enterotype))
+#' # (the taxa are at the genera level in this dataset)
+#' res = mt(x, "Enterotype", method=c("fdr", "bonferroni"), test="f", B=300)
+#' head(res, 10)
 #' ## # Not surprisingly, Prevotella and Bacteroides top the list.
 #' ## # Different test, multiple-adjusted t-test, whether samples are ent-2 or not.
 #' ## mt(x, get_variable(x, "Enterotype")==2)
-setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", ...) standardGeneric("mt") )
+setGeneric("mt", function(physeq, classlabel, minPmaxT="minP", method="fdr", ...) standardGeneric("mt") )
 ################################################################################
 # First, access the otu_table, and if appropriate, define classlabel from 
 # the sample_data.
 #' @aliases mt,phyloseq,ANY-method
 #' @rdname mt-methods
-setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", ...){
+setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="minP", method="fdr", ...){
 	# Extract the class information from the sample_data
 	# if sample_data slot is non-empty,
 	# and the classlabel is a character-class
@@ -79,8 +96,15 @@ setMethod("mt", c("phyloseq", "ANY"), function(physeq, classlabel, minPmaxT="min
 	if( !is.null(tax_table(physeq, FALSE)) ){
 		# If there is tax_table data present,
 		# add/cbind it to the results.		
-		MT = cbind(MT, as(tax_table(physeq), "matrix")[rownames(MT), ])
+		MT = cbind(MT, as(tax_table(physeq), "matrix")[rownames(MT), , drop=FALSE])
 	}
+  if(length(method)>0 & method %in% p.adjust.methods){
+    # Use only the supported methods
+    method <- method[which(method %in% p.adjust.methods)]
+    # Add adjust-p columns. sapply should retain the names.
+    adjp = sapply(method, function(meth, p){p.adjust(p, meth)}, p = MT$rawp, USE.NAMES = TRUE)
+    MT <- cbind(MT, adjp)
+  }
 	return(MT)
 })
 ################################################################################

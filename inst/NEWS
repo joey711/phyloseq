@@ -1,3 +1,85 @@
+CHANGES IN VERSION 1.9.8
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `mt` includes other corrections, FDR by default.
+
+	- Resolves [Issue 59](https://github.com/joey711/phyloseq/issues/59)
+
+CHANGES IN VERSION 1.9.7
+-------------------------
+
+BUG FIXES
+
+	- Now requires ggplot2 version 1.0.0
+
+	- Fixes bug in which ggplot 1.0 breaks in a phyloseq vignette 
+
+	- Resolves [Issue 347](https://github.com/joey711/phyloseq/issues/347) 
+
+CHANGES IN VERSION 1.9.6
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- New `sortby` argument in `plot_richness` function.
+
+	- Sort discrete x by one or more alpha-diversity measures
+
+	- Solves [Issue 342](https://github.com/joey711/phyloseq/issues/342)
+
+	- Resolves/merges [Pull 343](https://github.com/joey711/phyloseq/pull/343) 
+
+CHANGES IN VERSION 1.9.5
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `microbio_me_qiime` function now handles string study number for first argument.
+
+		This is in addition to numeric study number, already supported.
+
+CHANGES IN VERSION 1.9.4
+-------------------------
+
+BUG FIXES
+
+	- `rarefy_even_depth()` function no longer enforces an orientation.
+
+	- It used to always coerce to OTU-by-sample orientation.
+
+	- Solves Issue 320 https://github.com/joey711/phyloseq/issues/320
+
+CHANGES IN VERSION 1.9.3
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Massive Revision to plot_tree()
+
+	- `plot_tree` now uses the `psmelt` function
+
+		- All covariates are available for aesthetic mapping.
+
+	- `plot_tree` substantial speed improvement
+
+		- Uses native ape-package C code for tree computation
+
+		- Efficient `data.table` consolidated graphic data passed to ggplot2
+
+		- Additional arguments: `treetheme` and `justify`
+
+	- `tree_layout` - new, user-accessible function
+
+		- for building alternative trees from phyloseq data.
+
+	- Foundation for solving Issue 313 and Issue 331
+
+		- https://github.com/joey711/phyloseq/issues/313
+
+		- https://github.com/joey711/phyloseq/issues/331
+
 CHANGES IN VERSION 1.9.2
 -------------------------
 
