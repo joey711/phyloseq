@@ -85,6 +85,12 @@ setMethod("tax_table", "data.frame", function(object){
 #' function call. In the case of \code{subset_taxa}, the subsetting will be
 #' based on an expression related to the columns and values within the 
 #' \code{tax_table} (\code{taxonomyTable} component) slot of \code{physeq}.
+#' The \code{OTUs} retained in the dataset is equivalent to
+#' \code{x[subset & !is.na(subset)]}, where \code{x} is the vector of OTU IDs
+#' and \code{subset} is the logical that results from your subsetting expression.
+#' This is important to keep in mind, as users are often unaware that this
+#' subsetting step also removes/omits OTUs that have a missing value result, \code{NA},
+#' somewhere in the expression.
 #'
 #' @usage subset_taxa(physeq, ...)
 #'
