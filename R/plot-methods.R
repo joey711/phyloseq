@@ -60,7 +60,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 })
 ################################################################################
 ################################################################################
-#' Plot a network using ggplot2 (represent microbiome)
+#' Microbiome Network Plot using ggplot2 
 #'
 #' There are many useful examples of phyloseq network graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_network-examples}{phyloseq online tutorials}.
@@ -247,6 +247,261 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	}
 	
 	return(p)
+}
+################################################################################
+################################################################################
+#' Microbiome Network Plot using ggplot2 
+#'
+#' There are many useful examples of phyloseq network graphics in the
+#' \href{http://joey711.github.io/phyloseq/plot_net-examples}{phyloseq online tutorials}.
+#' A custom plotting function for displaying networks
+#' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
+#' Note that this function is a performance and interface revision to
+#' \code{\link{plot_network}}, which requires an \code{\link[igraph]{igraph}}
+#' object as its first argument.
+#' This new function is more in-line with other
+#' \code{plot_*} functions in the \code{\link{phyloseq-package}}, in that its
+#' first/main argument is a \code{\link{phyloseq-class}} instance.
+#' Edges in the network are created if the distance between
+#' nodes is below a (potentially arbitrary) threshold,
+#' and special care should be given to considering the choice of this threshold.
+#' However, network line thickness and opacity is scaled according to the
+#' similarity of vertices (either samples or taxa),
+#' helping to temper, somewhat, the effect of the threshold.
+#' Also note that the choice of network layout algorithm can have a large effect
+#' on the impression and interpretability of the network graphic,
+#' and you may want to familiarize yourself with some of these options
+#' (see the \code{laymeth} argument).
+#'
+#' @param physeq (Required). 
+#'  The \code{\link{phyloseq-class}} object that you want to represent as a network.
+#'  
+#' @param distance (Optional). Default is \code{"bray"}. 
+#'  Can be either a distance method supported by \code{\link[phyloseq]{distance}},
+#'  or an already-computed \code{\link{dist}}-class with labels that match
+#'  the indices implied by both the \code{physeq} and \code{type} arguments
+#'  (that is, either sample or taxa names).
+#'  If you used \code{\link[phyloseq]{distance}} to pre-calculate your \code{\link{dist}}ance,
+#'  and the same \code{type} argument as provided here, then they will match.
+#'  
+#' @param maxdist (Optional). Default \code{0.7}. 
+#'  The maximum distance value between two vertices
+#'  to connect with an edge in the graphic.
+#'
+#' @param type (Optional). Default \code{"samples"}.
+#'  Whether the network represented in the primary argument, \code{g},
+#'  is samples or taxa/OTUs.
+#'  Supported arguments are \code{"samples"}, \code{"taxa"},
+#'  where \code{"taxa"} indicates using the taxa indices,
+#'  whether they actually represent species or some other taxonomic rank.
+#'  
+#' @param laymeth (Optional). Default \code{"fruchterman.reingold"}.
+#'  A character string that indicates the method that will determine
+#'  the placement of vertices, typically based on conectedness of vertices
+#'  and the number of vertices.
+#'  This is an interesting topic, and there are lots of options.
+#'  See \code{\link{igraph-package}} for related topics in general, 
+#'  and see \code{\link[igraph]{layout.auto}} for descriptions of various
+#'  alternative layout method options supported here.
+#'  The character string argument should match exactly the
+#'  layout function name with the \code{"layout."} omitted.
+#'  Try \code{laymeth="list"} to see a list of options.
+#'
+#' @param color (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for color mapping
+#'  of points (graph vertices).
+#' 
+#' @param shape (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for shape mapping.
+#'  of points (graph vertices).
+#'  
+#' @param rescale (Optional). Logical. Default \code{FALSE}.
+#'  Whether to rescale the distance values to be \code{[0, 1]}, in which the
+#'  min value is close to zero and the max value is 1.
+#' 
+#' @param point_size (Optional). Default \code{4}. 
+#'  The size of the vertex points.
+#' 
+#' @param point_alpha (Optional). Default \code{1}.
+#'  A value between 0 and 1 for the alpha transparency of the vertex points.
+#' 
+#' @param point_label (Optional). Default \code{NULL}.
+#'  The variable name in \code{physeq} covariate data to map to vertex labels.
+#' 
+#' @param hjust (Optional). Default \code{1.35}.
+#'  The amount of horizontal justification to use for each label.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'  
+#' @return A \code{\link{ggplot}}2 network plot.
+#'  Will render to default graphic device automatically as print side effect.
+#'  Can also be saved, further manipulated, or rendered to
+#'  a vector or raster file using \code{\link{ggsave}}.
+#' 
+#' @seealso 
+#'  Original network plotting functions:
+#' 
+#'  \code{\link{make_network}}
+#' 
+#'  \code{\link{plot_network}}
+#' 
+#' @import ggplot2
+#' @import reshape2
+#' @importFrom data.table data.table
+#' @importFrom igraph layout.auto
+#' @importFrom igraph layout.random
+#' @importFrom igraph layout.circle
+#' @importFrom igraph layout.sphere
+#' @importFrom igraph layout.fruchterman.reingold
+#' @importFrom igraph layout.kamada.kawai
+#' @importFrom igraph layout.spring
+#' @importFrom igraph layout.reingold.tilford
+#' @importFrom igraph layout.fruchterman.reingold.grid
+#' @importFrom igraph layout.lgl
+#' @importFrom igraph layout.graphopt
+#' @importFrom igraph layout.svd
+#' @importFrom igraph graph.data.frame
+#' @importFrom igraph get.vertex.attribute
+#' @export
+#' @examples 
+#' data(enterotype)
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3)
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "auto")
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "svd")
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "circle")
+#' plot_net(enterotype, color="SeqTech", shape="Enterotype", maxdist = 0.3, laymeth = "circle")
+plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
+                     laymeth="fruchterman.reingold", color=NULL, shape=NULL, rescale=FALSE,
+                     point_size=5, point_alpha=1, point_label=NULL, hjust = 1.35, title=NULL){
+  # Supported layout methods
+  available_layouts = list(
+    auto = layout.auto,
+    random = layout.random,
+    circle = layout.circle,
+    sphere = layout.sphere,
+    fruchterman.reingold = layout.fruchterman.reingold,
+    kamada.kawai = layout.kamada.kawai,
+    spring = layout.spring,
+    reingold.tilford = layout.reingold.tilford,
+    fruchterman.reingold.grid = layout.fruchterman.reingold.grid,
+    lgl = layout.lgl,
+    graphopt = layout.graphopt,
+    svd = layout.svd
+  )
+  if(laymeth=="list"){
+    return(names(available_layouts))
+  }
+  if(!laymeth %in% names(available_layouts)){
+    stop("Unsupported argument to `laymeth` option. Please use an option returned by `plot_net(laymeth='list')`")
+  }
+  # 1. 
+  # Calculate Distance
+  if( inherits(distance, "dist") ){
+    # If distance a distance object, use it rather than re-calculate
+    Distance <- distance
+    # Check that it at least has (a subset of) the correct labels
+    possibleVertexLabels = switch(type, taxa=taxa_names(physeq), samples=sample_names(physeq))
+    if( !all(attributes(distance)$Labels %in% possibleVertexLabels) ){
+      stop("Some or all `distance` index labels do not match ", type, " names in `physeq`")
+    }
+  } else {
+    # Coerce to character and attempt distance calculation
+    scaled_distance = function(physeq, method, type, rescale=TRUE){
+      Dist = distance(physeq, method, type)
+      if(rescale){
+        # rescale the distance matrix to be [0, 1]
+        Dist <- Dist / max(Dist, na.rm=TRUE)
+        Dist <- Dist - min(Dist, na.rm=TRUE)
+      }
+      return(Dist)
+    }
+    distance <- as(distance[1], "character")
+    Distance = scaled_distance(physeq, distance, type, rescale)
+  }
+  # 2.
+  # Create edge data.table
+  dist_to_edge_table = function(Dist, MaxDistance=NULL, vnames = c("v1", "v2")){
+    dmat <- as.matrix(Dist)
+    # Set duplicate entries and self-links to Inf
+    dmat[upper.tri(dmat, diag = TRUE)] <- Inf
+    LinksData = data.table(reshape2::melt(dmat, varnames=vnames, as.is = TRUE))
+    setnames(LinksData, old = "value", new = "Distance")
+    # Remove self-links and duplicate links
+    LinksData <- LinksData[is.finite(Distance), ]
+    # Remove entries above the threshold, MaxDistance
+    if(!is.null(MaxDistance)){
+      LinksData <- LinksData[Distance < MaxDistance, ]
+    }
+    return(LinksData)
+  }
+  LinksData0 = dist_to_edge_table(Distance, maxdist)
+  # 3. Create vertex layout
+  # Make the vertices-coordinates data.table
+  vertex_layout = function(LinksData, physeq=NULL, type="samples",
+                           laymeth=igraph::layout.fruchterman.reingold, ...){
+    # `physeq` can be anything, only has effect when non-NULL returned by sample_data or tax_table
+    g = igraph::graph.data.frame(LinksData, directed=FALSE)
+    vertexDT = data.table(laymeth(g, ...),
+                          vertex=get.vertex.attribute(g, "name"))
+    setkey(vertexDT, vertex)
+    setnames(vertexDT, old = c(1, 2), new = c("x", "y"))
+    extraData = NULL
+    if( type == "samples" & !is.null(sample_data(physeq, FALSE)) ){
+      extraData <- data.table(data.frame(sample_data(physeq)), key = "rn", keep.rownames = TRUE)
+    } else if( type == "taxa" & !is.null(tax_table(physeq, FALSE)) ){
+      extraData <- data.table(as(tax_table(physeq), "matrix"), key = "rn", keep.rownames = TRUE)
+    }
+    # Only mod vertexDT if extraData exists
+    if(!is.null(extraData)){
+      # Join vertexDT, extraData using data.table syntax. Presumes `vertex` is key in both.
+      setnames(extraData, old = "rn", new = "vertex")
+      vertexDT <- vertexDT[extraData]
+      vertexDT <- vertexDT[!is.na(x), ]
+    }
+    return(vertexDT)
+  }
+  vertexDT = vertex_layout(LinksData0, physeq, type, available_layouts[[laymeth]])
+  # 4.
+  # Update the links layout for ggplot: x, y, xend, yend
+  link_layout = function(LinksData, vertexDT){
+    linkstart = vertexDT[LinksData$v1, x, y]
+    linkend = vertexDT[LinksData$v2, x, y]
+    setnames(linkend, old = c("y", "x"), new = c("yend", "xend"))
+    LinksData <- cbind(LinksData, linkstart, linkend)
+    return(LinksData)  
+  }
+  LinksData = link_layout(LinksData0, vertexDT)
+  # 5.
+  # Define ggplot2 network plot
+  links_to_ggplot = function(LinksData, vertexDT, vertmap=aes(x, y)){
+    p0 = ggplot(data=LinksData) + 
+      geom_segment(aes(x, y, xend=xend, yend=yend, size=Distance, alpha=Distance)) +
+      geom_point(mapping = vertmap, data=vertexDT, size=5, na.rm = TRUE) +
+      scale_alpha(range = c(1, 0.1)) + 
+      scale_size(range = c(2, 0.25))
+    return(p0)
+  }
+  p = links_to_ggplot(LinksData, vertexDT,
+                      vertmap = aes_string(x="x", y="y", color=color, shape=shape))
+  # Add labels
+  if(!is.null(point_label)){
+    p <- p + geom_text(aes_string(x="x", y="y", label=point_label),
+                       data = vertexDT, size = 2, hjust = hjust, na.rm = TRUE)
+  }
+  # Add default theme
+  net_theme = theme(
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    axis.text.x      = element_blank(),
+    axis.text.y      = element_blank(),
+    axis.title.x     = element_blank(),
+    axis.title.y     = element_blank(),
+    axis.ticks       = element_blank(),
+    panel.border     = element_blank()
+  )
+  p <- p + theme_bw() + net_theme
+  return(p)
 }
 ################################################################################
 ################################################################################
