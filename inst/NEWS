@@ -5,6 +5,8 @@ USER-VISIBLE CHANGES
 
 	- `plot_net` faster, more-flexible network plot with improved defaults
 
+	- https://github.com/joey711/phyloseq/pull/353
+
 CHANGES IN VERSION 1.9.8
 -------------------------
 
