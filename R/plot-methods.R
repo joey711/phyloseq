@@ -1625,19 +1625,9 @@ tree_layout = function(phy, ladderize=FALSE){
   TIPS = phy$edge[(phy$edge[, 2] <= Ntip), 2]
   NODES = (ROOT):(Ntip + Nnode)
   nodelabels = phy$node.label
-  # Define the horizontal positions by depth to root, `xx`
-  ape_node_depth_edge_length <- function(Ntip, Nnode, edge, Nedge, edge.length){
-    .C(ape:::node_depth_edgelength, PACKAGE="ape", as.integer(Ntip),
-       as.integer(Nnode), as.integer(edge[, 1]),
-       as.integer(edge[, 2]), as.integer(Nedge),
-       as.double(edge.length), double(Ntip + Nnode))[[7]]
-  }
-  # Pass to ape's internal horizontal position function, in C, using the re-ordered phylo object.
-  #xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
+  # Call phyloseq-internal function that in-turn calls ape's internal
+  # horizontal position function, in C, using the re-ordered phylo object.
   xx = ape_node_depth_edge_length(Ntip, Nnode, z$edge, Nedge, z$edge.length)
-  # Alternative call in R only...
-  # xx = double(Ntip + Nnode)
-  # system.time(sapply(Nedge:1, function(i, phy){xx[phy$edge[i, 2]] <<- xx[phy$edge[i, 1]] + phy$edge.length[i]}, phy))
   # Initialize `yy`, before passing to ape internal function in C.
   yy <- numeric(Ntip + Nnode)
   yy[TIPS] <- 1:Ntip
