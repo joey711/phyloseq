@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.9.10
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Massive speed/memory improvement for UniFrac calculations (via `UniFrac` or `distance`)
+
 CHANGES IN VERSION 1.9.9
 -------------------------
 

@@ -739,20 +739,18 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	# Convert `descList` to `edge_array` that matches the order of things in `tree$edge`
 	edge_array <- matrix(0, nrow=nrow(tree$edge), ncol=nsamples(physeq), 
 	                      dimnames=list(NULL, sample_names=sample_names(physeq)))
-	rows = 1:nrow(tree$edge)
-	nodes = tree$edge[rows, 2]
-	for(i in rows){
-	  edge_array[i, ] <- colSums(OTU[descList[[nodes[i]]], , drop=FALSE], na.rm = TRUE)
+	for(i in 1:nrow(tree$edge)){
+    # For each entry in the tree$edge table, sum the descendants for each sample
+    # `tree$edge[i, 2]` is the node ID.
+	  edge_array[i, ] <- colSums(OTU[descList[[tree$edge[i, 2]]], , drop=FALSE], na.rm = TRUE)
 	}
   # Remove unneeded variables. `descList` in particular could be large-ish.
-  rm(rows, nodes, descList)
-	
+  rm(descList)
 	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
 	if(!weighted){
 		# For unweighted UniFrac, convert the edge_array to an occurrence (presence/absence binary) array
 		edge_occ <- (edge_array > 0) - 0
 	}
-
 	if( weighted & normalized ){
 		# This is only relevant to weighted-UniFrac.
 		# For denominator in the normalized distance, we need the age of each tip.
@@ -772,56 +770,46 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
     # Explicitly re-order tipAges to match OTU
 	  tipAges <- tipAges[rownames(OTU)]
 	}
-
 	########################################	
   # optionally-parallel implementation with foreach
 	########################################
+	samplesums = sample_sums(physeq)
 	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
 	  A  <- i[1]
 	  B  <- i[2]
-	  AT <- sample_sums(physeq)[A]
-	  BT <- sample_sums(physeq)[B]
-	  if( weighted ){ # weighted UniFrac
-	    # subset matrix to just columns A and B
-	    edge_array_AB <- edge_array[, c(A, B)]
-	    # Perform UFwi equivalent, "inline" with apply on edge_array_AB
-	    wUF_branchweight <- apply(edge_array_AB, 1, function(br, A, B, ATBT){
-	      abs((br[A]/ATBT[A]) - (br[B]/ATBT[B]))
-	    }, A, B, c(AT, BT))
+	  AT <- samplesums[A]
+	  BT <- samplesums[B]
+	  if( weighted ){
+      # weighted UniFrac
+	    wUF_branchweight <- abs(edge_array[, A]/AT - edge_array[, B]/BT)
 	    # calculate the w-UF numerator
-	    numerator <- sum(tree$edge.length * wUF_branchweight)
+	    numerator <- sum({tree$edge.length * wUF_branchweight}, na.rm = TRUE)
 	    # if not-normalized weighted UniFrac, just return "numerator";
 	    # the u-value in the w-UniFrac description
 	    if(!normalized){
 	      return(numerator)
 	    } else {
 	      # denominator (assumes tree-indices and otu_table indices are same order)
-	      denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
+	      denominator <- sum({tipAges * (OTU[, A]/AT + OTU[, B]/BT)}, na.rm = TRUE)
 	      # return the normalized weighted UniFrac values
 	      return(numerator / denominator)
 	    }
-	  } else { # unweighted UniFrac
-	    # subset matrix to just columns A and B
+	  } else {
+      # Unweighted UniFrac
+	    # Subset matrix to just columns A and B
 	    edge_occ_AB <- edge_occ[, c(A, B)]
-	    # keep only the unique branches, sum the lengths
-	    edge_uni_AB_sum <- sum( (tree$edge.length * edge_occ_AB)[apply(edge_occ_AB, 1, sum) < 2, ] )
+      # Keep only the unique branches. Sum the lengths
+      edge_uni_AB_sum <- sum((tree$edge.length * edge_occ_AB)[rowSums(edge_occ_AB, na.rm=TRUE) < 2, ], na.rm=TRUE)
 	    # Normalize this sum to the total branches among these two samples, A and B
-	    uwUFpairdist <- edge_uni_AB_sum / sum( tree$edge.length[apply(edge_occ_AB, 1, sum) > 0] )
+	    uwUFpairdist <- edge_uni_AB_sum / sum(tree$edge.length[rowSums(edge_occ_AB, na.rm=TRUE) > 0])
 	    return(uwUFpairdist)
 	  }
 	}
-	# initialize UniFracMat with NAs
+	# Initialize UniFracMat with NAs
 	UniFracMat <- matrix(NA_real_, nsamples(physeq), nsamples(physeq))
-	# define the rows/cols of UniFracMat with the sample names 
 	rownames(UniFracMat) <- colnames(UniFracMat) <- sample_names(physeq)
-  # This is in serial, but it is quick.
-  # YOU ARE HERE
-  # TRY THIS INSTEAD 
-	# UniFracMat[do.call(rbind, spn)] <- unlist(DL)
-  distlist2distmat <- function(i, spn, DL){
-    UniFracMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
-  }
-	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
+  # Matrix-assign lower-triangle of UniFracMat. Then coerce to dist and return.
+	UniFracMat[do.call(rbind, spn)[, 2:1]] <- unlist(distlist)
 	return(as.dist(UniFracMat))	
 }
 ################################################################################
