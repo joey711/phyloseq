@@ -66,3 +66,4 @@ Collate:
     'distance-methods.R'
     'deprecated_functions.R'
     'extend_DESeq2.R'
+    'phylo-class.R'

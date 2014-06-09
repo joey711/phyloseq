@@ -162,6 +162,50 @@ setOldClass("dist")
 #' @keywords internal
 pcoa <- structure(list(), class = "pcoa")
 # @importMethodsFrom ape print
+# phyloseq-specific definition of "phylo" class,
+################################################################################
+#' S3 class placeholder definition (list) for phylogenetic trees.
+#' 
+#' The ape package does not export a version of its \code{\link[ape]{phylo}}-class,
+#' partly because it is not really defined formally anywhere.
+#' Instead, it is an S3 class extended from the base class, \code{\link{list}} --
+#' this is a very common and easy approach --
+#' and proper behavior of any method taking an instance of this class 
+#' requires exact naming conventions for element names of the components.
+#' The phyloseq package does not provide any validity checks that a given phylo
+#' instance is valid (conforms to the conventions in the ape package). Yet.
+#' If problems arise, this might be considered, and they could be defined
+#' judiciously and within phyloseq. 
+#' Similarly, if a formal definition for the the phylo-class is ever exported
+#' by ape, the current philosophy of phyloseq would be to remove this
+#' internal definition and import the former. Note that there is still some 
+#' work going on for the phylobase package, which is addressing these same 
+#' exact issues for S4 phylogenetic tree interaction. 
+#' A very large number of packages (around 60 at my last count), depend on ape,
+#' making it easily the de facto standard for representing phylogenetic trees in R;
+#' and the phyloseq team would prefer to use any exported definitions from
+#' the ape package if possible and available.
+#' 
+#' @seealso 
+#' \code{\link[ape]{phylo}}
+#' 
+#' @keywords internal
+phylo <- structure(list(), class = "phylo")
+################################################################################
+# If this ever works
+# @importClassesFrom ape phylo
+################################################################################
+#' An S4 placeholder of the main phylogenetic tree class from the ape package.
+#'
+#' See the \code{\link[ape]{ape}} package for details about this type of
+#' representation of a phylogenetic tree. It is used throught ape.
+#'
+#' @seealso \code{\link[ape]{phylo}}, \code{\link{setOldClass}}
+#'
+#' @name phylo-class
+#' @rdname phylo-class
+#' @exportClass phylo
+setOldClass("phylo")
 ################################################################################
 # Use setClassUnion to define the unholy NULL-data union as a virtual class.
 # This is a way of dealing with the expected scenarios in which one or more of
