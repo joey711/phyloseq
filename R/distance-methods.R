@@ -695,6 +695,7 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
 # Adapted from The ISME Journal (2010) 4, 17-27; doi:10.1038/ismej.2009.97;
 # http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html
 ################################################################################
+#' @importFrom ape prop.part
 #' @importFrom ape reorder.phylo
 #' @keywords internal
 #' @import foreach
@@ -731,7 +732,7 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	## Notice that A and B do not appear in this section.
 	# Begin by building the edge descendants matrix (edge-by-sample)
   # `edge_array`
-  
+  #
 	# Create a list of descendants, starting from the first internal node (root)
 	descList <- prop.part(tree, check.labels = FALSE)
 	# Add the terminal edge descendants (tips). By definition, can only have one descendant
