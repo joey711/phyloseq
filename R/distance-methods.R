@@ -606,7 +606,10 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	UniFracMat <- matrix(NA_real_, nsamples(physeq), nsamples(physeq))
 	rownames(UniFracMat) <- colnames(UniFracMat) <- sample_names(physeq)
   # Matrix-assign lower-triangle of UniFracMat. Then coerce to dist and return.
-	UniFracMat[do.call(rbind, spn)[, 2:1]] <- unlist(distlist)
+  	matIndices <- do.call(rbind, spn)[, 2:1]
+  	# Take care of edge case where there are two samples -> 1 pair of indices -> rbind doesn't return a matrix
+  	if(!is.matrix(matIndices)) matIndices <- matrix(matIndices, ncol=2)
+	UniFracMat[matIndices] <- unlist(distlist)
 	return(as.dist(UniFracMat))	
 }
 ################################################################################
