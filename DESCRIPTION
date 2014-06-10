@@ -21,7 +21,7 @@ Imports:
     DESeq2 (>= 1.4.0),
     foreach (>= 1.4.2),
     ggplot2 (>= 1.0.0),
-    igraph (>= 0.7.1),
+    igraph (>= 0.7.0),
     methods (>= 3.1.0),
     multtest (>= 2.16.0),
     plyr (>= 1.8),
