@@ -12,8 +12,8 @@ randoOTUs = sample(taxa_names(GlobalPatterns), 100, FALSE)
 GP100 = prune_taxa(randoOTUs, GlobalPatterns)
 min_lib = 1000
 # The default rng seed is being implied in this call (also 711)
-rGP  = rarefy_even_depth(GP100, sample.size=min_lib, rngseed=FALSE)
-rGPr = rarefy_even_depth(GP100, sample.size=min_lib, rngseed=FALSE, replace=FALSE)
+rGP  = suppressMessages(rarefy_even_depth(GP100, sample.size=min_lib, rngseed=FALSE))
+rGPr = suppressMessages(rarefy_even_depth(GP100, sample.size=min_lib, rngseed=FALSE, replace=FALSE))
 ################################################################################
 # Test that specific OTUs and samples were removed
 ################################################################################

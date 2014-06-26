@@ -301,8 +301,8 @@ zipfile = "study_816_split_library_seqs_and_mapping.zip"
 zipfile = system.file("extdata", zipfile, package="phyloseq")
 tarfile = "study_816_split_library_seqs_and_mapping.tar.gz"
 tarfile = system.file("extdata", tarfile, package="phyloseq")
-tarps = microbio_me_qiime(tarfile)
-zipps = microbio_me_qiime(zipfile)
+tarps = suppressWarnings(microbio_me_qiime(tarfile))
+zipps = suppressWarnings(microbio_me_qiime(zipfile))
 # This function is intended to interface with an external server,
 # as described in the documentation.
 # However, I don't want successful testing of this package to 
