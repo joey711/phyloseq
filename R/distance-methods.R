@@ -264,239 +264,33 @@ JSD.pair <- function(x, y){
 JSD <- function(physeq, parallel=FALSE){
 	OTU <- otu_table(physeq)
 	### Some parallel-foreach housekeeping.    
-    # If user specifies not-parallel run (the default), register the sequential "back-end"
-    if( !parallel ){ registerDoSEQ() }
-    
+	# If user specifies not-parallel run (the default), register the sequential "back-end"
+	if( !parallel ){ registerDoSEQ() }
 	# create N x 2 matrix of all pairwise combinations of samples.
-    spn <- combn(sample_names(OTU), 2, simplify=FALSE)
-    
-    # initialize DistMat with NAs
-    DistMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
-    # define the rows/cols of DistMat with the sample names (rownames)    
-    rownames(DistMat) <- sample_names(OTU)
-    colnames(DistMat) <- sample_names(OTU)
-    
+	spn <- combn(sample_names(physeq), 2, simplify=FALSE)
+	# initialize DistMat with NAs
+	DistMat <- matrix(NA, nsamples(physeq), nsamples(physeq))
+	# define the rows/cols of DistMat with the sample names (rownames)    
+	rownames(DistMat) <- sample_names(physeq)
+	colnames(DistMat) <- sample_names(physeq)
 	## Format coercion
 	# Coerce to the vegan orientation, with species as columns
-	if( taxa_are_rows(OTU) ){ OTU <- t( otu_table(OTU) ) }
-   	# Coerce OTU to matrix for calculations.
-    OTU <- as(OTU, "matrix")
-	
-   	# optionally-parallel implementation with foreach
-  	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
-		A <- i[1]
-		B <- i[2]
-		return( phyloseq:::JSD.pair(OTU[A, ], OTU[B, ]) )
+	if(taxa_are_rows(physeq)){ OTU <- t(OTU) }
+	# Coerce OTU to matrix for calculations.
+	OTU <- as(OTU, "matrix")
+	# optionally-parallel implementation with foreach
+	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
+	  A <- i[1]
+	  B <- i[2]
+	  return( phyloseq:::JSD.pair(OTU[A, ], OTU[B, ]) )
 	}
 	# return(distlist)
-    # This is in serial, but it is quick.
-    distlist2distmat <- function(i, spn, DL){
-    	DistMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
-    }
-	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
-    
-    return(as.dist(DistMat))
-}
-################################################################################
-#' Custom version of picante's \code{internal2tips}
-#'
-#' Internal function for \code{\link{UniFrac}}.
-#' 
-#' A modified version of the \code{internal2tips} function from 
-#' \href{http://cran.at.r-project.org/web/packages/picante/index.html}{the picante package},
-#' such that when a
-#' tip is provided as \code{int.node}, that tip is returned. This is a more intuitive
-#' behavior than the original picante version, which returns \code{NULL}.
-#' This is currently used in \code{\link{UniFrac}}.
-#'
-#' @param phy object of class \code{phylo}.
-#'
-#' @param int.node the internal node you want to get the descendants of.
-#'
-#' @keywords internal
-#' @return character vector
-#' @seealso 
-#' 
-#' \code{internal2tips} 
-#' 
-#' \code{\link{UniFrac}}
-internal2tips_self = function(phy, int.node, return.names=TRUE){	
-    Ntaxa = length(phy$tip.label)
-    Nnode = phy$Nnode
-    if ((Ntaxa + Nnode - 1) != nrow(phy$edge)) {
-        print("tree structure error")
-        break
-    }
-    # check if character index of node was used and convert, else use int.mode as index
-    if (mode(int.node) == "character"){
-		nodes = which(phy$node.label == int.node) + Ntaxa
-	}else nodes = int.node
-	
-    # initialize the return character vector "tips"
-    tips = c()
-    
-    # loop repeats while there are internal to include 
-    repeat {
-        nodes = phy$edge[which(phy$edge[, 1] %in% nodes), 2]
-        if (length(nodes) == 0) 
-            break
-        tips = c(tips, nodes)
-    }
-    # Remove any internal nodes. They have larger indices than the number of taxa (tips)
-    tips = tips[tips <= Ntaxa]
-    ### pjm2 add: If int.node was already a tip, then return itself, not NULL 
-    if( int.node <= Ntaxa & length(tips) == 0 ){
-    	tips = int.node
-    }
-    if (return.names) 
-        tips = phy$tip.label[tips]
-    return(tips)
-}
-##############################################################################
-#' Internal function for unweighted UniFrac edge-weight.
-#' 
-#' A function that takes a phylo object (tree) and an edge-index
-#' as input, and returns the edge-weight term for unweighted UniFrac.
-#'
-#' @param edge The edge index
-#'
-#' @param samples Character vector of length 2, giving the pair of
-#'  samples under comparison.
-#'
-#' @param occ \code{otu_table} object in samples-by-species orientation
-#'
-#' @param tree object of class \code{phylo}
-#'
-#' @keywords internal
-#' @return character vector
-#' @seealso UniFrac
-ufnum <- function(edge, samples, occ, tree){
-	A <- samples[1]
-	B <- samples[2]
-	
-	# get the associated node in order to call internal2tips(). node number, n:
-	n <- tree$edge[edge, 2]
-	
-	# get subset of tips (species) that descend from this branch
-	edgeDescendants <- internal2tips_self(tree, n, return.names = TRUE)
-	
-	# Tabulate whether Ai and Bi have descendants in each sample descended from branch n
-	Ai <- (sum(occ[A, edgeDescendants]) > 0) - 0
-	Bi <- (sum(occ[B, edgeDescendants]) > 0) - 0
-	wi   <- abs(Ai - Bi) > 0
-	return(wi)	
-}
-################################################################################
-#' Internal function for weighted UniFrac edge-weight.
-#' 
-#' A function that takes a phylo object (tree) and an edge-index
-#' as input, and returns the edge-weight term for weighted \code{\link{UniFrac}}.
-#'
-#' @param edge The edge index
-#'
-#' @param samples Character vector of length 2, giving the pair of
-#'  samples under comparison.
-#'
-#' @param OTU \code{otu_table} object in samples-by-species orientation
-#'
-#' @param tree object of class \code{phylo}
-#'
-#' @keywords internal
-#' @return character vector
-#' @seealso UniFrac
-UFwi = function(edge, samples, OTU, tree, AT=sum(OTU[samples[1],]), BT=sum(OTU[samples[2],])){
-	A <- samples[1]
-	B <- samples[2]
-	# get the associated node in order to call internal2tips(). node number, n:
-	n <- tree$edge[edge, 2]
-	# get subset of tips (species) that descend from this branch
-	edgeDescendants <- internal2tips_self(tree, n, return.names = TRUE)
-	# Calculate Ai/AT and Bi/BT, the number of individuals in each sample descended from branch n
-	AiAT <- sum(OTU[A, edgeDescendants]) / AT
-	BiBT <- sum(OTU[B, edgeDescendants]) / BT
-	wi   <- abs(AiAT - BiBT)
-	return(wi)	
-}
-################################################################################
-#' Calculate (unweighted) UniFrac for a pair of samples from an occurrence matrix.
-#' 
-#' Somewhat an internal function for \code{\link{UniFrac}}, as 
-#' an investigator is usually interested
-#' in the UniFrac distances between many different samples.
-#' Returns a single numeric value, between 0 and 1.
-#'
-#' @usage unifracPair(occ, tree, A, B)
-#'
-#' @param occ (Required). A matrix. A samples-by-species occurrence matrix.
-#' @param tree (Required). A rooted phylogenetic tree. \code{phylo} class.
-#' @param A (Required). Single character string. The name of sample \code{"A"}.
-#' @param B (Required). Single character string. The name of sample \code{"B"}. 
-#'
-#' @return A single number between 0, 1.
-#' @seealso See the main function, \code{\link{UniFrac}}.
-#' @keywords internal
-unifracPair <- function(occ, tree, A, B){
-	
-	# Prune tree to just those species present in either A or B
-	ispecies <- colnames(occ)[ (occ[A, ] > 0) | (occ[B, ] > 0) ]
-	itree    <- prune_taxa(ispecies, tree)
-	
-	# numerator loops over each edge:
-	edges <- 1:nrow(itree$edge)
-		
-	# sum the abs value of the occurrence matrix
-	# numerator, u = sum( bi * abs( Ai - Bi )  )
-	#numerator <- sum(tree$edge.length * sapply(edges, phyloseq:::ufnum, c(A,B), occ, tree))
-	numerator <- sum(itree$edge.length[ sapply(edges, phyloseq:::ufnum, c(A, B), occ, itree) ])
-	
-	# denominator is the sum of the branch lengths for which A and B have species
-	# (not all branches. Branches having nothing to do with A,B must not count)
-	return( numerator / sum(itree$edge.length) )
-}
-##############################################################################
-#' Calculate weighted UniFrac for a pair of samples from an abundance matrix.
-#' 
-#' Somewhat an internal function for \code{\link{UniFrac}}, as usually interested
-#' in the weighted-UniFrac distances between many different samples.
-#' Returns a single numeric value, between 0 and 1 if normalized
-#'
-#' @usage wUniFracPair(OTU, tree, A, B, normalized=TRUE)
-#'
-#' @param OTU (Required). An abundance matrix in samples-by-species orientation.
-#' @param tree (Required). Object of class \code{\link[ape]{phylo}}
-#' @param A (Required). single character string matching the first sample ID in the pair
-#' @param B (Required). single character string matching the second sample ID in the pair
-#' @param normalized (Optional). Logical. Should the output be normalized such that values 
-#'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}. 
-#'
-#' @return A single number between 0, 1.
-#' @seealso \code{\link{UniFrac}}
-#' @keywords internal
-wUniFracPair = function(OTU, tree, A, B, normalized=TRUE){
-	# outer loop
-	# Get the OTUs per sample. This should be calculated early so not needlessly repeated.
-	AT <- sum(OTU[A,])
-	BT <- sum(OTU[B,])
-	# want to loop over each edge:
-	edges <- 1:nrow(tree$edge)
-	# sum the product of the branch length and their weights to get the numerator
-	# numerator, u = sum( bi * UFwi ) = sum( bi * abs( Ai/AT - Bi/BT ) )
-	numerator <- sum(tree$edge.length * sapply(edges, phyloseq:::UFwi, c(A,B), OTU, tree, AT, BT))
-	# if not-normalized weighted UniFrac, just return "numerator";
-	# the u-value in the w-UniFrac description
-	if(!normalized){
-		return(numerator)
+	# This is in serial, but it is quick.
+	distlist2distmat <- function(i, spn, DL){
+	  DistMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
 	}
-	if(normalized){
-		# For denominator, we need the age of each tip
-		# Get the tip ages from their associated edges (node_age gives the age of edges, ironically)
-		tipAges <- node_ages(tree)[which(tree$edge[, 2] %in% 1:length(tree$tip.label))]
-		names(tipAges) <- tree$tip.label
-		# denominator (assumes tree-indices and otu_table indices are same order)
-		denominator <- sum( tipAges * (OTU[A, ]/AT + OTU[B, ]/BT) )
-		# return the normalized weighted UniFrac values
-		return(numerator / denominator)
-	}
+	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)	
+	return(as.dist(DistMat))
 }
 ##############################################################################
 #' Calculate weighted or unweighted (Fast) UniFrac distance for all sample pairs.
@@ -672,11 +466,9 @@ setGeneric("UniFrac", function(physeq, weighted=FALSE, normalized=TRUE, parallel
 #' @importFrom ape is.rooted
 #' @importFrom ape root
 setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE){
-
   if(is.null(phy_tree(physeq)$edge.length)){
     stop("Tree has no branch lengths. See tree$edge.length. Cannot compute UniFrac without branch lengths")
   }  
-  
   # Check if tree is rooted, set random root with warning if it is not.
   if( !is.rooted(phy_tree(physeq)) ){
     #phy_tree(physeq) <- unroot(phy_tree(physeq))
@@ -687,26 +479,26 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
       stop("Problem automatically rooting tree. Make sure your tree is rooted before attempting UniFrac calculation. See ?ape::root")
     }
   } 
-  
 	if( fast ){
 		fastUniFrac(physeq, weighted, normalized, parallel)
 	} else {
-		originalUniFrac(physeq, weighted, normalized, parallel)
+    warning("Option `fast=FALSE` is deprecated. Only 'fast' UniFrac is supported in phyloseq.")
+	  fastUniFrac(physeq, weighted, normalized, parallel)
 	}
-	
 })
 ################################################################################
 # Fast UniFrac for R.
 # Adapted from The ISME Journal (2010) 4, 17-27; doi:10.1038/ismej.2009.97;
 # http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html
 ################################################################################
+#' @importFrom ape prop.part
+#' @importFrom ape reorder.phylo
 #' @keywords internal
 #' @import foreach
 fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
 	# Access the needed components. Note, will error if missing in physeq.
 	OTU  <- otu_table(physeq)
 	tree <- phy_tree(physeq)
-
 	# Some important checks.
 	if( is.null(tree$edge.length) ) {
 	  stop("Tree has no branch lengths, cannot compute UniFrac")
@@ -714,145 +506,110 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	if( !is.rooted(tree) ) {
 	  stop("Rooted phylogeny required for UniFrac calculation")
 	}
-	
 	### Some parallel-foreach housekeeping.    
 	# If user specifies not-parallel run (the default), register the sequential "back-end"
 	if( !parallel ){ registerDoSEQ() }
-    
 	# create N x 2 matrix of all pairwise combinations of samples.
-	spn <- combn(sample_names(OTU), 2, simplify=FALSE)
-	# initialize UniFracMat with NAs
-	UniFracMat <- matrix(NA, nsamples(OTU), nsamples(OTU))
-	# define the rows/cols of UniFracMat with the sample names (rownames)    
-	rownames(UniFracMat) <- sample_names(OTU)
-	colnames(UniFracMat) <- sample_names(OTU)
-
+	spn <- combn(sample_names(physeq), 2, simplify=FALSE)
 	# Make sure OTU is in species-are-rows orientation
-	if( !taxa_are_rows(OTU) ){OTU <- t(OTU)}    
+	if( !taxa_are_rows(physeq) ){OTU <- t(OTU)}
+  # Convert to standard matrix
+	OTU <- as(OTU, "matrix")  
 	# Enforce that tree and otu_table indices are the same order, 
 	# by re-ordering OTU, if needed
 	if( !all(rownames(OTU) == taxa_names(tree)) ){
 	  OTU <- OTU[taxa_names(tree), ]
 	}
-	
 	########################################
 	# Build the requisite matrices as defined 
-	# in the Fast UniFrac paper.
+	# in the Fast UniFrac article.
 	########################################
 	## This only needs to happen once in a call to UniFrac.
 	## Notice that A and B do not appear in this section.
-	
-	# Begin by building the edge array (edge-by-sample matrix)
-	edges <- 1:nrow(tree$edge)
-	edge_array <- matrix(0, nrow=length(edges), ncol=nsamples(OTU), 
-		dimnames=list(edge_index=edges, sample_names=sample_names(OTU)))
-
-	# loop over each edge in the tree. Parallel version.
-  edge_array_list <- foreach( edge=edges, .packages="phyloseq") %dopar% {		
-		# get the associated node in order to call internal2tips(). node number, n:
-		n <- tree$edge[edge, 2]
-		# get subset of tips (species) that descend from this branch
-		edgeDescendants <- phyloseq:::internal2tips_self(tree, n, return.names=TRUE)
-		# sum the descendants of this branch for every sample, assign to edge array (list)
-		return( apply(OTU[edgeDescendants, ], 2, sum) )
+	# Begin by building the edge descendants matrix (edge-by-sample)
+  # `edge_array`
+  #
+	# Create a list of descendants, starting from the first internal node (root)
+	descList <- prop.part(tree, check.labels = FALSE)
+	# Add the terminal edge descendants (tips). By definition, can only have one descendant
+	descList <- c(as.list(1:length(tree$tip.label)), descList)
+	# Convert `descList` to `edge_array` that matches the order of things in `tree$edge`
+	edge_array <- matrix(0, nrow=nrow(tree$edge), ncol=nsamples(physeq), 
+	                      dimnames=list(NULL, sample_names=sample_names(physeq)))
+	for(i in 1:nrow(tree$edge)){
+    # For each entry in the tree$edge table, sum the descendants for each sample
+    # `tree$edge[i, 2]` is the node ID.
+	  edge_array[i, ] <- colSums(OTU[descList[[tree$edge[i, 2]]], , drop=FALSE], na.rm = TRUE)
 	}
-	# Quick loop to organize tree-edge results into a matrix, called edge_array
-	for( edge in edges ){
-		edge_array[edge, ] <- edge_array_list[[edge]]
-	}
-	
+  # Remove unneeded variables. `descList` in particular could be large-ish.
+  rm(descList)
 	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
 	if(!weighted){
 		# For unweighted UniFrac, convert the edge_array to an occurrence (presence/absence binary) array
 		edge_occ <- (edge_array > 0) - 0
 	}
-
 	if( weighted & normalized ){
 		# This is only relevant to weighted-UniFrac.
 		# For denominator in the normalized distance, we need the age of each tip.
-		# Get the tip ages from their associated edges (node_ages gives the age of edges, ironically)
-		tipAges <- node_ages(tree)[ which(tree$edge[, 2] %in% 1:length(tree$tip.label)) ]
-		names(tipAges) <- tree$tip.label		
+	  # 'z' is the tree in postorder order used in calls to .C
+	  # Descending order of left-hand side of edge (the ancestor to the node)
+	  z = reorder.phylo(tree, order="postorder")
+	  # Call phyloseq-internal function that in-turn calls ape's internal
+	  # horizontal position function, in C, using the re-ordered phylo object, `z`
+	  tipAges = ape_node_depth_edge_length(Ntip = length(tree$tip.label),
+	                                       Nnode = tree$Nnode, 
+	                                       edge = z$edge, 
+	                                       Nedge = nrow(tree$edge)[1],
+	                                       edge.length = z$edge.length)
+	  # Keep only the tips, and add the tip labels in case `z` order differs from `tree`
+	  tipAges <- tipAges[1:length(tree$tip.label)]
+	  names(tipAges) <- z$tip.label	
+    # Explicitly re-order tipAges to match OTU
+	  tipAges <- tipAges[rownames(OTU)]
 	}
-
 	########################################	
   # optionally-parallel implementation with foreach
 	########################################
+	samplesums = sample_sums(physeq)
 	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
 	  A  <- i[1]
 	  B  <- i[2]
-	  AT <- sample_sums(OTU)[A]
-	  BT <- sample_sums(OTU)[B]		
-	  if( weighted ){ # weighted UniFrac
-	    # subset matrix to just columns A and B
-	    edge_array_AB <- edge_array[, c(A, B)]
-	    # Perform UFwi equivalent, "inline" with apply on edge_array_AB
-	    wUF_branchweight <- apply(edge_array_AB, 1, function(br, A, B, ATBT){
-	      abs((br[A]/ATBT[A]) - (br[B]/ATBT[B]))
-	    }, A, B, c(AT, BT))
+	  AT <- samplesums[A]
+	  BT <- samplesums[B]
+	  if( weighted ){
+      # weighted UniFrac
+	    wUF_branchweight <- abs(edge_array[, A]/AT - edge_array[, B]/BT)
 	    # calculate the w-UF numerator
-	    numerator <- sum(tree$edge.length * wUF_branchweight)
+	    numerator <- sum({tree$edge.length * wUF_branchweight}, na.rm = TRUE)
 	    # if not-normalized weighted UniFrac, just return "numerator";
 	    # the u-value in the w-UniFrac description
 	    if(!normalized){
 	      return(numerator)
 	    } else {
 	      # denominator (assumes tree-indices and otu_table indices are same order)
-	      denominator <- sum( tipAges * (OTU[, A]/AT + OTU[, B]/BT) )
+	      denominator <- sum({tipAges * (OTU[, A]/AT + OTU[, B]/BT)}, na.rm = TRUE)
 	      # return the normalized weighted UniFrac values
 	      return(numerator / denominator)
 	    }
-	  } else { # unweighted UniFrac
-	    # subset matrix to just columns A and B
+	  } else {
+      # Unweighted UniFrac
+	    # Subset matrix to just columns A and B
 	    edge_occ_AB <- edge_occ[, c(A, B)]
-	    # keep only the unique branches, sum the lengths
-	    edge_uni_AB_sum <- sum( (tree$edge.length * edge_occ_AB)[apply(edge_occ_AB, 1, sum) < 2, ] )
+      # Keep only the unique branches. Sum the lengths
+      edge_uni_AB_sum <- sum((tree$edge.length * edge_occ_AB)[rowSums(edge_occ_AB, na.rm=TRUE) < 2, ], na.rm=TRUE)
 	    # Normalize this sum to the total branches among these two samples, A and B
-	    uwUFpairdist <- edge_uni_AB_sum / sum( tree$edge.length[apply(edge_occ_AB, 1, sum) > 0] )
+	    uwUFpairdist <- edge_uni_AB_sum / sum(tree$edge.length[rowSums(edge_occ_AB, na.rm=TRUE) > 0])
 	    return(uwUFpairdist)
 	  }
 	}
-	
-  # This is in serial, but it is quick.
-  distlist2distmat <- function(i, spn, DL){
-    UniFracMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
-  }
-	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)
-    
-    return(as.dist(UniFracMat))
-	
-}
-################################################################################
-#' Return the ages (length to root node) of each node in a phylogenetic tree
-#' 
-#' This is a reimplementation of the function \code{node.age} from 
-#' \href{http://cran.at.r-project.org/web/packages/picante/index.html}{the picante package}.
-#' In testing, the more-vectorized version of the computation included here
-#' is roughly 3-fold faster than \code{node.age} and with identical results.
-#' Unlike the picante-package implementation, this function does not 
-#' return a modified version of the phylogenetic tree input, 
-#' rather it returns only the newly-computed vector of ages for each node.
-#' 
-#' @param phy (Required). A phylogenetic tree 
-#'  in \code{\link[ape]{phylo}} format.
-#' 
-#' @return A numeric vector
-#' 
-#' @keywords internal
-node_ages = function(phy){
-  # Initialize the age and ancestor-index vectors, respectively
-  age = numeric(nrow(phy$edge))
-  anci = integer(nrow(phy$edge))
-  # Define the root edge indices
-  whichroot = which(phy$edge[, 1]==phy$edge[1, 1])
-  # Define the ancestor index (the edge index of the ancestor, for faster lookup)
-  anci[-whichroot] <- sapply(phy$edge[, 1][-whichroot], function(a, n){which(n == a)}, n=phy$edge[, 2])
-  # Initialize root edges to zero ancestor age
-  age[whichroot] <- 0 + phy$edge.length[whichroot] 
-  # Loop through each non-root edge.
-  dummy = sapply((1:length(age))[-whichroot], function(i){
-    age[i] <<- age[anci[i]] + phy$edge.length[i]
-  })
-  return(age)
+	# Initialize UniFracMat with NAs
+	UniFracMat <- matrix(NA_real_, nsamples(physeq), nsamples(physeq))
+	rownames(UniFracMat) <- colnames(UniFracMat) <- sample_names(physeq)
+  # Matrix-assign lower-triangle of UniFracMat. Then coerce to dist and return.
+  	matIndices <- do.call(rbind, spn)[, 2:1]
+  	# Take care of edge case where there are two samples -> 1 pair of indices -> rbind doesn't return a matrix
+  	if(!is.matrix(matIndices)) matIndices <- matrix(matIndices, ncol=2)
+	UniFracMat[matIndices] <- unlist(distlist)
+	return(as.dist(UniFracMat))	
 }
 ################################################################################

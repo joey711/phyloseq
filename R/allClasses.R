@@ -135,7 +135,35 @@ dpcoa <- structure(list(), class = "dpcoa")
 # If this ever works
 # @importClassesFrom ade4 dpcoa
 ################################################################################
-#
+#' An S4 placeholder for the basic \code{\link[stats]{dist}}ance matrix class.
+#'
+#' See the \code{\link[ape]{ape}} package for details about this type of
+#' representation of a phylogenetic tree. It is used throught ape.
+#'
+#' @seealso
+#'  \code{\link[stats]{dist}}
+#'  
+#'  \code{\link{setOldClass}}
+#'
+#' @name dist-class
+#' @rdname dist-class
+#' @exportClass dist
+setOldClass("dist")
+################################################################################
+#' S3 class for ape-calculated MDS results
+#' 
+#' Nothing to import, because ape doesn't (yet) export this S3 class.
+#' We will define it here, but keep it internal.
+#' For the moment, its only use is for proper dispatch in our extensions
+#' to the scores S3 generic from vegan,
+#' for generic extraction of coordinates and possibly other features from
+#' any ordination results.
+#' 
+#' @keywords internal
+pcoa <- structure(list(), class = "pcoa")
+# @importMethodsFrom ape print
+# phyloseq-specific definition of "phylo" class,
+################################################################################
 #' S3 class placeholder definition (list) for phylogenetic trees.
 #' 
 #' The ape package does not export a version of its \code{\link[ape]{phylo}}-class,
@@ -178,48 +206,6 @@ phylo <- structure(list(), class = "phylo")
 #' @rdname phylo-class
 #' @exportClass phylo
 setOldClass("phylo")
-################################################################################
-#' An S4 placeholder for the basic \code{\link[stats]{dist}}ance matrix class.
-#'
-#' See the \code{\link[ape]{ape}} package for details about this type of
-#' representation of a phylogenetic tree. It is used throught ape.
-#'
-#' @seealso
-#'  \code{\link[stats]{dist}}
-#'  
-#'  \code{\link{setOldClass}}
-#'
-#' @name dist-class
-#' @rdname dist-class
-#' @exportClass dist
-setOldClass("dist")
-################################################################################
-#' Method for fixing problems with phylo-class trees in phyloseq
-#' 
-#' For now this only entails replacing each missing (\code{NA}) branch-length
-#' value with 0.0.
-#' 
-#' @keywords internal
-setGeneric("fix_phylo", function(tree) standardGeneric("fix_phylo") )
-#' @rdname fix_phylo
-#' @aliases fix_phylo,phylo-method
-setMethod("fix_phylo", "phylo", function(tree){
-  tree$edge.length[which(is.na(tree$edge.length))] <- 0
-  return(tree)
-})
-################################################################################
-#' S3 class for ape-calculated MDS results
-#' 
-#' Nothing to import, because ape doesn't (yet) export this S3 class.
-#' We will define it here, but keep it internal.
-#' For the moment, its only use is for proper dispatch in our extensions
-#' to the scores S3 generic from vegan,
-#' for generic extraction of coordinates and possibly other features from
-#' any ordination results.
-#' 
-#' @keywords internal
-pcoa <- structure(list(), class = "pcoa")
-# @importMethodsFrom ape print
 ################################################################################
 # Use setClassUnion to define the unholy NULL-data union as a virtual class.
 # This is a way of dealing with the expected scenarios in which one or more of
