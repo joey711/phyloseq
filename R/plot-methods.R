@@ -899,8 +899,13 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
   siteDF = NULL
   specDF = NULL
   if( type %in% c("species", "split", "biplot") ){
-    specDF <- data.frame(scores(ordination, choices=axes, display="species"), 
-                         stringsAsFactors=FALSE)
+    if( class(ordination) == "pcoa" ){
+      # use wascores to get taxa weighted averages for the given axes
+      specDF <- wascores(ordination$vectors[,axes], t(otu_table(physeq)))
+    } else{
+      specDF <- data.frame(scores(ordination, choices=axes, display="species"), 
+                           stringsAsFactors=FALSE)
+    }
     if( length(specDF) < 2 ){
       specDF <- NULL
       warning("The `scores` method failed to acquire taxa/OTU/species coordinates \n",
