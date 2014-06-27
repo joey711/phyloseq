@@ -1,6 +1,7 @@
 \docType{methods}
 \name{otu_table}
 \alias{otu_table}
+\alias{otu_table,ANY-method}
 \alias{otu_table,data.frame-method}
 \alias{otu_table,matrix-method}
 \alias{otu_table,otu_table-method}

@@ -77,6 +77,12 @@ setMethod("otu_table", "matrix", function(object, taxa_are_rows){
 setMethod("otu_table", "data.frame", function(object, taxa_are_rows){
 	otu_table(as(object, "matrix"), taxa_are_rows)
 })
+# Any less-specific class, not inherited by those above.
+#' @aliases otu_table,ANY-method
+#' @rdname otu_table-methods
+setMethod("otu_table", "ANY", function(object, errorIfNULL=TRUE){
+  access(object, "otu_table", errorIfNULL) 
+})
 ################################################################################
 #' Returns the total number of individuals observed from each species/taxa/OTU.
 #' 

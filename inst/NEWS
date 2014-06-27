@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.9.11
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Support species in samples-only ordination results using weighted-average coordinates, via `vegan::wascores`
+
+	- Related to https://github.com/joey711/phyloseq/pull/364
+
 CHANGES IN VERSION 1.9.10
 -------------------------
 

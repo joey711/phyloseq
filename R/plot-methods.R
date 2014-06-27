@@ -177,7 +177,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
   if( vcount(g) < 2 ){
     # Report a warning if the graph is empty
-    stop("The graph you provided, `g`, has too few vertices. Check your graph, or the output of `make_network` and try again.")
+    stop("The graph you provided, `g`, has too few vertices. 
+         Check your graph, or the output of `make_network` and try again.")
   }
   
 	# disambiguate species/OTU/taxa as argument type...
@@ -840,6 +841,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' \code{\link{plot_phyloseq}}
 #'
 #' @import ggplot2
+#' @importFrom vegan wascores
 #' @export
 #' @examples 
 #' # See other examples at
@@ -899,9 +901,14 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
   siteDF = NULL
   specDF = NULL
   if( type %in% c("species", "split", "biplot") ){
-    specDF <- data.frame(scores(ordination, choices=axes, display="species"), 
+    specDF <- data.frame(scores(ordination, choices=axes, display="species", physeq=physeq), 
                          stringsAsFactors=FALSE)
-    if( length(specDF) < 2 ){
+    if( length(specDF) < 2 | suppressWarnings(all(is.na(specDF)))){
+      message("Species scores not found directly in ordination object. Attempting weighted average (`vegan::wascores`)")
+      specDF <- data.frame(wascores(scores(ordination, choices=axes, display="sites"), w = veganifyOTU(physeq)),
+                           stringsAsFactors=FALSE)
+    }
+    if( length(specDF) < 2 | suppressWarnings(all(is.na(specDF)))){
       specDF <- NULL
       warning("The `scores` method failed to acquire taxa/OTU/species coordinates \n",
               "from the provided ordination. \n",
@@ -912,7 +919,12 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
   if( type %in% c("sites", "split", "biplot") ){
     siteDF = data.frame(scores(ordination, choices=axes, display="sites"),
                         stringsAsFactors=FALSE)
-    if( length(siteDF) < 2 ){
+    if( length(siteDF) < 2 | suppressWarnings(all(is.na(siteDF)))){
+      message("Samples scores not found directly in ordination object. Attempting weighted average (`vegan::wascores`)")
+      siteDF = data.frame(wascores(scores(ordination, choices=axes, display="species"), w = t(veganifyOTU(physeq))),
+                          stringsAsFactors=FALSE)
+    }  
+    if( length(siteDF) < 2 | suppressWarnings(all(is.na(siteDF)))){
       siteDF <- NULL
       warning("The `scores` method failed to acquire sample/sites coordinates \n",
               "from the provided ordination. \n",
@@ -922,7 +934,8 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
                           stringsAsFactors=FALSE)
     }
   }
-  if( length(siteDF) < 2 & length(specDF) < 2 ){
+  if((length(siteDF) < 2 | suppressWarnings(all(is.na(siteDF)))) &
+     (length(specDF) < 2 | suppressWarnings(all(is.na(specDF))))){
     stop("The `scores` method failed to acquire any coordinates ", 
          "from the provided ordination. \n",
          "Please check your ordination and try again.")

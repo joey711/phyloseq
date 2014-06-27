@@ -4,18 +4,26 @@
 # vegan:::scores.default
 ################################################################################
 # pcoa-class, from pcoa{ape}
+#' @importFrom vegan wascores
 #' @importFrom vegan scores
 #' @keywords internal
-scores.pcoa <- function(x, choices=NULL, display="sites", ...){
+scores.pcoa <- function(x, choices=NULL, display="sites", physeq=NULL, ...){
 	if(is.null(choices)){
 		choices <- colnames(x$vectors)
 	}
-	if( !display %in% c("sites", "samples") ){
+	if( display %in% c("OTU", "OTUs", "species", "Species", "taxa") ){
+    if(is.null(otu_table(physeq, errorIfNULL = FALSE))){
+      warning("scores.pcoa: Failed to access OTU table from `physeq` argument, \n
+              needed for weighted average of OTU/taxa/species points in MDS/PCoA.")
+      return(NULL)
+    }
 		# MDS/PCoA only provides coordinates of the elements in the
 		# distance matrix, usually sites/samples, so species (etc.)
-		# not an option...
-		return( NULL )
+    # This means we need to use the weighted-average as there is
+    # no corresponding axes from the ordination directly.
+	  return(wascores(x$vectors[, choices], w = veganifyOTU(physeq)))
 	} else {
+    # Return the sample coordinates.
 		return( x$vectors[, choices] )		
 	}
 }
@@ -23,8 +31,10 @@ scores.pcoa <- function(x, choices=NULL, display="sites", ...){
 #' @importFrom vegan scores
 #' @keywords internal
 scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
-	ifelse(display=="species", coords <- x$l1, coords <- x$l2)
+  coords = NULL
+	coords = ifelse(display=="species", x$l1, x$l2)
 	if( is.null(choices) ){
+    # If no choices selection, take all dimensions/columns
 		choices <- colnames(coords)
 	}
 	return( coords[, choices] )
