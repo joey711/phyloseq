@@ -11,33 +11,40 @@ scores.pcoa <- function(x, choices=NULL, display="sites", physeq=NULL, ...){
 	if(is.null(choices)){
 		choices <- colnames(x$vectors)
 	}
-	if( display %in% c("OTU", "OTUs", "species", "Species", "taxa") ){
+  co = list(sites = x$vectors[, choices])
+	if( "species" %in% display ){
     if(is.null(otu_table(physeq, errorIfNULL = FALSE))){
       warning("scores.pcoa: Failed to access OTU table from `physeq` argument, \n
               needed for weighted average of OTU/taxa/species points in MDS/PCoA.")
-      return(NULL)
+    } else {
+      # MDS/PCoA only provides coordinates of the elements in the
+      # distance matrix, usually sites/samples, so species (etc.)
+      # This means we need to use the weighted-average as there is
+      # no corresponding axes from the ordination directly.
+      co$species <- wascores(x$vectors[, choices], w = veganifyOTU(physeq))      
     }
-		# MDS/PCoA only provides coordinates of the elements in the
-		# distance matrix, usually sites/samples, so species (etc.)
-    # This means we need to use the weighted-average as there is
-    # no corresponding axes from the ordination directly.
-	  return(wascores(x$vectors[, choices], w = veganifyOTU(physeq)))
-	} else {
-    # Return the sample coordinates.
-		return( x$vectors[, choices] )		
 	}
+  co <- co[display]
+  if(length(co) < 2L){
+    # Unlist
+    co <- co[[display]]
+  }
+  return(co)
 }
 # dpcoa-class, from ade4
 #' @importFrom vegan scores
 #' @keywords internal
 scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
   coords = NULL
-	coords = ifelse(display=="species", x$l1, x$l2)
-	if( is.null(choices) ){
-    # If no choices selection, take all dimensions/columns
-		choices <- colnames(coords)
-	}
-	return( coords[, choices] )
+  # `display` must be either "sites" or "species", per vegan-package convention.
+	coords <- switch(EXPR = display,
+                   species = x$l1,
+                   sites = x$l2)
+  # If no choices selection, take all dimensions/columns
+  if(is.null(choices)){
+    choices <- 1:ncol(coords) 
+  }
+	return( coords[, choices, drop=FALSE] )
 }
 ################################################################################
 # Extend vegdist for phyloseq classes
