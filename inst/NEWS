@@ -1,3 +1,18 @@
+CHANGES IN VERSION 1.9.11
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- More robust `plot_ordination` behavior with clearer warning/error messages.
+
+	- Coordinates automatically checked/assigned to OTU or samples
+
+	- Attempt to calculate OTU or sample weighted-average coordinates via `vegan::wascores`, if-needed
+
+	- Species weighted-average via `vegan::wascores` supported now in phyloseq::scores.pcoa
+
+	- Related to https://github.com/joey711/phyloseq/pull/364
+
 CHANGES IN VERSION 1.9.10
 -------------------------
 

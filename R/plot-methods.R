@@ -177,7 +177,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
   if( vcount(g) < 2 ){
     # Report a warning if the graph is empty
-    stop("The graph you provided, `g`, has too few vertices. Check your graph, or the output of `make_network` and try again.")
+    stop("The graph you provided, `g`, has too few vertices. 
+         Check your graph, or the output of `make_network` and try again.")
   }
   
 	# disambiguate species/OTU/taxa as argument type...
@@ -751,9 +752,6 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' additional annotation in the form of shading, shape, and/or labels of
 #' sample variables.
 #'
-#' @usage plot_ordination(physeq, ordination, type="samples", axes=c(1, 2),
-#'	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE)
-#' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}. 
 #'  The data about which you want to 
 #'  plot and annotate the ordination.
@@ -840,6 +838,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' \code{\link{plot_phyloseq}}
 #'
 #' @import ggplot2
+#' @importFrom vegan wascores
 #' @export
 #' @examples 
 #' # See other examples at
@@ -848,8 +847,12 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
 #' gp_bray_pcoa = ordinate(GP, "CCA", "bray")
 #' plot_ordination(GP, gp_bray_pcoa, "samples", color="SampleType")
-plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
+plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
                             color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
+  if(length(type) > 1){
+    warning("`type` can only be a single option, but more than one provided. Using only the first.")
+    type <- type[[1]]
+  }
   if(length(color) > 1){
     warning("The `color` variable argument should have length equal to 1.",
             "Taking first value.")
@@ -872,7 +875,7 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
         return(official_types)
       }
     } 
-    warning("Full functionality requires `physeq` be phyloseq-class",
+    warning("Full functionality requires `physeq` be phyloseq-class ",
             "with multiple components.")
   }
   # Catch typos and synonyms
@@ -888,65 +891,125 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
   if( !type %in% official_types ){
     warning("type argument not supported. `type` set to 'samples'.\n",
             "See `plot_ordination('list')`")
-    type = "sites"
+    type <- "sites"
   }
   if( type %in% c("scree") ){
     # Stop early by passing to plot_scree() if "scree" was chosen as a type
     return( plot_scree(ordination, title=title) )
   }
-  # Initialize plotting data frames.
-  DF = NULL
-  siteDF = NULL
-  specDF = NULL
-  if( type %in% c("species", "split", "biplot") ){
-    specDF <- data.frame(scores(ordination, choices=axes, display="species"), 
-                         stringsAsFactors=FALSE)
-    if( length(specDF) < 2 ){
+  # Define a function to check if a data.frame is empty
+  is_empty = function(x){
+    length(x) < 2 | suppressWarnings(all(is.na(x)))
+  }
+  # The plotting data frames.
+  # Call scores to get coordinates.
+  # Silently returns only the coordinate systems available.
+  # e.g. sites-only, even if species requested.
+  specDF = siteDF = NULL
+  try({siteDF <- scores(ordination, choices = axes, display="sites", physeq=physeq)}, silent = TRUE)
+  try({specDF <- scores(ordination, choices = axes, display="species", physeq=physeq)}, silent = TRUE)
+  # Check that have assigned coordinates to the correct object
+  siteSampIntx = length(intersect(rownames(siteDF), sample_names(physeq)))
+  siteTaxaIntx = length(intersect(rownames(siteDF), taxa_names(physeq)))
+  specSampIntx = length(intersect(rownames(specDF), sample_names(physeq)))
+  specTaxaIntx = length(intersect(rownames(specDF), taxa_names(physeq)))
+  if(siteSampIntx < specSampIntx & specTaxaIntx < siteTaxaIntx){
+    # Double-swap
+    co = specDF
+    specDF <- siteDF
+    siteDF <- co
+    rm(co)
+  } else {
+    if(siteSampIntx < specSampIntx){
+      # Single swap
+      siteDF <- specDF
       specDF <- NULL
-      warning("The `scores` method failed to acquire taxa/OTU/species coordinates \n",
-              "from the provided ordination. \n",
-              "Changing `type` variable to samples/sites in case this solves problem.")
+    }
+    if(specTaxaIntx < siteTaxaIntx){
+      # Single swap 
+      specDF <- siteDF
+      siteDF <- NULL
+    }
+  }
+  # If both empty, warn and return NULL
+  if(is_empty(siteDF) & is_empty(specDF)){
+    warning("Could not obtain coordinates from the provided `ordination`. \n",
+            "Please check your ordination method, and whether it is supported by `scores` or listed by phyloseq-package.")
+    return(NULL)
+  }
+  # If either is missing, do weighted average
+  if(is_empty(specDF) & type != "sites"){
+    message("Species coordinates not found directly in ordination object. Attempting weighted average (`vegan::wascores`)")
+    specDF <- data.frame(wascores(siteDF, w = veganifyOTU(physeq)), stringsAsFactors=FALSE)
+  }
+  if(is_empty(siteDF) & type != "species"){ 
+    message("Species coordinates not found directly in ordination object. Attempting weighted average (`vegan::wascores`)")
+    siteDF <- data.frame(wascores(specDF, w = t(veganifyOTU(physeq))), stringsAsFactors=FALSE)
+  }
+  # Double-check that have assigned coordinates to the correct object
+  specTaxaIntx <- siteSampIntx <- NULL
+  siteSampIntx <- length(intersect(rownames(siteDF), sample_names(physeq)))
+  specTaxaIntx <- length(intersect(rownames(specDF), taxa_names(physeq)))
+  if(siteSampIntx < 1L & !is_empty(siteDF)){
+    # If siteDF is not empty, but it doesn't intersect the sample_names in physeq, warn and set to NULL
+    warning("`Ordination site/sample coordinate indices did not match `physeq` index names. Setting corresponding coordinates to NULL.")
+    siteDF <- NULL
+  }
+  if(specTaxaIntx < 1L & !is_empty(specDF)){
+    # If specDF is not empty, but it doesn't intersect the taxa_names in physeq, warn and set to NULL
+    warning("`Ordination species/OTU/taxa coordinate indices did not match `physeq` index names. Setting corresponding coordinates to NULL.")
+    specDF <- NULL
+  }
+  # If you made it this far and both NULL, return NULL and throw a warning
+  if(is_empty(siteDF) & is_empty(specDF)){
+    warning("Could not obtain coordinates from the provided `ordination`. \n",
+            "Please check your ordination method, and whether it is supported by `scores` or listed by phyloseq-package.")
+    return(NULL)
+  }
+  if(type %in% c("biplot", "split") & (is_empty(siteDF) | is_empty(specDF)) ){
+    # biplot and split require both coordinates systems available. 
+    # Both were attempted, or even evaluated by weighted average.
+    # If still empty, warn and switch to relevant type.
+    if(is_empty(siteDF)){
+      warning("Could not access/evaluate site/sample coordinates. Switching type to 'species'")
+      type <- "species"
+    }
+    if(is_empty(specDF)){
+      warning("Could not access/evaluate species/taxa/OTU coordinates. Switching type to 'sites'")
       type <- "sites"
     }
   }
-  if( type %in% c("sites", "split", "biplot") ){
-    siteDF = data.frame(scores(ordination, choices=axes, display="sites"),
-                        stringsAsFactors=FALSE)
-    if( length(siteDF) < 2 ){
-      siteDF <- NULL
-      warning("The `scores` method failed to acquire sample/sites coordinates \n",
-              "from the provided ordination. \n",
-              "Changing `type` variable to 'taxa' in case this solves problem.")
-      type <- "species"
-      specDF = data.frame(scores(ordination, choices=axes, display="species"),
-                          stringsAsFactors=FALSE)
+  if(type != "species"){
+    # samples covariate data frame, `sdf`
+    sdf = NULL
+    sdf = data.frame(access(physeq, slot="sam_data"), stringsAsFactors=FALSE)
+    if( !is_empty(sdf) & !is_empty(siteDF) ){
+      # The first two axes should always be x and y, the ordination axes.
+      siteDF <- cbind(siteDF, sdf[rownames(siteDF), ])
     }
   }
-  if( length(siteDF) < 2 & length(specDF) < 2 ){
-    stop("The `scores` method failed to acquire any coordinates ", 
-         "from the provided ordination. \n",
-         "Please check your ordination and try again.")
+  if(type != "sites"){
+    # taxonomy data frame `tdf`
+    tdf = NULL
+    tdf = data.frame(access(physeq, slot="tax_table"), stringsAsFactors=FALSE)
+    if( !is_empty(tdf) & !is_empty(specDF) ){
+      # The first two axes should always be x and y, the ordination axes.
+      specDF = cbind(specDF, tdf[rownames(specDF), ])
+    }
   }
-  # samples covariate data frame, `sdf`
-  sdf = NULL
-  sdf = data.frame(access(physeq, slot="sam_data"), stringsAsFactors=FALSE)
-  if( length(sdf) > 0 & length(siteDF) >= 2 ){
-    # The first two axes should always be x and y, the ordination axes.
-    siteDF = cbind(siteDF, sdf[rownames(siteDF), ])
-  }
-  # taxonomy data frame `tdf`
-  tdf = NULL
-  tdf = data.frame(access(physeq, slot="tax_table"), stringsAsFactors=FALSE)
-  if( length(tdf) > 0 & !is.null(specDF) ){
-    # The first two axes should always be x and y, the ordination axes.
-    specDF = cbind(specDF, tdf[rownames(specDF), ])
+  # In "naked" OTU-table cases, `siteDF` or `specDF` could be matrix.
+  if(!inherits(siteDF, "data.frame")){
+    #warning("Sample Co-variables apparently missing in provided `physeq` for this plot-type. Coercing coord matrix to data.frame.")
+    siteDF <- as.data.frame(siteDF, stringsAsFactors = FALSE)
+  }  
+  if(!inherits(specDF, "data.frame")){
+    #warning("Taxonomy apparently missing in provided `physeq` for this plot-type. Coercing coord matrix to data.frame.")
+    specDF <- as.data.frame(specDF, stringsAsFactors = FALSE)
   }
   # Define the main plot data frame, `DF`
-  if( type == "sites" ){
-    DF = siteDF
-  } else if( type == "species" ){
-    DF = specDF
-  } else if( type %in% c("split", "biplot") ){
+  DF = NULL
+  DF <- switch(EXPR = type, sites = siteDF, species = specDF, {
+    # Anything else. In practice, type should be "biplot" or "split" here.
     # Add id.type label
     specDF$id.type <- "Taxa"
     siteDF$id.type <- "Samples"
@@ -959,8 +1022,9 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
     if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "Samples") }
     if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "Taxa") }
     if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Samples") }
-    if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Taxa") }    
-  }
+    if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Taxa") }
+    DF
+  })
   # In case user wants the plot-DF for some other purpose, return early
   if(justDF){return(DF)}
   # Check variable availability before defining mapping.

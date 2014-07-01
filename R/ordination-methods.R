@@ -598,7 +598,7 @@ setGeneric("capscale.phyloseq", function(physeq, formula, distance, ...){
   standardGeneric("capscale.phyloseq")
 })
 #' @importFrom vegan capscale
-#' @aliases capscale.phyloseq,phyloseq,formula-method
+#' @aliases capscale.phyloseq,phyloseq,formula,dist-method
 #' @rdname capscale-phyloseq-methods
 setMethod("capscale.phyloseq", c("phyloseq", "formula", "dist"),
 function(physeq, formula, distance, ...){

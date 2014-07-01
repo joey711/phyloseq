@@ -2,9 +2,9 @@
 \alias{plot_ordination}
 \title{General ordination plotter based on ggplot2.}
 \usage{
-  plot_ordination(physeq, ordination, type="samples",
-  axes=c(1, 2), color=NULL, shape=NULL, label=NULL,
-  title=NULL, justDF=FALSE)
+  plot_ordination(physeq, ordination, type = "samples",
+  axes = 1:2, color = NULL, shape = NULL, label = NULL,
+  title = NULL, justDF = FALSE)
 }
 \arguments{
   \item{physeq}{(Required). \code{\link{phyloseq-class}}.
