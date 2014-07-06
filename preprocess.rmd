@@ -1,5 +1,4 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
+`r knitr::opts_chunk$set(cache=FALSE, fig.width=8)`
 
 
 Functions for Accessing and (Pre)Processing Data
@@ -11,11 +10,11 @@ library(phyloseq)
 For completeness, here is the version number of phyloseq used to build this instance of the tutorial -- and also how you can check your own current version from the command line.
 
 ```{r}
-packageDescription("phyloseq")$Version
+packageVersion("phyloseq")
 ```
 Load the `GlobalPatterns` dataset, included with the phyloseq package.
 ```{r}
-data(GlobalPatterns)
+data("GlobalPatterns")
 ```
 
 ## Accessors
@@ -32,17 +31,22 @@ otu_table(GlobalPatterns)[1:5, 1:5]
 tax_table(GlobalPatterns)[1:5, 1:4]
 phy_tree(GlobalPatterns)
 taxa_names(GlobalPatterns)[1:10]
-myTaxa = taxa_names(GlobalPatterns)[1:10]
-plot(phy_tree(prune_taxa(myTaxa, GlobalPatterns)))
+myTaxa = names(sort(taxa_sums(GlobalPatterns), decreasing = TRUE)[1:10])
+ex1 = prune_taxa(myTaxa, GlobalPatterns)
+plot(phy_tree(ex1), show.node.label = TRUE)
+plot_tree(ex1, color = "SampleType", label.tips = "Phylum", ladderize = "left", justify = "left" , size = "Abundance")
 ```
 
 ## Preprocessing
-The phyloseqBase package also includes functions for filtering, subsetting, and merging abundance data. Filtering in phyloseq is designed in a modular fashion similar to the approach in the genefilter package. This includes the `prune_taxa` and `prune_samples` methods for directly removing unwanted indices, as well as the `filterfun_sample` and `genefilter_sample` functions for building arbitrarily complex sample-wise filtering criteria, and the `filter_taxa` function for taxa-wise filtering. In the following example, the `GlobalPatterns` data is first transformed to relative abundance, creating the new `GPr` object, which is then filtered such that all OTUs with a variance greater than 10^-5 are removed. This results in a highly-subsetted object containing just 177 of the original ~19000 OTUs (`GPfr` below). Note that in both lines we have provided a custom function for transformation and filtering, respectively.
+
+The phyloseq package also includes functions for filtering, subsetting, and merging abundance data. Filtering in phyloseq is designed in a modular fashion similar to the approach in the genefilter package. This includes the `prune_taxa` and `prune_samples` methods for directly removing unwanted indices, as well as the `filterfun_sample` and `genefilter_sample` functions for building arbitrarily complex sample-wise filtering criteria, and the `filter_taxa` function for taxa-wise filtering. In the following example, the `GlobalPatterns` data is first transformed to relative abundance, creating the new `GPr` object, which is then filtered such that only OTUs with a mean greater than 10^-5 are kept.
 
 ```{rGP-filter, cache=TRUE}
 GPr  = transform_sample_counts(GlobalPatterns, function(x) x / sum(x) )
-GPfr = filter_taxa(GPr, function(x) var(x) > 1e-5, TRUE)
+GPfr = filter_taxa(GPr, function(x) mean(x) > 1e-5, TRUE)
 ```
+
+This results in a highly-subsetted object, `GPfr`, containing just `r ntaxa(GPfr)` of the original ~`r ntaxa(GlobalPatterns)` OTUs. Note that in both lines we have provided a custom function for transformation and filtering, respectively.
 
 The subsetting methods `prune_taxa` and `prune_samples` are for cases where the complete subset of desired OTUs or samples is directly available. Alternatively, the `subset_taxa` and `subset_samples` functions are for subsetting based on auxiliary data contained in the Taxonomy Table or Sample Data components, respectively. These functions are analogous to the `subset` function in core R, in which the initial data argument is followed by an arbitrary logical expression that indicates elements or rows to keep. Thus, entire experiment-level data objects can be subset according to conditional expressions regarding the auxiliary data. For example, the following code will first assign to `GP.chl` the subset of the GlobalPatterns dataset that are part of the Chlamydiae phylum, and then remove samples with less than 20 total reads.
 
@@ -64,7 +68,7 @@ gpsfbg = tax_glom(gpsfb, "Family")
 plot_tree(gpsfbg, color="SampleType", shape="Class", size="abundance")
 ```
 
-For transforming abundance values by an arbitrary R function, phyloseqBase includes the `transform_sample_counts` function. It takes as arguments a phyloseq-object and an R function, and returns a phyloseq-object in which the abundance values have been transformed, sample-wise, according to the transformations specified by the function. For example, the following command transforms `GP.chl` abundance counts to fractional abundance.
+For transforming abundance values by an arbitrary R function, phyloseq includes the `transform_sample_counts` function. It takes as arguments a phyloseq-object and an R function, and returns a phyloseq-object in which the abundance values have been transformed, sample-wise, according to the transformations specified by the function. For example, the following command transforms `GP.chl` abundance counts to fractional abundance.
 
 ```{rtransform-counts-ex, eval=FALSE}
 transform_sample_counts(GP.chl, function(OTU) OTU/sum(OTU) )
