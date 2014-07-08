@@ -1,6 +1,6 @@
 \name{plot_network}
 \alias{plot_network}
-\title{Plot a network using ggplot2 (represent microbiome)}
+\title{Microbiome Network Plot using ggplot2}
 \usage{
   plot_network(g, physeq=NULL, type="samples", color=NULL,
   shape=NULL, point_size=4, alpha=1, label="value", hjust =

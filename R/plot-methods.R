@@ -34,7 +34,7 @@
 #'  \code{\link{plot_heatmap}}
 #'  \code{\link{plot_tree}}
 #'  \code{\link{plot_network}}
-#'  \code{\link{plot_taxa_bar}}
+#'  \code{\link{plot_bar}}
 #'  \code{\link{plot_richness}}
 #'
 #' @export
@@ -60,7 +60,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 })
 ################################################################################
 ################################################################################
-#' Plot a network using ggplot2 (represent microbiome)
+#' Microbiome Network Plot using ggplot2 
 #'
 #' There are many useful examples of phyloseq network graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_network-examples}{phyloseq online tutorials}.
@@ -177,7 +177,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
   if( vcount(g) < 2 ){
     # Report a warning if the graph is empty
-    stop("The graph you provided, `g`, has too few vertices. Check your graph, or the output of `make_network` and try again.")
+    stop("The graph you provided, `g`, has too few vertices. 
+         Check your graph, or the output of `make_network` and try again.")
   }
   
 	# disambiguate species/OTU/taxa as argument type...
@@ -247,6 +248,261 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	}
 	
 	return(p)
+}
+################################################################################
+################################################################################
+#' Microbiome Network Plot using ggplot2 
+#'
+#' There are many useful examples of phyloseq network graphics in the
+#' \href{http://joey711.github.io/phyloseq/plot_net-examples}{phyloseq online tutorials}.
+#' A custom plotting function for displaying networks
+#' using advanced \code{\link[ggplot2]{ggplot}}2 formatting.
+#' Note that this function is a performance and interface revision to
+#' \code{\link{plot_network}}, which requires an \code{\link[igraph]{igraph}}
+#' object as its first argument.
+#' This new function is more in-line with other
+#' \code{plot_*} functions in the \code{\link{phyloseq-package}}, in that its
+#' first/main argument is a \code{\link{phyloseq-class}} instance.
+#' Edges in the network are created if the distance between
+#' nodes is below a (potentially arbitrary) threshold,
+#' and special care should be given to considering the choice of this threshold.
+#' However, network line thickness and opacity is scaled according to the
+#' similarity of vertices (either samples or taxa),
+#' helping to temper, somewhat, the effect of the threshold.
+#' Also note that the choice of network layout algorithm can have a large effect
+#' on the impression and interpretability of the network graphic,
+#' and you may want to familiarize yourself with some of these options
+#' (see the \code{laymeth} argument).
+#'
+#' @param physeq (Required). 
+#'  The \code{\link{phyloseq-class}} object that you want to represent as a network.
+#'  
+#' @param distance (Optional). Default is \code{"bray"}. 
+#'  Can be either a distance method supported by \code{\link[phyloseq]{distance}},
+#'  or an already-computed \code{\link{dist}}-class with labels that match
+#'  the indices implied by both the \code{physeq} and \code{type} arguments
+#'  (that is, either sample or taxa names).
+#'  If you used \code{\link[phyloseq]{distance}} to pre-calculate your \code{\link{dist}}ance,
+#'  and the same \code{type} argument as provided here, then they will match.
+#'  
+#' @param maxdist (Optional). Default \code{0.7}. 
+#'  The maximum distance value between two vertices
+#'  to connect with an edge in the graphic.
+#'
+#' @param type (Optional). Default \code{"samples"}.
+#'  Whether the network represented in the primary argument, \code{g},
+#'  is samples or taxa/OTUs.
+#'  Supported arguments are \code{"samples"}, \code{"taxa"},
+#'  where \code{"taxa"} indicates using the taxa indices,
+#'  whether they actually represent species or some other taxonomic rank.
+#'  
+#' @param laymeth (Optional). Default \code{"fruchterman.reingold"}.
+#'  A character string that indicates the method that will determine
+#'  the placement of vertices, typically based on conectedness of vertices
+#'  and the number of vertices.
+#'  This is an interesting topic, and there are lots of options.
+#'  See \code{\link{igraph-package}} for related topics in general, 
+#'  and see \code{\link[igraph]{layout.auto}} for descriptions of various
+#'  alternative layout method options supported here.
+#'  The character string argument should match exactly the
+#'  layout function name with the \code{"layout."} omitted.
+#'  Try \code{laymeth="list"} to see a list of options.
+#'
+#' @param color (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for color mapping
+#'  of points (graph vertices).
+#' 
+#' @param shape (Optional). Default \code{NULL}.
+#'  The name of the sample variable in \code{physeq} to use for shape mapping.
+#'  of points (graph vertices).
+#'  
+#' @param rescale (Optional). Logical. Default \code{FALSE}.
+#'  Whether to rescale the distance values to be \code{[0, 1]}, in which the
+#'  min value is close to zero and the max value is 1.
+#' 
+#' @param point_size (Optional). Default \code{4}. 
+#'  The size of the vertex points.
+#' 
+#' @param point_alpha (Optional). Default \code{1}.
+#'  A value between 0 and 1 for the alpha transparency of the vertex points.
+#' 
+#' @param point_label (Optional). Default \code{NULL}.
+#'  The variable name in \code{physeq} covariate data to map to vertex labels.
+#' 
+#' @param hjust (Optional). Default \code{1.35}.
+#'  The amount of horizontal justification to use for each label.
+#'
+#' @param title (Optional). Default \code{NULL}. Character string.
+#'  The main title for the graphic.
+#'  
+#' @return A \code{\link{ggplot}}2 network plot.
+#'  Will render to default graphic device automatically as print side effect.
+#'  Can also be saved, further manipulated, or rendered to
+#'  a vector or raster file using \code{\link{ggsave}}.
+#' 
+#' @seealso 
+#'  Original network plotting functions:
+#' 
+#'  \code{\link{make_network}}
+#' 
+#'  \code{\link{plot_network}}
+#' 
+#' @import ggplot2
+#' @import reshape2
+#' @importFrom data.table data.table
+#' @importFrom igraph layout.auto
+#' @importFrom igraph layout.random
+#' @importFrom igraph layout.circle
+#' @importFrom igraph layout.sphere
+#' @importFrom igraph layout.fruchterman.reingold
+#' @importFrom igraph layout.kamada.kawai
+#' @importFrom igraph layout.spring
+#' @importFrom igraph layout.reingold.tilford
+#' @importFrom igraph layout.fruchterman.reingold.grid
+#' @importFrom igraph layout.lgl
+#' @importFrom igraph layout.graphopt
+#' @importFrom igraph layout.svd
+#' @importFrom igraph graph.data.frame
+#' @importFrom igraph get.vertex.attribute
+#' @export
+#' @examples 
+#' data(enterotype)
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3)
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "auto")
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "svd")
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "circle")
+#' plot_net(enterotype, color="SeqTech", shape="Enterotype", maxdist = 0.3, laymeth = "circle")
+plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
+                     laymeth="fruchterman.reingold", color=NULL, shape=NULL, rescale=FALSE,
+                     point_size=5, point_alpha=1, point_label=NULL, hjust = 1.35, title=NULL){
+  # Supported layout methods
+  available_layouts = list(
+    auto = layout.auto,
+    random = layout.random,
+    circle = layout.circle,
+    sphere = layout.sphere,
+    fruchterman.reingold = layout.fruchterman.reingold,
+    kamada.kawai = layout.kamada.kawai,
+    spring = layout.spring,
+    reingold.tilford = layout.reingold.tilford,
+    fruchterman.reingold.grid = layout.fruchterman.reingold.grid,
+    lgl = layout.lgl,
+    graphopt = layout.graphopt,
+    svd = layout.svd
+  )
+  if(laymeth=="list"){
+    return(names(available_layouts))
+  }
+  if(!laymeth %in% names(available_layouts)){
+    stop("Unsupported argument to `laymeth` option. Please use an option returned by `plot_net(laymeth='list')`")
+  }
+  # 1. 
+  # Calculate Distance
+  if( inherits(distance, "dist") ){
+    # If distance a distance object, use it rather than re-calculate
+    Distance <- distance
+    # Check that it at least has (a subset of) the correct labels
+    possibleVertexLabels = switch(type, taxa=taxa_names(physeq), samples=sample_names(physeq))
+    if( !all(attributes(distance)$Labels %in% possibleVertexLabels) ){
+      stop("Some or all `distance` index labels do not match ", type, " names in `physeq`")
+    }
+  } else {
+    # Coerce to character and attempt distance calculation
+    scaled_distance = function(physeq, method, type, rescale=TRUE){
+      Dist = distance(physeq, method, type)
+      if(rescale){
+        # rescale the distance matrix to be [0, 1]
+        Dist <- Dist / max(Dist, na.rm=TRUE)
+        Dist <- Dist - min(Dist, na.rm=TRUE)
+      }
+      return(Dist)
+    }
+    distance <- as(distance[1], "character")
+    Distance = scaled_distance(physeq, distance, type, rescale)
+  }
+  # 2.
+  # Create edge data.table
+  dist_to_edge_table = function(Dist, MaxDistance=NULL, vnames = c("v1", "v2")){
+    dmat <- as.matrix(Dist)
+    # Set duplicate entries and self-links to Inf
+    dmat[upper.tri(dmat, diag = TRUE)] <- Inf
+    LinksData = data.table(reshape2::melt(dmat, varnames=vnames, as.is = TRUE))
+    setnames(LinksData, old = "value", new = "Distance")
+    # Remove self-links and duplicate links
+    LinksData <- LinksData[is.finite(Distance), ]
+    # Remove entries above the threshold, MaxDistance
+    if(!is.null(MaxDistance)){
+      LinksData <- LinksData[Distance < MaxDistance, ]
+    }
+    return(LinksData)
+  }
+  LinksData0 = dist_to_edge_table(Distance, maxdist)
+  # 3. Create vertex layout
+  # Make the vertices-coordinates data.table
+  vertex_layout = function(LinksData, physeq=NULL, type="samples",
+                           laymeth=igraph::layout.fruchterman.reingold, ...){
+    # `physeq` can be anything, only has effect when non-NULL returned by sample_data or tax_table
+    g = igraph::graph.data.frame(LinksData, directed=FALSE)
+    vertexDT = data.table(laymeth(g, ...),
+                          vertex=get.vertex.attribute(g, "name"))
+    setkey(vertexDT, vertex)
+    setnames(vertexDT, old = c(1, 2), new = c("x", "y"))
+    extraData = NULL
+    if( type == "samples" & !is.null(sample_data(physeq, FALSE)) ){
+      extraData <- data.table(data.frame(sample_data(physeq)), key = "rn", keep.rownames = TRUE)
+    } else if( type == "taxa" & !is.null(tax_table(physeq, FALSE)) ){
+      extraData <- data.table(as(tax_table(physeq), "matrix"), key = "rn", keep.rownames = TRUE)
+    }
+    # Only mod vertexDT if extraData exists
+    if(!is.null(extraData)){
+      # Join vertexDT, extraData using data.table syntax. Presumes `vertex` is key in both.
+      setnames(extraData, old = "rn", new = "vertex")
+      vertexDT <- vertexDT[extraData]
+      vertexDT <- vertexDT[!is.na(x), ]
+    }
+    return(vertexDT)
+  }
+  vertexDT = vertex_layout(LinksData0, physeq, type, available_layouts[[laymeth]])
+  # 4.
+  # Update the links layout for ggplot: x, y, xend, yend
+  link_layout = function(LinksData, vertexDT){
+    linkstart = vertexDT[LinksData$v1, x, y]
+    linkend = vertexDT[LinksData$v2, x, y]
+    setnames(linkend, old = c("y", "x"), new = c("yend", "xend"))
+    LinksData <- cbind(LinksData, linkstart, linkend)
+    return(LinksData)  
+  }
+  LinksData = link_layout(LinksData0, vertexDT)
+  # 5.
+  # Define ggplot2 network plot
+  links_to_ggplot = function(LinksData, vertexDT, vertmap=aes(x, y)){
+    p0 = ggplot(data=LinksData) + 
+      geom_segment(aes(x, y, xend=xend, yend=yend, size=Distance, alpha=Distance)) +
+      geom_point(mapping = vertmap, data=vertexDT, size=5, na.rm = TRUE) +
+      scale_alpha(range = c(1, 0.1)) + 
+      scale_size(range = c(2, 0.25))
+    return(p0)
+  }
+  p = links_to_ggplot(LinksData, vertexDT,
+                      vertmap = aes_string(x="x", y="y", color=color, shape=shape))
+  # Add labels
+  if(!is.null(point_label)){
+    p <- p + geom_text(aes_string(x="x", y="y", label=point_label),
+                       data = vertexDT, size = 2, hjust = hjust, na.rm = TRUE)
+  }
+  # Add default theme
+  net_theme = theme(
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    axis.text.x      = element_blank(),
+    axis.text.y      = element_blank(),
+    axis.title.x     = element_blank(),
+    axis.title.y     = element_blank(),
+    axis.ticks       = element_blank(),
+    panel.border     = element_blank()
+  )
+  p <- p + theme_bw() + net_theme
+  return(p)
 }
 ################################################################################
 ################################################################################
@@ -496,9 +752,6 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' additional annotation in the form of shading, shape, and/or labels of
 #' sample variables.
 #'
-#' @usage plot_ordination(physeq, ordination, type="samples", axes=c(1, 2),
-#'	color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE)
-#' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}. 
 #'  The data about which you want to 
 #'  plot and annotate the ordination.
@@ -585,6 +838,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' \code{\link{plot_phyloseq}}
 #'
 #' @import ggplot2
+#' @importFrom vegan wascores
 #' @export
 #' @examples 
 #' # See other examples at
@@ -593,8 +847,12 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
 #' gp_bray_pcoa = ordinate(GP, "CCA", "bray")
 #' plot_ordination(GP, gp_bray_pcoa, "samples", color="SampleType")
-plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
+plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
                             color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
+  if(length(type) > 1){
+    warning("`type` can only be a single option, but more than one provided. Using only the first.")
+    type <- type[[1]]
+  }
   if(length(color) > 1){
     warning("The `color` variable argument should have length equal to 1.",
             "Taking first value.")
@@ -617,7 +875,7 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
         return(official_types)
       }
     } 
-    warning("Full functionality requires `physeq` be phyloseq-class",
+    warning("Full functionality requires `physeq` be phyloseq-class ",
             "with multiple components.")
   }
   # Catch typos and synonyms
@@ -633,65 +891,125 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
   if( !type %in% official_types ){
     warning("type argument not supported. `type` set to 'samples'.\n",
             "See `plot_ordination('list')`")
-    type = "sites"
+    type <- "sites"
   }
   if( type %in% c("scree") ){
     # Stop early by passing to plot_scree() if "scree" was chosen as a type
     return( plot_scree(ordination, title=title) )
   }
-  # Initialize plotting data frames.
-  DF = NULL
-  siteDF = NULL
-  specDF = NULL
-  if( type %in% c("species", "split", "biplot") ){
-    specDF <- data.frame(scores(ordination, choices=axes, display="species"), 
-                         stringsAsFactors=FALSE)
-    if( length(specDF) < 2 ){
+  # Define a function to check if a data.frame is empty
+  is_empty = function(x){
+    length(x) < 2 | suppressWarnings(all(is.na(x)))
+  }
+  # The plotting data frames.
+  # Call scores to get coordinates.
+  # Silently returns only the coordinate systems available.
+  # e.g. sites-only, even if species requested.
+  specDF = siteDF = NULL
+  try({siteDF <- scores(ordination, choices = axes, display="sites", physeq=physeq)}, silent = TRUE)
+  try({specDF <- scores(ordination, choices = axes, display="species", physeq=physeq)}, silent = TRUE)
+  # Check that have assigned coordinates to the correct object
+  siteSampIntx = length(intersect(rownames(siteDF), sample_names(physeq)))
+  siteTaxaIntx = length(intersect(rownames(siteDF), taxa_names(physeq)))
+  specSampIntx = length(intersect(rownames(specDF), sample_names(physeq)))
+  specTaxaIntx = length(intersect(rownames(specDF), taxa_names(physeq)))
+  if(siteSampIntx < specSampIntx & specTaxaIntx < siteTaxaIntx){
+    # Double-swap
+    co = specDF
+    specDF <- siteDF
+    siteDF <- co
+    rm(co)
+  } else {
+    if(siteSampIntx < specSampIntx){
+      # Single swap
+      siteDF <- specDF
       specDF <- NULL
-      warning("The `scores` method failed to acquire taxa/OTU/species coordinates \n",
-              "from the provided ordination. \n",
-              "Changing `type` variable to samples/sites in case this solves problem.")
+    }
+    if(specTaxaIntx < siteTaxaIntx){
+      # Single swap 
+      specDF <- siteDF
+      siteDF <- NULL
+    }
+  }
+  # If both empty, warn and return NULL
+  if(is_empty(siteDF) & is_empty(specDF)){
+    warning("Could not obtain coordinates from the provided `ordination`. \n",
+            "Please check your ordination method, and whether it is supported by `scores` or listed by phyloseq-package.")
+    return(NULL)
+  }
+  # If either is missing, do weighted average
+  if(is_empty(specDF) & type != "sites"){
+    message("Species coordinates not found directly in ordination object. Attempting weighted average (`vegan::wascores`)")
+    specDF <- data.frame(wascores(siteDF, w = veganifyOTU(physeq)), stringsAsFactors=FALSE)
+  }
+  if(is_empty(siteDF) & type != "species"){ 
+    message("Species coordinates not found directly in ordination object. Attempting weighted average (`vegan::wascores`)")
+    siteDF <- data.frame(wascores(specDF, w = t(veganifyOTU(physeq))), stringsAsFactors=FALSE)
+  }
+  # Double-check that have assigned coordinates to the correct object
+  specTaxaIntx <- siteSampIntx <- NULL
+  siteSampIntx <- length(intersect(rownames(siteDF), sample_names(physeq)))
+  specTaxaIntx <- length(intersect(rownames(specDF), taxa_names(physeq)))
+  if(siteSampIntx < 1L & !is_empty(siteDF)){
+    # If siteDF is not empty, but it doesn't intersect the sample_names in physeq, warn and set to NULL
+    warning("`Ordination site/sample coordinate indices did not match `physeq` index names. Setting corresponding coordinates to NULL.")
+    siteDF <- NULL
+  }
+  if(specTaxaIntx < 1L & !is_empty(specDF)){
+    # If specDF is not empty, but it doesn't intersect the taxa_names in physeq, warn and set to NULL
+    warning("`Ordination species/OTU/taxa coordinate indices did not match `physeq` index names. Setting corresponding coordinates to NULL.")
+    specDF <- NULL
+  }
+  # If you made it this far and both NULL, return NULL and throw a warning
+  if(is_empty(siteDF) & is_empty(specDF)){
+    warning("Could not obtain coordinates from the provided `ordination`. \n",
+            "Please check your ordination method, and whether it is supported by `scores` or listed by phyloseq-package.")
+    return(NULL)
+  }
+  if(type %in% c("biplot", "split") & (is_empty(siteDF) | is_empty(specDF)) ){
+    # biplot and split require both coordinates systems available. 
+    # Both were attempted, or even evaluated by weighted average.
+    # If still empty, warn and switch to relevant type.
+    if(is_empty(siteDF)){
+      warning("Could not access/evaluate site/sample coordinates. Switching type to 'species'")
+      type <- "species"
+    }
+    if(is_empty(specDF)){
+      warning("Could not access/evaluate species/taxa/OTU coordinates. Switching type to 'sites'")
       type <- "sites"
     }
   }
-  if( type %in% c("sites", "split", "biplot") ){
-    siteDF = data.frame(scores(ordination, choices=axes, display="sites"),
-                        stringsAsFactors=FALSE)
-    if( length(siteDF) < 2 ){
-      siteDF <- NULL
-      warning("The `scores` method failed to acquire sample/sites coordinates \n",
-              "from the provided ordination. \n",
-              "Changing `type` variable to 'taxa' in case this solves problem.")
-      type <- "species"
-      specDF = data.frame(scores(ordination, choices=axes, display="species"),
-                          stringsAsFactors=FALSE)
+  if(type != "species"){
+    # samples covariate data frame, `sdf`
+    sdf = NULL
+    sdf = data.frame(access(physeq, slot="sam_data"), stringsAsFactors=FALSE)
+    if( !is_empty(sdf) & !is_empty(siteDF) ){
+      # The first two axes should always be x and y, the ordination axes.
+      siteDF <- cbind(siteDF, sdf[rownames(siteDF), ])
     }
   }
-  if( length(siteDF) < 2 & length(specDF) < 2 ){
-    stop("The `scores` method failed to acquire any coordinates ", 
-         "from the provided ordination. \n",
-         "Please check your ordination and try again.")
+  if(type != "sites"){
+    # taxonomy data frame `tdf`
+    tdf = NULL
+    tdf = data.frame(access(physeq, slot="tax_table"), stringsAsFactors=FALSE)
+    if( !is_empty(tdf) & !is_empty(specDF) ){
+      # The first two axes should always be x and y, the ordination axes.
+      specDF = cbind(specDF, tdf[rownames(specDF), ])
+    }
   }
-  # samples covariate data frame, `sdf`
-  sdf = NULL
-  sdf = data.frame(access(physeq, slot="sam_data"), stringsAsFactors=FALSE)
-  if( length(sdf) > 0 & length(siteDF) >= 2 ){
-    # The first two axes should always be x and y, the ordination axes.
-    siteDF = cbind(siteDF, sdf[rownames(siteDF), ])
-  }
-  # taxonomy data frame `tdf`
-  tdf = NULL
-  tdf = data.frame(access(physeq, slot="tax_table"), stringsAsFactors=FALSE)
-  if( length(tdf) > 0 & !is.null(specDF) ){
-    # The first two axes should always be x and y, the ordination axes.
-    specDF = cbind(specDF, tdf[rownames(specDF), ])
+  # In "naked" OTU-table cases, `siteDF` or `specDF` could be matrix.
+  if(!inherits(siteDF, "data.frame")){
+    #warning("Sample Co-variables apparently missing in provided `physeq` for this plot-type. Coercing coord matrix to data.frame.")
+    siteDF <- as.data.frame(siteDF, stringsAsFactors = FALSE)
+  }  
+  if(!inherits(specDF, "data.frame")){
+    #warning("Taxonomy apparently missing in provided `physeq` for this plot-type. Coercing coord matrix to data.frame.")
+    specDF <- as.data.frame(specDF, stringsAsFactors = FALSE)
   }
   # Define the main plot data frame, `DF`
-  if( type == "sites" ){
-    DF = siteDF
-  } else if( type == "species" ){
-    DF = specDF
-  } else if( type %in% c("split", "biplot") ){
+  DF = NULL
+  DF <- switch(EXPR = type, sites = siteDF, species = specDF, {
+    # Anything else. In practice, type should be "biplot" or "split" here.
     # Add id.type label
     specDF$id.type <- "Taxa"
     siteDF$id.type <- "Samples"
@@ -704,8 +1022,9 @@ plot_ordination = function(physeq, ordination, type="samples", axes=c(1, 2),
     if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "Samples") }
     if(!is.null(shape)){ DF <- rp.joint.fill(DF, shape, "Taxa") }
     if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Samples") }
-    if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Taxa") }    
-  }
+    if(!is.null(color)){ DF <- rp.joint.fill(DF, color, "Taxa") }
+    DF
+  })
   # In case user wants the plot-DF for some other purpose, return early
   if(justDF){return(DF)}
   # Check variable availability before defining mapping.
@@ -1370,19 +1689,9 @@ tree_layout = function(phy, ladderize=FALSE){
   TIPS = phy$edge[(phy$edge[, 2] <= Ntip), 2]
   NODES = (ROOT):(Ntip + Nnode)
   nodelabels = phy$node.label
-  # Define the horizontal positions by depth to root, `xx`
-  ape_node_depth_edge_length <- function(Ntip, Nnode, edge, Nedge, edge.length){
-    .C(ape:::node_depth_edgelength, PACKAGE="ape", as.integer(Ntip),
-       as.integer(Nnode), as.integer(edge[, 1]),
-       as.integer(edge[, 2]), as.integer(Nedge),
-       as.double(edge.length), double(Ntip + Nnode))[[7]]
-  }
-  # Pass to ape's internal horizontal position function, in C, using the re-ordered phylo object.
-  #xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
+  # Call phyloseq-internal function that in-turn calls ape's internal
+  # horizontal position function, in C, using the re-ordered phylo object.
   xx = ape_node_depth_edge_length(Ntip, Nnode, z$edge, Nedge, z$edge.length)
-  # Alternative call in R only...
-  # xx = double(Ntip + Nnode)
-  # system.time(sapply(Nedge:1, function(i, phy){xx[phy$edge[i, 2]] <<- xx[phy$edge[i, 1]] + phy$edge.length[i]}, phy))
   # Initialize `yy`, before passing to ape internal function in C.
   yy <- numeric(Ntip + Nnode)
   yy[TIPS] <- 1:Ntip

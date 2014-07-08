@@ -1,3 +1,38 @@
+CHANGES IN VERSION 1.9.11
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- More robust `plot_ordination` behavior with clearer warning/error messages.
+
+	- Coordinates automatically checked/assigned to OTU or samples
+
+	- Attempt to calculate OTU or sample weighted-average coordinates via `vegan::wascores`, if-needed
+
+	- Species weighted-average via `vegan::wascores` supported now in phyloseq::scores.pcoa
+
+	- Related to https://github.com/joey711/phyloseq/pull/364
+
+CHANGES IN VERSION 1.9.10
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- Massive speed/memory improvement for UniFrac calculations (via `UniFrac` or `distance`)
+
+	- Added unit-tests for the correctness of UniFrac results (no bugs detected. results from pycogent)
+
+	- Moved all unit tests to tests/testthat as recommended by CRAN maintainers and testthat doc
+
+CHANGES IN VERSION 1.9.9
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `plot_net` faster, more-flexible network plot with improved defaults
+
+	- https://github.com/joey711/phyloseq/pull/353
+
 CHANGES IN VERSION 1.9.8
 -------------------------
 

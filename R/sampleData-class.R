@@ -105,9 +105,15 @@ reconcile_categories <- function(DFSM){
 #'
 #' This is a convenience wrapper around the \code{\link{subset}} function.
 #' It is intended to allow subsetting complex experimental objects with one
-#' function call. The subsetting will be
-#' based on an expression related to the columns and values within the 
-#' sample_data.
+#' function call.
+#' Subsetting is based on an expression for which the context first includes
+#' the variables contained in \code{\link{sample_data}}.
+#' The \code{samples} retained in the dataset is equivalent to
+#' \code{x[subset & !is.na(subset)]}, where \code{x} is the vector of sample IDs
+#' and \code{subset} is the logical that results from your subsetting expression.
+#' This is important to keep in mind, as users are often unaware that this
+#' subsetting step also removes/omits samples that have a missing value, \code{NA},
+#' somewhere in the expression.
 #'
 #' @usage subset_samples(physeq, ...)
 #'

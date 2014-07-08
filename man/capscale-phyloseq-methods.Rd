@@ -1,8 +1,8 @@
 \docType{methods}
 \name{capscale.phyloseq}
 \alias{capscale.phyloseq}
-\alias{capscale.phyloseq,phyloseq,formula-method}
 \alias{capscale.phyloseq,phyloseq,formula,character-method}
+\alias{capscale.phyloseq,phyloseq,formula,dist-method}
 \title{Constrained Analysis of Principal Coordinates, \code{\link[vegan]{capscale}}.}
 \arguments{
   \item{physeq}{(Required). Phylogenetic sequencing data
