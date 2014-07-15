@@ -267,7 +267,7 @@ mapfile = system.file("extdata", "master_map.txt", package="phyloseq")
 trefile = system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
 rs_file = system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
 qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)
-print(qiimedata)
+qiimedata
 ```
 
 So it has Let's try some quick graphics built from our newly-imported dataset, `qiimedata`.
