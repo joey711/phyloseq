@@ -1,5 +1,7 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+---
+output: html_document
+---
+`r knitr::opts_chunk$set(cache=TRUE, fig.width=10)`
 
 plot_bar function: Powerful, flexible phyloseq bar plots
 ========================================================
@@ -23,7 +25,7 @@ theme_set(theme_bw())
 Load dataset
 ```{r}
 data("GlobalPatterns")
-gp.ch = subset_species(GlobalPatterns, Phylum == "Chlamydiae")
+gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 ```
 
 ### Some Initial Basic Plots
