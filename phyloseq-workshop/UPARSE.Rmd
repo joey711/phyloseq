@@ -1,0 +1,77 @@
+---
+title: "Lab 01 part 2 - Alternative OTU Clustering"
+output: ioslides_presentation
+---
+
+## Outline of lab
+
+This is a short (~15 minute) lab demonstrating how you can run an alternative OTU clustering method, that is completely separate from QIIME. Consider it a "fork" in the workflow, at one of the final steps in the process of counting the number of DNA sequence fragments (reads) that came from each bacterial species.
+
+1. UPARSE - Why we might want to use it
+2. Sequence data - Inputs for UPARSE
+3. `check-trim-sequences.Rmd` - some simple sequence processing using R
+4. `run-uparse.sh` - Open, Closed, De Novo OTU clustering
+6. Your Turn: Try on example dataset (provided).
+
+
+## OTU Clustering (background)
+
+In SSU metagenomics, next-generation reads are clustered into Operational Taxonomic Units (OTUs). This requires:
+
+- quality filtering
+- dereplication
+- discarding singletons (optional)
+- clustering into OTUs (typically at a 97% identity threshold)
+
+http://drive5.com/usearch/manual/otu_clustering.html
+
+## UPARSE Reference
+
+- Edgar, R. C. (2013). UPARSE: highly accurate OTU sequences from microbial amplicon reads. Nature Methods, 10(10), 996–998.
+- http://www.drive5.com/usearch/manual/
+- UPARSE - Part of `usearch` software, low-level C
+- QIIME uses by default old version of `usearch` (licensing/distribution issues)
+
+## UPARSE method (very brief)
+Identify a set of OTU representative sequences that satisfy
+
+- All pairs of OTU sequences should have < 97% pair-wise sequence identity.
+- Chimeric sequences should be discarded.
+- All non-chimeric input sequences should match at least one OTU with ≥ 97% identity.
+
+![](uparseotu_algo.jpg)
+
+http://www.drive5.com/usearch/manual/uparseotu_algo.html
+
+## UPARSE results/comparison
+- Simulated microbiome DNA mixture from 21 bacterial species
+- Assess OTU-clustering accuracy of various workflows
+- QIIME produced thousands of OTUs, far more than the number of species
+
+## UPARSE results/comparison
+![](uparse-Fig1-mock-results.png)
+
+## UPARSE Requires Global-Trimmed Reads
+
+![](amplicon_coverage.gif)
+
+http://www.drive5.com/usearch/manual/global_trimming.html
+
+## Run Trimming `check-trim-sequences.Rmd`
+
+- Execute `check-trim-sequences.Rmd` in its C.D.
+- Inspect the code (R), file paths, and threshold values.
+- Where does the sequence-trimming happen?
+- Why was that threshold chosen?
+- Would you have chosen the same threshold? 
+
+## Run `run-uparse.sh` 
+
+Use the provided bash script to execute UPARSE OTU clustering multiple times
+
+- Open
+- Closed
+- De Novo 
+
+Can you tell which is which? What is the code doing differently?
+

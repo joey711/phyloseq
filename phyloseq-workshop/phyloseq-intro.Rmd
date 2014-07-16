@@ -1,0 +1,381 @@
+---
+title: "Lab 02: Introduction to phyloseq: importing and manipulating data"
+output: ioslides_presentation
+---
+
+## Outline of Lab 02
+
+- phyloseq Design
+- Importing Data (QIIME/biom, QIIME-DB, UPARSE)
+- Simple Accessors
+- Simple Filtration
+
+## phyloseq Design
+R packages allow modular design, flexible toolset.
+![](phyloseq-workflow.png)
+
+## phyloseq Design
+Data API Diagram
+![](data-diagram.png)
+
+## Importing Data 
+Can always refer to the
+[phyloseq import tutorial](http://joey711.github.io/phyloseq/import-data)
+
+Before we discuss the "convenience functions" for popular file formats,
+it is important to emphasize that 
+**if you can get the data into R, then you can get it "into" phyloseq.**
+There really is no difference. phyloseq is a specialized collection of R functions, and an R data definition(class). phyloseq requires a few extra steps so that data can be recognized by its class (see previous diagram).
+
+There are lots of ways to get data related to a microbiome project.
+Not all of these will come from a popular server or workflow that is already supported by phyloseq.
+
+## Importing Data - "Manually"
+
+We encourage you to create and share your own import code for special data formats, as you come across them, or have a need to create them. 
+
+phyloseq provides tools for *constructing* phyloseq component data,
+and binding it together in the experiment-level 
+multi-component data object, the *phyloseq-class*.
+These are the same functions used internally by
+[the currently available importers](http://joey711.github.io/phyloseq/import-data#import_functions).
+In most cases these also have the same name as the accessors.
+The R interpreter knows what to do based on the argument
+(a process called "dispatch").
+
+See the help files
+```{r eval=FALSE}
+?phyloseq
+?otu_table
+?sample_data
+?tax_table
+```
+
+## Importing Data - "Manually"
+
+Constructors:
+
+- `otu_table` - Works on any numeric `matrix`. You must also specify if the species are rows or columns
+- `sample_data` - Works on any `data.frame`. The rownames must match the sample names in the `otu_table` if you plan to combine them as a phyloseq-object
+- `tax_table` - Works on any character `matrix`. The rownames must match the OTU names (`taxa_names`) of the `otu_table` if you plan to combine it with a phyloseq-object.
+- `phyloseq` - Takes as argument an `otu_table` and any unordered list of valid phyloseq components: `sample_data`, `tax_table`, `phylo`, or `XStringSet`. The tip labels of a phylo-object (tree) must match the OTU names of the `otu_table`, and similarly, the sequence names of an `XStringSet` object must match the OTU names of the `otu_table`. 
+- `merge_phyloseq` - Can take any number of phyloseq objects and/or phyloseq components, and attempts to combine them into one larger phyloseq object. This is most-useful for adding separately-imported components to an already-created phyloseq object.
+
+**Note:** OTUs and samples are included in the combined object only if they are present in all components. For instance, extra "leaves" on the tree will be trimmed off when that tree is added to a phyloseq object.
+
+**Example** - In the following example, we will define random example data tables in R, and then combine these into a phyloseq object. If you are able to get your data tables into R, then you can apply the following method to manually create phyloseq instances of your own data.
+
+## Importing Data - "Manually"
+
+We'll create the example vanilla R tables using base R code. No packages required yet. 
+
+```{r}
+# Create a pretend OTU table that you read from a file, called otumat
+otumat = matrix(sample(1:100, 100, replace = TRUE), nrow = 10, ncol = 10)
+otumat
+```
+
+It needs sample names and OTU names, the index names of the your own matrix might already have this.
+
+```{r}
+rownames(otumat) <- paste0("OTU", 1:nrow(otumat))
+colnames(otumat) <- paste0("Sample", 1:ncol(otumat))
+otumat
+```
+
+## Importing Data - "Manually"
+
+Now we need a pretend taxonomy table
+
+```{r}
+taxmat = matrix(sample(letters, 70, replace = TRUE), nrow = nrow(otumat), ncol = 7)
+rownames(taxmat) <- rownames(otumat)
+colnames(taxmat) <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+taxmat
+class(otumat)
+class(taxmat)
+```
+
+## Importing Data - "Manually"
+
+Note how these are just vanilla R matrices. Now let's tell phyloseq how to combine them into a phyloseq object.
+
+In the previous lines, we didn't even need to have phyloseq loaded yet. Now we do.
+
+```{r warning=FALSE, message=FALSE, results='hide'}
+library("phyloseq"); packageVersion("phyloseq")
+```
+
+```{r}
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+TAX = tax_table(taxmat)
+OTU
+TAX
+physeq = phyloseq(OTU, TAX)
+physeq
+plot_bar(physeq, fill = "Family")
+```
+
+## Importing Data - "Manually"
+
+Let's add to this, pretending we also had other types of data available.
+
+Create random sample data, and add that to the combined dataset. Make sure that the sample names match the `sample_names` of the `otu_table`.
+
+```{r}
+sampledata = sample_data(data.frame(
+  Location = sample(LETTERS[1:4], size=nsamples(physeq), replace=TRUE),
+  Depth = sample(50:1000, size=nsamples(physeq), replace=TRUE),
+  row.names=sample_names(physeq),
+  stringsAsFactors=FALSE
+))
+sampledata
+```
+
+## Importing Data - "Manually"
+
+Now create a random phylogenetic tree with the ape package, and add it to your dataset. Make sure its tip labels match your `OTU_table`.
+
+```{r}
+random_tree = ape::rtree(ntaxa(physeq), rooted=TRUE, tip.label=taxa_names(physeq))
+plot(random_tree)
+```
+
+## Importing Data - "Manually"
+
+Now let's combine these altogether. We can do this either by adding the new data components to the phyloseq object we already have by using `merge_phyloseq`, or we can use a fresh new call to `phyloseq` to build it again from scratch. The results should be identical, and we can check. You can always do either one with the help from accessor functions, and the choice is stylistic.
+
+Merge new data with current phyloseq object:
+
+```{r}
+physeq1 = merge_phyloseq(physeq, sampledata, random_tree)
+physeq1
+```
+
+## Importing Data - "Manually"
+
+Rebuild phyloseq data from scratch using all the simulated data components we just generated:
+
+```{r}
+physeq2 = phyloseq(OTU, TAX, sampledata, random_tree)
+physeq2
+```
+
+## Importing Data - "Manually"
+
+Are they identical? We can test perfect identity with `identical` function.
+
+```{r identical-check-manual}
+identical(physeq1, physeq2)
+```
+
+## Importing Data - "Manually"
+
+Let's build a couple tree plots with the new combined data.
+
+```{r treeplot}
+plot_tree(physeq1, color="Location", label.tips="taxa_names",
+          size = "abundance",
+          justify = "left", ladderize="left", plot.margin=0.3)
+```
+
+## Importing Data - "Manually"
+
+Now how about some heatmaps.
+
+```{r heatmap-random}
+plot_heatmap(physeq1, taxa.label="Phylum")
+```
+
+## Importing Data - "Manually"
+
+As you can see, you gain access to the all the typical phyloseq tools, but without relying on any of the import wrappers.
+
+## Importing Data - BIOM-format
+
+This is a format you are very likely to encounter.
+
+The latest few versions of QIIME and other tools/workflows have begun using this
+as a standard output format that can include various types
+of primary- and meta-data in one file, called [biom-format](http://biom-format.org/).
+
+Projects using the BIOM format:
+
+- QIIME
+- MG-RAST
+- PICRUSt
+- Mothur
+- MEGAN
+- VAMPS
+
+## Importing Data - BIOM-format
+
+The phyloseq package provides the `import_biom` function.
+
+First, define the file paths. To make things easy, 
+these are simply names of files in the current directory.
+See `?import_biom` for details about the `parseFunction` argument.
+In short, it is a function (or `NULL`), that defines how taxonomy is processed.
+
+```{r biom-define-files}
+biomfile = "rich_sparse_otu_table.biom"
+treefile = "biom-tree.phy"
+import_biom(biomfile, treefile, parseFunction=parse_taxonomy_greengenes)
+```
+
+## Importing Data - BIOM-format
+We can also import the biom-file that we created during our QIIME example.
+
+```{r qiime-biom}
+biomfile = "otu_table.biom"
+treefile = "rep_set.tre"
+ps0 = import_biom(biomfile, treefile, parseFunction=parse_taxonomy_greengenes)
+ps0 <- merge_phyloseq(ps0, import_qiime_sample_data("Fasting_Map.txt"))
+ps0
+```
+
+## Importing Data - BIOM-format
+Not many samples and ~400 OTUs: good for a tree plot.
+```{r}
+plot_tree(ps0, color = "Treatment", ladderize = "left", justify = "left")
+```
+
+## Importing Data - UPARSE
+You've already heard about OTU clustering with UPARSE. 
+UPARSE is part of the larger `usearch` package, 
+which defines its own [cluster format](http://www.drive5.com/usearch/manual/ucout.html)
+(tab delimited).
+
+In general, this file contains a row for every **read**,
+which means in practice hundreds of millions of rows, or more.
+
+phyloseq provides an extremely efficient import function to read this file,
+the results of which are only an OTU table.
+You should then use tools from the previous "manual import" section
+to bind together other related data for phyloseq.
+
+## Importing Data - UPARSE
+Recall our UPARSE example from Lab 01 Part 02. I've copied those output files into this section,
+the most important of which is the cluster format (`.uc`) file.
+
+Reference-only ("closed"") OTU table:
+
+```{r warning=FALSE, message=FALSE}
+OTU = import_usearch_uc("closed_map.uc")
+SD = import_qiime_sample_data("Fasting_Map.txt")
+tree = read_tree_greengenes("13_8_97_otus_unannotated.tree")
+closedps = phyloseq(OTU, SD, tree)
+closedps
+```
+Only `r ntaxa(closedps)` OTUs for closed-reference UPARSE,
+compared with `r ntaxa(ps0)` OTUs from QIIME.
+
+## Importing Data - UPARSE
+Let's make the same tree, for comparison:
+```{r}
+plot_tree(closedps, color = "Treatment", ladderize = "left", justify = "left")
+```
+A bit more legible, no?
+
+## Importing Data - UPARSE
+Question: 
+"How could we import a "de novo" table from our UPARSE run?"
+
+## Importing Data - UPARSE
+The following doesn't work exactly 
+because we named the de novo sequences differently 
+between the QIIME and UPARSE runs. 
+If we matched these up though, we could compare.
+
+```{r warning=FALSE, message=FALSE}
+OTU = import_usearch_uc("denovo_map.uc")
+dim(OTU)
+```
+Only `r ntaxa(OTU)` OTUs for de novo UPARSE,
+compared with `r ntaxa(ps0)` OTUs from QIIME.
+
+
+## Importing Data - UPARSE
+Now add taxonomy table from complete GreenGenes reference.
+This is a bit unweildy, and I should probably add an `import_greengenes_taxonomy` function
+for just this purpose.
+
+```{r}
+library("data.table")
+taxDT = fread("13_8_97_otu_taxonomy.txt", 
+                        sep="\t", header=FALSE, colClasses="character") 
+setnames(taxDT, c("OTU", "taxstring"))
+setkey(taxDT, "OTU")
+closedtaxDT = taxDT[taxa_names(closedps), ]
+closedtaxlist = lapply(
+  lapply(closedtaxDT$taxstring,
+         function(x){strsplit(x, split="; ", fixed=TRUE)[[1]]}
+         ), parse_taxonomy_greengenes)
+names(closedtaxlist) <- closedtaxDT$OTU
+closedtax = build_tax_table(closedtaxlist)
+```
+
+## Importing Data - UPARSE
+Now merge the previous phyloseq object, and the new `taxonomyTable` into one new phyloseq object.
+
+```{r}
+closedps <- merge_phyloseq(closedps, closedtax)
+closedps
+```
+
+## Importing Data - UPARSE
+Repeat that tree, add phylum label.
+```{r}
+plot_tree(closedps, color = "Treatment", label.tips = "Phylum",
+          ladderize = "left", justify = "left")
+```
+
+
+## Importing Data - QIIME-legacy
+QIIME (legacy format)
+
+Older versions of QIIME produced several files that are still supported input files for phyloseq.
+
+- OTU table file. Essentially tab-delimited file with OTU-abundance and taxonomic identity information.
+- Map file stores sample covariates and demultiplexing information, like primers
+- Tree (Newick format) with a tip for each OTU, which can also be imported by this function.
+- Reference sequences (fasta format). Though rarely analyzed later, phyloseq can import these as well.
+
+## Importing Data - QIIME-legacy
+
+Examples of these files are included within phyloseq.
+
+```{r import-qiime, message=FALSE}
+otufile = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
+mapfile = system.file("extdata", "master_map.txt", package="phyloseq")
+trefile = system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
+rs_file = system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
+qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)
+qiimedata
+```
+
+## Importing Data - QIIME-DB
+QIIME-DB is a server of publicly available datasets 
+that includes the OTU table, taxonomy, and sample covariate ("mapping") table.
+
+See the [microbio_me_qiime tutorial](http://joey711.github.io/phyloseq/download-microbio.me.html)
+
+```{r eval=FALSE}
+microbio_me_qiime(1457, ext = ".tgz")
+```
+
+## Save imported data for later
+We don't have to re-run data-importing tasks every time we come back to our data.
+
+Instead we can save it in an *R binary* format, usually with the suffix `.RData`.
+
+We can save every object in our current *working environment*
+using `save.image`, 
+or we can select specific objects that we want to `save`.
+
+```{r}
+save(ps0, closedps, qiimedata, file = "example-data.RData")
+```
+
+
+

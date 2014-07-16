@@ -1,0 +1,78 @@
+
+
+# Check lengths and trim for UPARSE
+
+Choose a sequence length threshold to use. This will actually be evaluated and used to filter and trim the reads later in the script, and will right the file to disk as a modified name of the input file. The graphic is included to help you choose/refine the length threshold. Thus, you should run this more than once (if the initial threshold is inappropriate), or run the chunks in steps and repeat that way. I prefer the former because you can keep the HTML results as a record of your parameter choices for this trimming step.
+
+If you'd like, you can download [the compressed dataset](ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_1688_split_library_seqs_and_mapping.tgz) for yourself. You will need to also decompress the directory, and the sequence file.
+
+`ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_1688_split_library_seqs_and_mapping.tgz`
+
+We are going to use the ShortRead package to process large (~250 MB) DNA sequence files, and the ggplot2 package 
+to create a histogram of read lengths for this dataset. 
+
+Let's load these packages.
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+library("ShortRead"); packageVersion("ShortRead")
+library("ggplot2"); packageVersion("ggplot2")
+```
+
+
+```{r}
+LengthThreshold = 210L
+outputFile = paste0("seqs-trim-", LengthThreshold,".fna")
+data_dir = "qiime_overview_tutorial"
+inputFile = "seqs.fna"
+```
+
+The demultiplexed 454 reads are stored in a single `.fna` file in my data archive.
+
+```{r load-read}
+x = readFasta(dirPath=data_dir, pattern=inputFile)
+x
+```
+
+There are `r length(x)` reads provided in this dataset, with a length range of `r range(width(x))`. 
+
+We need to decide on a length threshold. UPARSE doc strongly suggests against any end-gap alignment 
+issues by trimming sequences to some minimum length so that they are all the same. 
+Not that this assumes that the primers, linkers, and other technical segments
+of the "raw" sequences have been trimmed off, so that the beginning of each read is comparable.
+
+We need to choose a length for our sequences. Let's explore the histogram of read lengths.
+`width(x)` returns an integer vector of read lengths.
+The following is a custom histogram plotting function 
+that we will use several times in this script.
+
+```{r length-hist, warning=FALSE}
+plot_length_hist = function(x, LengthThreshold, binw=5L){
+  require("ggplot2")
+  ggplot(data.frame(ReadLength = width(x)), aes(x=ReadLength)) + geom_histogram(binwidth = binw) + 
+    scale_y_log10() +
+    geom_vline(xintercept=LengthThreshold, color="red") + ggtitle("Histogram of read lengths")
+}
+plot_length_hist(x, LengthThreshold)
+```
+
+It looks like `r LengthThreshold` nucleotides would be a good length threhold for these sequences.
+
+First, remove reads from our ShortRead object, `x`, that are shorter in length than `r LengthThreshold`.
+
+```{r filter}
+xfilt = x[width(x) >= LengthThreshold]
+plot_length_hist(xfilt, LengthThreshold)
+```
+
+Now, trim the ends of the remaining sequences
+
+```{r}
+xtrim = narrow(xfilt, start=1, end=LengthThreshold)
+plot_length_hist(xtrim, LengthThreshold)
+xtrim
+# Remove prev version of output file, then write
+outputFile = file.path(data_dir, outputFile)
+unlink(outputFile)
+writeFasta(object=xtrim, file=outputFile, mode="w")
+```
+

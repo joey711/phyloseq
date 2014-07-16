@@ -1,0 +1,27 @@
+
+Preliminaries, online documentation (live, manual, take questions)
+- RStudio, R markdown, using RStudio IDE
+- phyloseq online documentation
+	- Bioconductor (introduce, explain)
+	- phyloseq issue tracker, GitHub
+	- import
+	- unifrac
+	- plot tutorials
+	- phyloseq-demo repo
+	- phyloseq-extensions repo
+
+Tutorials
+- (Upstream) UPARSE/OTU-clustering - UPARSE.html
+- (Beginner) Intro to phyloseq, importing, basics - phyloseq-intro.html
+- (Intermediate) Tutorial on accessors, filter, transformation tutorial - filt-trans.html
+- (Intermediate) Trees and Networks
+- (Advanced) Mixture Models
+	- Rarefying discussion? Poll audience if this is needed
+	- Variance Stabilizing Transformations
+		(exploratory sample-wise analyses)
+	- Differential Abundance Detection
+		- mixture model OTU multiple-testing
+
+Freestyle (last hour or so)
+- Load your own data using what you learned in import tutorial
+- Try some of the data-manipulation/exploration techniques we investigated

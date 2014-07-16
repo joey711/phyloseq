@@ -1,0 +1,422 @@
+---
+title: "Lab 02: Part 2: Filtering and Transformation in phyloseq"
+author: Paul J. McMurdie
+date: July 21, 2014
+output: revealjs_presentation
+---
+
+## Outline of Lab 02, Part 2
+
+<style type="text/css">
+p { text-align: left; }
+</style>
+
+Expected Time to Completion: 45 minutes
+
+- Remaining Accessor examples
+- Merging (DB *join*)
+- Independent Filtering
+- Basic Transformations (proportion, log)
+
+
+# Startup R session
+
+## Load phyloseq
+Use gridExtra and ggplot2 packages for side-by-side plots in some places (`arrangeGrob`). Check your own installed package versions and note any differences. If you're behind, consider installing an update with `install.packages`.
+
+```{r warning=FALSE, message=FALSE}
+library("phyloseq"); packageVersion("phyloseq")
+library("gridExtra"); packageVersion("gridExtra")
+library("ggplot2"); packageVersion("ggplot2")
+```
+
+## Load data from previous lab
+
+```{r}
+load("example-data.RData")
+ls()
+```
+
+# Accessors
+
+## Accessors
+
+We have shown some already, but phyloseq provides special accessor functions,
+which I sometimes call *accessors*, that return specific information 
+about a phyloseq data object, if that data is available. 
+Most accessors will return `NULL` or stop with an error
+if the requested data is absent.
+Accessors are useful for both package development
+(separating data structure from function code)
+and for direct interaction by users.
+
+## Accessors
+
+```{r}
+ntaxa(closedps)
+nsamples(closedps)
+sample_names(closedps)[1:5]
+taxa_names(closedps)[1:5]
+```
+
+## Accessors
+
+```{r}
+rank_names(closedps)
+sample_variables(closedps)
+```
+
+## Accessors
+
+```{r}
+otu_table(closedps)[1:5, 1:5]
+```
+
+## Accessors
+
+```{r}
+sample_data(closedps)[1:5, 1:5]
+```
+
+## Accessors
+
+```{r}
+tax_table(closedps)[1:5, 1:4]
+```
+
+## Accessors
+
+```{r}
+phy_tree(closedps)
+```
+
+## Accessors - Questions?
+
+Did I miss any that you're curious about?
+Any "slices" of data that you're wondering about how to get at?
+
+
+# Independent Filtering
+
+## Motivation
+
+For details see the [Independent Filtering vignette](http://bioconductor.org/packages/release/bioc/vignettes/genefilter/inst/doc/independent_filtering.pdf)
+of the [genefilter package](http://bioconductor.org/packages/release/bioc/html/genefilter.html).
+
+The idea of independent ﬁltering is to ﬁlter out those
+tests from the procedure that have no (or little) chance 
+of showing signiﬁcant evidence, 
+**without even looking at their test statistic**. 
+
+No Cheating!  :-)
+
+## Motivation
+
+More rigorously, a good choice for a filtering criterion is one that:
+
+- is statistically independent from the test statistic under the null hypothesis
+- is correlated with the test statistic under the alternative, and
+- does not notably change the dependence structure – if there is any – 
+between the tests that pass the filter, 
+compared to the dependence structure between the tests before filtering.
+
+Typically, this results in increased detection power 
+at the same experiment-wide type I error, as measured
+in terms of the false discovery rate (FDR).
+
+(FDR and multiple testing will be discussed later)
+
+## Motivation
+
+This notion of suprious or "noisy" OTUs is an issue in metagenome data
+that extends beyond multiple testing,
+but I find this a good motivation
+for why we might want to filter OTUs from the data.
+
+We will handle these details more rigorously later.
+
+**In this lab we are interested in demonstrating the mechanics of filtering** OTUs in phyloseq,
+so that you'll know how to perform filtering
+when we later discuss *multiple testing*.
+
+## Independent Filtering - tools
+
+Filtering in phyloseq is designed in a modular fashion.This includes:
+
+- `prune_taxa` - simple "keep only these OTUs" filtering
+- `prune_samples` - simple "keep only these samples" filtering
+- `filterfun_sample` - define arbitrary filter function
+- `genefilter_sample` - apply filtering function (within sample)
+- `filter_taxa` function for taxa-wise (across sample) filtering
+
+## Independent Filtering - examples
+
+In the following example, the `GlobalPatterns` data is first transformed to relative abundance, 
+creating the new `GPr` object, 
+which is then filtered such that only OTUs with a mean greater than 10^-5 are kept.
+
+```{r filter_taxa}
+cpsf = filter_taxa(closedps, function(x) mean(x) > 1, TRUE)
+```
+
+## Independent Filtering - examples
+
+Exercise: Construct your own, more complicated filter,
+that requires that OTUs be present above some proportion threshold
+in at least 2 samples. 
+
+
+# Merging Data
+
+## Merging Data - Motivation
+
+Merging OTU or sample indices based on variables in the data 
+can be a useful means of reducing noise or excess features,
+or for some other reason that oyu know ahead of time, or want to explore.
+
+Some examples might be to merge the samples in a dataset that are from the same environment, 
+or to merge OTUs that are from the same taxonomic genera.
+
+## Merging Data - joins, etc.
+
+General database **join** operations:
+
+- Merge two data frames by common columns or row names
+- etc.
+
+```{r eval=FALSE}
+base::merge
+```
+
+## Merging Data - joins, etc.
+Other useful data "munging" packages in R
+
+- [data.table](http://cran.r-project.org/web/packages/data.table/index.html)
+- [dplyr](http://cran.r-project.org/web/packages/dplyr/index.html)
+- [plyr](http://cran.r-project.org/web/packages/plyr/index.html)
+- [reshape2](http://cran.r-project.org/web/packages/reshape2/index.html)
+- *others*
+
+
+## Merging Data
+phyloseq includes support for two completely different categories of **merging**. 
+
+- `merge_samples`
+- `merge_taxa`
+- `tax_glom`
+- `tip_glom`
+
+See the [merge tutorial](http://joey711.github.io/phyloseq/merge)
+
+## Merging - `merge_samples`
+`merge_samples` can be very useful if you'd like to see what happens to an analysis if you remove the indivual effects between replicates or between samples from a particular explanatory variable. With the `merge_samples` function, the abundance values of merged samples are summed
+and effects related to individual samples are obsecured.
+Some [filtering steps](http://joey711.github.com/phyloseq/preprocess)
+you may want to do first.
+
+## Merging - `merge_samples`
+Beware that non-target variables can get mangled!
+```{r}
+mcps = merge_samples(closedps, "Treatment")
+sample_data(mcps)
+sample_names(mcps)
+```
+
+## Merging - `merge_samples`
+As emphasized earlier, the OTU abundances of merged samples are summed. Let's inspect
+```{r}
+otu_table(mcps)[, 1:5]
+```
+
+## Merging Data - `merge_taxa`
+Merge a subset of the OTUs in x into a single OTU.
+Takes a phyloseq object, a vector of OTU IDs that are "equivalent" (should be merged),
+and returns a new phyloseq object with those merges.
+
+This is "fine-grained" merging, used by `tip_glom` and `tax_glom` (next).
+Useful if you have a few specific manual OTU merges you need to do.
+
+```{r}
+?merge_taxa
+```
+
+
+## Merging Data - `tax_glom`
+The analog to `merge_samples` is, perhaps confusingly, `tax_glom`.
+However, `tax_glom` is the discrete analog of `tip_glom`,
+in case you were wondering where the nomenclature went "off the rails".
+The `tax_glom` function agglomerates OTUs that are equivalent
+at a specified taxonomic rank.
+
+## Merging Data - `tax_glom`
+```{r}
+get_taxa_unique(closedps, "Phylum")
+taxg = tax_glom(closedps, "Phylum")
+taxg
+```
+What just happened? What is `taxg`? What might you use to figure this out?
+
+## Merging Data - `tax_glom`
+```{r}
+otu_table(taxg)
+```
+
+## Merging Data - `tax_glom`
+```{r}
+plot_tree(taxg, color = "Treatment", size = "abundance",
+          justify = "left", label.tips = "Phylum")
+```
+
+## Merging Data - `tax_glom`
+
+- Where are the low-abundance OTUs coming from?
+- Any guesses?
+- How might you investigate this?
+
+
+## Merging Data - `tip_glom`
+As mentioned earlier, `tip_glom` is the continuous analog of `tax_glom`.
+Unlike `tax_glom`, though, there are no classification values that might go missing,
+so the agglomeration is much smoother with
+not really any potential for "straggling" artifacts,
+since every branch-length in the tree is available.
+If you have a tree available, this is recommended over `tax_glom`.
+
+## Merging Data - `tip_glom`
+```{r}
+tipg = tip_glom(closedps, 0.4)
+plot_tree(tipg, color = "Treatment", size = "abundance",
+          justify = "left", label.tips = "Phylum")
+```
+
+## Merging Data - `tip_glom`
+
+```{r}
+grid.arrange(nrow=1,
+  plot_tree(closedps, justify = "left", title = "original"),
+  plot_tree(tip_glom(closedps, 0.1), justify = "left", title = "tipglom")
+)
+```
+
+
+
+# Basic Transformations
+
+## Basic Transformations - Motivation
+
+For some applications, it is useful to work with transformed versions of the count data. 
+We will get into the details of more sophisticated transformations later.
+
+- *proportion* (counts of species `i` divided by library size)
+- *log*
+
+The [DESeq2 vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf)
+has a discussion of transformations,
+and we will use some of the more advanced transformations later on.
+
+## Basic Transformations 
+
+For transforming abundance values by an arbitrary R function, 
+phyloseq includes the `transform_sample_counts` function.
+It takes as arguments a phyloseq-object and an R function,
+and returns a phyloseq-object in which the abundance values 
+have been transformed, sample-wise, 
+according to the transformations specified by the function.
+
+## Basic Transformations - Proportion
+
+For example, the following command transforms `closedps`
+abundance counts to fractional abundance (simple proportions).
+
+```{rtransform-counts-ex}
+cpsProp = transform_sample_counts(closedps, function(x) x/sum(x) )
+plot_heatmap(cpsProp)
+```
+
+## Basic Transformations - Logarithm
+
+"Logarithmic Transformation" - Since count values for a gene can be zero
+in some conditions (and non-zero in others),
+some advocate the use of pseudocounts:
+
+```{r eval=FALSE}
+y = log2(n + 1) 
+```
+
+or more generally, 
+
+```{r eval=FALSE}
+y = log2(n + n0)
+```
+
+where `n` represents the count values and `n0` is a positive constant.
+
+## Basic Transformations - Logarithm
+
+In phyloseq
+
+```{rtransform-counts-log2}
+cpsLog = transform_sample_counts(closedps, function(x) log2(x+1L) )
+plot_heatmap(cpsLog)
+```
+
+# Example Workflow
+
+## Example Workflow
+
+Finally, the following is an example workflow of preprocessing steps
+that might be applied to a phyloseq dataset prior to further analysis.
+
+## Example Workflow - tip_glom
+
+```{r}
+cpst = tip_glom(closedps, 0.1)
+```
+
+## Example Workflow - heuristic filter
+
+Remove OTUs not seen more than 3 times in at least 20% of the samples
+
+```{r}
+cpsf = filter_taxa(cpst, function(x) sum(x > 3) > (0.2 * length(x)), TRUE)
+cpsfp = transform_sample_counts(cpsf, function(x) x / sum(x))
+```
+
+## Example Workflow - mean prop. filter
+Filter taxa using a cutoff of 0.01%
+```{r}
+keepTaxa = taxa_sums(cpsfp) > 0.01
+cpsf <- prune_taxa(keepTaxa, cpsf)
+```
+
+## Example Workflow - transform
+
+```{r}
+cpsfProp = transform_sample_counts(cpsf, function(x) x/sum(x))
+```
+
+## Example Workflow - taxonomic subset
+Subset the data to *Bacteroidetes*, make a plot.
+```{r}
+cpsfb = subset_taxa(cpsfProp, Phylum == "Bacteroidetes")
+plot_tree(cpsfb, color="Treatment", label.tips = "Family",
+          size="abundance", justify = "left")
+```
+
+
+# Lab 02 Exercises
+
+## Exercises
+
+Load a new (to you) dataset e.g.
+
+```{r eval=FALSE}
+data("GlobalPatterns")
+newData = microbio_me_qiime(1457)
+```
+
+- Inspect its contents using **accessors**
+- **Filter** OTUs as you see fit (and possibly samples)
+- Apply a **transformation**
+- **BONUS:** Create a nice plot (not a tree)
+
