@@ -1,6 +1,4 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://kevinburke.bitbucket.org/markdowncss/markdown.css" rel="stylesheet"></link>
-
+`r knitr::opts_chunk$set(fig.width=10)`
 
 # Merge
 [The phyloseq project](http://joey711.github.com/phyloseq/) includes support 
@@ -85,26 +83,22 @@ One of the sources of "noise" in a microbial census dataset is a fine-scaled def
 
 The following is an example of `merge_taxa` in action, using a tree graphic to display the before and after of the merge, and also show how the merge affects not just the OTU table, but all data components with OTU indices.
 
-We will use a dataset that is included with the picante package, so a few steps must be taken to get the data into an optimal format for phyloseq functions.
+We will use an example dataset that was previously imported into phyloseq with the variable name `closedps`
+and saved within an RData binary file, `"example-data.RData"`.
 
 ```{r}
-data(phylocom)
-tree = phylocom$phylo
-otu = otu_table(phylocom$sample, taxa_are_rows=FALSE)
-x0 = phyloseq(otu, tree)
-SDF = data.frame(sample=sample_names(x0), row.names=sample_names(x0))
-sample_data(x0) = sample_data(SDF)
+load("example-data.RData")
+plot_tree(closedps, color="Treatment", size="abundance", sizebase=2, label.tips="taxa_names")
 ```
 
-Now that the original unmerged dataset has been combined into a phyloseq object, `x0`, we are free to make an interesting tree graphic using the `plot_tree` function.
+Now let's use `merge_taxa` to merge the first 8 OTUS of `closedps` into one new OTU. 
+By choosing `2` as the optional third argument to `merge_taxa`,
+we are combining the counts of these 8 OTUs 
+into the index for the second OTU.
+The default is to use the first OTU of the second argument.
 ```{r}
-plot_tree(x0, color="sample", size="abundance", sizebase=2, label.tips="taxa_names")
-```
-
-Now let's use `merge_taxa` to merge the first 8 OTUS of `x0` into one new OTU. By choosing `2` as the optional third argument to `merge_taxa`, we are choosing to essentially pile the data of these 8 OTUs into the index for the second OTU. The default is to use the first OTU of the second argument.
-```{r}
-x1 = merge_taxa(x0, taxa_names(x0)[1:8], 2)
-plot_tree(x1, color="sample", size="abundance", sizebase=2, label.tips="taxa_names")
+x1 = merge_taxa(closedps, taxa_names(closedps)[3:27], 2)
+plot_tree(x1, color="Treatment", size="abundance", sizebase=2, label.tips="taxa_names")
 ```
 
 ---
