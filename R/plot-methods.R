@@ -1482,11 +1482,17 @@ psmelt = function(physeq){
   # Next merge taxonomy data, if present
   if(!is.null(rankNames)){
     TT = access(physeq, "tax_table")
-    # Remove any empty columns (all NA)
-    TT <- TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
-    # Now add to the "psmelt" output data.frame, `mdf`
-    tdf = data.frame(TT, OTU=taxa_names(physeq), stringsAsFactors=FALSE)
-    mdf <- merge(mdf, tdf, by.x="OTU")
+    # First, check for empty TT columns (all NA)
+    keepTTcols <- colSums(is.na(TT)) < ntaxa(TT)
+    # Protect against all-empty columns, or col-less matrix
+    if(length(which(keepTTcols)) > 0 & ncol(TT) > 0){
+      # Remove the empty columns
+      TT <- TT[, keepTTcols]
+      # Add TT to the "psmelt" data.frame
+      tdf = data.frame(TT, OTU=taxa_names(physeq))
+      # Now add to the "psmelt" output data.frame, `mdf`
+      mdf <- merge(mdf, tdf, by.x="OTU")
+    }
   }
   # Sort the entries by abundance
   mdf = mdf[order(mdf$Abundance, decreasing=TRUE), ]

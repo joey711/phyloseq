@@ -486,4 +486,15 @@ test_that("psmelt correctly handles phyloseq data with NULL components, and OTU 
   expect_is((prPTr<-print(pTr)), "list")
   expect_is((prPN<-print(pN)), "list")
 })
+test_that("psmelt doesn't break when the number of taxa is 1", {
+  data(GlobalPatterns)
+  # tree removal warning when prune to 1 OTU.
+  expect_warning(GP1 <- prune_taxa(taxa_names(GlobalPatterns)[1], GlobalPatterns))
+  expect_equal(ntaxa(GP1), 1)
+  df <- psmelt(GP1)
+  expect_is(df, 'data.frame')
+  reqnames = c("OTU", "Sample", "Abundance", "SampleType", "Kingdom", "Phylum")
+  expect_true(all(reqnames %in% names(df)))
+  expect_equivalent(sum(df$Abundance, na.rm = TRUE), taxa_sums(GP1))
+})
 ################################################################################
