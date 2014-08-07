@@ -1140,7 +1140,9 @@ psmelt = function(physeq){
   if( !is.null(tax_table(physeq, FALSE)) ){
     TT = tax_table(physeq)
     # First, remove any empty columns (all NA)
-    TT = TT[, which(apply(!apply(TT, 2, is.na), 2, any))]
+    k <- colnames(TT[,!colSums(is.na(TT)) == nrow(TT)])
+    TT <- TT[,k]
+
     # Now add to the "psmelt" data.frame
     tdf = data.frame(TT, OTU=taxa_names(physeq))
     mdf = merge(mdf, tdf, by.x="OTU")	
