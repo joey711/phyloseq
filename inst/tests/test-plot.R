@@ -344,6 +344,17 @@ test_that("plot_richness/estimate_richness: fisher.alpha", {
   expect_equivalent(levels(p123123$data$variable), "Fisher")
 })
 ################################################################################
+# Test psmelt doesnt break when the number of taxa is 1
+################################################################################
+test_that("psmelt doesn't break when the number of taxa is 1", {
+  data(GlobalPatterns)
+  ss <- subset_taxa(GlobalPatterns, Phylum == 'Bacteroidetes')
+  expect_warning(glom <- tax_glom(ss, taxrank = 'Phylum')) # tree removed
+  expect_equal(ntaxa(glom), 1)
+  df <- psmelt(glom)
+  expect_is(df, 'data.frame')
+})
+################################################################################
 # Test psmelt properly protects against various name collisions
 ################################################################################
 test_that("psmelt properly protects against various name collisions", {
