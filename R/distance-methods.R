@@ -104,7 +104,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		"mountford", "raup" , "binomial", "chao", "cao")
 
 	# Special methods (re)defined in phyloseq
-	phyloseq_methods <- c("unifrac", "dpcoa", "jsd")
+	phyloseq_methods <- c("weighted-unifrac", "unifrac", "dpcoa", "jsd")
 	
 	# The standard distance methods
 	dist_methods <- c("maximum", "binary", "minkowski")
@@ -117,7 +117,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		"sim", "gl", "z")
 	
 	method.list <- list(
-		UniFrac    = "unifrac",
+		UniFrac    = c("unifrac", "weighted-unifrac"),
 		DPCoA      = "dpcoa",
 		JSD        = "jsd",
 		vegdist    = vegdist_methods,
@@ -143,6 +143,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	# Define the function call to build
 	if( method %in% phyloseq_methods ){
 		if( method == "unifrac"){ return(UniFrac(physeq, ...)) }
+    if( method == "weighted-unifrac") { return(UniFrac(physeq, weighted=T,...)) }
 		if( method == "jsd"    ){ return(    JSD(physeq, ...)) }
 		if( method == "dpcoa"  ){ return(dist(DPCoA(physeq, ...)$RaoDis)) }
 	} else if( method %in% vegdist_methods ){
