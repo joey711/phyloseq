@@ -56,7 +56,8 @@
   support the option is now deprecated here (the
   implementation was an internal function, anyway) and the
   \code{fast} option will remain for one release cycle
-  before being removed completely.}
+  before being removed completely in order to avoid causing
+  unsupported-argument errors.}
 }
 \value{
   a sample-by-sample distance matrix, suitable for NMDS,
