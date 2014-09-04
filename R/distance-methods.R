@@ -4,7 +4,7 @@
 #' Takes a \code{\link{phyloseq-class}} object and method option, and returns
 #'  a \code{\link{dist}}ance object suitable for certain 
 #'  ordination methods and other distance-based analyses. 
-#'  There are currently 44 explicitly supported method options, as well as
+#'  There are currently 45 explicitly supported method options, as well as
 #'  user-provided arbitrary methods via an interface to
 #'  \code{\link{designdist}}. For the complete list of currently
 #'  supported options/arguments to the \code{method} parameter, 
@@ -32,7 +32,7 @@
 #'  and a phylogenetic tree (\code{phylo}).
 #'
 #' @param method (Optional). A character string. Default is \code{"unifrac"}.
-#'  Provide one of the 44 currently supported options. 
+#'  Provide one of the 45 currently supported options. 
 #'  To see a list of supported options, enter the following into the command line:
 #' 
 #'  \code{distance("list")}
@@ -86,7 +86,7 @@
 #' @examples 
 #' data(esophagus)
 #' distance(esophagus) # Unweighted UniFrac
-#' distance(esophagus, weighted=TRUE) # weighted UniFrac
+#' distance(esophagus, "w-unifrac") # weighted UniFrac
 #' distance(esophagus, "jaccard") # vegdist jaccard
 #' distance(esophagus, "gower") # vegdist option "gower"
 #' distance(esophagus, "g") # designdist method option "g"
@@ -104,7 +104,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		"mountford", "raup" , "binomial", "chao", "cao")
 
 	# Special methods (re)defined in phyloseq
-	phyloseq_methods <- c("unifrac", "dpcoa", "jsd")
+	phyloseq_methods <- c("unifrac", "w-unifrac", "dpcoa", "jsd")
 	
 	# The standard distance methods
 	dist_methods <- c("maximum", "binary", "minkowski")
@@ -117,7 +117,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		"sim", "gl", "z")
 	
 	method.list <- list(
-		UniFrac    = "unifrac",
+		UniFrac    = c("unifrac", "w-unifrac"),
 		DPCoA      = "dpcoa",
 		JSD        = "jsd",
 		vegdist    = vegdist_methods,
@@ -142,9 +142,10 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
   
 	# Define the function call to build
 	if( method %in% phyloseq_methods ){
-		if( method == "unifrac"){ return(UniFrac(physeq, ...)) }
-		if( method == "jsd"    ){ return(    JSD(physeq, ...)) }
-		if( method == "dpcoa"  ){ return(dist(DPCoA(physeq, ...)$RaoDis)) }
+		if( method == "unifrac"  ){ return(UniFrac(physeq, ...)) }
+    if( method == "w-unifrac"){ return(UniFrac(physeq, weighted=T, ...)) }
+		if( method == "jsd"      ){ return(JSD(physeq, ...)) }
+		if( method == "dpcoa"    ){ return(dist(DPCoA(physeq, ...)$RaoDis)) }
 	} else if( method %in% vegdist_methods ){
 		dfun <- "vegdist"
 	} else if( method %in% betadiver_methods ){
