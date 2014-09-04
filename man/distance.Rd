@@ -15,7 +15,7 @@
   \code{otu_table} and a phylogenetic tree (\code{phylo}).}
 
   \item{method}{(Optional). A character string. Default is
-  \code{"unifrac"}. Provide one of the 44 currently
+  \code{"unifrac"}. Provide one of the 45 currently
   supported options. To see a list of supported options,
   enter the following into the command line:
 
@@ -29,7 +29,10 @@
   \code{\link{phyloseq-package}}, and accessed by the
   following \code{method} options:
 
-  \code{"unifrac"}, for UniFrac based distances,
+  \code{"unifrac"}, for (unweighted) UniFrac distance,
+  \code{\link{UniFrac}};
+
+  \code{"wunifrac"}, for weighted-UniFrac distance,
   \code{\link{UniFrac}};
 
   \code{"dpcoa"}, sample-wise distance from Double
@@ -62,7 +65,7 @@
   Takes a \code{\link{phyloseq-class}} object and method
   option, and returns a \code{\link{dist}}ance object
   suitable for certain ordination methods and other
-  distance-based analyses. There are currently 44
+  distance-based analyses. There are currently 45
   explicitly supported method options, as well as
   user-provided arbitrary methods via an interface to
   \code{\link{designdist}}. For the complete list of
@@ -84,7 +87,7 @@
 \examples{
 data(esophagus)
 distance(esophagus) # Unweighted UniFrac
-distance(esophagus, weighted=TRUE) # weighted UniFrac
+distance(esophagus, "wunifrac") # weighted UniFrac
 distance(esophagus, "jaccard") # vegdist jaccard
 distance(esophagus, "gower") # vegdist option "gower"
 distance(esophagus, "g") # designdist method option "g"

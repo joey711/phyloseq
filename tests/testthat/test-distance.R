@@ -44,7 +44,15 @@ test_that("UniFrac produces correct values on an example subset from Global Patt
   expect_false({isTRUE(all.equal(gp500_uuf, gp500_wuf, check.attributes = FALSE, tolerance = 0.01))},
                label = "The reference matrices for UniFrac testing should be different, but were not. uuf/wuf")
   expect_false({isTRUE(all.equal(gp500_uuf, gp500_wufu, check.attributes = FALSE, tolerance = 0.01))},
-               label = "The reference matrices for UniFrac testing should be different, but were not. uuf/wufu")  
+               label = "The reference matrices for UniFrac testing should be different, but were not. uuf/wufu")
+  expect_identical(distance(GP500, "wunifrac"), distance(GP500, "unifrac", weighted = TRUE),
+                   label = "wunifrac output is not identical to unifrac with weighted=T flag")
+})
+test_that("Check that regular-expression matching for unifrac method flag is working", {
+  expect_identical(distance(GP500, "w-UniFrac"), distance(GP500, "unifrac", weighted = TRUE))
+  expect_identical(distance(GP500, "weighted-UniFrac"), distance(GP500, "unifrac", weighted = TRUE))
+  expect_identical(distance(GP500, "unweighted-UniFrac"), distance(GP500, "unifrac"))
+  expect_identical(distance(GP500, "u-UniFrac"), distance(GP500, "unifrac"))
 })
 ################################################################################
 ################################################################################

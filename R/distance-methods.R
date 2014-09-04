@@ -4,7 +4,7 @@
 #' Takes a \code{\link{phyloseq-class}} object and method option, and returns
 #'  a \code{\link{dist}}ance object suitable for certain 
 #'  ordination methods and other distance-based analyses. 
-#'  There are currently 44 explicitly supported method options, as well as
+#'  There are currently 45 explicitly supported method options, as well as
 #'  user-provided arbitrary methods via an interface to
 #'  \code{\link{designdist}}. For the complete list of currently
 #'  supported options/arguments to the \code{method} parameter, 
@@ -32,7 +32,7 @@
 #'  and a phylogenetic tree (\code{phylo}).
 #'
 #' @param method (Optional). A character string. Default is \code{"unifrac"}.
-#'  Provide one of the 44 currently supported options. 
+#'  Provide one of the 45 currently supported options. 
 #'  To see a list of supported options, enter the following into the command line:
 #' 
 #'  \code{distance("list")}
@@ -45,7 +45,9 @@
 #'  by the \code{\link{phyloseq-package}}, and accessed by the following
 #'  \code{method} options:
 #' 
-#'  \code{"unifrac"}, for UniFrac based distances, \code{\link{UniFrac}};
+#'  \code{"unifrac"}, for (unweighted) UniFrac distance, \code{\link{UniFrac}};
+#'  
+#'  \code{"wunifrac"}, for weighted-UniFrac distance, \code{\link{UniFrac}};
 #'
 #'  \code{"dpcoa"}, sample-wise distance from Double Principle 
 #'   Coordinate Analysis, \code{\link{DPCoA}};
@@ -86,7 +88,7 @@
 #' @examples 
 #' data(esophagus)
 #' distance(esophagus) # Unweighted UniFrac
-#' distance(esophagus, weighted=TRUE) # weighted UniFrac
+#' distance(esophagus, "wunifrac") # weighted UniFrac
 #' distance(esophagus, "jaccard") # vegdist jaccard
 #' distance(esophagus, "gower") # vegdist option "gower"
 #' distance(esophagus, "g") # designdist method option "g"
@@ -96,28 +98,29 @@
 #' distance("list")
 #' help("distance")
 distance <- function(physeq, method="unifrac", type="samples", ...){
-	# # Can't do partial matching directly, because too many similar options.
+  # Only one method at a time.
+  if(length(method) > 1){
+    stop("`distance` only accepts one method at a time. ",
+         "You provided ", length(method), " methods. ")
+  }
+	# # Can't do partial matching for all options,
+  # # because too many similar options.
+  # # Do partial matching for wunifrac/unifrac.
 	# # Determine if method argument matches any options exactly.
 	# # If not, call designdist
 	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
 		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
 		"mountford", "raup" , "binomial", "chao", "cao")
-
-	# Special methods (re)defined in phyloseq
-	phyloseq_methods <- c("unifrac", "dpcoa", "jsd")
-	
-	# The standard distance methods
+	# Standard distance methods
 	dist_methods <- c("maximum", "binary", "minkowski")
 	# Only keep the ones that are NOT already in vegdist_methods
 	dist_methods <- dist_methods[!dist_methods %in% intersect(vegdist_methods, dist_methods)]
-
 	# The methods supported by vegan::betadiver function.
 	betadiver_methods <- c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j",
 		"sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
 		"sim", "gl", "z")
-	
 	method.list <- list(
-		UniFrac    = "unifrac",
+		UniFrac    = c("unifrac", "wunifrac"),
 		DPCoA      = "dpcoa",
 		JSD        = "jsd",
 		vegdist    = vegdist_methods,
@@ -125,7 +128,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 		dist       = dist_methods,
 		designdist = "ANY"
 	)
-	
+  # User support, and method options definition.
 	if(class(physeq) == "character"){
 		if( physeq=="help" ){
 			cat("Available arguments to methods:\n")
@@ -139,12 +142,15 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 			return(c(method.list))
 		}		
 	}
-  
-	# Define the function call to build
-	if( method %in% phyloseq_methods ){
-		if( method == "unifrac"){ return(UniFrac(physeq, ...)) }
-		if( method == "jsd"    ){ return(    JSD(physeq, ...)) }
-		if( method == "dpcoa"  ){ return(dist(DPCoA(physeq, ...)$RaoDis)) }
+  # Regular Expression detect/convert unifrac/weighted-UniFrac args
+  method <- gsub("^(u.*)*unifrac$", "unifrac", method, ignore.case = TRUE)
+  method <- gsub("^w.*unifrac$", "wunifrac", method, ignore.case = TRUE)
+	# Return distance, or define the function call to build/pass call
+  if( method ==  "unifrac" ){ return(UniFrac(physeq, ...)) }
+  if( method == "wunifrac" ){ return(UniFrac(physeq, weighted=TRUE, ...)) }
+  if( method == "jsd"      ){ return(JSD(physeq, ...)) }
+  if( method == "dpcoa"    ){
+    return(dist(DPCoA(physeq, ...)$RaoDis))
 	} else if( method %in% vegdist_methods ){
 		dfun <- "vegdist"
 	} else if( method %in% betadiver_methods ){
@@ -154,19 +160,16 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	} else {
 		dfun <- "designdist"
 	}
-	
 	# get the extra arguments to pass to functions (this can be empty)
 	extrargs <- list(...)	
-
 	# # non-phyloseq methods are assumed to be based on otu_table-only (for now)
 	# # If necessary (non phyloseq funs), enforce orientation, build function.
 	OTU <- otu_table(physeq)
-
 	# disambiguate type argument... Must be "species" for vegan integration...
-	if( type %in% c("taxa", "species", "OTUs", "otus", "otu") ){
-		type <- "species"
-	}
-
+  # The following should all work: "OTUs", "OTU", "otus", "Taxas", "site"
+  type <- gsub("(OTU(s)?)|(taxa(s)?)|(Species)", "species", type, ignore.case = TRUE)
+  # The following should all work: "SaMplE", "Samples", "site", "sites"
+  type <- gsub("(Sample(s)?)|(site(s)?)", "samples", type, ignore.case = TRUE)
 	# Test type, and enforce orientation accordingly	
 	if( type == "species"){
 		# For species-distance, species need to be rows (vegan-style)
@@ -177,7 +180,6 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	} else {
 		stop("type argument must be one of \n (1) samples \n or \n (2) species")
 	}	
-
 	OTU <- as(OTU, "matrix")
 	fun.args <- c(list(OTU, method=method), extrargs)	
 	return( do.call(dfun, fun.args) )
@@ -382,7 +384,8 @@ JSD <- function(physeq, parallel=FALSE){
 #'  For legacy code support the option is now deprecated here
 #'  (the implementation was an internal function, anyway)
 #'  and the \code{fast} option will remain for one release cycle before
-#'  being removed completely.
+#'  being removed completely
+#'  in order to avoid causing unsupported-argument errors.
 #'
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
 #' 
@@ -471,7 +474,6 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
   }  
   # Check if tree is rooted, set random root with warning if it is not.
   if( !is.rooted(phy_tree(physeq)) ){
-    #phy_tree(physeq) <- unroot(phy_tree(physeq))
     randoroot = sample(taxa_names(physeq), 1)
     warning("Randomly assigning root as -- ", randoroot, " -- in the phylogenetic tree in the data you provided.")
     phy_tree(physeq) <- root(phy=phy_tree(physeq), outgroup=randoroot, resolve.root=TRUE, interactive=FALSE)

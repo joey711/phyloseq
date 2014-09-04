@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.9.13
+-------------------------
+
+USER-VISIBLE CHANGES
+
+	- `distance` function now supports "wunifrac" option, for `UniFrac(..., weighted=TRUE)`
+
+	- `distance` function regexpr-matching for range of variants for weighted-UniFrac, unweighted-UniFrac method option
+
+	- `distance` function regexpr-matching for `type` argument range of alternatives
+
+	- Proposed in https://github.com/joey711/phyloseq/pull/384
+
 CHANGES IN VERSION 1.9.12
 -------------------------
 
