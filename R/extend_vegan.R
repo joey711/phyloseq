@@ -192,7 +192,7 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	# Some standard diversity indices
   estimRmeas = c("Chao1", "Observed", "ACE")
 	if( any(estimRmeas %in% measures) ){ 
-    outlist <- c(outlist, list(t(data.frame(estimateR(OTU)))))
+    outlist <- c(outlist, list(t(data.frame(estimateR(OTU), check.names=F))))
 	}
 	if( "Shannon" %in% measures ){
     outlist <- c(outlist, list(shannon = diversity(OTU, index="shannon")))
