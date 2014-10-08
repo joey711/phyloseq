@@ -57,7 +57,7 @@ In this example I'm using the major sample covariate, `DIAGNOSIS`, as the study 
 Here is the summary of the data variable `kostic` that we are about to use, as well as the first few entries of the `DIAGNOSIS` factor.
 ```{r show-variables}
 kostic
-head(sample_data(kostic)$DIAGNOSIS, 25)
+head(sample_data(kostic)$DIAGNOSIS, 10)
 ```
 
 ### DESeq2 conversion and call
@@ -70,8 +70,33 @@ library("DESeq2"); packageVersion("DESeq2")
 
 The following two lines actually do all the complicated DESeq2 work. The function `phyloseq_to_deseq2` converts your phyloseq-format microbiome data into a `DESeqDataSet` with dispersions estimated, using the experimental design formula, also shown (the `~DIAGNOSIS` term). The `DESeq` function does the rest of the testing, in this case with default testing framework, but you can actually use alternatives. 
 
+First remove the 5 samples that had no `DIAGNOSIS` attribute assigned.
+These introduce a spurious third design class
+that is actually a rare artifact in the dataset.
+Also remove samples with less than `500` reads (counts).
+Note that this kind of data cleanup
+is useful, necessary, and should be well-documented
+because it can also be dangerous to alter or omit data
+without clear documentation. 
+In this case I actually explored the data first,
+and am omitting some of the details 
+(and explanatory plots) here for clarity.
+
+```{r rm-bad-samples}
+kostic <- subset_samples(kostic, DIAGNOSIS != "None")
+kostic <- prune_samples(sample_sums(kostic) > 500, kostic)
+kostic
+```
+
+
 ```{r run-deseq2}
 diagdds = phyloseq_to_deseq2(kostic, ~ DIAGNOSIS)
+# calculate geometric means prior to estimate size factors
+gm_mean = function(x, na.rm=TRUE){
+  exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+}
+geoMeans = apply(counts(diagdds), 1, gm_mean)
+diagdds = estimateSizeFactors(diagdds, geoMeans = geoMeans)
 diagdds = DESeq(diagdds, fitType="local")
 ```
 Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
@@ -105,7 +130,7 @@ dummy = apply(posigtab, 1, function(x){
 })
 ```
 
-As expected from the original study abstract and title, a *Fusobacterium* OTU was most-significantly differentially abundant between the cancerous and healthy samples.
+As expected from the original study abstract and title, a *Fusobacterium* OTU was among the most-significantly differentially abundant between the cancerous and healthy samples.
 
 Here is a bar plot showing the log2-fold-change, showing Genus and Phylum. Uses some ggplot2 commands.
 

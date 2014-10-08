@@ -62,7 +62,6 @@ phyloseq_to_deseq2 = function(physeq, design, ...){
   if( !taxa_are_rows(physeq) ){ physeq <- t(physeq)}
   # Coerce count data to vanilla matrix of integers
   countData = round(as(otu_table(physeq), "matrix"), digits=0)
-  countData = countData + 1L
   colData = data.frame(sample_data(physeq))
   # Create the DESeq data set, dds.
   dds <- DESeqDataSetFromMatrix(countData, colData, design, ...)

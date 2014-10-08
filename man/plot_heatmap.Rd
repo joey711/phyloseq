@@ -191,15 +191,6 @@ gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 # Remove the nearly-empty samples (e.g. 10 reads or less)
 gpac = prune_samples(sample_sums(gpac) > 50, gpac)
-# Use DESeq2 variance-stabilizing transformation of counts
-gpacds2 = phyloseq_to_deseq2(gpac, design=~SampleType)
-library("DESeq2")
-gpacds2 = estimateSizeFactors(gpacds2)
-gpacds2 = estimateDispersions(gpacds2, fitType="local")
-gpacvst = getVarianceStabilizedData(gpacds2)
-otu_table(gpac) <- otu_table(gpacvst, TRUE)
-# Set values below zero, to zero.
-otu_table(gpac)[otu_table(gpac) < 0.0] <- 0
 # Arbitrary order if method set to NULL
 plot_heatmap(gpac, method=NULL, sample.label="SampleType", taxa.label="Family")
 # Use ordination

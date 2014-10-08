@@ -1,3 +1,21 @@
+CHANGES IN VERSION 1.9.15
+-------------------------
+
+BUG FIXES
+
+	- `phyloseq_to_deseq2` was adding an unnecessary pseudocount of `1` to the count matrix. No longer.
+
+	- Originally described at https://github.com/joey711/phyloseq/issues/387
+
+CHANGES IN VERSION 1.9.14
+-------------------------
+
+BUG FIXES
+
+	- `distance` erroneously transformed Rao distance results for method DPCoA. Now Fixed.
+
+	- Originally described at https://github.com/joey711/phyloseq/issues/390
+
 CHANGES IN VERSION 1.9.13
 -------------------------
 
