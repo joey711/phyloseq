@@ -150,7 +150,8 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
   if( method == "wunifrac" ){ return(UniFrac(physeq, weighted=TRUE, ...)) }
   if( method == "jsd"      ){ return(JSD(physeq, ...)) }
   if( method == "dpcoa"    ){
-    return(dist(DPCoA(physeq, ...)$RaoDis))
+    # Remove diagnol entries from "dist" object returned in `RaoDis` slot.
+    return(as.dist(DPCoA(physeq, ...)$RaoDis, diag=FALSE))
 	} else if( method %in% vegdist_methods ){
 		dfun <- "vegdist"
 	} else if( method %in% betadiver_methods ){
