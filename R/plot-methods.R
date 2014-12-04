@@ -320,7 +320,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  Whether to rescale the distance values to be \code{[0, 1]}, in which the
 #'  min value is close to zero and the max value is 1.
 #' 
-#' @param point_size (Optional). Default \code{4}. 
+#' @param point_size (Optional). Default \code{5}. 
 #'  The size of the vertex points.
 #' 
 #' @param point_alpha (Optional). Default \code{1}.
@@ -371,6 +371,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "auto")
 #' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "svd")
 #' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "circle")
+#' plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "circle", point_size = 6)
 #' plot_net(enterotype, color="SeqTech", shape="Enterotype", maxdist = 0.3, laymeth = "circle")
 plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
                      laymeth="fruchterman.reingold", color=NULL, shape=NULL, rescale=FALSE,
@@ -478,7 +479,7 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
   links_to_ggplot = function(LinksData, vertexDT, vertmap=aes(x, y)){
     p0 = ggplot(data=LinksData) + 
       geom_segment(aes(x, y, xend=xend, yend=yend, size=Distance, alpha=Distance)) +
-      geom_point(mapping = vertmap, data=vertexDT, size=5, na.rm = TRUE) +
+      geom_point(mapping = vertmap, data=vertexDT,size=point_size, alpha=point_alpha, na.rm = TRUE) +
       scale_alpha(range = c(1, 0.1)) + 
       scale_size(range = c(2, 0.25))
     return(p0)
