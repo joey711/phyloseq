@@ -1083,8 +1083,9 @@ select_mothur_cutoff = function(cutoff, cutoffs){
   if( is.null(cutoff) ){
     # cutoff was NULL, need to select one.
     if( length(cutoffs) > 1 ){
-      # Select the largest value, avoiding the "unique" option.
-      selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
+      # Select the largest value, avoiding the "unique" option.      
+      selectCutoffs <- as(cutoffs[cutoffs != "unique" & cutoffs != "label"], "numeric") 
+      selectCutoffs = selectCutoffs[!is.na(selectCutoffs)]
       cutoff <- as.character(max(selectCutoffs))
     } else {
       # There is only one cutoff value, so use it.
