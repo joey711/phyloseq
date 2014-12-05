@@ -1064,9 +1064,9 @@ import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
   rawlines = scan(mothur_list_file, "character", sep="\t", skip=(inputline-1), nlines=1, na.strings="", quiet=TRUE)
   rawlines = rawlines[!is.na(rawlines)]
   # The first two elements are the cutoff and the number of OTUs. skip, and read to first comma for OTUnames
-  OTUnames = scan(text=rawlines, what="character", comment.char=",", quiet=TRUE)[3:as.integer(rawlines[2])]
+  OTUnames = scan(text=rawlines, what="character", comment.char=",", quiet=TRUE)[3:length(rawlines)]
   # split each element on commas
-  OTUs <- strsplit(rawlines[3:as.integer(rawlines[2])], ",", fixed=TRUE)
+  OTUs <- strsplit(rawlines[3:length(rawlines)], ",", fixed=TRUE)
   # Name each OTU (currently as the first seq name in each cluster), and return the list
   names(OTUs) <- OTUnames
   # return as-is
@@ -1099,6 +1099,7 @@ select_mothur_cutoff = function(cutoff, cutoffs){
       stop("The cutoff value you provided is not among those available. Try show_mothur_cutoffs()")
     }
   }
+  return(cutoff)
 }
 ################################################################################
 #' Parse mothur group file into a simple hash table.
