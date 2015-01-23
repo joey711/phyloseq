@@ -62,9 +62,9 @@ print(dist_methods)
 Remove the two distance-methods that require a tree, and the generic custom method that requires user-defined distance arguments.
 ```{r}
 # These require tree
-dist_methods[(1:2)]
+dist_methods[(1:3)]
 # Remove them from the vector
-dist_methods <- dist_methods[-(1:2)]
+dist_methods <- dist_methods[-(1:3)]
 # This is the user-defined method:
 dist_methods["designdist"]
 # Remove the user-defined distance
