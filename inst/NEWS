@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.11.1
+-------------------------
+
+BUG FIXES
+
+  - plot_heatmap y-axis
+
+  - scores.pcoa issue.
+
 CHANGES IN VERSION 1.9.15
 -------------------------
 
