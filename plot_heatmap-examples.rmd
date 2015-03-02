@@ -1,4 +1,9 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
+---
+output:
+  html_document:
+    keep_md: yes
+---
+`r knitr::opts_chunk$set(cache=TRUE, fig.width=10)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # plot_heatmap
@@ -40,6 +45,7 @@ By default, the color mapping of `plot_heatmap` is transformed to a log-scale of
 The following two lines subset the dataset to just the top 300 most abundant Bacteria taxa across all samples (in this case, with no prior preprocessing. Not recommended, but quick).
 
 ```{r}
+data("GlobalPatterns")
 gpt <- subset_taxa(GlobalPatterns, Kingdom=="Bacteria")
 gpt <- prune_taxa(names(sort(taxa_sums(gpt),TRUE)[1:300]), gpt)
 plot_heatmap(gpt, sample.label="SampleType")
@@ -68,7 +74,18 @@ plot_heatmap(gpac)
 Here is an example re-labelling based on the "SampleType" sample variable and the taxonomic rank of "Family".
 
 ```{r}
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
+(p <- plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family"))
+```
+
+## Re-label axis titles
+
+What if you wanted to change the axis labels,
+but not the labels on individual features?
+
+```{r GPheatmap-rename-axes}
+p$scales$scales[[1]]$name <- "My X-Axis"
+p$scales$scales[[2]]$name <- "My Y-Axis"
+print(p)
 ```
 
 

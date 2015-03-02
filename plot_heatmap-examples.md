@@ -6,23 +6,20 @@ A tutorial with Examples
 
 
 ```r
-library("phyloseq")
-packageVersion("phyloseq")
+library("phyloseq"); packageVersion("phyloseq")
 ```
 
 ```
-## [1] '1.5.21'
+## [1] '1.10.0'
 ```
 
 ```r
-library("ggplot2")
-packageVersion("ggplot2")
+library("ggplot2"); packageVersion("ggplot2")
 ```
 
 ```
-## [1] '0.9.3.1'
+## [1] '1.0.0'
 ```
-
 
 ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.ggplot2.org/current/) for further help.
 
@@ -30,7 +27,6 @@ ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.gg
 ```r
 theme_set(theme_bw())
 ```
-
 
 
 The following demonstrates some uses of the `plot_heatmap` function in [the phyloseq package](http://joey711.github.com/phyloseq/) for R and Bioconductor.
@@ -58,13 +54,13 @@ The following two lines subset the dataset to just the top 300 most abundant Bac
 
 
 ```r
-gpt <- subset_taxa(GlobalPatterns, Kingdom == "Bacteria")
-gpt <- prune_taxa(names(sort(taxa_sums(gpt), TRUE)[1:300]), gpt)
-plot_heatmap(gpt, sample.label = "SampleType")
+data("GlobalPatterns")
+gpt <- subset_taxa(GlobalPatterns, Kingdom=="Bacteria")
+gpt <- prune_taxa(names(sort(taxa_sums(gpt),TRUE)[1:300]), gpt)
+plot_heatmap(gpt, sample.label="SampleType")
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-2-1.png) 
 
 ## Subset a smaller dataset based on an Archaeal phylum
 
@@ -73,9 +69,8 @@ represented in one plot. In the following examples, the Crenarchaeota phylum.
 
 
 ```r
-gpac <- subset_taxa(GlobalPatterns, Phylum == "Crenarchaeota")
+gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 ```
-
 
 
 ## Default `plot_heatmap` settings
@@ -86,8 +81,7 @@ Now let's see how our `plot_heatmap` function works with all default settings.
 plot_heatmap(gpac)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-4-1.png) 
 
 
 ## Re-label by a sample variable and taxonomic family
@@ -96,11 +90,24 @@ Here is an example re-labelling based on the "SampleType" sample variable and th
 
 
 ```r
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family")
+(p <- plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family"))
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-5-1.png) 
 
+## Re-label axis titles
+
+What if you wanted to change the axis labels,
+but not the labels on individual features?
+
+
+```r
+p$scales$scales[[1]]$name <- "My X-Axis"
+p$scales$scales[[2]]$name <- "My Y-Axis"
+print(p)
+```
+
+![](plot_heatmap-examples_files/figure-html/GPheatmap-rename-axes-1.png) 
 
 
 ### Now repeat the plot, but change the color scheme.
@@ -110,36 +117,30 @@ on which you want to display the heatmap.
 
 
 ```r
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#000033", 
-    high = "#CCFF66")
+plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#CCFF66")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-6-1.png) 
 
 
 Here is a dark-blue to red scheme.
 
 
 ```r
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#000033", 
-    high = "#FF3300")
+plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#FF3300")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-7-1.png) 
 
 
 A very dark-blue to very light-blue scheme
 
 
 ```r
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#000033", 
-    high = "#66CCFF")
+plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#000033", high="#66CCFF")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-8-1.png) 
 
 
 Here is a "dark on light" color scheme. Note that we change the background value
@@ -147,12 +148,10 @@ Here is a "dark on light" color scheme. Note that we change the background value
 
 
 ```r
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#66CCFF", 
-    high = "#000033", na.value = "white")
+plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#66CCFF", high="#000033", na.value="white")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-9-1.png) 
 
 
 This is a similar color scheme as the previous, but the "near zero" color is closer to 
@@ -161,12 +160,10 @@ overall contrast than a lot of schemes, but may not be as exciting.
 
 
 ```r
-plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low = "#FFFFCC", 
-    high = "#000033", na.value = "white")
+plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family", low="#FFFFCC", high="#000033", na.value="white")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-10-1.png) 
 
 
 ## Now try different ordination methods, distances
@@ -179,8 +176,7 @@ For example, NMDS ordination on the jaccard distance.
 plot_heatmap(gpac, "NMDS", "jaccard")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-11-1.png) 
 
 
 Detrended correspondence analysis.
@@ -190,8 +186,7 @@ Detrended correspondence analysis.
 plot_heatmap(gpac, "DCA", "none", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-12-1.png) 
 
 
 Unconstrained redundancy analysis (Principle Components Analysis, PCA)
@@ -201,8 +196,7 @@ Unconstrained redundancy analysis (Principle Components Analysis, PCA)
 plot_heatmap(gpac, "RDA", "none", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
-
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-13-1.png) 
 
 
 PCoA/MDS ordination on the (default) bray-curtis distance.
@@ -212,8 +206,13 @@ PCoA/MDS ordination on the (default) bray-curtis distance.
 plot_heatmap(gpac, "PCoA", "bray", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+```
+## Warning in scores.pcoa(ps.ord, choices = c(1, 2), display = "species"): scores.pcoa: Failed to access OTU table from `physeq` argument, 
+## 
+##               needed for weighted average of OTU/taxa/species points in MDS/PCoA.
+```
 
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-14-1.png) 
 
 
 MDS/PCoA ordination on the Unweighted-UniFrac distance.
@@ -223,19 +222,29 @@ MDS/PCoA ordination on the Unweighted-UniFrac distance.
 plot_heatmap(gpac, "PCoA", "unifrac", "SampleType", "Family")
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+```
+## Warning in scores.pcoa(ps.ord, choices = c(1, 2), display = "species"): scores.pcoa: Failed to access OTU table from `physeq` argument, 
+## 
+##               needed for weighted average of OTU/taxa/species points in MDS/PCoA.
+```
 
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-15-1.png) 
 
 
 Now try weighted-UniFrac distance and MDS/PCoA ordination.
 
 
 ```r
-plot_heatmap(gpac, "MDS", "unifrac", "SampleType", "Family", weighted = TRUE)
+plot_heatmap(gpac, "MDS", "unifrac", "SampleType", "Family", weighted=TRUE)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
+```
+## Warning in scores.pcoa(ps.ord, choices = c(1, 2), display = "species"): scores.pcoa: Failed to access OTU table from `physeq` argument, 
+## 
+##               needed for weighted average of OTU/taxa/species points in MDS/PCoA.
+```
 
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-16-1.png) 
 
 
 Here is how you might create a heatmap using base-R graphics
@@ -247,8 +256,13 @@ organization, in case you want to compare with `plot_heatmap`, for example.
 heatmap(otuTable(gpac))
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17.png) 
+```
+## Warning: 'otuTable' is deprecated.
+## Use 'otu_table' instead.
+## See help("Deprecated") and help("phyloseq-deprecated").
+```
 
+![](plot_heatmap-examples_files/figure-html/unnamed-chunk-17-1.png) 
 			
 
 
@@ -293,5 +307,4 @@ heatmap(otuTable(gpac))
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 
 #### [tutorials-index](tutorials-index.html)
-
 
