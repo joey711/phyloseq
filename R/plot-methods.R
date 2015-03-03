@@ -2597,7 +2597,8 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 
 	## Now the plotting part
 	# Initialize p.
-	p = ggplot(adf, aes(Sample, OTU, fill=Abundance)) + geom_tile()
+	p = ggplot(adf, aes(x = Sample, y = OTU, fill=Abundance)) + 
+    geom_raster()
 
 	# # Don't render labels if more than max.label
 	# Samples

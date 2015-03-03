@@ -1,11 +1,23 @@
+CHANGES IN VERSION 1.11.3
+-------------------------
+
+BUG FIXES
+
+  - scores.pcoa issue.
+
+CHANGES IN VERSION 1.11.2
+-------------------------
+
+USER-VISIBLE CHANGES
+
+  - `plot_heatmap` replaces `geom_tile` with `geom_raster`. This should afford a substantial speed improvement during rendering of heatmaps, according to ggplot2 documentation.
+
 CHANGES IN VERSION 1.11.1
 -------------------------
 
 BUG FIXES
 
   - plot_heatmap y-axis
-
-  - scores.pcoa issue.
 
 CHANGES IN VERSION 1.9.15
 -------------------------
