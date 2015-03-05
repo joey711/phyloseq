@@ -2566,10 +2566,10 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
   
   # Now that index orders are determined, check/assign edges of axes, if specified
   if( !is.null(first.sample) ){
-    sample.order = restart(sample.order, first.sample)
+    sample.order = chunkReOrder(sample.order, first.sample)
   }
   if( !is.null(first.taxa) ){
-    taxa.order = restart(taxa.order, first.taxa)
+    taxa.order = chunkReOrder(taxa.order, first.taxa)
   }
 
 	# melt physeq with the standard user-accessible data melting function
@@ -2597,7 +2597,8 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 
 	## Now the plotting part
 	# Initialize p.
-	p = ggplot(adf, aes(Sample, OTU, fill=Abundance)) + geom_tile()
+	p = ggplot(adf, aes(x = Sample, y = OTU, fill=Abundance)) + 
+    geom_raster()
 
 	# # Don't render labels if more than max.label
 	# Samples
@@ -2670,14 +2671,42 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	return(p)
 }
 ################################################################################
-# Chunk re-order a vector so that specified newstart is first.
-# Different than relevel.
+#' Chunk re-order a vector so that specified newstart is first.
+#' 
+#' Different than relevel.
+#' 
 #' @keywords internal
-restart = function(x, newstart){
-  # x = sample_names(gpac)
-  # newstart = "NP2"
-  pivot = which(x %in% newstart)
-  return(c(x[pivot:length(x)], x[1:(pivot-1)]))
+#' @examples 
+#' # Typical use-case
+#' chunkReOrder(1:10, 5)
+#' # Default is to not modify the vector
+#' chunkReOrder(1:10)
+#' # Another example not starting at 1
+#' chunkReOrder(10:25, 22)
+#' # Should silently ignore the second element of `newstart`
+#' chunkReOrder(10:25, c(22, 11))
+#' # Should be able to handle `newstart` being the first argument already
+#' # without duplicating the first element at the end of `x`
+#' chunkReOrder(10:25, 10)
+#' all(chunkReOrder(10:25, 10) == 10:25)
+#' # This is also the default
+#' all(chunkReOrder(10:25) == 10:25)
+#' # An example with characters
+#' chunkReOrder(LETTERS, "G") 
+#' chunkReOrder(LETTERS, "B") 
+#' chunkReOrder(LETTERS, "Z") 
+#' What about when `newstart` is not in `x`? Return x as-is, throw warning.
+#' chunkReOrder(LETTERS, "g") 
+chunkReOrder = function(x, newstart = x[[1]]){
+  pivot = match(newstart[1], x, nomatch = NA)
+  # If pivot `is.na`, throw warning, return x as-is
+  if(is.na(pivot)){
+    warning("The `newstart` argument was not in `x`. Returning `x` without reordering.")
+    newx = x
+  } else {
+    newx = c(tail(x, {length(x) - pivot + 1}), head(x, pivot - 1L))
+  }
+  return(newx)
 }
 ################################################################################
 #' Create a ggplot summary of gap statistic results
