@@ -10,7 +10,7 @@ CHANGES IN VERSION 1.11.2
 
 USER-VISIBLE CHANGES
 
-  - `plot_heatmap` replaces `geom_tile` with `geom_raster`. This should afford a substantial speed improvement during rendering of heatmaps, according to ggplot2 documentation.
+  - `plot_heatmap` replaces `geom_tile` with `geom_raster`. This should afford a substantial speed improvement during rendering of heatmaps, according to ggplot2 documentation. This also solves Issue 401 https://github.com/joey711/phyloseq/issues/401
 
 CHANGES IN VERSION 1.11.1
 -------------------------
