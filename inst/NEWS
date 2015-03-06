@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.11.3
+-------------------------
+
+BUG FIXES
+
+  - plot_heatmap bug when PCoA/MDS used as ordination method for axis ordering. This solves issue 420 https://github.com/joey711/phyloseq/issues/420
+
 CHANGES IN VERSION 1.11.2
 -------------------------
 
