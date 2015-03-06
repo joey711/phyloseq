@@ -906,8 +906,10 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   # Silently returns only the coordinate systems available.
   # e.g. sites-only, even if species requested.
   specDF = siteDF = NULL
-  try({siteDF <- scores(ordination, choices = axes, display="sites", physeq=physeq)}, silent = TRUE)
-  try({specDF <- scores(ordination, choices = axes, display="species", physeq=physeq)}, silent = TRUE)
+  trash1 = try({siteDF <- scores(ordination, choices = axes, display="sites", physeq=physeq)},
+               silent = TRUE)
+  trash2 = try({specDF <- scores(ordination, choices = axes, display="species", physeq=physeq)},
+               silent = TRUE)
   # Check that have assigned coordinates to the correct object
   siteSampIntx = length(intersect(rownames(siteDF), sample_names(physeq)))
   siteTaxaIntx = length(intersect(rownames(siteDF), taxa_names(physeq)))
@@ -2547,20 +2549,39 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	  # phyloseq-wrapped distance/ordination procedures.
 	  # Reorder by the angle in radial coordinates on the 2-axis plane.
     
-    # Capture the NMDS iterations cat() output with capture.output
+    # In case of NMDS iterations, capture the output so it isn't dumped on standard-out
 		junk = capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
     if( is.null(sample.order) ){
+      siteDF = NULL
       # Only define new ord-based sample order if user did not define one already
-      reduction.result = scores(ps.ord, choices=c(1, 2), display="sites")
-      sample.order = sample_names(physeq)[order(RadialTheta(reduction.result))]      
+      trash1 = try({siteDF <- scores(ps.ord, choices = c(1, 2), display="sites", physeq=physeq)},
+                   silent = TRUE)
+      if(inherits(trash1, "try-error")){
+        # warn that the attempt to get ordination coordinates for ordering failed.
+        warning("Attempt to access ordination coordinates for sample ordering failed.\n",
+                "Using default sample ordering.")
+      }
+      if(!is.null(siteDF)){
+        # If the score accession seemed to work, go ahead and replace sample.order
+        sample.order <- sample_names(physeq)[order(RadialTheta(siteDF))]
+      }
     }
 
-		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
-		if( class(test) != "try-error" & !is.null(test) & is.null(taxa.order) ){			
+		if( is.null(taxa.order) ){
 		  # re-order species/taxa/OTUs, if possible,
 		  # and only if user did not define an order already
-			OTUreduct = scores(ps.ord, choices=c(1, 2), display="species")
-			taxa.order  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
+			specDF = NULL
+			trash2 = try({specDF <- scores(ps.ord, choices=c(1, 2), display="species", physeq=physeq)},
+			             silent = TRUE)
+			if(inherits(trash2, "try-error")){
+			  # warn that the attempt to get ordination coordinates for ordering failed.
+			  warning("Attempt to access ordination coordinates for feature/species/taxa/OTU ordering failed.\n",
+			          "Using default feature/species/taxa/OTU ordering.")
+			}
+			if(!is.null(specDF)){
+			  # If the score accession seemed to work, go ahead and replace sample.order
+			  taxa.order = taxa_names(physeq)[order(RadialTheta(specDF))]
+			}
 		}
 	}
   
