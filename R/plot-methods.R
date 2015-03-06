@@ -1370,7 +1370,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' Because the number of OTU entries has a large effect on the RAM requirement,
 #' methods to reduce the number of separate OTU entries -- 
 #' for instance by agglomerating OTUs based on phylogenetic distance
-#' using \code{\link{tipglom}} --
+#' using \code{\link{tip_glom}} --
 #' can help alleviate RAM usage problems.
 #' This function is made user-accessible for flexibility,
 #' but is also used extensively by plot functions in phyloseq.
