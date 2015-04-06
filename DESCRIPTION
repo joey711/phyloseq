@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 1.11.0
+Version: 1.11.1
 Date: 2014-10-07
 Title: Handling and analysis of high-throughput microbiome
     census data.
@@ -15,6 +15,7 @@ Imports:
     ade4 (>= 1.6.2),
     ape (>= 3.1.1),
     biom (>= 0.3.9),
+    BiocGenerics (>= 0.13.11),
     Biostrings (>= 2.28.0),
     cluster (>= 1.14.4),
     data.table (>= 1.9.2),
