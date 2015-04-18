@@ -38,8 +38,8 @@ scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
   coords = NULL
   # `display` must be either "sites" or "species", per vegan-package convention.
 	coords <- switch(EXPR = display,
-                   species = x$l1,
-                   sites = x$l2)
+	                 species = x$dls,
+                   sites = x$li)
   # If no choices selection, take all dimensions/columns
   if(is.null(choices)){
     choices <- 1:ncol(coords) 
