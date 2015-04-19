@@ -189,7 +189,18 @@ gpac <- subset_taxa(GlobalPatterns, Phylum=="Crenarchaeota")
 (p <- plot_heatmap(gpac, "NMDS", "bray", "SampleType", "Family"))
 ```
 
-Note that it is possible to order the sample/species indices by any of the ordination methods supported in the `ordinate` function; and also that the color scheme can be modified with additional arguments. 
+What if you wanted to change the axis labels?
+
+```{r GPheatmap-rename-axes}
+p$scales$scales[[1]]$name <- "My X-Axis"
+p$scales$scales[[2]]$name <- "My Y-Axis"
+print(p)
+```
+
+Note that it is possible to order the sample/species indices
+by any of the ordination methods supported in the `ordinate` function; 
+and also that the color scheme can be modified with additional arguments. 
+
 
 ###### Heat map representation of the Crenarchaeota phylum abundance pattern across different sample types in the Global Patterns dataset.
 
@@ -393,7 +404,8 @@ Here is a quick example illustrating the use of Double Principal Coordinate Anal
 
 ```{r GPdpcoa01}
 GP.dpcoa <- ordinate(GP, "DPCoA") 
-pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot", color="SampleType", shape="Phylum")
+pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot",
+                          color="SampleType", shape="Phylum")
 shape.fac <- pdpcoa$data[, deparse(pdpcoa$mapping$shape)]
 man.shapes <- c(19, 21:25)
 names(man.shapes) <- c("Samples", levels(shape.fac)[levels(shape.fac)!="Samples"])

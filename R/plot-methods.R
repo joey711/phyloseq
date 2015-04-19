@@ -850,7 +850,8 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
                             color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
   if(length(type) > 1){
-    warning("`type` can only be a single option, but more than one provided. Using only the first.")
+    warning("`type` can only be a single option,
+            but more than one provided. Using only the first.")
     type <- type[[1]]
   }
   if(length(color) > 1){
@@ -906,8 +907,12 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   # Silently returns only the coordinate systems available.
   # e.g. sites-only, even if species requested.
   specDF = siteDF = NULL
-  try({siteDF <- scores(ordination, choices = axes, display="sites", physeq=physeq)}, silent = TRUE)
-  try({specDF <- scores(ordination, choices = axes, display="species", physeq=physeq)}, silent = TRUE)
+  trash1 = try({siteDF <- scores(ordination, choices = axes, 
+                                 display="sites", physeq=physeq)},
+               silent = TRUE)
+  trash2 = try({specDF <- scores(ordination, choices = axes, 
+                                 display="species", physeq=physeq)},
+               silent = TRUE)
   # Check that have assigned coordinates to the correct object
   siteSampIntx = length(intersect(rownames(siteDF), sample_names(physeq)))
   siteTaxaIntx = length(intersect(rownames(siteDF), taxa_names(physeq)))
@@ -1368,7 +1373,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' Because the number of OTU entries has a large effect on the RAM requirement,
 #' methods to reduce the number of separate OTU entries -- 
 #' for instance by agglomerating OTUs based on phylogenetic distance
-#' using \code{\link{tipglom}} --
+#' using \code{\link{tip_glom}} --
 #' can help alleviate RAM usage problems.
 #' This function is made user-accessible for flexibility,
 #' but is also used extensively by plot functions in phyloseq.
@@ -2547,29 +2552,48 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	  # phyloseq-wrapped distance/ordination procedures.
 	  # Reorder by the angle in radial coordinates on the 2-axis plane.
     
-    # Capture the NMDS iterations cat() output with capture.output
+    # In case of NMDS iterations, capture the output so it isn't dumped on standard-out
 		junk = capture.output( ps.ord <- ordinate(physeq, method, distance, ...), file=NULL)
     if( is.null(sample.order) ){
+      siteDF = NULL
       # Only define new ord-based sample order if user did not define one already
-      reduction.result = scores(ps.ord, choices=c(1, 2), display="sites")
-      sample.order = sample_names(physeq)[order(RadialTheta(reduction.result))]      
+      trash1 = try({siteDF <- scores(ps.ord, choices = c(1, 2), display="sites", physeq=physeq)},
+                   silent = TRUE)
+      if(inherits(trash1, "try-error")){
+        # warn that the attempt to get ordination coordinates for ordering failed.
+        warning("Attempt to access ordination coordinates for sample ordering failed.\n",
+                "Using default sample ordering.")
+      }
+      if(!is.null(siteDF)){
+        # If the score accession seemed to work, go ahead and replace sample.order
+        sample.order <- sample_names(physeq)[order(RadialTheta(siteDF))]
+      }
     }
 
-		test <- try(scores(ps.ord, choices=c(1, 2), display="species"), TRUE)
-		if( class(test) != "try-error" & !is.null(test) & is.null(taxa.order) ){			
+		if( is.null(taxa.order) ){
 		  # re-order species/taxa/OTUs, if possible,
 		  # and only if user did not define an order already
-			OTUreduct = scores(ps.ord, choices=c(1, 2), display="species")
-			taxa.order  = taxa_names(physeq)[order(RadialTheta(OTUreduct))]
+			specDF = NULL
+			trash2 = try({specDF <- scores(ps.ord, choices=c(1, 2), display="species", physeq=physeq)},
+			             silent = TRUE)
+			if(inherits(trash2, "try-error")){
+			  # warn that the attempt to get ordination coordinates for ordering failed.
+			  warning("Attempt to access ordination coordinates for feature/species/taxa/OTU ordering failed.\n",
+			          "Using default feature/species/taxa/OTU ordering.")
+			}
+			if(!is.null(specDF)){
+			  # If the score accession seemed to work, go ahead and replace sample.order
+			  taxa.order = taxa_names(physeq)[order(RadialTheta(specDF))]
+			}
 		}
 	}
   
   # Now that index orders are determined, check/assign edges of axes, if specified
   if( !is.null(first.sample) ){
-    sample.order = restart(sample.order, first.sample)
+    sample.order = chunkReOrder(sample.order, first.sample)
   }
   if( !is.null(first.taxa) ){
-    taxa.order = restart(taxa.order, first.taxa)
+    taxa.order = chunkReOrder(taxa.order, first.taxa)
   }
 
 	# melt physeq with the standard user-accessible data melting function
@@ -2597,7 +2621,8 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 
 	## Now the plotting part
 	# Initialize p.
-	p = ggplot(adf, aes(Sample, OTU, fill=Abundance)) + geom_tile()
+	p = ggplot(adf, aes(x = Sample, y = OTU, fill=Abundance)) + 
+    geom_raster()
 
 	# # Don't render labels if more than max.label
 	# Samples
@@ -2670,14 +2695,42 @@ plot_heatmap <- function(physeq, method="NMDS", distance="bray",
 	return(p)
 }
 ################################################################################
-# Chunk re-order a vector so that specified newstart is first.
-# Different than relevel.
+#' Chunk re-order a vector so that specified newstart is first.
+#' 
+#' Different than relevel.
+#' 
 #' @keywords internal
-restart = function(x, newstart){
-  # x = sample_names(gpac)
-  # newstart = "NP2"
-  pivot = which(x %in% newstart)
-  return(c(x[pivot:length(x)], x[1:(pivot-1)]))
+#' @examples 
+#' # Typical use-case
+#' chunkReOrder(1:10, 5)
+#' # Default is to not modify the vector
+#' chunkReOrder(1:10)
+#' # Another example not starting at 1
+#' chunkReOrder(10:25, 22)
+#' # Should silently ignore the second element of `newstart`
+#' chunkReOrder(10:25, c(22, 11))
+#' # Should be able to handle `newstart` being the first argument already
+#' # without duplicating the first element at the end of `x`
+#' chunkReOrder(10:25, 10)
+#' all(chunkReOrder(10:25, 10) == 10:25)
+#' # This is also the default
+#' all(chunkReOrder(10:25) == 10:25)
+#' # An example with characters
+#' chunkReOrder(LETTERS, "G") 
+#' chunkReOrder(LETTERS, "B") 
+#' chunkReOrder(LETTERS, "Z") 
+#' What about when `newstart` is not in `x`? Return x as-is, throw warning.
+#' chunkReOrder(LETTERS, "g") 
+chunkReOrder = function(x, newstart = x[[1]]){
+  pivot = match(newstart[1], x, nomatch = NA)
+  # If pivot `is.na`, throw warning, return x as-is
+  if(is.na(pivot)){
+    warning("The `newstart` argument was not in `x`. Returning `x` without reordering.")
+    newx = x
+  } else {
+    newx = c(tail(x, {length(x) - pivot + 1}), head(x, pivot - 1L))
+  }
+  return(newx)
 }
 ################################################################################
 #' Create a ggplot summary of gap statistic results

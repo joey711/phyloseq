@@ -1,3 +1,24 @@
+CHANGES IN VERSION 1.11.3
+-------------------------
+
+BUG FIXES
+
+  - plot_heatmap bug when PCoA/MDS used as ordination method for axis ordering. This solves issue 420 https://github.com/joey711/phyloseq/issues/420
+
+CHANGES IN VERSION 1.11.2
+-------------------------
+
+USER-VISIBLE CHANGES
+
+  - `plot_heatmap` replaces `geom_tile` with `geom_raster`. This should afford a substantial speed improvement during rendering of heatmaps, according to ggplot2 documentation. This also solves Issue 401 https://github.com/joey711/phyloseq/issues/401
+
+CHANGES IN VERSION 1.11.1
+-------------------------
+
+BUG FIXES
+
+  - plot_heatmap y-axis
+
 CHANGES IN VERSION 1.9.15
 -------------------------
 

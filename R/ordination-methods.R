@@ -334,8 +334,8 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	OTU  <- otu_table(physeq)
 	tree <- phy_tree(physeq)
 	
-	# Enforce that OTU is in species-by-samples orientation
-	if( !taxa_are_rows(OTU) ){ OTU <- t(OTU) }
+	# Enforce that OTU is in samples-by-species orientation
+	if(taxa_are_rows(OTU) ){ OTU <- t(OTU) }
   
 	# get the patristic distances between the species from the tree 
 	patristicDist <- as.dist(cophenetic.phylo(tree))
