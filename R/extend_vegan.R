@@ -31,15 +31,58 @@ scores.pcoa <- function(x, choices=NULL, display="sites", physeq=NULL, ...){
   }
   return(co)
 }
+################################################################################
+# DPCoA management
+################################################################################
+#' @importFrom vegan scores
+#' @keywords internal
+get_dpcoa_species_coords = function(x, physeq=NULL){
+  # Grab coordinates from the dpcoa object
+  coords = x$dls
+  # ade4 mangles the element names using `make.names` conventions in base R
+  # Replace them in `coords`
+  if(is.null(taxa_names(physeq))){
+    warning("scores.dpcoa: Failed to access `taxa_names` from `physeq` argument, \n
+              needed to ensure correct mapping of OTU/taxa/species points in DPCoA.")
+  } else {
+    # if the names are available, use them
+    # by mapping the same variable-name conversion that ade4 would have used.
+    taxnames = taxa_names(physeq)
+    names(taxnames) <- make.names(taxnames)
+    rownames(coords) <- taxnames[rownames(coords)]
+  }
+  return(coords)
+}
+#' @importFrom vegan scores
+#' @keywords internal
+get_dpcoa_sites_coords = function(x, physeq=NULL){
+  # Grab coordinates from the dpcoa object
+  coords = x$li
+  # ade4 mangles the element names using `make.names` conventions in base R
+  # Replace them in `coords`
+  if(is.null(sample_names(physeq))){
+    warning("scores.dpcoa: Failed to access `sample_names` from `physeq` argument, \n
+              needed to ensure correct mapping of site/sample/library points in DPCoA.")
+  } else {
+    # if the names are available, use them
+    # by mapping the same variable-name conversion that ade4 would have used.
+    samplenames = sample_names(physeq)
+    names(samplenames) <- make.names(samplenames)
+    rownames(coords) <- samplenames[rownames(coords)]
+  }
+  return(coords)
+}
 # dpcoa-class, from ade4
 #' @importFrom vegan scores
 #' @keywords internal
-scores.dpcoa <- function(x, choices=NULL, display="sites", ...){
+scores.dpcoa <- function(x, choices=NULL, display="sites", physeq=NULL, ...){
+  # x = ordination
+  # display = "species"
   coords = NULL
   # `display` must be either "sites" or "species", per vegan-package convention.
 	coords <- switch(EXPR = display,
-                   species = x$l1,
-                   sites = x$l2)
+	                 species = get_dpcoa_species_coords(x, physeq),
+                   sites = get_dpcoa_sites_coords(x, physeq))
   # If no choices selection, take all dimensions/columns
   if(is.null(choices)){
     choices <- 1:ncol(coords) 

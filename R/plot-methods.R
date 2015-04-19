@@ -850,7 +850,8 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
                             color=NULL, shape=NULL, label=NULL, title=NULL, justDF=FALSE){
   if(length(type) > 1){
-    warning("`type` can only be a single option, but more than one provided. Using only the first.")
+    warning("`type` can only be a single option,
+            but more than one provided. Using only the first.")
     type <- type[[1]]
   }
   if(length(color) > 1){
@@ -906,9 +907,11 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   # Silently returns only the coordinate systems available.
   # e.g. sites-only, even if species requested.
   specDF = siteDF = NULL
-  trash1 = try({siteDF <- scores(ordination, choices = axes, display="sites", physeq=physeq)},
+  trash1 = try({siteDF <- scores(ordination, choices = axes, 
+                                 display="sites", physeq=physeq)},
                silent = TRUE)
-  trash2 = try({specDF <- scores(ordination, choices = axes, display="species", physeq=physeq)},
+  trash2 = try({specDF <- scores(ordination, choices = axes, 
+                                 display="species", physeq=physeq)},
                silent = TRUE)
   # Check that have assigned coordinates to the correct object
   siteSampIntx = length(intersect(rownames(siteDF), sample_names(physeq)))
