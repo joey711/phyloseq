@@ -404,7 +404,8 @@ Here is a quick example illustrating the use of Double Principal Coordinate Anal
 
 ```{r GPdpcoa01}
 GP.dpcoa <- ordinate(GP, "DPCoA") 
-pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot", color="SampleType", shape="Phylum")
+pdpcoa <- plot_ordination(GP, GP.dpcoa, type="biplot",
+                          color="SampleType", shape="Phylum")
 shape.fac <- pdpcoa$data[, deparse(pdpcoa$mapping$shape)]
 man.shapes <- c(19, 21:25)
 names(man.shapes) <- c("Samples", levels(shape.fac)[levels(shape.fac)!="Samples"])
