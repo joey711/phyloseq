@@ -135,21 +135,6 @@ dpcoa <- structure(list(), class = "dpcoa")
 # If this ever works
 # @importClassesFrom ade4 dpcoa
 ################################################################################
-#' An S4 placeholder for the basic \code{\link[stats]{dist}}ance matrix class.
-#'
-#' See the \code{\link[ape]{ape}} package for details about this type of
-#' representation of a phylogenetic tree. It is used throught ape.
-#'
-#' @seealso
-#'  \code{\link[stats]{dist}}
-#'  
-#'  \code{\link{setOldClass}}
-#'
-#' @name dist-class
-#' @rdname dist-class
-#' @exportClass dist
-setOldClass("dist")
-################################################################################
 #' S3 class for ape-calculated MDS results
 #' 
 #' Nothing to import, because ape doesn't (yet) export this S3 class.
@@ -280,6 +265,7 @@ setClassUnion("XStringSetOrNULL", c("XStringSet", "NULL"))
 #'  constructor/accessors \code{\link{otu_table}}, \code{\link{sample_data}},
 #'  \code{\link{tax_table}}, \code{\link{phy_tree}}, and \code{\link{refseq}}.
 #' 
+#' @import BiocGenerics
 #' @importClassesFrom Biostrings XStringSet
 #' @name phyloseq-class
 #' @rdname phyloseq-class
