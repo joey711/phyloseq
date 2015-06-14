@@ -497,4 +497,12 @@ test_that("psmelt doesn't break when the number of taxa is 1", {
   expect_true(all(reqnames %in% names(df)))
   expect_equivalent(sum(df$Abundance, na.rm = TRUE), taxa_sums(GP1))
 })
+test_that("psmelt doesn't break when package reshape is loaded", {
+    data(GlobalPatterns)
+    library(reshape)
+    mdf1 <- psmelt(GlobalPatterns)
+    detach(package:reshape)
+    mdf2 <-psmelt(GlobalPatterns)
+    expect_equivalent(mdf1,mdf2)
+})
 ################################################################################

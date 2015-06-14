@@ -1469,9 +1469,10 @@ psmelt = function(physeq){
   otutab = otu_table(physeq)
   if(!taxa_are_rows(otutab)){otutab <- t(otutab)}
   # Melt the OTU table: wide form to long form table
-  mdf = melt(as(otutab, "matrix"), value.name="Abundance")
+  mdf = melt(as(otutab, "matrix"))
   colnames(mdf)[1] <- "OTU"
   colnames(mdf)[2] <- "Sample"
+  colnames(mdf)[3] <- "Abundance"
   # Row and Col names are coerced to integer or factor if possible.
   # Do not want this. Coerce these to character.
   # e.g. `OTU` should always be discrete, even if OTU ID values can be coerced to integer
