@@ -212,7 +212,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	}
 
 	# Combine vertex and edge coordinate data.frames
-	graphDF   <- merge(melt(edgeDF, id="id"), vertDF, by = "value") 
+	graphDF   <- merge(reshape2::melt(edgeDF, id="id"), vertDF, by = "value") 
  
 	# Initialize the ggplot
 	p <- ggplot(vertDF, aes(x, y)) 
@@ -664,7 +664,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 	  x <- "samples"
 	}
 	# melt to display different alpha-measures separately
-	mdf = melt(DF, measure.vars=measures)
+	mdf = reshape2::melt(DF, measure.vars=measures)
   # Initialize the se column. Helpful even if not used.
   mdf$se <- NA_integer_
   if( length(ses) > 0 ){
