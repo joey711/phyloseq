@@ -1,39 +1,23 @@
-R/.DS_Store
-.DS_Store
-<<<<<<< HEAD
-inst/.DS_Store
-=======
-.DS_Store
->>>>>>> DS_Store
+*.DS_Store
+*.Rhistory
+*.Rproj
 
 cache/*
 figure/*
+
 vignettes/cache/*
 vignettes/figure/*
 vignettes/*.html
 vignettes/*.md
 *.Rapp.history
 
-.DS_Store
-
 tests/.Rapp.history
 inst/tests/.Rapp.history
 
-inst/.DS_Store
 .Rproj.user
 
 .Rbuildignore
 
-.Rhistory
-
-.DS_Store
-
-.DS_Store
-
-inst/.DS_Store
-
 R/.Rapp.history
 
-R/.Rhistory
 
-*.Rproj
