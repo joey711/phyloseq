@@ -212,7 +212,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	}
 
 	# Combine vertex and edge coordinate data.frames
-	graphDF   <- merge(melt(edgeDF, id="id"), vertDF, by = "value") 
+	graphDF   <- merge(reshape2::melt(edgeDF, id="id"), vertDF, by = "value") 
  
 	# Initialize the ggplot
 	p <- ggplot(vertDF, aes(x, y)) 
@@ -664,7 +664,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 	  x <- "samples"
 	}
 	# melt to display different alpha-measures separately
-	mdf = melt(DF, measure.vars=measures)
+	mdf = reshape2::melt(DF, measure.vars=measures)
   # Initialize the se column. Helpful even if not used.
   mdf$se <- NA_integer_
   if( length(ses) > 0 ){
@@ -1469,9 +1469,10 @@ psmelt = function(physeq){
   otutab = otu_table(physeq)
   if(!taxa_are_rows(otutab)){otutab <- t(otutab)}
   # Melt the OTU table: wide form to long form table
-  mdf = melt(as(otutab, "matrix"), value.name="Abundance")
+  mdf = reshape2::melt(as(otutab, "matrix"))
   colnames(mdf)[1] <- "OTU"
   colnames(mdf)[2] <- "Sample"
+  colnames(mdf)[3] <- "Abundance"
   # Row and Col names are coerced to integer or factor if possible.
   # Do not want this. Coerce these to character.
   # e.g. `OTU` should always be discrete, even if OTU ID values can be coerced to integer

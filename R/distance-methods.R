@@ -190,7 +190,7 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 # Shannon-Jensen Divergence, in R.
 ################################################################################
 #' @keywords internal
-JSD.pair <- function(x, y){
+phyloseq_JSD_pair <- function(x, y){
 	###Function to compute Shannon-Jensen Divergence
 	###x and y are the frequencies for the same p categories
 	u <- x/sum(x)
@@ -285,7 +285,7 @@ JSD <- function(physeq, parallel=FALSE){
 	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
 	  A <- i[1]
 	  B <- i[2]
-	  return( phyloseq:::JSD.pair(OTU[A, ], OTU[B, ]) )
+	  return( phyloseq_JSD_pair(OTU[A, ], OTU[B, ]) )
 	}
 	# return(distlist)
 	# This is in serial, but it is quick.
