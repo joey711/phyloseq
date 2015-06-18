@@ -1,6 +1,7 @@
 *.DS_Store
 *.Rhistory
 *.Rproj
+*Rplots.pdf
 
 cache/*
 figure/*

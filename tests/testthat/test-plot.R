@@ -499,10 +499,10 @@ test_that("psmelt doesn't break when the number of taxa is 1", {
 })
 test_that("psmelt doesn't break when package reshape is loaded", {
     data(GlobalPatterns)
-    library(reshape)
+    library("reshape")
     mdf1 <- psmelt(GlobalPatterns)
     detach(package:reshape)
     mdf2 <-psmelt(GlobalPatterns)
-    expect_equivalent(mdf1,mdf2)
+    expect_equivalent(mdf1, mdf2)
 })
 ################################################################################

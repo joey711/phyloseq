@@ -1469,7 +1469,7 @@ psmelt = function(physeq){
   otutab = otu_table(physeq)
   if(!taxa_are_rows(otutab)){otutab <- t(otutab)}
   # Melt the OTU table: wide form to long form table
-  mdf = melt(as(otutab, "matrix"))
+  mdf = reshape2::melt(as(otutab, "matrix"))
   colnames(mdf)[1] <- "OTU"
   colnames(mdf)[2] <- "Sample"
   colnames(mdf)[3] <- "Abundance"
