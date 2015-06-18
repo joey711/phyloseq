@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.13.3
+-------------------------
+
+BUG FIXES
+
+  - `psmelt` bug if user has also loaded the original "reshape" package, due to name collision on the function called `melt`. `psmelt` now explicitly calls `reshape2::melt` to avoid confusion. https://github.com/joey711/phyloseq/pull/489
+
 CHANGES IN VERSION 1.11.3
 -------------------------
 
