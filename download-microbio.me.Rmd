@@ -1,97 +1,31 @@
+---
+output: 
+  html_document: 
+    fig_caption: yes
+    theme: readable
+    toc: yes
+---
 `r opts_chunk$set(cache=TRUE, fig.width=10)`
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
+# The QIIME-DB Server is Permanently Down.
 
-Download microbio.me/qiime datasets
-========================================================
-[Originally hosted here](http://joey711.github.io/phyloseq/download-microbio.me.html)
+Users are suggested to migrate their queries over to Qiita.
 
-Here is an example accessing microbiome datasets from a public repository, using entirely R code. I haven't yet figured out how to list the available studies at The [microbio.me/qiime](http://www.microbio.me/qiime/index.psp) from within R, but I have provided illustrate instructions for finding details about studies you might want to download and explore, and some example FTP addresses that I used after doing just that. Note that you likely need to create an account at The [microbio.me/qiime](http://www.microbio.me/qiime/index.psp) in order to explore the studies they have available for download.
-
-## microbio.me/qiime --> *microbio_me_qiime* in phyloseq
- The `microbio_me_qiime` interface is a means to import data directly from the [microbio.me/qiime](http://www.microbio.me/qiime/index.psp) data repository with only a small quantity of effort.
-
-There are datasets posted on [microbio.me/qiime](http://www.microbio.me/qiime/index.psp), and these usually have the "raw" OTU clustered data hosted at an FTP address. I'm not sure of a "nice" way to explor the details of the different studies using the FTP address directly, but I can post a few hand-picked datasets and import them all.
-
-First, [create an account and login](http://www.microbio.me/qiime/index.psp). Here is what the frontpage should look like:
-
-<img src="http://joey711.github.io/phyloseq/microbio-me-login.png" width="750px" />
-
-Once you have logged-in, you will see a different screen. Click on "Get Study Summary and Raw Data", which will be a link near the top of the page (highlighted at the bottom of the following clipped page):
-
-<img src="http://joey711.github.io/phyloseq/microbio-me-download-data.png" width="400px" />
-
-And once you're at this "raw data" page, you will see a box below "Available Studies". The box is a large scrollable list, and the page below it will start off blank:
-
-<img src="http://joey711.github.io/phyloseq/microbio-me-data-databox.png" width="250px" />
-
-But once you click on something, details and additional links for that particular study will pop up. For example, I clicked on a version of the "Global Patterns" dataset in the box, which exposed a page below with further details about the study and links for data. If available, there is an FTP link called "Sequences, Mapping and OTU Table", which can be accessed directly from within R using the code provided farther down this page. The link itself is highlighted on this screenshot:
-
-<img src="http://joey711.github.io/phyloseq/microbio-me-gpdata.png" width="250px" />
+Indeed, the previous link to
+[microbio.me/qiime](http://www.microbio.me/qiime/index.psp)
+now sends users to the new Qiita website.
 
 
----
+# Updated API for Qiita
 
-# Download, parse datasets
+The Qiita team has indicated they are planning to create
+a REST-like API. 
+Upon stable release of this API, 
+it should be possible for phyloseq to define an interface
+that will allow users to query this database and download data,
+converting it seemlessly into a phyloseq object.
+This is my current plan, anyway,
+but it is contingent on the Qiita API release, 
+and also the extent to which the data is freely provided.
 
-Load phyloseq package... and ggplot2 for plotting at the end...
-
-```{r load-phyloseq, warning=FALSE, message=FALSE}
-library("phyloseq"); packageVersion("phyloseq")
-library("ggplot2"); packageVersion("ggplot2")
-theme_set(theme_bw())
-```
-
-I previously defined a function here "on the fly" to download and parse data from the FTP server for `microbio.me`, and also download, unpack and import into R/[phyloseq](http://joey711.github.io/phyloseq/). A more complete version of this functionality is now included in phyloseq, and this page now demonstrates how that can work.
-
-The main argument to this function identifies which study in the microbio.me/qiime database that you want to download and import. Here are several hand-picked examples using either just the study ID number.
-
-```{r download-datasets}
-# Restroom Surfaces - Flores_restroom_surface_biogeography
-restroom = microbio_me_qiime(1335)
-# smokers - Charlson_cigarette_smokers
-smokers = microbio_me_qiime(524)
-# rs - resistant starches - Martinez_Resistant_starches
-rs = microbio_me_qiime(495)
-# abt - antibiotic timecourse - Relman_antibiotic_timeseries
-abt = microbio_me_qiime(494)
-# vagina - vaginal microbiome - Ravel_reproductive_women_vagina
-vagina = microbio_me_qiime(509)
-# palms - Fierer_undergraduate_palms
-palms = microbio_me_qiime(317)
-```
-
-Here is an example downloading a version of the Global Patterns dataset using the full URL (ftp) address:
-
-```{r gp-import}
-# # Global Patterns - CaporasoIlluminaPNAS2011_3prime
-gpftp = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_721_split_library_seqs_and_mapping.tgz"
-gp = microbio_me_qiime(gpftp)
-```
-
-## Some minimal [preprocessing](http://joey711.github.io/phyloseq/preprocessing.html)
-Remove "empty" OTUs and samples from each dataset. Note that I've chosen to keep only samples that have more than 100 total reads
-
-```{r preprocessing}
-dlist = list(restroom, smokers, rs, abt, vagina, palms)
-dlist = lapply(dlist, function(physeq){
-  physeq = prune_taxa(taxa_sums(physeq) > 0, physeq)
-	physeq = prune_samples(sample_sums(physeq) > 100, physeq)
-})
-```
-
-## Plots
-And some plots, because humans like images and it also helps demonstrate that the data is now directly available for analysis.
-
-### [Richness plots](http://joey711.github.io/phyloseq/plot_richness-examples.html)
-```{r richness-plots, fig.width=12, warning=FALSE}
-plot_richness(smokers, x="AGE", color="SEX", shape="BODY_PRODUCT")
-plot_richness(vagina, x="NUGENT_SCORE", color="ETHNICITY") + stat_smooth(method=lm)
-plot_richness(vagina, x="PH", color="ETHNICITY") + stat_smooth(method=lm)
-```
-
-### [Heatmap](http://joey711.github.io/phyloseq/plot_heatmap-examples.html)
-
-```{r heatmap}
-plot_heatmap(smokers)
-```
