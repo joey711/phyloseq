@@ -1,0 +1,21 @@
+sample	time	age	bmi	subject	group	gender	diet
+1	Sample.1	1	85.8433880610391	32.2863816516474	subjectID-1	group-3	M	Beverages
+2	Sample.2	2	94.6258301846683	23.1105686817318	subjectID-2	group-1	M	Beverages
+3	Sample.3	3	99.9520865967497	36.188610936515	subjectID-3	group-1	F	Carrots
+4	Sample.4	4	20.3088392037898	31.6378254117444	subjectID-4	group-3	M	Carrots
+5	Sample.5	1	23.2428927905858	28.4659434156492	subjectID-1	group-2	F	Apricots
+6	Sample.6	2	58.3642185665667	28.2212427211925	subjectID-2	group-1	F	Apricots
+7	Sample.7	3	88.2101588649675	37.2577215731144	subjectID-3	group-3	M	Beverages
+8	Sample.8	4	58.5738602327183	28.3229198353365	subjectID-4	group-4	M	Apricots
+9	Sample.9	1	61.9347910163924	34.6328677376732	subjectID-1	group-2	F	Carrots
+10	Sample.10	2	36.2461138749495	20.3815436176956	subjectID-2	group-3	M	Apricots
+11	Sample.11	3	64.646816579625	26.7828461900353	subjectID-3	group-2	F	Apricots
+12	Sample.12	4	95.2600260963663	28.377737798728	subjectID-4	group-2	M	Apricots
+13	Sample.13	1	15.5538083519787	24.4066228251904	subjectID-1	group-4	M	Carrots
+14	Sample.14	2	73.4662210801616	38.5478967474774	subjectID-2	group-1	F	Beverages
+15	Sample.15	3	5.19541068933904	21.8961177952588	subjectID-3	group-1	F	Apricots
+16	Sample.16	4	76.4617804670706	38.6612982256338	subjectID-4	group-3	F	Apricots
+17	Sample.17	1	23.0053467210382	33.7020166032016	subjectID-1	group-4	M	Apricots
+18	Sample.18	2	98.9401012659073	22.6421155594289	subjectID-2	group-2	M	Apricots
+19	Sample.19	3	32.7132781036198	23.2739646546543	subjectID-3	group-4	M	Carrots
+20	Sample.20	4	52.5421292986721	21.974186161533	subjectID-4	group-4	M	Beverages
