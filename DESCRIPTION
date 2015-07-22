@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 1.13.3
+Version: 1.13.31
 Date: 2015-06-18
 Title: Handling and analysis of high-throughput microbiome
     census data
@@ -27,6 +27,7 @@ Imports:
     multtest (>= 2.16.0),
     plyr (>= 1.8),
     reshape2 (>= 1.2.2),
+    RPA (>= 1.24.0),
     scales (>= 0.2.3),
     vegan (>= 2.0.10)
 Depends:
@@ -68,3 +69,5 @@ Collate:
     'deprecated_functions.R'
     'extend_DESeq2.R'
     'phylo-class.R'
+    'import_hitchip.R'
+    
