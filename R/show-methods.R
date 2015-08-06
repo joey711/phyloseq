@@ -1,5 +1,4 @@
 ############################################################################
-#' @aliases show,otu_table-method
 #' @rdname show-methods
 setMethod("show", "otu_table", function(object){
 	# print otu_table (always there).
@@ -13,7 +12,6 @@ setMethod("show", "otu_table", function(object){
 	show(as(object, "matrix"))
 })
 ############################################################################
-#' @aliases show,sample_data-method
 #' @rdname show-methods
 setMethod("show", "sample_data", function(object){
 	cat(paste("Sample Data:        [", dim(sample_data(object))[1], " samples by ", 
@@ -23,7 +21,6 @@ setMethod("show", "sample_data", function(object){
 	show(as(object, "data.frame"))
 })
 ############################################################################
-#' @aliases show,taxonomyTable-method
 #' @rdname show-methods
 setMethod("show", "taxonomyTable", function(object){
     cat(paste("Taxonomy Table:     [", dim(object)[1], " taxa by ", 
@@ -40,9 +37,8 @@ setMethod("show", "taxonomyTable", function(object){
 #'
 #' @seealso \code{\link[methods]{show}}
 #' 
+#' @inheritParams methods::show
 #' @export
-#' @aliases show,phyloseq-method
-#' @docType methods
 #' @rdname show-methods
 #' @examples
 #' # data(GlobalPatterns)

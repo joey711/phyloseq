@@ -17,16 +17,20 @@
 #' into a vector. See the documentation of \code{\link[base]{Extract}} for
 #' more information about the \code{drop} argument.
 #'
+#' @param j See \code{\link[base]{Extract}}
+#' 
+#' @param ... See \code{\link[base]{Extract}}
+#'
 #' @seealso  \code{\link[base]{Extract}}
 #' 
 #' @export
-#' @docType methods
+#' 
 #' @rdname extract-methods
+#' @inheritParams base::Extract
 #' @examples
 #' data(esophagus)
 #' nrow(otu_table(esophagus))
 #' nrow(otu_table(esophagus)[1:5, ])
-#' @aliases [,otu_table,ANY,ANY,ANY-method
 setMethod("[", "otu_table", function(x, i, j, ...){
 	newx <- as(x, "matrix")[i, j, drop=FALSE]
 	otu_table(newx, taxa_are_rows(x) )
@@ -34,7 +38,6 @@ setMethod("[", "otu_table", function(x, i, j, ...){
 # extract parts of sample_data
 #
 #' @export
-#' @aliases [,sample_data,ANY,ANY,ANY-method
 #' @rdname extract-methods
 setMethod("[", "sample_data", function(x, i, j, ...){
 	sample_data( data.frame(x)[i, j, drop=FALSE] )
@@ -42,7 +45,6 @@ setMethod("[", "sample_data", function(x, i, j, ...){
 # extract parts of taxonomyTable
 #
 #' @export
-#' @aliases [,taxonomyTable,ANY,ANY,ANY-method
 #' @rdname extract-methods
 setMethod("[", "taxonomyTable", function(x, i, j, ...){
   # Coerce to matrix, apply std extraction, reconstruct.
@@ -53,7 +55,6 @@ setMethod("[", "taxonomyTable", function(x, i, j, ...){
 #
 #' @importClassesFrom Biostrings XStringSet
 #' @export
-#' @aliases [,XStringSet,character,ANY,ANY-method
 #' @rdname extract-methods
 setMethod("[", c("XStringSet", "character"), function(x, i){
 	index_vector = match(i, names(x), nomatch=NA_integer_)
