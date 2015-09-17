@@ -29,7 +29,8 @@ Imports:
     reshape2 (>= 1.2.2),
     scales (>= 0.2.3),
     vegan (>= 2.0.10),
-    metagenomeSeq (>= 1.10.0)
+    metagenomeSeq (>= 1.10.0),
+    Biobase (>= 2.0.0),
 Depends:
     R (>= 3.1.0)
 Suggests:
