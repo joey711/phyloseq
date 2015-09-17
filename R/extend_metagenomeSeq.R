@@ -48,16 +48,22 @@ phyloseq_to_metagenomeSeq = function(physeq, ...){
   if( !taxa_are_rows(physeq) ){ physeq <- t(physeq)}
   # Coerce count data to vanilla matrix of integers
   countData = round(as(otu_table(physeq), "matrix"), digits=0)
-  OTU = as(otu_table(physeq), "matrix")
+  # Create sample annotation if possible
   if(!is.null(sample_data(physeq,FALSE))){
     ADF = AnnotatedDataFrame(data.frame(sample_data(physeq)))  
+  } else { 
+    ADF = NULL 
   }
+  # Create taxa annotation if possible
   if(!is.null(tax_table(physeq,FALSE))){
     TDF = AnnotatedDataFrame(data.frame(OTUname = taxa_names(physeq),
           data.frame(tax_table(physeq)),row.names = taxa_names(physeq)))
   }
-  mrobj = newMRexperiment(counts = OTU, phenoData = ADF, featureData = TDF)
-  if (sum(colSums(OTU > 0) > 1) < ncol(OTU)) {
+  # Create MRexperiment
+  mrobj = newMRexperiment(counts = countData, phenoData = ADF, featureData = TDF)
+  
+  # Calculate normalization factor
+  if (sum(colSums(countData > 0) > 1) < ncol(countData)) {
       p = suppressMessages(cumNormStat(mrobj))
   }
   else {
