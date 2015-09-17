@@ -36,6 +36,10 @@
 #'
 #' @importFrom metagenomeSeq newMRexperiment
 #'
+#' @importFrom metagenomeSeq cumNormStat
+#'
+#' @importFrom metagenomeSeq cumNormStatFast
+#'
 #' @importFrom Biobase AnnotatedDataFrame
 #'  
 #' @examples
