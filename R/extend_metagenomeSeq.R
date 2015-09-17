@@ -58,6 +58,9 @@ phyloseq_to_metagenomeSeq = function(physeq, ...){
   if(!is.null(tax_table(physeq,FALSE))){
     TDF = AnnotatedDataFrame(data.frame(OTUname = taxa_names(physeq),
           data.frame(tax_table(physeq)),row.names = taxa_names(physeq)))
+  } else {
+    TDF = AnnotatedDataFrame(data.frame(OTUname = taxa_names(physeq),
+          row.names = taxa_names(physeq)))
   }
   # Create MRexperiment
   mrobj = newMRexperiment(counts = countData, phenoData = ADF, featureData = TDF,...)
