@@ -2,7 +2,7 @@
 #' Convert phyloseq data to MetagenomeSeq MRexperiment object
 #'
 #' No testing is performed by this function. The phyloseq data is converted
-#' to the relevant \code{\link[metagenomeSeq]{'MRexperiment-class'}} object, which can then be
+#' to the relevant \code{\link[metagenomeSeq]{MRexperiment-class}} object, which can then be
 #' tested in the zero-inflated mixture model framework
 #' of the \code{\link[metagenomeSeq]{fitFeatureModel}} or \code{\link[metagenomeSeq]{fitZig}} functions in the metagenomeSeq package.
 #' See the
@@ -16,7 +16,7 @@
 #'  Most testing-related options should be provided in 
 #'  a following call to \code{\link[metagenomeSeq]{fitFeatureModel}}.
 #'  
-#' @return A \code{\link[metagenomeSeq]{'MRexperiment-class'}} object.
+#' @return A \code{\link[metagenomeSeq]{MRexperiment-class}} object.
 #' 
 #' @seealso
 #'
