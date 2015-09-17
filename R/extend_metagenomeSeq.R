@@ -60,7 +60,7 @@ phyloseq_to_metagenomeSeq = function(physeq, ...){
           data.frame(tax_table(physeq)),row.names = taxa_names(physeq)))
   }
   # Create MRexperiment
-  mrobj = newMRexperiment(counts = countData, phenoData = ADF, featureData = TDF)
+  mrobj = newMRexperiment(counts = countData, phenoData = ADF, featureData = TDF,...)
   
   # Calculate normalization factor
   if (sum(colSums(countData > 0) > 1) < ncol(countData)) {
