@@ -68,4 +68,5 @@ Collate:
     'distance-methods.R'
     'deprecated_functions.R'
     'extend_DESeq2.R'
+    'extend_metagenomeSeq.R'
     'phylo-class.R'
