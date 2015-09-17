@@ -40,6 +40,8 @@
 #'
 #' @importFrom metagenomeSeq cumNormStatFast
 #'
+#' @importFrom metagenomeSeq cumNorm
+#'
 #' @importFrom Biobase AnnotatedDataFrame
 #'  
 #' @examples
