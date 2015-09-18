@@ -1,4 +1,4 @@
-###############################################
+############################################### 
 #'  Handling and analysis of high-throughput phylogenetic sequence data.
 #'
 #' There are already several ecology and phylogenetic packages available in R, 
@@ -21,4 +21,4 @@
 #' @docType package
 #' @keywords package
 NA
-###############################################
+###############################################  

@@ -1,4 +1,4 @@
-################################################################################
+################################################################################ 
 #' Make microbiome network (igraph)
 #'
 #' A specialized function for creating a network representation of microbiomes,
@@ -7,7 +7,7 @@
 #' The graph is ultimately represented using the 
 #' \code{igraph}-package.
 #'
-#' @usage make_network(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
+#' @usage make_network(physeq, type='samples', distance='jaccard', max.dist = 0.4, 
 #'     keep.isolates=FALSE, ...)
 #'
 #' @param physeq (Required). Default \code{NULL}. 
@@ -15,22 +15,22 @@
 #'  or \code{\link{otu_table-class}} object,
 #'  on which \code{g} is based. \code{phyloseq-class} recommended.
 #'
-#' @param type (Optional). Default \code{"samples"}.
+#' @param type (Optional). Default \code{'samples'}.
 #'  Whether the network should be samples or taxa/OTUs.
-#'  Supported arguments are \code{"samples"}, \code{"taxa"},
-#'  where \code{"taxa"} indicates using the OTUs/taxaindices,
+#'  Supported arguments are \code{'samples'}, \code{'taxa'},
+#'  where \code{'taxa'} indicates using the OTUs/taxaindices,
 #'  whether they actually represent species or some other taxonomic rank.
 #'
-#'  NOTE: not all distance methods are supported if \code{"taxa"}
+#'  NOTE: not all distance methods are supported if \code{'taxa'}
 #'  selected for type. For example, the UniFrac distance and DPCoA
 #'  cannot be calculated for taxa-wise distances, because they use
 #'  a taxa-wise tree as part of their calculation between samples, and
 #'  there is no transpose-equivalent for this tree.
 #'
-#' @param distance (Optional). Default \code{"jaccard"}.
+#' @param distance (Optional). Default \code{'jaccard'}.
 #'  Any supported argument to the \code{method} parameter of the 
 #'  \code{\link{distance}} function is supported here.
-#'  Some distance methods, like \code{"unifrac"}, may take 
+#'  Some distance methods, like \code{'unifrac'}, may take 
 #'  a non-trivial amount of time to calculate, in which case
 #'  you probably want to calculate the distance matrix separately,
 #'  save, and then provide it as the argument to \code{distance} instead.
@@ -74,98 +74,103 @@
 #' # # Example plots with Enterotype Dataset
 #' data(enterotype)
 #' ig <- make_network(enterotype, max.dist=0.3)
-#' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+#' plot_network(ig, enterotype, color='SeqTech', shape='Enterotype', line_weight=0.3, label=NULL)
 #' # 
 #' ig1 <- make_network(enterotype, max.dist=0.2)
-#' plot_network(ig1, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
+#' plot_network(ig1, enterotype, color='SeqTech', shape='Enterotype', line_weight=0.3, label=NULL)
 #' # 
 #' # # Three methods of choosing/providing distance/distance-method
 #' # Provide method name available to distance() function
-#' ig <- make_network(enterotype, max.dist=0.3, distance="jaccard")
+#' ig <- make_network(enterotype, max.dist=0.3, distance='jaccard')
 #' # Provide distance object, already computed
-#' jaccdist <- distance(enterotype, "jaccard")
+#' jaccdist <- distance(enterotype, 'jaccard')
 #' ih <- make_network(enterotype, max.dist=0.3, distance=jaccdist)
-#' # Provide "custom" function.
-#' ii <- make_network(enterotype, max.dist=0.3, distance=function(x){vegan::vegdist(x, "jaccard")})
-#' # The have equal results:		
+#' # Provide 'custom' function.
+#' ii <- make_network(enterotype, max.dist=0.3, distance=function(x){vegan::vegdist(x, 'jaccard')})
+#' # The have equal results:\t\t
 #' all.equal(ig, ih)
 #' all.equal(ig, ii)
 #' # 
-#' # Try out making a trivial "network" of the 3-sample esophagus data,
+#' # Try out making a trivial 'network' of the 3-sample esophagus data,
 #' # with weighted-UniFrac as distance
 #' data(esophagus)
-#' ij <- make_network(esophagus, "samples", "unifrac", weighted=TRUE)
-make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 0.4, 
-	keep.isolates=FALSE, ...){
-
-	if( type %in% c("taxa", "species", "OTUs", "otus", "otu")){
+#' ij <- make_network(esophagus, 'samples', 'unifrac', weighted=TRUE)
+make_network <- function(physeq, type = "samples", distance = "jaccard", max.dist = 0.4, 
+  keep.isolates = FALSE, ...) {
+  
+  if (type %in% c("taxa", "species", "OTUs", "otus", "otu")) {
     # Calculate or asign taxa-wise distance matrix
-	  if( class(distance) == "dist" ){ 
-	    # If distance a distance object, use it rather than re-calculate
-	    obj.dist <- distance
-	    if( attributes(obj.dist)$Size != ntaxa(physeq) ){
-	      stop("ntaxa(physeq) does not match size of dist object in distance")
-	    }
-	    if( !setequal(attributes(obj.dist)$Labels, taxa_names(physeq)) ){
-	      stop("taxa_names does not exactly match dist-indices")
-	    }
-	  } else if( class(distance) == "character" ){ 
-	    # If character string, pass on to distance(), assume supported
-	    obj.dist <- distance(physeq, method=distance, type=type, ...)
-	    # Else, assume a custom function and attempt to calculate.
-	  } else { 	
-	    # Enforce orientation for taxa-wise distances
-	    if( !taxa_are_rows(physeq) ){ physeq <- t(physeq) }
-	    # Calculate distances
-	    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
-	  }
-	    # coerce distance-matrix back into vanilla matrix, Taxa Distance Matrix, TaDiMa
-	    TaDiMa  <- as.matrix(obj.dist)
-	    # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
-	    TaDiMa <- TaDiMa + diag(Inf, ntaxa(physeq), ntaxa(physeq))
-	    # Convert distance matrix to coincidence matrix, CoMa, using max.dist
-		CoMa <- TaDiMa < max.dist   
-	} else if( type == "samples" ){
-    # Calculate or asign sample-wise distance matrix
-	  if( class(distance) == "dist" ){ # If argument is already a distance matrix.
-	    # If distance a distance object, use it rather than re-calculate
-	    obj.dist <- distance
-	    if( attributes(obj.dist)$Size != nsamples(physeq) ){
-	      stop("nsamples(physeq) does not match size of dist object in distance")
-	    }
-	    if( !setequal(attributes(obj.dist)$Labels, sample_names(physeq)) ){
-	      stop("sample_names does not exactly match dist-indices")
-	    }
-	    # If character string, pass on to distance(), assume supported    	
-	  } else if( class(distance) == "character" ){
-	    # Else, assume a custom function and attempt to calculate. 
-	    obj.dist <- distance(physeq, method=distance, type=type, ...)
-	  } else { 
-	    # Enforce orientation for sample-wise distances
-	    if(taxa_are_rows(physeq)){ physeq <- t(physeq) }
-	    # Calculate distances
-	    obj.dist <- distance(as(otu_table(physeq), "matrix"))	    
-	  }
-	  # coerce distance-matrix back into vanilla matrix, Sample Distance Matrix, SaDiMa
-	  SaDiMa  <- as.matrix(obj.dist)
-	  # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
-	  SaDiMa <- SaDiMa + diag(Inf, nsamples(physeq), nsamples(physeq))
-	  # Convert distance matrix to coincidence matrix, CoMa, using max.dist
-	  CoMa <- SaDiMa < max.dist  
-	} else {
-		stop("type argument must be one of \n (1) samples \n or \n (2) taxa")
-	}
-	# Calculate the igraph-formatted network
-	ig <- graph.adjacency(CoMa, mode="lower")
-	if( !keep.isolates ){
-	  # If not-keeping isolates, remove them
-	  isolates <- V(ig)[degree(ig) == 0]
-	  ig = delete.vertices(ig, V(ig)[degree(ig) == 0])
-	}
-	if( vcount(ig) < 2 ){
-	  # Report a warning if the graph is empty
-	  warning("The graph you created has too few vertices. Consider changing `max.dist` argument, and check your data.")
-	}      
-	return(ig)  
+    if (class(distance) == "dist") {
+      # If distance a distance object, use it rather than re-calculate
+      obj.dist <- distance
+      if (attributes(obj.dist)$Size != ntaxa(physeq)) {
+        stop("ntaxa(physeq) does not match size of dist object in distance")
+      }
+      if (!setequal(attributes(obj.dist)$Labels, taxa_names(physeq))) {
+        stop("taxa_names does not exactly match dist-indices")
+      }
+    } else if (class(distance) == "character") {
+      # If character string, pass on to distance(), assume supported
+      obj.dist <- distance(physeq, method = distance, type = type, ...)
+      # Else, assume a custom function and attempt to calculate.
+    } else {
+      # Enforce orientation for taxa-wise distances
+      if (!taxa_are_rows(physeq)) {
+        physeq <- t(physeq)
+      }
+      # Calculate distances
+      obj.dist <- distance(as(otu_table(physeq), "matrix"))
+    }
+    # coerce distance-matrix back into vanilla matrix, Taxa Distance Matrix, TaDiMa
+    TaDiMa <- as.matrix(obj.dist)
+    # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
+    TaDiMa <- TaDiMa + diag(Inf, ntaxa(physeq), ntaxa(physeq))
+    # Convert distance matrix to coincidence matrix, CoMa, using max.dist
+    CoMa <- TaDiMa < max.dist
+  } else if (type == "samples") {
+    # Calculate or asign sample-wise distance matrix If argument is already a
+    # distance matrix.  If distance a distance object, use it rather than
+    # re-calculate
+    if (class(distance) == "dist") {
+      obj.dist <- distance
+      if (attributes(obj.dist)$Size != nsamples(physeq)) {
+        stop("nsamples(physeq) does not match size of dist object in distance")
+      }
+      if (!setequal(attributes(obj.dist)$Labels, sample_names(physeq))) {
+        stop("sample_names does not exactly match dist-indices")
+      }
+      # If character string, pass on to distance(), assume supported
+    } else if (class(distance) == "character") {
+      # Else, assume a custom function and attempt to calculate.
+      obj.dist <- distance(physeq, method = distance, type = type, ...)
+    } else {
+      # Enforce orientation for sample-wise distances
+      if (taxa_are_rows(physeq)) {
+        physeq <- t(physeq)
+      }
+      # Calculate distances
+      obj.dist <- distance(as(otu_table(physeq), "matrix"))
+    }
+    # coerce distance-matrix back into vanilla matrix, Sample Distance Matrix, SaDiMa
+    SaDiMa <- as.matrix(obj.dist)
+    # Add Inf to the diagonal to avoid self-connecting edges (inefficient)
+    SaDiMa <- SaDiMa + diag(Inf, nsamples(physeq), nsamples(physeq))
+    # Convert distance matrix to coincidence matrix, CoMa, using max.dist
+    CoMa <- SaDiMa < max.dist
+  } else {
+    stop("type argument must be one of \n (1) samples \n or \n (2) taxa")
+  }
+  # Calculate the igraph-formatted network
+  ig <- graph.adjacency(CoMa, mode = "lower")
+  if (!keep.isolates) {
+    # If not-keeping isolates, remove them
+    isolates <- V(ig)[degree(ig) == 0]
+    ig = delete.vertices(ig, V(ig)[degree(ig) == 0])
+  }
+  if (vcount(ig) < 2) {
+    # Report a warning if the graph is empty
+    warning("The graph you created has too few vertices. Consider changing `max.dist` argument, and check your data.")
+  }
+  return(ig)
 }
-################################################################################
+################################################################################  
