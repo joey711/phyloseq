@@ -1,4 +1,16 @@
-CHANGES IN VERSION 1.13.3
+CHANGES IN VERSION 1.13.5
+-------------------------
+
+USER-VISIBLE CHANGES
+
+  - Help avoid cryptic errors due to name collision of `distance` with external loaded packages by making `distance` a formal S4 method in phyloseq.
+  - Improve documentation of `distance` function and the downstream procedures on which it depends
+  - Migrate the list of supported methods to a documented, exported list object, called `distanceMethodList`.
+  - Improved distance unit tests with detailed checks that dispatch works and gives exactly expected distance matrices for all methods defined in distanceMethodList.
+  - Improved JSD doc, performance, code, deprecated unnecessary `parallel` argument in JSD
+
+
+CHANGES IN VERSION 1.13.4
 -------------------------
 
 BUG FIXES

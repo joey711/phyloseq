@@ -1,7 +1,8 @@
 ################################################################################
 # Use testthat to test that distance methods return correct results.
 ################################################################################
-library("phyloseq"); library("testthat")
+library("phyloseq")
+library("testthat")
 ################################################################################
 # UniFrac testing section. Relies on pre-computed results from pycogent
 # The relevant python code is saved in `extdata/gp500-pycogent.py`
@@ -55,4 +56,63 @@ test_that("Check that regular-expression matching for unifrac method flag is wor
   expect_identical(distance(GP500, "u-UniFrac"), distance(GP500, "unifrac"))
 })
 ################################################################################
+# Test other distances against their expected dispatch explicit calculation
+################################################################################
+test_that("Test accurate dispatch for other distances", {
+  otumatgp500 = t(as(otu_table(GP500), "matrix"))
+  # Test for all vegdist, phyloseq object
+  expect_equal(
+    lapply(distanceMethodList$vegdist, vegan::vegdist, x = otumatgp500),
+    lapply(distanceMethodList$vegdist, distance, physeq = GP500),
+    check.attributes = FALSE, tolerance = tol)
+  # Test for all vegdist, OTU table
+  expect_equal(
+    lapply(distanceMethodList$vegdist, vegan::vegdist, x = otumatgp500),
+    lapply(distanceMethodList$vegdist, distance, physeq = otu_table(GP500)),
+    check.attributes = FALSE, tolerance = tol)
+  # Test for all betadiver, phyloseq object
+  expect_equal(
+    lapply(distanceMethodList$betadiver, vegan::betadiver, x = otumatgp500),
+    lapply(distanceMethodList$betadiver, distance, physeq = GP500),
+    check.attributes = FALSE, tolerance = tol)
+  # Test for all betadiver, OTU table
+  expect_equal(
+    lapply(distanceMethodList$betadiver, vegan::betadiver, x = otumatgp500),
+    lapply(distanceMethodList$betadiver, distance, physeq = otu_table(GP500)),
+    check.attributes = FALSE, tolerance = tol) 
+  # Test for all dist, phyloseq object
+  expect_equal(
+    lapply(distanceMethodList$dist, stats::dist, x = otumatgp500),
+    lapply(distanceMethodList$dist, distance, physeq = GP500),
+    check.attributes = FALSE, tolerance = tol)
+  # Test for all dist, OTU table
+  expect_equal(
+    lapply(distanceMethodList$dist, stats::dist, x = otumatgp500),
+    lapply(distanceMethodList$dist, distance, physeq = otu_table(GP500)),
+    check.attributes = FALSE, tolerance = tol) 
+  
+  # DPCoA
+  #"dpcoa"
+  # phyloseq object
+  # TOO SLOW to test routinely. Commenting out.
+  #   expect_equal(
+  #     as.dist(DPCoA(GP500)$RaoDis, diag=FALSE),
+  #     distance(GP500, "dpcoa"),
+  #     check.attributes = FALSE, tolerance = tol)
+  # OTU table doesn't have a tree
+  expect_error(DPCoA(otu_table(GP500)))
+  
+  # JSD
+  #"jsd"
+  # phyloseq object
+  expect_equal(
+    phyloseq:::JSD(GP500),
+    distance(GP500, "jsd"),
+    check.attributes = FALSE, tolerance = tol)
+  # OTU table
+  expect_equal(
+    phyloseq:::JSD(otu_table(GP500)),
+    distance(otu_table(GP500), "jsd"),
+    check.attributes = FALSE, tolerance = tol)
+})
 ################################################################################

@@ -1,18 +1,13 @@
 ################################################################################
-#' General distance / dissimilarity index calculator
+#' Calculate distance, dissimilarity 
 #'
 #' Takes a \code{\link{phyloseq-class}} object and method option, and returns
 #'  a \code{\link{dist}}ance object suitable for certain 
 #'  ordination methods and other distance-based analyses. 
-#'  There are currently 45 explicitly supported method options, as well as
-#'  user-provided arbitrary methods via an interface to
-#'  \code{\link{designdist}}. For the complete list of currently
-#'  supported options/arguments to the \code{method} parameter, 
-#'  type \code{distance("list")} at the command-line.
 #'  Only
 #'  sample-wise distances are currently supported (the \code{type} argument),
 #'  but eventually species-wise (OTU-wise)
-#'  distances will be supported as well. 
+#'  distances may be supported as well. 
 #'
 #'  Depending on the \code{method}
 #'  argument, \code{distance()} wraps one of 
@@ -27,35 +22,28 @@
 #' @param physeq (Required).  A \code{\link{phyloseq-class}} or
 #'  an \code{\link{otu_table-class}} object. The latter is only appropriate
 #'  for methods that do not require any additional data (one-table). 
-#'  For example, the ``unifrac'' option (\code{\link{UniFrac}}) requires
+#'  For example, the ``wunifrac'' option (\code{\link{UniFrac}}) requires
 #'  \code{\link{phyloseq-class}} that contains both an \code{otu_table}
 #'  and a phylogenetic tree (\code{phylo}).
 #'
-#' @param method (Optional). A character string. Default is \code{"unifrac"}.
-#'  Provide one of the 45 currently supported options. 
-#'  To see a list of supported options, enter the following into the command line:
-#' 
-#'  \code{distance("list")}
+#' @param method (Required). A character string. 
+#'  Provide one of the currently supported options. 
+#'  See \code{\link{distanceMethodList}} for a detailed list 
+#'  of the supported options here,
+#'  and links to accompanying documentation.
 #'  
-#'  For further details and additional arguments,
-#'  see the documentation for the supprting functions, linked below
-#'  under ``See Also''. 
+#'  The following methods are implemented explicitly within
+#'  the \code{\link{phyloseq-package}}, 
+#'  and accessed by the following \code{method} options:
 #'  
-#'  In particular, there are three methods included
-#'  by the \code{\link{phyloseq-package}}, and accessed by the following
-#'  \code{method} options:
-#' 
-#'  \code{"unifrac"}, for (unweighted) UniFrac distance, \code{\link{UniFrac}};
-#'  
-#'  \code{"wunifrac"}, for weighted-UniFrac distance, \code{\link{UniFrac}};
-#'
-#'  \code{"dpcoa"}, sample-wise distance from Double Principle 
-#'   Coordinate Analysis, \code{\link{DPCoA}};
-#' 
-#'  \code{"jsd"}, for Jensen-Shannon Divergence, \code{\link{JSD}}; 
-#'  
-#'  and it is recommended that you see their documentation
-#'  for details, references, background and examples for use. 
+#'  \describe{
+#'   \item{\code{"unifrac"}}{Original (unweighted) UniFrac distance, \code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{"wunifrac"}}{weighted-UniFrac distance, \code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{"dpcoa"}}{
+#'     sample-wise distance used in 
+#'     Double Principle Coordinate Analysis, \code{\link[phyloseq]{DPCoA}}}
+#'   \item{\code{"jsd"}}{Jensen-Shannon Divergence, \code{\link{JSD}}}
+#'  }
 #'
 #'  Alternatively, you can provide
 #'  a character string that defines a custom distance method, if it has the form
@@ -87,7 +75,7 @@
 #' @export
 #' @examples 
 #' data(esophagus)
-#' distance(esophagus) # Unweighted UniFrac
+#' distance(esophagus, "uunifrac") # Unweighted UniFrac
 #' distance(esophagus, "wunifrac") # weighted UniFrac
 #' distance(esophagus, "jaccard") # vegdist jaccard
 #' distance(esophagus, "gower") # vegdist option "gower"
@@ -97,115 +85,177 @@
 #' distance("help")
 #' distance("list")
 #' help("distance")
-distance <- function(physeq, method="unifrac", type="samples", ...){
+setGeneric("distance", function(physeq, method, ...){
+  standardGeneric("distance")
+})
+setMethod("distance", c("phyloseq", "ANY"), function(physeq, method){
+  stop("You must specify a `method` argument as a character string.
+       \nIt was missing/NA or not a character string.
+       \nSee `?distanceMethodList`")
+})
+setMethod("distance", c("otu_table", "character"), function(physeq, method, type="samples", ...){
+  OTU = physeq
+  if( method == "jsd" ){
+    return(JSD(OTU))
+  }
+  # Hard-coded dispatch according to certain method groups
+  if( method %in% distanceMethodList$vegdist ){
+    dfun <- "vegdist"
+  } else if( method %in% distanceMethodList$betadiver ){
+    dfun <- "betadiver"
+  } else if( method %in% distanceMethodList$dist ){
+    dfun <- "dist"		
+  } else {
+    dfun <- "designdist"
+  }
+  # get the extra arguments to pass to functions (this can be empty)
+  extrargs <- list(...)	
+  # If necessary (non phyloseq funs), enforce orientation, build function.
+  # disambiguate type argument... Must be "species" for vegan integration...
+  # The following should all work: "OTUs", "OTU", "otus", "Taxas", "site"
+  type <- gsub("(OTU(s)?)|(taxa(s)?)|(Species)", "species", type, ignore.case = TRUE)
+  # The following should all work: "SaMplE", "Samples", "site", "sites"
+  type <- gsub("(Sample(s)?)|(site(s)?)", "samples", type, ignore.case = TRUE)
+  # Test type, and enforce orientation accordingly	
+  if( type == "species"){
+    # For species-distance, species need to be rows (vegan-style)
+    if( !taxa_are_rows(OTU) ){OTU <- t(OTU)}	
+  } else if( type == "samples" ){
+    # For sample-distance, samples need to be rows (vegan-style)
+    if( taxa_are_rows(OTU) ){OTU <- t(OTU)}
+  } else {
+    stop("type argument must be one of \n (1) samples \n or \n (2) species")
+  }
+  OTU <- as(OTU, "matrix")
+  fun.args <- c(list(OTU, method=method), extrargs)	
+  return( do.call(dfun, fun.args) )
+})
+setMethod("distance", c("phyloseq", "character"), function(physeq, method, type="samples", ...){
   # Only one method at a time.
   if(length(method) > 1){
     stop("`distance` only accepts one method at a time. ",
          "You provided ", length(method), " methods. ")
   }
-	# # Can't do partial matching for all options,
-  # # because too many similar options.
-  # # Do partial matching for wunifrac/unifrac.
-	# # Determine if method argument matches any options exactly.
-	# # If not, call designdist
-	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
-		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
-		"mountford", "raup" , "binomial", "chao", "cao")
-	# Standard distance methods
-	dist_methods <- c("maximum", "binary", "minkowski")
-	# Only keep the ones that are NOT already in vegdist_methods
-	dist_methods <- dist_methods[!dist_methods %in% intersect(vegdist_methods, dist_methods)]
-	# The methods supported by vegan::betadiver function.
-	betadiver_methods <- c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j",
-		"sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
-		"sim", "gl", "z")
-	method.list <- list(
-		UniFrac    = c("unifrac", "wunifrac"),
-		DPCoA      = "dpcoa",
-		JSD        = "jsd",
-		vegdist    = vegdist_methods,
-		betadiver  = betadiver_methods,
-		dist       = dist_methods,
-		designdist = "ANY"
-	)
-  # User support, and method options definition.
-	if(class(physeq) == "character"){
-		if( physeq=="help" ){
-			cat("Available arguments to methods:\n")
-			print(method.list)
-			cat("Please be exact, partial-matching not supported.\n")
-			cat("Can alternatively provide a custom distance.\n")
-			cat("See:\n help(\"distance\") \n")
-			return()
-		}
-		if( physeq=="list" ){
-			return(c(method.list))
-		}		
-	}
+  if(length(method) < 1 | is.na(method)){
+    stop("You must specify a `method` argument. \nIt was missing/NA. \nSee `?distanceMethodList`")
+  }
   # Regular Expression detect/convert unifrac/weighted-UniFrac args
   method <- gsub("^(u.*)*unifrac$", "unifrac", method, ignore.case = TRUE)
   method <- gsub("^w.*unifrac$", "wunifrac", method, ignore.case = TRUE)
-	# Return distance, or define the function call to build/pass call
+  # Distances that require a phyloseq object
+  # because they make use of additional information (e.g. a tree)
   if( method ==  "unifrac" ){ return(UniFrac(physeq, ...)) }
   if( method == "wunifrac" ){ return(UniFrac(physeq, weighted=TRUE, ...)) }
-  if( method == "jsd"      ){ return(JSD(physeq, ...)) }
   if( method == "dpcoa"    ){
     # Remove diagnol entries from "dist" object returned in `RaoDis` slot.
     return(as.dist(DPCoA(physeq, ...)$RaoDis, diag=FALSE))
-	} else if( method %in% vegdist_methods ){
-		dfun <- "vegdist"
-	} else if( method %in% betadiver_methods ){
-		dfun <- "betadiver"
-	} else if( method %in% dist_methods ){
-		dfun <- "dist"		
-	} else {
-		dfun <- "designdist"
-	}
-	# get the extra arguments to pass to functions (this can be empty)
-	extrargs <- list(...)	
-	# # non-phyloseq methods are assumed to be based on otu_table-only (for now)
-	# # If necessary (non phyloseq funs), enforce orientation, build function.
-	OTU <- otu_table(physeq)
-	# disambiguate type argument... Must be "species" for vegan integration...
-  # The following should all work: "OTUs", "OTU", "otus", "Taxas", "site"
-  type <- gsub("(OTU(s)?)|(taxa(s)?)|(Species)", "species", type, ignore.case = TRUE)
-  # The following should all work: "SaMplE", "Samples", "site", "sites"
-  type <- gsub("(Sample(s)?)|(site(s)?)", "samples", type, ignore.case = TRUE)
-	# Test type, and enforce orientation accordingly	
-	if( type == "species"){
-		# For species-distance, species need to be rows (vegan-style)
-		if( !taxa_are_rows(OTU) ){OTU <- t(OTU)}	
-	} else if( type == "samples" ){
-		# For sample-distance, samples need to be rows (vegan-style)
-		if( taxa_are_rows(OTU) ){OTU <- t(OTU)}
-	} else {
-		stop("type argument must be one of \n (1) samples \n or \n (2) species")
-	}	
-	OTU <- as(OTU, "matrix")
-	fun.args <- c(list(OTU, method=method), extrargs)	
-	return( do.call(dfun, fun.args) )
-} 
+	} 
+  # Else, dispatch to OTU table method
+  return(distance(otu_table(physeq), method, type, ...))
+})
 ################################################################################
+#' List of distance method keys supported in \code{\link[phyloseq]{distance}}
+#'
+#' Distance methods should be specified by exact string match.
+#' Cannot do partial matching for all options, 
+#' because too many similar options in downstream method dispatch. 
+#'
+#' @format A list of character vectors. 
+#' Every entry specifies a supported distance method.
+#' Names in the list indicate which downstream function
+#' is being utilized for further details.
+#' Same functions are linked in the itemized list below.
+#' 
+#' \describe{
+#'   \item{\code{unifrac}}{\code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{wunifrac}}{\code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{dpcoa}}{\code{\link[phyloseq]{DPCoA}}}
+#'   \item{\code{jsd}}{\code{\link{JSD}}}
+#'   \item{\code{manhattan}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{euclidean}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{canberra}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{bray}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{kulczynski}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{jaccard}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{gower}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{altGower}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{morisita}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{horn}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{mountford}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{raup}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{binomial}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{chao}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{cao}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{w}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{-}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{c}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{wb}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{r}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{I}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{e}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{t}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{me}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{j}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{sor}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{m}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{-}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{co}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{cc}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{g}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{-}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{l}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{hk}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{rlb}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{sim}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{gl}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{z}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{maximum}}{\code{\link[stats]{dist}}}
+#'   \item{\code{binary}}{\code{\link[stats]{dist}}}
+#'   \item{\code{minkowski}}{\code{\link[stats]{dist}}}
+#'   \item{\code{ANY}}{\code{\link[vegan]{designdist}}}
+#' }
+#' 
+#' @seealso 
+#' \code{\link[phyloseq]{distance}}
+#' 
+#' @export
+#' 
+#' @examples 
+#' distanceMethodList
+distanceMethodList <- list(
+  UniFrac    = c("unifrac", "wunifrac"),
+  DPCoA      = "dpcoa",
+  JSD        = "jsd",
+  # The methods supported by vegan::vegdist function.
+  vegdist    = c("manhattan", "euclidean", "canberra", "bray", 
+                 "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
+                 "mountford", "raup" , "binomial", "chao", "cao"),
+  # The methods supported by vegan::betadiver function.
+  betadiver  = c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j",
+                 "sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
+                 "sim", "gl", "z"),
+  dist       = c("maximum", "binary", "minkowski"),
+  designdist = "ANY"
+)
 ################################################################################
 # Shannon-Jensen Divergence, in R.
 ################################################################################
 #' @keywords internal
 phyloseq_JSD_pair <- function(x, y){
-	###Function to compute Shannon-Jensen Divergence
-	###x and y are the frequencies for the same p categories
-	u <- x/sum(x)
-	v <- y/sum(y)
-	m <- (u+v)/2
-	if (all(u*v>0)){
-		d <- (u*log(u/m)+v*log(v/m))/2
-	} else {
-		P1 <- u*log(u/m)
-		P2 <- v*log(v/m)
-		P1[is.nan(P1)] <- 0
-		P2[is.nan(P2)] <- 0
-		d <- (P1+P2)/2
-	}
-	return(sum(d))
+	# Function to compute Shannon-Jensen Divergence
+	# x and y are the frequencies for the same p categories
+  # Assumes relative abundance transformation already happened (for efficiency)
+  
+  # Define the mean point
+	m <- (x+y)/2
+	# Define each samples component
+	P1 <- x*log(x/m)
+	P2 <- y*log(y/m)
+	# In the case of zeroes entries log is undefined, JSD is defined as zero
+	P1[!is.finite(P1)] <- 0
+	P2[!is.finite(P2)] <- 0
+	d <- (P1+P2)/2
+	return(sum(d, na.rm = TRUE))
 }
 ################################################################################
 #' Calculate the Jensen-Shannon Divergence (distance)
@@ -226,12 +276,6 @@ phyloseq_JSD_pair <- function(x, y){
 #' @param physeq (Required). \code{\link{phyloseq-class}}. 
 #'  The phyloseq data on which to compute the 
 #'  pairwise sample distance matrix.
-#'
-#' @param parallel (Optional). Logical. Default \code{FALSE}. Should the 
-#'  calculation be run using parallel processors? Note that this only actually
-#'  runs in parallel if you have registered a parallel ``backend'' prior to 
-#'  calling this function. Further details are provided in the documentation
-#'  for \code{\link{UniFrac}}.
 #'
 #' @return An object of class ``\code{\link{dist}}'' suitable for certain 
 #'  ordination methods and other distance-based analyses.
@@ -264,37 +308,49 @@ phyloseq_JSD_pair <- function(x, y){
 #' # ent.PCoA <- ordinate(enterotype, "PCoA", ent.jsd) # Perform principle coordinate analysis
 #' # p <- plot_ordination(enterotype, ent.PCoA, color="Enterotype", shape="SeqTech") 
 #' # (p <- p + geom_point(size=5, alpha=0.5))
-JSD <- function(physeq, parallel=FALSE){
-	OTU <- otu_table(physeq)
-	### Some parallel-foreach housekeeping.    
-	# If user specifies not-parallel run (the default), register the sequential "back-end"
-	if( !parallel ){ registerDoSEQ() }
-	# create N x 2 matrix of all pairwise combinations of samples.
-	spn <- combn(sample_names(physeq), 2, simplify=FALSE)
-	# initialize DistMat with NAs
-	DistMat <- matrix(NA, nsamples(physeq), nsamples(physeq))
-	# define the rows/cols of DistMat with the sample names (rownames)    
-	rownames(DistMat) <- sample_names(physeq)
-	colnames(DistMat) <- sample_names(physeq)
-	## Format coercion
-	# Coerce to the vegan orientation, with species as columns
-	if(taxa_are_rows(physeq)){ OTU <- t(OTU) }
-	# Coerce OTU to matrix for calculations.
-	OTU <- as(OTU, "matrix")
-	# optionally-parallel implementation with foreach
-	distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
-	  A <- i[1]
-	  B <- i[2]
-	  return( phyloseq_JSD_pair(OTU[A, ], OTU[B, ]) )
-	}
-	# return(distlist)
-	# This is in serial, but it is quick.
-	distlist2distmat <- function(i, spn, DL){
-	  DistMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
-	}
-	junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)	
-	return(as.dist(DistMat))
-}
+setGeneric("JSD", function(physeq){
+  standardGeneric("JSD")
+})
+setMethod("JSD", "ANY", function(physeq){
+  stop("JSD requires specific input classes. Check call and try again")
+})
+setMethod("JSD", "phyloseq", function(physeq){
+  JSD(otu_table(physeq))
+})
+setMethod("JSD", "otu_table", function(physeq){
+  # Coerce to species-as-columns
+  if(taxa_are_rows(physeq)){ physeq <- t(physeq) }
+  # Coerce physeq to matrix and pass on
+  return(JSD(as(physeq, "matrix")))
+})
+# Assumes samples are rows
+setMethod("JSD", "matrix", function(physeq){
+  # Coerce to relative abundance by sample (row)
+  physeq <- sweep(physeq, 1, rowSums(physeq), "/")
+  # Parallelization not needed for this.
+  # Fix at sequential (eventually update code to remove parallelization complexity)
+  registerDoSEQ()
+  # create N x 2 matrix of all pairwise combinations of samples.
+  spn <- combn(row.names(physeq), 2, simplify=FALSE)
+  # initialize DistMat with NAs
+  DistMat <- matrix(NA, nrow(physeq), nrow(physeq))
+  # define the rows/cols of DistMat with the sample names (rownames)    
+  rownames(DistMat) <- row.names(physeq)
+  colnames(DistMat) <- row.names(physeq)
+  # optionally-parallel implementation with foreach
+  distlist <- foreach( i = spn, .packages="phyloseq") %dopar% {
+    A <- i[1]
+    B <- i[2]
+    return( phyloseq_JSD_pair(physeq[A, ], physeq[B, ]) )
+  }
+  # return(distlist)
+  # This is in serial, but it is quick.
+  distlist2distmat <- function(i, spn, DL){
+    DistMat[ spn[[i]][2], spn[[i]][1] ] <<- DL[[i]]
+  }
+  junk <- sapply(1:length(spn), distlist2distmat, spn, distlist)	
+  return(as.dist(DistMat))
+})
 ##############################################################################
 #' Calculate weighted or unweighted (Fast) UniFrac distance for all sample pairs.
 #'
