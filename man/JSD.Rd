@@ -10,12 +10,6 @@ JSD(physeq, parallel=FALSE)
 \item{physeq}{(Required). \code{\link{phyloseq-class}}.
  The phyloseq data on which to compute the
  pairwise sample distance matrix.}
-
-\item{parallel}{(Optional). Logical. Default \code{FALSE}. Should the
- calculation be run using parallel processors? Note that this only actually
- runs in parallel if you have registered a parallel ``backend'' prior to
- calling this function. Further details are provided in the documentation
- for \code{\link{UniFrac}}.}
 }
 \value{
 An object of class ``\code{\link{dist}}'' suitable for certain
