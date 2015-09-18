@@ -1,4 +1,4 @@
-################################################################################
+################################################################################ 
 #' Convert phyloseq data to DESeq2 dds object
 #'
 #' No testing is performed by this function. The phyloseq data is converted
@@ -23,7 +23,7 @@
 #'  reference sample class in tests by setting it to the first of the factor levels
 #'  using the \code{\link{relevel}} function:
 #'  
-#'  \code{sample_data(entill)$Enterotype <- relevel(sample_data(entill)$Enterotype, "1")}
+#'  \code{sample_data(entill)$Enterotype <- relevel(sample_data(entill)$Enterotype, '1')}
 #'  
 #' @param ... (Optional). Additional named arguments passed to \code{\link[DESeq2]{DESeqDataSetFromMatrix}}.
 #'  Most users will not need to pass any additional arguments here.
@@ -34,7 +34,7 @@
 #' 
 #' @seealso
 #' 
-#' \code{vignette("phyloseq-mixture-models")}
+#' \code{vignette('phyloseq-mixture-models')}
 #' 
 #' The 
 #' \href{http://joey711.github.io/phyloseq-extensions}{phyloseq-extensions}
@@ -50,21 +50,23 @@
 #'  
 #' @examples
 #'  # Check out the vignette phyloseq-mixture-models for more details.
-#'  # vignette("phyloseq-mixture-models")
+#'  # vignette('phyloseq-mixture-models')
 #'  data(soilrep)
 #'  phyloseq_to_deseq2(soilrep, ~warmed)
-phyloseq_to_deseq2 = function(physeq, design, ...){
+phyloseq_to_deseq2 = function(physeq, design, ...) {
   # Need to add check here for missing sample_data
-  if( is.null(sample_data(physeq, FALSE)) ){
+  if (is.null(sample_data(physeq, FALSE))) {
     stop("There must be sample_data present, for specifying experimental design. See ?phyloseq_to_deseq2")
   }
   # Enforce orientation. Samples are columns
-  if( !taxa_are_rows(physeq) ){ physeq <- t(physeq)}
+  if (!taxa_are_rows(physeq)) {
+    physeq <- t(physeq)
+  }
   # Coerce count data to vanilla matrix of integers
-  countData = round(as(otu_table(physeq), "matrix"), digits=0)
+  countData = round(as(otu_table(physeq), "matrix"), digits = 0)
   colData = data.frame(sample_data(physeq))
   # Create the DESeq data set, dds.
   dds <- DESeqDataSetFromMatrix(countData, colData, design, ...)
   return(dds)
 }
-################################################################################
+################################################################################  

@@ -1,4 +1,4 @@
-################################################################################
+################################################################################ 
 #' Build or access the taxonomyTable.
 #'
 #' This is the suggested method for both constructing and accessing a table of
@@ -36,48 +36,45 @@
 #' @export
 #'
 #' @examples #
-#' # tax1 <- tax_table(matrix("abc", 30, 8))
+#' # tax1 <- tax_table(matrix('abc', 30, 8))
 #' # data(GlobalPatterns)
 #' # tax_table(GlobalPatterns)
-setGeneric("tax_table", function(object, errorIfNULL=TRUE) standardGeneric("tax_table"))
+setGeneric("tax_table", function(object, errorIfNULL = TRUE) standardGeneric("tax_table"))
 #' @rdname tax_table-methods
 #' @aliases tax_table,ANY-method
-setMethod("tax_table",  "ANY", function(object, errorIfNULL=TRUE){
-	access(object, "tax_table", errorIfNULL)
+setMethod("tax_table", "ANY", function(object, errorIfNULL = TRUE) {
+  access(object, "tax_table", errorIfNULL)
 })
 # Constructor; for creating taxonomyTable from a matrix.
 #' @rdname tax_table-methods
 #' @aliases tax_table,matrix-method
-setMethod("tax_table", "matrix", function(object){
+setMethod("tax_table", "matrix", function(object) {
   # Want dummy species/taxa index names if missing
-  if(is.null(rownames(object))){
-    rownames(object) <- paste("sp", 1:nrow(object), sep="")
+  if (is.null(rownames(object))) {
+    rownames(object) <- paste("sp", 1:nrow(object), sep = "")
   }
-  if(is.null(colnames(object))){
-    colnames(object) <- paste("ta", 1:ncol(object), sep="")
-  }	
-	# instantiate as taxonomyTable
-	return(new("taxonomyTable", object))
+  if (is.null(colnames(object))) {
+    colnames(object) <- paste("ta", 1:ncol(object), sep = "")
+  }
+  # instantiate as taxonomyTable
+  return(new("taxonomyTable", object))
 })
 # Constructor; coerce to matrix, then pass on for creating taxonomyTable.
 #' @rdname tax_table-methods
 #' @aliases tax_table,data.frame-method
-setMethod("tax_table", "data.frame", function(object){
-	# Warn first
+setMethod("tax_table", "data.frame", function(object) {
+  # Warn first
   text = "Coercing from data.frame class to character matrix \n"
   text = paste0(text, "prior to building taxonomyTable. \n")
   text = paste0(text, "This could introduce artifacts. \n")
   text = paste0(text, "Check your taxonomyTable, or coerce to matrix manually.")
-	warning(text)
-	# Coerce everything to a matrix, then char-vector, then back to matrix.
-	TT <- matrix(as(as(object, "matrix"), "character"),
-               nrow=nrow(object),
-               ncol=ncol(object)
-        )
-	# Pass on to matrix-method.
-	tax_table(TT)
+  warning(text)
+  # Coerce everything to a matrix, then char-vector, then back to matrix.
+  TT <- matrix(as(as(object, "matrix"), "character"), nrow = nrow(object), ncol = ncol(object))
+  # Pass on to matrix-method.
+  tax_table(TT)
 })
-################################################################################
+################################################################################ 
 #' Subset species by taxonomic expression
 #'
 #' This is a convenience wrapper around the \code{\link{subset}} function.
@@ -111,22 +108,22 @@ setMethod("tax_table", "data.frame", function(object){
 #' @export
 #'
 #' @examples
-#' ## ex3 <- subset_taxa(GlobalPatterns, Phylum=="Bacteroidetes")
-subset_taxa <- function(physeq, ...){
-	if( is.null(tax_table(physeq)) ){ 
-		cat("Nothing subset. No taxonomyTable in physeq.\n")
-		return(physeq)
-	} else {
-		oldMA <- as(tax_table(physeq), "matrix")
-		oldDF <- data.frame(oldMA)
-		newDF <- subset(oldDF, ...)
-		newMA <- as(newDF, "matrix")
-		if( inherits(physeq, "taxonomyTable") ){
-			return(tax_table(newMA))
-		} else {
-			tax_table(physeq) <- tax_table(newMA)
-			return(physeq)
-		}
-	}
+#' ## ex3 <- subset_taxa(GlobalPatterns, Phylum=='Bacteroidetes')
+subset_taxa <- function(physeq, ...) {
+  if (is.null(tax_table(physeq))) {
+    cat("Nothing subset. No taxonomyTable in physeq.\n")
+    return(physeq)
+  } else {
+    oldMA <- as(tax_table(physeq), "matrix")
+    oldDF <- data.frame(oldMA)
+    newDF <- subset(oldDF, ...)
+    newMA <- as(newDF, "matrix")
+    if (inherits(physeq, "taxonomyTable")) {
+      return(tax_table(newMA))
+    } else {
+      tax_table(physeq) <- tax_table(newMA)
+      return(physeq)
+    }
+  }
 }
-################################################################################
+################################################################################  

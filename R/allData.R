@@ -1,4 +1,4 @@
-################################################################################
+################################################################################ 
 #' (Data) Small example dataset from a human esophageal community (2004)
 #'
 #' Includes just 3 samples, 1 each from 3 subjects. Although the research article mentions 4 subjects,
@@ -34,15 +34,15 @@
 #' data(esophagus)
 #' UniFrac(esophagus, weighted=TRUE)
 #' # How to re-create the esophagus dataset using import_mothur function
-#' mothlist  <- system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
-#' mothgroup <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
-#' mothtree  <- system.file("extdata", "esophagus.tree.gz", package="phyloseq")
+#' mothlist  <- system.file('extdata', 'esophagus.fn.list.gz', package='phyloseq')
+#' mothgroup <- system.file('extdata', 'esophagus.good.groups.gz', package='phyloseq')
+#' mothtree  <- system.file('extdata', 'esophagus.tree.gz', package='phyloseq')
 #' show_mothur_cutoffs(mothlist)
-#' cutoff    <- "0.10"
-#' esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)	
-################################################################################
+#' cutoff    <- '0.10'
+#' esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)\t
+################################################################################ 
 NA
-################################################################################
+################################################################################ 
 #' (Data) Enterotypes of the human gut microbiome (2011)
 #'
 #' Published in Nature in early 2011, this work compared (among other things),
@@ -81,11 +81,11 @@ NA
 #' @keywords data
 #' @examples
 #' data(enterotype)
-#' ig <- make_network(enterotype, "samples", max.dist=0.3)
-#' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
-################################################################################
+#' ig <- make_network(enterotype, 'samples', max.dist=0.3)
+#' plot_network(ig, enterotype, color='SeqTech', shape='Enterotype', line_weight=0.3, label=NULL)
+################################################################################ 
 NA
-################################################################################
+################################################################################ 
 #' (Data) Reproducibility of soil microbiome data (2011)
 #'
 #' Published in early 2011,
@@ -159,12 +159,11 @@ NA
 #' # No convincing difference in species richness between warmed/unwarmed soils.
 #' ################################################################################
 #' # Graphically compare richness between the different treatments.
-#' man.col <- c(WC="red", WU="brown", UC="blue", UU="darkgreen")
-#' plot_richness(soilrep, x="Treatment", color="Treatment", measures=c("Observed", "Chao1", "Shannon"))
-################################################################################
+#' man.col <- c(WC='red', WU='brown', UC='blue', UU='darkgreen')
+#' plot_richness(soilrep, x='Treatment', color='Treatment', measures=c('Observed', 'Chao1', 'Shannon'))
+################################################################################ 
 NA
-################################################################################
-################################################################################
+################################################################################ 
 #' (Data) Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample (2011)
 #'
 #' Published in PNAS in early 2011. This work compared the microbial 
@@ -207,7 +206,7 @@ NA
 #'
 #' @examples
 #' data(GlobalPatterns)
-#' plot_richness(GlobalPatterns, x="SampleType", measures=c("Observed", "Chao1", "Shannon"))
-################################################################################
+#' plot_richness(GlobalPatterns, x='SampleType', measures=c('Observed', 'Chao1', 'Shannon'))
+################################################################################ 
 NA
-################################################################################
+################################################################################  

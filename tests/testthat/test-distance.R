@@ -17,12 +17,17 @@ GP500 = import_qiime(GP500File, treefilename = treeFile)
 gp500_uuf = read.csv(system.file("extdata", "gp500-uuf.csv", package = "phyloseq"), header = FALSE, fill = TRUE)
 gp500_wuf = read.csv(system.file("extdata", "gp500-wuf.csv", package = "phyloseq"), header = FALSE, fill = TRUE)
 gp500_wufu = read.csv(system.file("extdata", "gp500-wufu.csv", package = "phyloseq"), header = FALSE, fill = TRUE)
+gp500_guf = read.csv(system.file("extdata", "gp500-guf.csv", package = "phyloseq"), header = FALSE, fill = TRUE)
 # Add the sample names
-colnames(gp500_uuf) <- rownames(gp500_uuf) <- colnames(gp500_wuf) <- rownames(gp500_wuf) <- colnames(gp500_wufu) <- rownames(gp500_wufu) <- sample_names(GP500)
+colnames(gp500_guf) <- rownames(gp500_guf) <- sample_names(GP500)
+colnames(gp500_uuf) <- rownames(gp500_uuf) <- sample_names(GP500)
+colnames(gp500_wuf) <- rownames(gp500_wuf) <- sample_names(GP500)
+colnames(gp500_wufu) <- rownames(gp500_wufu) <- sample_names(GP500)
 # Coerce to Distance Matrices for comparison `"dist"` class
 gp500_wufu <- as.dist(gp500_wufu)
 gp500_wuf <- as.dist(gp500_wuf)
 gp500_uuf <- as.dist(gp500_uuf)
+gp500_guf <- as.dist(gp500_guf)
 # Define numerical tolerance
 tol = 0.00000001
 test_that("UniFrac produces correct values on an example subset from Global Patterns. 'Correct' values are results from pyCogent", {
@@ -33,13 +38,21 @@ test_that("UniFrac produces correct values on an example subset from Global Patt
                label = "`UniFrac`: Weighted, normalized UniFrac results did not match reference answer.")
   expect_equal(gp500_uuf, UniFrac(GP500, weighted = FALSE), check.attributes = FALSE, tolerance = tol,
                label = "`UniFrac`: Unweighted UniFrac results did not match reference answer.")
+  expect_equal(gp500_guf, UniFrac(GP500, generalized = TRUE, alpha = 0.5), check.attributes = FALSE, tolerance = tol,
+               label = "`UniFrac`: Generalized UniFrac results (a=0.5) did not match reference answer.")
+  expect_equal(gp500_wuf, UniFrac(GP500, generalized = TRUE, alpha = 1.0), check.attributes = FALSE, tolerance = tol,
+               label = "`UniFrac`: Generalized UniFrac results (a=1.0) did not match reference answer.")
   # Using the `distance` wrapper
   expect_equal(gp500_wufu, distance(GP500, "unifrac", weighted = TRUE, normalized = FALSE), check.attributes = FALSE, tolerance = tol,
                label = "`distance`: Weighted but Un-normalized UniFrac results did not match reference answer.")
   expect_equal(gp500_wuf, distance(GP500, "unifrac", weighted = TRUE), check.attributes = FALSE, tolerance = tol,
                label = "`distance`: Weighted, normalized UniFrac results did not match reference answer.")
   expect_equal(gp500_uuf, distance(GP500, "unifrac", weighted = FALSE), check.attributes = FALSE, tolerance = tol,
-               label = "`distance`: Unweighted UniFrac results did not match reference answer.")  
+               label = "`distance`: Unweighted UniFrac results did not match reference answer.")
+  expect_equal(gp500_guf, distance(GP500, "unifrac", generalized = TRUE, alpha = 0.5), check.attributes = FALSE, tolerance = tol,
+               label = "`distance`: Generalized UniFrac results (a=0.5) did not match reference answer.")
+  expect_equal(gp500_wuf, distance(GP500, "unifrac", generalized = TRUE, alpha = 1.0), check.attributes = FALSE, tolerance = tol,
+               label = "`distance`: Generalized UniFrac results (a=1.0) did not match reference answer.")
   # Make sure reference files are different (at the very least)
   expect_false({isTRUE(all.equal(gp500_uuf, gp500_wuf, check.attributes = FALSE, tolerance = 0.01))},
                label = "The reference matrices for UniFrac testing should be different, but were not. uuf/wuf")
@@ -47,12 +60,16 @@ test_that("UniFrac produces correct values on an example subset from Global Patt
                label = "The reference matrices for UniFrac testing should be different, but were not. uuf/wufu")
   expect_identical(distance(GP500, "wunifrac"), distance(GP500, "unifrac", weighted = TRUE),
                    label = "wunifrac output is not identical to unifrac with weighted=T flag")
+  expect_identical(distance(GP500, "gunifrac"), distance(GP500, "unifrac", generalized = TRUE),
+                   label = "gunifrac output is not identical to unifrac with generalized=T flag")
 })
 test_that("Check that regular-expression matching for unifrac method flag is working", {
   expect_identical(distance(GP500, "w-UniFrac"), distance(GP500, "unifrac", weighted = TRUE))
   expect_identical(distance(GP500, "weighted-UniFrac"), distance(GP500, "unifrac", weighted = TRUE))
-  expect_identical(distance(GP500, "unweighted-UniFrac"), distance(GP500, "unifrac"))
   expect_identical(distance(GP500, "u-UniFrac"), distance(GP500, "unifrac"))
+  expect_identical(distance(GP500, "unweighted-UniFrac"), distance(GP500, "unifrac"))
+  expect_identical(distance(GP500, "g-UniFrac"), distance(GP500, "unifrac", generalized = TRUE))
+  expect_identical(distance(GP500, "generalized-UniFrac"), distance(GP500, "unifrac", generalized = TRUE))
 })
 ################################################################################
 ################################################################################
