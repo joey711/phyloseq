@@ -23,7 +23,7 @@
 #'  \code{\link[vegan]{betadiver}},
 #'  \code{\link[vegan]{designdist}}, or
 #'  \code{\link{dist}}.
-#' 
+#'
 #' @param physeq (Required).  A \code{\link{phyloseq-class}} or
 #'  an \code{\link{otu_table-class}} object. The latter is only appropriate
 #'  for methods that do not require any additional data (one-table). 
@@ -34,26 +34,28 @@
 #' @param method (Optional). A character string. Default is \code{'unifrac'}.
 #'  Provide one of the 45 currently supported options. 
 #'  To see a list of supported options, enter the following into the command line:
-#' 
+#'
 #'  \code{distance('list')}
-#'  
+#'
 #'  For further details and additional arguments,
 #'  see the documentation for the supprting functions, linked below
 #'  under ``See Also''. 
-#'  
+#'
 #'  In particular, there are three methods included
 #'  by the \code{\link{phyloseq-package}}, and accessed by the following
 #'  \code{method} options:
-#' 
+#'
 #'  \code{'unifrac'}, for (unweighted) UniFrac distance, \code{\link{UniFrac}};
-#'  
+#'
 #'  \code{'wunifrac'}, for weighted-UniFrac distance, \code{\link{UniFrac}};
+#'
+#'  \code{'gunifrac'}, for generalized UniFrac distance, \code{\link{UniFrac}};
 #'
 #'  \code{'dpcoa'}, sample-wise distance from Double Principle 
 #'   Coordinate Analysis, \code{\link{DPCoA}};
-#' 
+#'
 #'  \code{'jsd'}, for Jensen-Shannon Divergence, \code{\link{JSD}}; 
-#'  
+#'
 #'  and it is recommended that you see their documentation
 #'  for details, references, background and examples for use. 
 #'
@@ -70,7 +72,7 @@
 #'
 #' @return An object of class ``\code{\link{dist}}'' suitable for certain 
 #'  ordination methods and other distance-based analyses.
-#' 
+#'
 #' @seealso 
 #'  \code{\link{plot_ordination}}, 
 #'  \code{\link{UniFrac}},
@@ -89,6 +91,7 @@
 #' data(esophagus)
 #' distance(esophagus) # Unweighted UniFrac
 #' distance(esophagus, 'wunifrac') # weighted UniFrac
+#' distance(esophagus, 'gunifrac') # generalized UniFrac
 #' distance(esophagus, 'jaccard') # vegdist jaccard
 #' distance(esophagus, 'gower') # vegdist option 'gower'
 #' distance(esophagus, 'g') # designdist method option 'g'
@@ -103,9 +106,9 @@ distance <- function(physeq, method = "unifrac", type = "samples", ...) {
     stop("`distance` only accepts one method at a time. ", "You provided ", length(method), 
       " methods. ")
   }
-  # # Can't do partial matching for all options, # because too many similar
-  # options.  # Do partial matching for wunifrac/unifrac.  # Determine if method
-  # argument matches any options exactly.  # If not, call designdist
+  # Can't do partial matching for all options, because too many similar options.
+  # Do partial matching for unifrac/wunifrac/gunifrac.
+  # Determine if argument matches any options exactly. If not, call designdist.
   vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", "kulczynski", 
     "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", 
     "binomial", "chao", "cao")
@@ -116,7 +119,7 @@ distance <- function(physeq, method = "unifrac", type = "samples", ...) {
   # The methods supported by vegan::betadiver function.
   betadiver_methods <- c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j", "sor", 
     "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb", "sim", "gl", "z")
-  method.list <- list(UniFrac = c("unifrac", "wunifrac"), DPCoA = "dpcoa", JSD = "jsd", 
+  method.list <- list(UniFrac = c("unifrac", "wunifrac", "gunifrac"), DPCoA = "dpcoa", JSD = "jsd",
     vegdist = vegdist_methods, betadiver = betadiver_methods, dist = dist_methods, 
     designdist = "ANY")
   # User support, and method options definition.
@@ -133,15 +136,19 @@ distance <- function(physeq, method = "unifrac", type = "samples", ...) {
       return(c(method.list))
     }
   }
-  # Regular Expression detect/convert unifrac/weighted-UniFrac args
+  # Regular Expression detect/convert unifrac/weighted/generalized-UniFrac args
   method <- gsub("^(u.*)*unifrac$", "unifrac", method, ignore.case = TRUE)
   method <- gsub("^w.*unifrac$", "wunifrac", method, ignore.case = TRUE)
+  method <- gsub("^g.*unifrac$", "gunifrac", method, ignore.case = TRUE)
   # Return distance, or define the function call to build/pass call
   if (method == "unifrac") {
     return(UniFrac(physeq, ...))
   }
   if (method == "wunifrac") {
     return(UniFrac(physeq, weighted = TRUE, ...))
+  }
+  if (method == "gunifrac") {
+    return(UniFrac(physeq, generalized = TRUE, ...))
   }
   if (method == "jsd") {
     return(JSD(physeq, ...))
@@ -220,7 +227,7 @@ phyloseq_JSD_pair <- function(x, y) {
 #' the analysis of the \code{\link{enterotype}} dataset. 
 #'
 #' @usage JSD(physeq, parallel=FALSE)
-#' 
+#'
 #' @param physeq (Required). \code{\link{phyloseq-class}}. 
 #'  The phyloseq data on which to compute the 
 #'  pairwise sample distance matrix.
@@ -234,12 +241,12 @@ phyloseq_JSD_pair <- function(x, y) {
 #' @return An object of class ``\code{\link{dist}}'' suitable for certain 
 #'  ordination methods and other distance-based analyses.
 #'  See \code{\link{distance}}.
-#'  
+#'
 #' @seealso
 #'  \code{\link{distance}} 
-#' 
+#'
 #'  \code{\link{enterotype}}
-#' 
+#'
 #'  \url{http://en.wikipedia.org/wiki/Jensen-Shannon_divergence}
 #'
 #' @references
@@ -321,7 +328,7 @@ JSD <- function(physeq, parallel = FALSE) {
 #' helper packages. One of the simplest seems to be the \emph{doParallel} package.
 #'
 #' For more information, see the following links on registering the ``backend'':
-#' 
+#'
 #' \emph{foreach} package manual: 
 #'
 #' \url{http://cran.r-project.org/web/packages/foreach/index.html}
@@ -329,7 +336,7 @@ JSD <- function(physeq, parallel = FALSE) {
 #' Notes on parallel computing in \code{R}. Skip to the section describing 
 #' the \emph{foreach Framework}. It gives off-the-shelf examples for registering
 #' a parallel backend using the \emph{doMC}, \emph{doSNOW}, or \emph{doMPI} packages:
-#' 
+#'
 #' \url{http://trg.apbionet.org/euasiagrid/docs/parallelR.notes.pdf}
 #'
 #' Furthermore, as of \code{R} version \code{2.14.0} and higher, a parallel package
@@ -368,7 +375,7 @@ JSD <- function(physeq, parallel = FALSE) {
 #'  has registered a parallel ``backend'' prior to calling this function. 
 #'  Default is \code{FALSE}. If FALSE, UniFrac will register a serial backend
 #'  so that \code{foreach::\%dopar\%} does not throw a warning.
-#' 
+#'
 #' @param fast (Optional). Logical. DEPRECATED.
 #'  Do you want to use the ``Fast UniFrac''
 #'  algorithm? Implemented natively in the \code{phyloseq-package}.
@@ -389,20 +396,20 @@ JSD <- function(physeq, parallel = FALSE) {
 #'  in order to avoid causing unsupported-argument errors.
 #'
 #' @return a sample-by-sample distance matrix, suitable for NMDS, etc.
-#' 
+#'
 #' @seealso
-#' 
+#'
 #' \code{\link{distance}}
-#' 
+#'
 #' \code{unifrac} in the picante package.
 #'
 #' @references
-#' 
+#'
 #' \url{http://bmf.colorado.edu/unifrac/}
 #'
 #' The main implementation (Fast UniFrac) is adapted from the algorithm's
 #' description in:
-#' 
+#'
 #' Hamady, Lozupone, and Knight,
 #' ``\href{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}{Fast UniFrac:}
 #' facilitating high-throughput phylogenetic analyses of 
@@ -420,7 +427,7 @@ JSD <- function(physeq, parallel = FALSE) {
 #'
 #' Lozupone C, Knight R. ``UniFrac: a new phylogenetic method for comparing microbial
 #' communities.'' Appl Environ Microbiol. 2005 71 (12):8228-35.
-#' 
+#'
 #' @docType methods
 #' @export
 #' @import foreach
