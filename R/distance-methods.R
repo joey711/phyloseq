@@ -317,7 +317,7 @@ JSD <- function(physeq, parallel=FALSE){
 #' and is encouraged in the instances of large trees, many samples, or both.
 #' Parallelization has been implemented via the \code{\link{foreach-package}}.
 #' This means that parallel calls need to be preceded by 2 or more commands
-#' that register the parallel ``backend''. This is acheived via your choice of
+#' that register the parallel ``backend''. This is achieved via your choice of
 #' helper packages. One of the simplest seems to be the \emph{doParallel} package.
 #'
 #' For more information, see the following links on registering the ``backend'':
