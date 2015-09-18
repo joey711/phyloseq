@@ -304,7 +304,7 @@ JSD <- function(physeq, parallel = FALSE) {
 }
 ############################################################################## 
 #' Calculate weighted, unweighted or generalized UniFrac distance for all
-#' all sample pairs.
+#' sample pairs.
 #'
 #' This function calculates the (Fast) UniFrac distance for all sample-pairs
 #' in a \code{\link{phyloseq-class}} object.
@@ -368,7 +368,8 @@ JSD <- function(physeq, parallel = FALSE) {
 #' @param normalized (Optional). Logical. Should the output be normalized such that values
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}.
 #'  Note that (unweighted) UniFrac is always normalized by total branch-length,
-#'  and so this value is ignored when \code{weighted = FALSE}.
+#'  and so this value is ignored when \code{weighted = FALSE}. It is also ignored
+#'  for generalized UniFrac.
 #'
 #' @param generalized (Optional). Logical. Should weighted-UniFrac be calculated?
 #'  This uses the \code{GUniFrac} R package. Default is \code{FALSE}.
