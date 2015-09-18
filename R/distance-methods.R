@@ -634,5 +634,18 @@ fastUniFrac <- function(physeq, weighted = FALSE, normalized = TRUE, parallel = 
 #' @importFrom GUniFrac GUniFrac
 #' @keywords internal
 gUniFrac <- function(physeq, alpha = 0.5) {
-
+  # The GUniFrac package is orphaned; it may be good to integrate it inside phyloseq eventually.
+  tree <- phy_tree(physeq)
+  OTU <- as.matrix(otu_table(physeq))
+  if (taxa_are_rows(physeq)) {
+    OTU <- t(OTU)
+  }
+  unifracs <- GUniFrac::GUniFrac(OTU, tree=tree, alpha=alpha)$unifracs
+  #UniFracMat <- unifracs[, , "d_UW"]       # Unweighted UniFrac
+  #UniFracMat <- unifracs[, , "d_0"]        # GUniFrac with alpha 0
+  #UniFracMat <- unifracs[, , "d_0.5"]      # GUniFrac with alpha 0.5
+  #UniFracMat <- unifracs[, , "d_1"]        # Weighted UniFrac
+  #UniFracMat <- unifracs[, , "d_VAW"]      # Variance adjusted weighted UniFrac
+  UniFracMat <- unifracs[, , paste("d", alpha, sep="_")]
+  return(as.dist(UniFracMat))
 }
