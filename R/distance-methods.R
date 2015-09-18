@@ -426,19 +426,25 @@ JSD <- function(physeq, parallel = FALSE) {
 #' ``\href{http://www.nature.com/ismej/journal/v4/n1/full/ismej200997a.html}{Fast UniFrac:}
 #' facilitating high-throughput phylogenetic analyses of 
 #' microbial communities including analysis of pyrosequencing and PhyloChip data.''
-#' The ISME Journal (2010) 4, 17--27.
+#' The ISME Journal (2010) 4, 17:27.
 #'
 #' See also additional descriptions of UniFrac in the following articles:
 #'
 #' Lozupone, Hamady and Knight, ``UniFrac - An Online Tool for Comparing Microbial 
-#' Community Diversity in a Phylogenetic Context.'', BMC Bioinformatics 2006, 7:371
+#' Community Diversity in a Phylogenetic Context.'', BMC Bioinformatics (2006), 7:371.
 #'
 #' Lozupone, Hamady, Kelley and Knight, ``Quantitative and qualitative (beta) 
 #' diversity measures lead to different insights into factors that structure
-#' microbial communities.'' Appl Environ Microbiol. 2007
+#' microbial communities.'' Appl Environ Microbiol (2007).
 #'
 #' Lozupone C, Knight R. ``UniFrac: a new phylogenetic method for comparing microbial
-#' communities.'' Appl Environ Microbiol. 2005 71 (12):8228-35.
+#' communities.'' Appl Environ Microbiol (2005) 71 (12):8228-35.
+#'
+#' The generalized UniFrac algorithm is described in:
+#'
+#' Chen, Bittinger, Charlson, Hoffmann et al., ``Associating microbiome composition
+#' with environmental covariates using generalized UniFrac distances'', Bioinformatics
+#' (2012) 28(16):2106-2113.
 #'
 #' @docType methods
 #' @export
