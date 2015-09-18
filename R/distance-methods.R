@@ -41,7 +41,7 @@
 #'  see the documentation for the supprting functions, linked below
 #'  under ``See Also''. 
 #'
-#'  In particular, there are three methods included
+#'  In particular, there are four methods included
 #'  by the \code{\link{phyloseq-package}}, and accessed by the following
 #'  \code{method} options:
 #'
@@ -91,7 +91,7 @@
 #' data(esophagus)
 #' distance(esophagus) # Unweighted UniFrac
 #' distance(esophagus, 'wunifrac') # weighted UniFrac
-#' distance(esophagus, 'gunifrac') # generalized UniFrac
+#' distance(esophagus, 'gunifrac', alpha=0.5) # generalized UniFrac
 #' distance(esophagus, 'jaccard') # vegdist jaccard
 #' distance(esophagus, 'gower') # vegdist option 'gower'
 #' distance(esophagus, 'g') # designdist method option 'g'
@@ -303,7 +303,8 @@ JSD <- function(physeq, parallel = FALSE) {
   return(as.dist(DistMat))
 }
 ############################################################################## 
-#' Calculate weighted or unweighted (Fast) UniFrac distance for all sample pairs.
+#' Calculate weighted, unweighted or generalized UniFrac distance for all
+#' all sample pairs.
 #'
 #' This function calculates the (Fast) UniFrac distance for all sample-pairs
 #' in a \code{\link{phyloseq-class}} object.
@@ -358,19 +359,28 @@ JSD <- function(physeq, parallel = FALSE) {
 #'  contingency table (\code{\link{otu_table-class}}). See
 #'  examples below for coercions that might be necessary.
 #'
-#' @param weighted (Optional). Logical. Should use weighted-UniFrac calculation?
+#' @param weighted (Optional). Logical. Should weighted-UniFrac be calculated?
 #'  Weighted-UniFrac takes into account the relative abundance of species/taxa
 #'  shared between samples, whereas unweighted-UniFrac only considers 
 #'  presence/absence. Default is \code{FALSE}, meaning the unweighted-UniFrac
 #'  distance is calculated for all pairs of samples.
 #'
-#' @param normalized (Optional). Logical. Should the output be normalized such that values 
+#' @param normalized (Optional). Logical. Should the output be normalized such that values
 #'  range from 0 to 1 independent of branch length values? Default is \code{TRUE}.
-#'  Note that (unweighted) \code{UniFrac} is always normalized by total branch-length,
-#'  and so this value is ignored when \code{weighted == FALSE}.
+#'  Note that (unweighted) UniFrac is always normalized by total branch-length,
+#'  and so this value is ignored when \code{weighted = FALSE}.
 #'
-#' @param parallel (Optional). Logical. Should execute calculation in parallel,
-#'  using multiple CPU cores simultaneously? This can dramatically hasten the
+#' @param generalized (Optional). Logical. Should weighted-UniFrac be calculated?
+#'  This uses the \code{GUniFrac} R package. Default is \code{FALSE}.
+#'
+#' @param alpha (Optional). The alpha value, i.e. a number between 0 and 1 used when
+#'  calculatin generalized UniFrac. Alpha limits the weight on abundant taxam so that
+#'  they do not dominate the distance. A value of 1 gives the same results as weighted
+#'  UniFrac. The default is \code{0.5}, which has the best power.
+#'
+#' @param parallel (Optional). Logical. Should calculation be executed in parallel,
+#'  using multiple CPU cores simultaneously? This is available for weighted and
+#'  unweighted UniFrac only (not generalized UniFrac) and can dramatically hasten the
 #'  computation time for this function. However, it also requires that the user
 #'  has registered a parallel ``backend'' prior to calling this function. 
 #'  Default is \code{FALSE}. If FALSE, UniFrac will register a serial backend
@@ -402,6 +412,8 @@ JSD <- function(physeq, parallel = FALSE) {
 #' \code{\link{distance}}
 #'
 #' \code{unifrac} in the picante package.
+#'
+#' \code{GUniFrac} in the GUniFrac package.
 #'
 #' @references
 #'
