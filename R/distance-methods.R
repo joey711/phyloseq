@@ -87,7 +87,7 @@
 #' @export
 #' @examples 
 #' data(esophagus)
-#' distance(esophagus) # Unweighted UniFrac
+#' distance(esophagus, "uunifrac") # Unweighted UniFrac
 #' distance(esophagus, "wunifrac") # weighted UniFrac
 #' distance(esophagus, "jaccard") # vegdist jaccard
 #' distance(esophagus, "gower") # vegdist option "gower"
@@ -97,51 +97,30 @@
 #' distance("help")
 #' distance("list")
 #' help("distance")
-distance <- function(physeq, method="unifrac", type="samples", ...){
+setGeneric("distance", function(physeq, ...){
+  standardGeneric("distance")
+})
+setMethod("distance", "phyloseq", function(physeq, method=NULL, type="samples", ...){
   # Only one method at a time.
   if(length(method) > 1){
     stop("`distance` only accepts one method at a time. ",
          "You provided ", length(method), " methods. ")
   }
-	# # Can't do partial matching for all options,
-  # # because too many similar options.
-  # # Do partial matching for wunifrac/unifrac.
-	# # Determine if method argument matches any options exactly.
-	# # If not, call designdist
-	vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
-		"kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
-		"mountford", "raup" , "binomial", "chao", "cao")
-	# Standard distance methods
-	dist_methods <- c("maximum", "binary", "minkowski")
-	# Only keep the ones that are NOT already in vegdist_methods
-	dist_methods <- dist_methods[!dist_methods %in% intersect(vegdist_methods, dist_methods)]
-	# The methods supported by vegan::betadiver function.
-	betadiver_methods <- c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j",
-		"sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
-		"sim", "gl", "z")
-	method.list <- list(
-		UniFrac    = c("unifrac", "wunifrac"),
-		DPCoA      = "dpcoa",
-		JSD        = "jsd",
-		vegdist    = vegdist_methods,
-		betadiver  = betadiver_methods,
-		dist       = dist_methods,
-		designdist = "ANY"
-	)
+  if(length(method) < 1 | is.na(method)){
+    stop("You must specify a `method` argument. \nIt was missing/NA. \nSee `?distMethodList`")
+  }
   # User support, and method options definition.
-	if(class(physeq) == "character"){
-		if( physeq=="help" ){
-			cat("Available arguments to methods:\n")
-			print(method.list)
-			cat("Please be exact, partial-matching not supported.\n")
-			cat("Can alternatively provide a custom distance.\n")
-			cat("See:\n help(\"distance\") \n")
-			return()
-		}
-		if( physeq=="list" ){
-			return(c(method.list))
-		}		
-	}
+  if( physeq=="help" ){
+    cat("Available arguments to methods:\n")
+    print(distMethodList)
+    cat("Please be exact, partial-matching not supported.\n")
+    cat("Can alternatively provide a custom distance.\n")
+    cat("See:\n help(\"distance\") \n")
+    return()
+  }
+  if( method=="list" ){
+    return(c(distMethodList))
+  }
   # Regular Expression detect/convert unifrac/weighted-UniFrac args
   method <- gsub("^(u.*)*unifrac$", "unifrac", method, ignore.case = TRUE)
   method <- gsub("^w.*unifrac$", "wunifrac", method, ignore.case = TRUE)
@@ -184,8 +163,83 @@ distance <- function(physeq, method="unifrac", type="samples", ...){
 	OTU <- as(OTU, "matrix")
 	fun.args <- c(list(OTU, method=method), extrargs)	
 	return( do.call(dfun, fun.args) )
-} 
+})
 ################################################################################
+#' List of distance method keys supported in \code{\link{distance}}
+#'
+#' Distance methods should be specified by exact string match.
+#' Cannot do partial matching for all options, 
+#' because too many similar options in downstream method dispatch. 
+#'
+#' @format A list of character vectors. 
+#' Every entry specifies a supported distance method.
+#' Names in the list indicate which downstream function
+#' is being utilized for further details.
+#' Same functions are linked in the itemized list below.
+#' 
+#' \describe{
+#'   \item{\code{unifrac}}{\code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{wunifrac}}{\code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{dpcoa}}{\code{\link[phyloseq]{DPCoA}}}
+#'   \item{\code{jsd}}{\code{\link{JSD}}}
+#'   \item{\code{manhattan}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{euclidean}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{canberra}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{bray}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{kulczynski}
+#'   \item{\code{jaccard}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{gower}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{altGower}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{morisita}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{horn}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{mountford}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{raup}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{binomial}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{chao}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{cao}}{\code{\link[vegan]{vegdist}}}
+#'   \item{\code{w}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{-}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{c}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{wb}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{r}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{I}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{e}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{t}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{me}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{j}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{sor}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{m}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{-}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{co}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{cc}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{g}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{-}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{l}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{hk}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{rlb}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{sim}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{gl}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{z}}{\code{\link[vegan]{betadiver}}}
+#'   \item{\code{maximum}}{\code{\link[stats]{dist}}}
+#'   \item{\code{binary}}{\code{\link[stats]{dist}}}
+#'   \item{\code{minkowski}}{\code{\link[stats]{dist}}}
+#'   \item{\code{ANY}}{\code{\link[vegan]{designdist}}}
+#' }
+#' 
+distMethodList <- list(
+  UniFrac    = c("unifrac", "wunifrac"),
+  DPCoA      = "dpcoa",
+  JSD        = "jsd",
+  vegdist    = c("manhattan", "euclidean", "canberra", "bray", 
+                 "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", 
+                 "mountford", "raup" , "binomial", "chao", "cao"),
+  # The methods supported by vegan::betadiver function.
+  betadiver  = c("w", "-1", "c", "wb", "r", "I", "e", "t", "me", "j",
+                 "sor", "m", "-2", "co", "cc", "g", "-3", "l", "19", "hk", "rlb",
+                 "sim", "gl", "z"),
+  dist       = c("maximum", "binary", "minkowski"),
+  designdist = "ANY"
+)
 ################################################################################
 # Shannon-Jensen Divergence, in R.
 ################################################################################
