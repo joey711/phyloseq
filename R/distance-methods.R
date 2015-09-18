@@ -462,7 +462,7 @@ JSD <- function(physeq, parallel = FALSE) {
 #' # UniFrac(esophagus, TRUE)
 #' ################################################################################
 setGeneric("UniFrac", function(physeq, weighted = FALSE, normalized = TRUE, parallel = FALSE, 
-  fast = TRUE) {
+  fast = TRUE, generalized = FALSE, alpha = 0.5) {
   standardGeneric("UniFrac")
 })
 ################################################################################ 
@@ -471,7 +471,7 @@ setGeneric("UniFrac", function(physeq, weighted = FALSE, normalized = TRUE, para
 #' @importFrom ape is.rooted
 #' @importFrom ape root
 setMethod("UniFrac", "phyloseq", function(physeq, weighted = FALSE, normalized = TRUE, 
-  parallel = FALSE, fast = TRUE) {
+  parallel = FALSE, fast = TRUE, generalized = FALSE, alpha = 0.5) {
   if (is.null(phy_tree(physeq)$edge.length)) {
     stop("Tree has no branch lengths. See tree$edge.length. Cannot compute UniFrac without branch lengths")
   }
@@ -485,11 +485,15 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted = FALSE, normalized =
       stop("Problem automatically rooting tree. Make sure your tree is rooted before attempting UniFrac calculation. See ?ape::root")
     }
   }
-  if (fast) {
-    fastUniFrac(physeq, weighted, normalized, parallel)
+  if (generalized) {
+    gUniFrac(physeq, alpha)
   } else {
-    warning("Option `fast=FALSE` is deprecated. Only 'fast' UniFrac is supported in phyloseq.")
-    fastUniFrac(physeq, weighted, normalized, parallel)
+    if (fast) {
+      fastUniFrac(physeq, weighted, normalized, parallel)
+    } else {
+      warning("Option `fast=FALSE` is deprecated. Only 'fast' UniFrac is supported in phyloseq.")
+      fastUniFrac(physeq, weighted, normalized, parallel)
+    }
   }
 })
 ################################################################################ Fast UniFrac for R.  Adapted from The ISME Journal (2010) 4, 17-27;
@@ -622,4 +626,13 @@ fastUniFrac <- function(physeq, weighted = FALSE, normalized = TRUE, parallel = 
   UniFracMat[matIndices] <- unlist(distlist)
   return(as.dist(UniFracMat))
 }
-################################################################################  
+
+################################################################################ Generalized UniFrac (provided by the GUniFrac R package)
+################################################################################ Chen et al., Bioinformatics (2012) 28 (16): 2106-2113
+################################################################################ doi: 10.1093/bioinformatics/bts342
+################################################################################ http://bioinformatics.oxfordjournals.org/content/28/16/2106
+#' @importFrom GUniFrac GUniFrac
+#' @keywords internal
+gUniFrac <- function(physeq, alpha = 0.5) {
+
+}
