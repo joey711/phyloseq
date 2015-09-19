@@ -1,4 +1,4 @@
-################################################################################ 
+################################################################################
 #' Universal import method (wrapper) for phyloseq-package
 #'
 #' A user must still understand the additional arguments required for each
@@ -15,7 +15,7 @@
 #' @param pipelineName (Required). Character string. The name of the 
 #'  analysis tool / pipeline / package
 #'  that created the OTU-cluster data or other data that you now want to import.
-#'  Current options are \code{c('mothur', 'pyrotagger', 'QIIME', 'RDP')}, and
+#'  Current options are \code{c("mothur", "pyrotagger", "QIIME", "RDP")}, and
 #'  only the first letter is necessary.
 #'
 #' @param ... (Required). Additional named arguments providing file paths, and possible
@@ -66,32 +66,33 @@
 #' @export
 #' @examples
 #'  ## See documentation of a specific import function
-import <- function(pipelineName, ...) {
-  # Reduce pipelineName to just its first letter, as all are different
-  pipelineName <- substr(pipelineName, 1, 1)
-  
-  # Test that it is in the set
-  if (!(pipelineName %in% c("B", "b", "M", "m", "P", "p", "Q", "q", "R", "r"))) {
-    stop("You need to select among available importer types:\n", "\"BIOM\", \"mothur\", \"pyrotagger\", \"QIIME\", \"RDP\" \n See ?import for details")
-  }
-  
-  if (pipelineName %in% c("B", "b")) {
-    return(import_biom(...))
-  }
-  if (pipelineName %in% c("M", "m")) {
-    return(import_mothur(...))
-  }
-  if (pipelineName %in% c("P", "p")) {
-    return(import_pyrotagger_tab(...))
-  }
-  if (pipelineName %in% c("Q", "q")) {
-    return(import_qiime(...))
-  }
-  if (pipelineName %in% c("R", "r")) {
-    return(import_RDP_cluster(...))
-  }
+import <- function(pipelineName, ...){
+	# Reduce pipelineName to just its first letter, as all are different
+	pipelineName <- substr(pipelineName, 1, 1)
+
+	# Test that it is in the set
+	if( !(pipelineName %in% c("B", "b", "M", "m", "P", "p", "Q", "q", "R", "r")) ){
+		stop("You need to select among available importer types:\n", 
+		"\"BIOM\", \"mothur\", \"pyrotagger\", \"QIIME\", \"RDP\" \n See ?import for details")
+	}
+
+	if( pipelineName %in% c("B", "b") ){
+		return( import_biom(...) )
+	}	
+	if( pipelineName %in% c("M", "m") ){
+		return( import_mothur(...) )
+	}
+	if( pipelineName %in% c("P", "p") ){
+		return( import_pyrotagger_tab(...) ) 
+	}	
+	if( pipelineName %in% c("Q", "q") ){
+		return( import_qiime(...) )
+	}
+	if( pipelineName %in% c("R", "r") ){
+		return( import_RDP_cluster(...) )
+	}
 }
-################################################################################ 
+################################################################################
 #' Import function to read the now legacy-format QIIME OTU table.
 #'
 #' QIIME produces several files that can be directly imported by
@@ -114,7 +115,7 @@ import <- function(pipelineName, ...) {
 #' phylogenetic tree with a tip for each OTU, which can also be imported
 #' specified here or imported separately using \code{\link{read_tree}}.
 #' 
-#' See \url{'http://www.qiime.org/'} for details on using QIIME. While there are
+#' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
 #' many complex dependencies, QIIME can be downloaded as a pre-installed 
 #' linux virtual machine that runs ``off the shelf''. 
 #'
@@ -193,7 +194,7 @@ import <- function(pipelineName, ...) {
 #' @param parseFunction (Optional). An optional custom function for parsing the
 #'  character string that contains the taxonomic assignment of each OTU. 
 #'  The default parsing function is \code{\link{parse_taxonomy_qiime}},
-#'  specialized for splitting the \code{';'}-delimited strings and also 
+#'  specialized for splitting the \code{";"}-delimited strings and also 
 #'  attempting to interpret greengenes prefixes, if any, as that is a common
 #'  format of the taxonomy string produced by QIIME.
 #'  
@@ -232,77 +233,76 @@ import <- function(pipelineName, ...) {
 #' @importFrom Biostrings readDNAStringSet
 #' @export
 #' @examples
-#'  otufile <- system.file('extdata', 'GP_otu_table_rand_short.txt.gz', package='phyloseq')
-#'  mapfile <- system.file('extdata', 'master_map.txt', package='phyloseq')
-#'  trefile <- system.file('extdata', 'GP_tree_rand_short.newick.gz', package='phyloseq')
+#'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
+#'  mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
+#'  trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
 #'  import_qiime(otufile, mapfile, trefile)
-import_qiime <- function(otufilename = NULL, mapfilename = NULL, treefilename = NULL, 
-  refseqfilename = NULL, refseqFunction = readDNAStringSet, refseqArgs = NULL, 
-  parseFunction = parse_taxonomy_qiime, verbose = TRUE, ...) {
-  
-  # initialize the argument-list for phyloseq. Start empty.
-  argumentlist <- list()
-  
-  if (!is.null(mapfilename)) {
-    if (verbose) {
-      cat("Processing map file...", fill = TRUE)
-    }
-    QiimeMap <- import_qiime_sample_data(mapfilename)
-    argumentlist <- c(argumentlist, list(QiimeMap))
-  }
-  
-  if (!is.null(otufilename)) {
-    if (verbose) {
-      cat("Processing otu/tax file...", fill = TRUE)
-    }
-    otutax <- import_qiime_otu_tax(otufilename, parseFunction, verbose = verbose)
-    otutab <- otu_table(otutax$otutab, TRUE)
-    taxtab <- tax_table(otutax$taxtab)
-    argumentlist <- c(argumentlist, list(otutab), list(taxtab))
-  }
-  
-  if (!is.null(treefilename)) {
-    if (verbose) {
-      cat("Processing phylogenetic tree...\n", treefilename, "...\n")
-    }
-    if (inherits(treefilename, "phylo")) {
-      # If argument is already a tree, don't read, just assign.
-      tree = treefilename
-    } else {
-      # If it is not a tree, assume file and attempt to import.  NULL is silently
-      # returned if tree is not read properly.
-      tree <- read_tree(treefilename, ...)
-    }
-    # Add to argument list or warn
-    if (is.null(tree)) {
-      warning("treefilename failed import. It will not be included.")
-    } else {
-      argumentlist <- c(argumentlist, list(tree))
-    }
-  }
-  
-  if (!is.null(refseqfilename)) {
-    if (verbose) {
-      cat("Processing Reference Sequences...", fill = TRUE)
-    }
-    if (inherits(refseqfilename, "XStringSet")) {
-      # If argument is already a XStringSet, don't read, just assign.
-      refseq = refseqfilename
-    } else {
-      # call refseqFunction and read refseqfilename, either with or without additional
-      # args
-      if (!is.null(refseqArgs)) {
-        refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
-      } else {
-        refseq = refseqFunction(refseqfilename)
-      }
-    }
-    argumentlist <- c(argumentlist, list(refseq))
-  }
-  
-  do.call("phyloseq", argumentlist)
+import_qiime <- function(otufilename=NULL, mapfilename=NULL,
+	treefilename=NULL, refseqfilename=NULL, 
+  refseqFunction=readDNAStringSet, refseqArgs=NULL,
+	parseFunction=parse_taxonomy_qiime, verbose=TRUE, ...){
+
+	# initialize the argument-list for phyloseq. Start empty.
+	argumentlist <- list()
+
+	if( !is.null(mapfilename) ){	
+		if( verbose ){
+			cat("Processing map file...", fill=TRUE)
+		}
+		QiimeMap     <- import_qiime_sample_data(mapfilename)
+		argumentlist <- c(argumentlist, list(QiimeMap))
+	}
+
+	if( !is.null(otufilename) ){
+		if( verbose ){
+			cat("Processing otu/tax file...", fill=TRUE)
+		}		
+		otutax <- import_qiime_otu_tax(otufilename, parseFunction, verbose=verbose)
+		otutab <- otu_table(otutax$otutab, TRUE)
+		taxtab <- tax_table(otutax$taxtab)
+		argumentlist <- c(argumentlist, list(otutab), list(taxtab) )
+	}
+
+	if( !is.null(treefilename) ){
+		if(verbose){cat("Processing phylogenetic tree...\n", treefilename, "...\n")}
+		if(inherits(treefilename, "phylo")){
+			# If argument is already a tree, don't read, just assign.
+			tree = treefilename
+		} else {
+      # If it is not a tree, assume file and attempt to import.
+			# NULL is silently returned if tree is not read properly.
+			tree <- read_tree(treefilename, ...)
+		}
+		# Add to argument list or warn
+		if( is.null(tree) ){
+			warning("treefilename failed import. It will not be included.")
+		} else {
+			argumentlist <- c(argumentlist, list(tree) )
+		}
+	}
+	
+	if( !is.null(refseqfilename) ){
+		if( verbose ){
+			cat("Processing Reference Sequences...", fill=TRUE)
+		}
+		if( inherits(refseqfilename, "XStringSet") ){
+			# If argument is already a XStringSet, don't read, just assign.
+			refseq = refseqfilename
+		} else {
+			# call refseqFunction and read refseqfilename, 
+      # either with or without additional args
+			if( !is.null(refseqArgs) ){
+				refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
+			} else {
+				refseq = refseqFunction(refseqfilename)
+			}
+		}
+		argumentlist <- c(argumentlist, list(refseq) )
+	}
+
+	do.call("phyloseq", argumentlist)
 }
-################################################################################ 
+################################################################################
 #' Somewhat flexible tree-import function
 #'
 #' This function is a convenience wrapper around the
@@ -346,33 +346,32 @@ import_qiime <- function(otufilename = NULL, mapfilename = NULL, treefilename = 
 #' @importFrom ape read.tree
 #' @export
 #' @examples
-#' read_tree(system.file('extdata', 'esophagus.tree.gz', package='phyloseq'))
-#' read_tree(system.file('extdata', 'GP_tree_rand_short.newick.gz', package='phyloseq'))
-read_tree <- function(treefile, errorIfNULL = FALSE, ...) {
-  # 'phylo' object provided directly
-  if (class(treefile)[1] %in% c("phylo")) {
-    tree <- treefile
-  } else {
-    # file path to tree file provided.  Try Nexus first, protected, then newick if it
-    # fails
-    tree <- NULL
-    try(tree <- read.nexus(treefile, ...), TRUE)
-    # Try Newick if nexus didn't work.
-    if (is.null(tree)) 
-      try(tree <- read.tree(treefile, ...), TRUE)
+#' read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
+#' read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+read_tree <- function(treefile, errorIfNULL=FALSE, ...){
+	# "phylo" object provided directly
+	if( class(treefile)[1] %in% c("phylo") ){ 
+		tree <- treefile
+	} else {
+	  # file path to tree file provided.
+		# Try Nexus first, protected, then newick if it fails
+		tree <- NULL
+		try(tree <- read.nexus(treefile, ...), TRUE)
+		# Try Newick if nexus didn't work.
+		if(is.null(tree)) try(tree <- read.tree(treefile, ...), TRUE)
+	}
+	# If neither tree-import worked (still NULL), report warning
+	if( errorIfNULL & is.null(tree) ){
+		stop("tree file could not be read.\nPlease retry with valid tree.")
+	}
+  if( !is.null(tree) ){
+    # Perform any standard phyloseq checks/fixes
+    # E.g. Replace any NA branch-length values in the tree with zero.
+    tree = fix_phylo(tree)    
   }
-  # If neither tree-import worked (still NULL), report warning
-  if (errorIfNULL & is.null(tree)) {
-    stop("tree file could not be read.\nPlease retry with valid tree.")
-  }
-  if (!is.null(tree)) {
-    # Perform any standard phyloseq checks/fixes E.g. Replace any NA branch-length
-    # values in the tree with zero.
-    tree = fix_phylo(tree)
-  }
-  return(tree)
+	return(tree)
 }
-################################################################################ 
+################################################################################
 #' Read GreenGenes tree released in annotated newick format
 #'
 #' In principal, this is a standard newick format, that can be imported
@@ -411,7 +410,7 @@ read_tree <- function(treefile, errorIfNULL = FALSE, ...) {
 #' @examples
 #' # Read the May 2013, 73% similarity official tree,
 #' # included as extra data in phyloseq.
-#' treefile = system.file('extdata', 'gg13-5-73.tree.gz', package='phyloseq')
+#' treefile = system.file("extdata", "gg13-5-73.tree.gz", package="phyloseq")
 #' x = read_tree_greengenes(treefile)
 #' x
 #' class(x)
@@ -419,29 +418,29 @@ read_tree <- function(treefile, errorIfNULL = FALSE, ...) {
 #' y
 #' class(y)
 #' ## Not run, causes an error:
-#' # library('ape')
+#' # library("ape")
 #' # read.tree(treefile)
-read_tree_greengenes = function(treefile) {
-  alines = readLines(treefile, warn = FALSE)
+read_tree_greengenes = function(treefile){
+  alines = readLines(treefile, warn=FALSE)
   # Collapse to one line, in case it isn't already.
-  alines = paste0(alines, collapse = "")
-  # replace all semicolons with something weird that isn't already a special newick
-  # character.
+  alines = paste0(alines, collapse="")
+  # replace all semicolons with something weird
+  # that isn't already a special newick character.
   newdelim = "><-><"
   clines = gsub("\\;", newdelim, alines)
   # reinstate the final character as a semicolon
   clines = gsub(paste0(newdelim, "$"), ";", clines)
   # Convert your newick string into a phylo-class tree.
-  tree = read.tree("", text = clines)
-  # Now that it is phylo-class, reinstate semicolon as the delimiter in the node
-  # labels
+  tree = read.tree("", text=clines)
+  # Now that it is phylo-class, reinstate semicolon
+  # as the delimiter in the node labels
   gsub(newdelim, ";", tree$node.label)
   # Also get rid of those extra quotes
   gsub("'", "", tree$node.label)
   # Return the cleaned-up tree
   return(tree)
 }
-################################################################################ 
+################################################################################
 #' Import now legacy-format QIIME OTU table as a list of two matrices.
 #'
 #' Now a legacy-format, older versions of QIIME
@@ -473,7 +472,7 @@ read_tree_greengenes = function(treefile) {
 #' @param parseFunction (Optional). An optional custom function for parsing the
 #'  character string that contains the taxonomic assignment of each OTU. 
 #'  The default parsing function is \code{\link{parse_taxonomy_qiime}},
-#'  specialized for splitting the \code{';'}-delimited strings and also 
+#'  specialized for splitting the \code{";"}-delimited strings and also 
 #'  attempting to interpret greengenes prefixes, if any, as that is a common
 #'  format of the taxonomy string produced by QIIME.
 #'
@@ -514,55 +513,44 @@ read_tree_greengenes = function(treefile) {
 #' 
 #' @export
 #' @examples
-#'  otufile <- system.file('extdata', 'GP_otu_table_rand_short.txt.gz', package='phyloseq')
+#'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 #'  import_qiime_otu_tax(otufile)
-import_qiime_otu_tax <- function(file, parseFunction = parse_taxonomy_qiime, verbose = TRUE, 
-  parallel = FALSE) {
-  if (verbose) {
-    cat("Reading file into memory prior to parsing...\n")
-  }
+import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime,
+                                 verbose=TRUE, parallel=FALSE){
+  if(verbose){cat("Reading file into memory prior to parsing...\n")}
   x = readLines(file)
-  if (verbose) {
-    cat("Detecting first header line...\n")
-  }
-  # Check for commented lines, starting with line 1.  The deepest commented line
-  # (largest n) is assumed to have header information.
-  skipLines = max(which(substr(x[1:25L], 1, 1) == "#")) - 1L
-  if (verbose) {
-    cat("Header is on line", (skipLines + 1L), " \n")
-  }
-  if (verbose) {
-    cat("Converting input file to a table...\n")
-  }
-  x = fread(input = paste0(x, collapse = "\n"), sep = "\t", header = TRUE, skip = skipLines)
-  if (verbose) {
-    cat("Defining OTU table... \n")
-  }
+  if(verbose){cat("Detecting first header line...\n")}
+  # Check for commented lines, starting with line 1.
+  # The deepest commented line (largest n) is assumed to have header information.
+  skipLines = max(which(substr(x[1:25L], 1, 1)=="#"))-1L
+  if(verbose){cat("Header is on line", (skipLines + 1L), " \n")}
+  if(verbose){cat("Converting input file to a table...\n")}
+  x = fread(input=paste0(x, collapse="\n"), sep="\t", header=TRUE, skip=skipLines)
+  if(verbose){cat("Defining OTU table... \n")}
   taxstring = x$`Consensus Lineage`
   # This pops the taxonomy (Consensus Lineage) column, in-place statement
-  x[, `:=`(`Consensus Lineage`, NULL)]
+  x[, `Consensus Lineage`:=NULL]
   # Store the OTU names, you will pop the column
   OTUnames = x$`#OTU ID`
   # This pops the OTUID column, in-place statement
-  x[, `:=`(`#OTU ID`, NULL)]
+  x[, `#OTU ID`:=NULL]
   x <- as(x, "matrix")
   rownames(x) <- OTUnames
   rm(OTUnames)
-  if (verbose) {
-    cat("Parsing taxonomy table...\n")
-  }
-  # Split into 'jagged' list (vectors of different lengths)
-  taxlist = llply(taxstring, parseFunction, .parallel = parallel)
+  if(verbose){cat("Parsing taxonomy table...\n")}
+  # Split into "jagged" list (vectors of different lengths)
+  taxlist = llply(taxstring, parseFunction, .parallel=parallel)
   # Add OTU names to list element names
   names(taxlist) <- rownames(x)
-  # Build the tax table from the jagged list.
+  # Build the tax table from the jagged list.  
   taxtab <- build_tax_table(taxlist)
-  # Call garbage collection one more time. Lots of unneeded stuff.
-  garbage.collection <- gc(FALSE)
+	# Call garbage collection one more time. Lots of unneeded stuff.
+	garbage.collection <- gc(FALSE)
   # Return the named list
-  return(list(otutab = x, taxtab = taxtab))
+	return(list(otutab=x, taxtab=taxtab))
 }
-################################################################################ 
+################################################################################
+################################################################################
 #' Import just \code{sample_data} file from QIIME pipeline.
 #'
 #' QIIME produces several files that can be analyzed in the phyloseq-package, 
@@ -602,15 +590,16 @@ import_qiime_otu_tax <- function(file, parseFunction = parse_taxonomy_qiime, ver
 #' 
 #' @export
 #' @examples 
-#'  mapfile <- system.file('extdata', 'master_map.txt', package = 'phyloseq')
+#'  mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
 #'  import_qiime_sample_data(mapfile)
-import_qiime_sample_data <- function(mapfilename) {
-  # Process mapfile. Name rows as samples.
-  QiimeMap <- read.table(file = mapfilename, header = TRUE, sep = "\t", comment.char = "")
-  rownames(QiimeMap) <- as.character(QiimeMap[, 1])
-  return(sample_data(QiimeMap))
+import_qiime_sample_data <- function(mapfilename){
+	# Process mapfile. Name rows as samples.
+	QiimeMap <- read.table(file=mapfilename, header=TRUE,
+		sep="\t", comment.char="")
+	rownames(QiimeMap) <- as.character(QiimeMap[,1])
+	return( sample_data(QiimeMap) )
 }
-################################################################################ 
+################################################################################
 #' Read a UniFrac-formatted ENV file.
 #'
 #' Convenience wrapper function to read the environment-file, as formatted for 
@@ -619,7 +608,7 @@ import_qiime_sample_data <- function(mapfilename) {
 #' each row specifies (in order) the sequence name, source sample, and (optionally)
 #' the number of times the sequence was observed. 
 #'
-#' @usage import_env_file(envfilename, tree=NULL, sep='\t', ...)
+#' @usage import_env_file(envfilename, tree=NULL, sep="\t", ...)
 #'
 #' @param envfilename (Required). A charater string of the ENV filename (relative or absolute)
 #'
@@ -627,7 +616,7 @@ import_qiime_sample_data <- function(mapfilename) {
 #'  the output otu_table. 
 #'
 #' @param sep A character string indicating the delimiter used in the file.
-#'  The default is \code{'\t'}.
+#'  The default is \code{"\t"}.
 #'
 #' @param ... Additional parameters passed on to \code{\link{read.table}}.
 #'
@@ -643,19 +632,18 @@ import_qiime_sample_data <- function(mapfilename) {
 #' @export
 #' @examples 
 #' # import_env_file(myEnvFile, myTree)
-import_env_file <- function(envfilename, tree = NULL, sep = "\t", ...) {
-  tipSampleTable <- read.table(envfilename, sep = sep, ...)
-  # Convert to otu_table-class table (trivial table)
-  physeq <- envHash2otu_table(tipSampleTable)
-  # If tree is provided, combine it with the OTU Table
-  if (class(tree) == "phylo") {
-    # Create phyloseq-class with a tree and OTU Table (will perform any needed
-    # pruning)
-    physeq <- phyloseq(physeq, tree)
-  }
-  return(physeq)
+import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
+	tipSampleTable <- read.table(envfilename, sep=sep, ...)
+	# Convert to otu_table-class table (trivial table)
+	physeq <- envHash2otu_table(tipSampleTable)
+	# If tree is provided, combine it with the OTU Table
+	if( class(tree) == "phylo" ){
+		# Create phyloseq-class with a tree and OTU Table (will perform any needed pruning)
+		physeq <- phyloseq(physeq, tree)
+	}
+	return(physeq)
 }
-################################################################################ 
+################################################################################  
 #' Convert a sequence-sample hash (like ENV file) into an OTU table.
 #' 
 #' Parses an ENV-file into a sparse matrix of species-by-sample, where
@@ -685,33 +673,34 @@ import_env_file <- function(envfilename, tree = NULL, sep = "\t", ...) {
 #'
 #' @keywords internal
 #' @examples #
-#' ## fakeSeqNameVec <- paste('seq_', 1:8, sep='')
-#' ## fakeSamNameVec <- c(rep('A', 4), rep('B', 4))
+#' ## fakeSeqNameVec <- paste("seq_", 1:8, sep="")
+#' ## fakeSamNameVec <- c(rep("A", 4), rep("B", 4))
 #' ## fakeSeqAbunVec <- sample(1:50, 8, TRUE)
 #' ## test    <- cbind(fakeSeqNameVec, fakeSamNameVec, fakeSeqAbunVec)
 #' ## testotu <- envHash2otu_table( test )
 #' ## test    <- cbind(fakeSeqNameVec, fakeSamNameVec)
 #' ## testotu <- envHash2otu_table( test )
-envHash2otu_table <- function(tipSampleTable) {
-  if (ncol(tipSampleTable) > 2) {
-    tst <- tipSampleTable
-    trivialOTU <- matrix(0, nrow = nrow(tst), ncol = length(unique(tst[, 2])))
-    colnames(trivialOTU) <- unique(tst[, 2])
-    rownames(trivialOTU) <- tst[, 1]
-    for (i in 1:nrow(tst)) {
-      trivialOTU[tst[i, 1], tst[i, 2]] <- as.integer(tst[i, 3])
-    }
-  } else {
-    trivialOTU <- table(as.data.frame(tipSampleTable))
-    trivialOTU <- as(trivialOTU, "matrix")
-  }
-  return(otu_table(trivialOTU, taxa_are_rows = TRUE))
+envHash2otu_table <- function(tipSampleTable){
+	if( ncol(tipSampleTable) > 2 ){
+		tst <- tipSampleTable
+		trivialOTU <- matrix(0, nrow=nrow(tst), ncol=length(unique(tst[,2])))
+		colnames(trivialOTU) <- unique(tst[,2])
+		rownames(trivialOTU) <- tst[,1]
+		for( i in 1:nrow(tst) ){
+			trivialOTU[tst[i, 1], tst[i, 2]] <- as.integer(tst[i, 3])
+		}
+	} else {
+		trivialOTU <- table(as.data.frame(tipSampleTable))
+		trivialOTU <- as(trivialOTU, "matrix")	
+	}
+	return( otu_table(trivialOTU, taxa_are_rows=TRUE) )
 }
-################################################################################ 
+################################################################################
+################################################################################
 #' Import RDP cluster file and return otu_table (abundance table).
 #'
 #' The RDP cluster pipeline (specifically, the output of the complete linkage clustering step)
-#' has no formal documentation for the \code{'.clust'} 
+#' has no formal documentation for the \code{".clust"} 
 #' file or its apparent sequence naming convention. 
 #'
 #' \code{http://pyro.cme.msu.edu/index.jsp}
@@ -720,113 +709,109 @@ envHash2otu_table <- function(tipSampleTable) {
 #' the names of all sequences contained in input alignment. If the upstream
 #' barcode and aligment processing steps are also done with the RDP pipeline,
 #' then the sequence names follow a predictable naming convention wherein each
-#' sequence is named by its sample and sequence ID, separated by a \code{'_'} as
+#' sequence is named by its sample and sequence ID, separated by a \code{"_"} as
 #' delimiter:
 #'
-#' \code{'sampleName_sequenceIDnumber'}
+#' \code{"sampleName_sequenceIDnumber"}
 #'
 #' This import function assumes that the sequence names in the cluster file follow
-#' this convention, and that the sample name does not contain any \code{'_'}. It
+#' this convention, and that the sample name does not contain any \code{"_"}. It
 #' is unlikely to work if this is not the case. It is likely to work if you used
 #' the upstream steps in the RDP pipeline to process your raw (barcoded, untrimmed)
 #' fasta/fastq data. 
 #'
-#' This function first loops through the \code{'.clust'} file and collects all
-#' of the sample names that appear. It secondly loops through each OTU (\code{'cluster'};
+#' This function first loops through the \code{".clust"} file and collects all
+#' of the sample names that appear. It secondly loops through each OTU (\code{"cluster"};
 #' each row of the cluster file) and sums the number of sequences (reads) from
 #' each sample. The resulting abundance table of OTU-by-sample is trivially
 #' coerced to an \code{\link{otu_table}} object, and returned.
 #'
 #' @usage import_RDP_cluster(RDP_cluster_file)
 #'
-#' @param RDP_cluster_file A character string. The name of the \code{'.clust'} 
+#' @param RDP_cluster_file A character string. The name of the \code{".clust"} 
 #'  file produced by the 
 #'  the complete linkage clustering step of the RDP pipeline.
 #'
-#' @return An \code{\link{otu_table}} object parsed from the \code{'.clust'} file. 
+#' @return An \code{\link{otu_table}} object parsed from the \code{".clust"} file. 
 #' 
 #' @references \url{http://pyro.cme.msu.edu/index.jsp}
 #'
 #' @export
 #' 
-import_RDP_cluster <- function(RDP_cluster_file) {
-  
-  # Read file and pop the header lines
-  RDP_raw_otu_lines_only <- readLines(RDP_cluster_file)[-(1:5)]
-  
-  # internal function:
-  make_verbose_sample_list <- function(RDP_raw_otu_lines_only) {
-    # Each OTU line has a 3 element 'line header' that indicates the OTUID, the name
-    # of the file, and the number of sequences that are included in this cluster.
-    # From each line, remove the header elements
-    get_sample_names_from_one_line <- function(otuline) {
-      # first split the line on tabs '\t'
-      splittabs <- strsplit(otuline, "\t")[[1]]
-      
-      # next, remove the header by keeping on the 4th element.
-      seqIDonly <- splittabs[4]
-      
-      # Finally, split on white space
-      seqIDonly <- strsplit(seqIDonly, "[[:space:]]+")[[1]]
-      
-      # For each element in seqIDonly, split on the underscore delimiter
-      splitseqnames <- strsplit(seqIDonly, "_", fixed = TRUE)
-      
-      # Return the sample names from the first element (assumes no '_' in sample names)
-      return(sapply(splitseqnames, function(i) {
-        i[1]
-      }))
-    }
-    return(sapply(RDP_raw_otu_lines_only, get_sample_names_from_one_line))
-  }
-  
-  ## Get the verbose sample name list, and then shrink to the unique sample names in
-  ## the entire dataset.  Need this unique list for initializing the OTU abundance
-  ## matrix
-  RDPsamplenameslist <- make_verbose_sample_list(RDP_raw_otu_lines_only)
-  RDPsamplenames <- unique(unlist(RDPsamplenameslist))
-  
-  # remove NAs
-  RDPsamplenames <- RDPsamplenames[!is.na(RDPsamplenames)]
-  
-  # Initialize otu abundance matrix.
-  otumat <- matrix(0, nrow = length(RDP_raw_otu_lines_only), ncol = length(RDPsamplenames))
-  rownames(otumat) <- paste("OTUID_", 1:length(RDP_raw_otu_lines_only))
-  colnames(otumat) <- RDPsamplenames
-  
-  # Now re-loop through the cluster file (by OTU) and sum the abundance of
-  # sequences from each sample
-  for (i in 1:length(RDP_raw_otu_lines_only)) {
-    # i = 1
-    
-    # first split the line on tabs '\t'
-    splittabs <- strsplit(RDP_raw_otu_lines_only[i], "\t")[[1]]
-    
-    # next, remove the header by keeping on the 4th element.
-    seqIDonly <- splittabs[4]
-    
-    # Finally, split on white space
-    seqIDonly <- strsplit(seqIDonly, "[[:space:]]+")[[1]]
-    
-    # For each element in seqIDonly, split on the underscore delimiter
-    splitseqnames <- strsplit(seqIDonly, "_", fixed = TRUE)
-    
-    # make the verbose vector
-    verbosesamplenamesi <- sapply(splitseqnames, function(i) {
-      i[1]
-    })
-    
-    # sum the reads from each sample with tapply
-    OTUi <- tapply(verbosesamplenamesi, factor(verbosesamplenamesi), length)
-    
-    # store results of this OTU in abundance matrix
-    otumat[i, names(OTUi)] <- OTUi
-  }
-  
-  # Return the abundance table.
-  return(otu_table(otumat, taxa_are_rows = TRUE))
+import_RDP_cluster <- function(RDP_cluster_file){
+	
+	# Read file and pop the header lines
+	RDP_raw_otu_lines_only <- readLines(RDP_cluster_file)[-(1:5)]
+	
+	# internal function:
+	make_verbose_sample_list <- function(RDP_raw_otu_lines_only){
+		# Each OTU line has a 3 element "line header" that indicates the OTUID, the name of the file,
+		# and the number of sequences that are included in this cluster.
+		# From each line, remove the header elements
+		get_sample_names_from_one_line <- function(otuline){
+			# first split the line on tabs "\t"
+			splittabs <- strsplit(otuline, "\t")[[1]]
+			
+			# next, remove the header by keeping on the 4th element.
+			seqIDonly <- splittabs[4]
+			
+			# Finally, split on white space
+			seqIDonly <- strsplit(seqIDonly, "[[:space:]]+")[[1]]
+			
+			# For each element in seqIDonly, split on the underscore delimiter
+			splitseqnames <- strsplit(seqIDonly, "_", fixed=TRUE)
+			
+			# Return the sample names from the first element (assumes no "_" in sample names)
+			return( sapply(splitseqnames, function(i){i[1]}) )
+		}
+		return( sapply(RDP_raw_otu_lines_only, get_sample_names_from_one_line) )
+	}
+	
+	## Get the verbose sample name list, and then shrink to the 
+	## unique sample names in the entire dataset. 
+	## Need this unique list for initializing the OTU abundance matrix
+	RDPsamplenameslist <- make_verbose_sample_list(RDP_raw_otu_lines_only)
+	RDPsamplenames     <- unique(unlist(RDPsamplenameslist))
+	
+	# remove NAs
+	RDPsamplenames <- RDPsamplenames[!is.na(RDPsamplenames)]
+	
+	# Initialize otu abundance matrix.
+	otumat <- matrix(0, nrow=length(RDP_raw_otu_lines_only), ncol=length(RDPsamplenames))
+	rownames(otumat) <- paste("OTUID_", 1:length(RDP_raw_otu_lines_only))
+	colnames(otumat) <- RDPsamplenames
+	
+	# Now re-loop through the cluster file (by OTU) and sum the 
+	# abundance of sequences from each sample 
+	for( i in 1:length(RDP_raw_otu_lines_only) ){
+		# i = 1
+	
+		# first split the line on tabs "\t"
+		splittabs <- strsplit(RDP_raw_otu_lines_only[i], "\t")[[1]]
+		
+		# next, remove the header by keeping on the 4th element.
+		seqIDonly <- splittabs[4]
+		
+		# Finally, split on white space
+		seqIDonly <- strsplit(seqIDonly, "[[:space:]]+")[[1]]
+		
+		# For each element in seqIDonly, split on the underscore delimiter
+		splitseqnames <- strsplit(seqIDonly, "_", fixed=TRUE)	
+		
+		# make the verbose vector
+		verbosesamplenamesi <- sapply(splitseqnames, function(i){i[1]})
+		
+		# sum the reads from each sample with tapply
+		OTUi <- tapply(verbosesamplenamesi, factor(verbosesamplenamesi), length)
+		
+		# store results of this OTU in abundance matrix
+		otumat[i, names(OTUi)] <- OTUi
+	}
+	
+	# Return the abundance table.
+	return( otu_table(otumat, taxa_are_rows=TRUE) )
 }
-################################################################################ 
+################################################################################
 #' Import new RDP OTU-table format
 #' 
 #' Recently updated tools on RDP Pyro site make it easier to import Pyrosequencing output 
@@ -834,7 +819,7 @@ import_RDP_cluster <- function(RDP_cluster_file) {
 #' (generated from RDP Clustering tools) to create a community data matrix file
 #' for distance cutoff range you are interested in. The resulting output file 
 #' is a tab-delimited file containing the number of sequences for each sample 
-#' for each OTU. The OTU header naming convention is \code{'OTU_'} followed by the OTU
+#' for each OTU. The OTU header naming convention is \code{"OTU_"} followed by the OTU
 #' number in the cluster file. It pads ``0''s to make the OTU header easy to sort.
 #' The OTU numbers are not necessarily in order.
 #'
@@ -855,7 +840,7 @@ import_RDP_cluster <- function(RDP_cluster_file) {
 #'
 #' @export
 #' @examples
-#' otufile <- system.file('extdata', 'rformat_dist_0.03.txt.gz', package='phyloseq')
+#' otufile <- system.file("extdata", "rformat_dist_0.03.txt.gz", package="phyloseq")
 #' ### the gzipped file is automatically recognized, and read using R-connections
 #' ex_otu  <- import_RDP_otu(otufile)
 #' class(ex_otu)
@@ -863,24 +848,28 @@ import_RDP_cluster <- function(RDP_cluster_file) {
 #' nsamples(ex_otu)
 #' sample_sums(ex_otu)
 #' head(t(ex_otu))
-import_RDP_otu <- function(otufile) {
-  otumat <- read.table(otufile, TRUE, sep = "\t", row.names = 1)
-  return(otu_table(otumat, FALSE))
+import_RDP_otu <- function(otufile){
+	otumat <- read.table(otufile, TRUE, sep="\t", row.names=1)	
+	return(otu_table(otumat, FALSE))
 }
-################################################################################ 
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 #' Imports a tab-delimited version of the pyrotagger output file.
 #'
 #' PyroTagger is a web-server that takes raw, barcoded 16S rRNA amplicon sequences
-#' and returns an excel spreadsheet (\code{'.xls'}) with both abundance and 
+#' and returns an excel spreadsheet (\code{".xls"}) with both abundance and 
 #' taxonomy data. It also includes some confidence information related to the 
 #' taxonomic assignment.
 #'
 #' PyroTagger is created and maintained by the Joint Genome Institute 
-#' at \code{'http://pyrotagger.jgi-psf.org/'}
+#' at \code{"http://pyrotagger.jgi-psf.org/"}
 #' 
-#' The typical output form PyroTagger is a spreadsheet format \code{'.xls'}, which poses 
+#' The typical output form PyroTagger is a spreadsheet format \code{".xls"}, which poses 
 #' additional import challenges. However, virtually all spreadsheet applications 
-#' support the \code{'.xls'} format, and can further export this file in a 
+#' support the \code{".xls"} format, and can further export this file in a 
 #' tab-delimited format. It is recommended that you convert the xls-file without
 #' any modification (as tempting as it might be once you have loaded it) into a
 #' tab-delimited text file. Deselect any options to encapsulate fields in quotes,
@@ -891,7 +880,7 @@ import_RDP_otu <- function(otufile) {
 #'
 #' A highly-functional and free spreadsheet application can be obtained as part
 #' of the cross-platform \code{OpenOffice} suite. It works for the above 
-#' required conversion. Go to \code{'http://www.openoffice.org/'}. 
+#' required conversion. Go to \code{"http://www.openoffice.org/"}. 
 #'
 #' It is regrettable that this importer does not take the xls-file directly
 #' as input. However, because of the moving-target nature of spreadsheet
@@ -903,7 +892,7 @@ import_RDP_otu <- function(otufile) {
 #' long-run.
 #' 
 #' @usage import_pyrotagger_tab(pyrotagger_tab_file, 
-#'\tstrict_taxonomy=FALSE, keep_potential_chimeras=FALSE)
+#'	strict_taxonomy=FALSE, keep_potential_chimeras=FALSE)
 #'
 #' @param pyrotagger_tab_file (Required). A character string. The name of the tab-delimited
 #'  pyrotagger output table.
@@ -926,78 +915,87 @@ import_RDP_otu <- function(otufile) {
 #'
 #' @examples
 #' ## New_otuTaxObject <- import_pyrotagger_tab(pyrotagger_tab_file)
-import_pyrotagger_tab <- function(pyrotagger_tab_file, strict_taxonomy = FALSE, keep_potential_chimeras = FALSE) {
-  
-  x <- readLines(pyrotagger_tab_file, warn = FALSE)
-  # Get the header
-  pyro_header <- strsplit(x[1], "\t", TRUE)[[1]]
-  # Pop the first (header) line from the list.
-  x <- x[-1]
-  
-  ######################################## There are 'Potential chimeras' listed in the typical output, separated by 2
-  ######################################## completely blank lines after the last confidently-good OTU.
-  chimera_line <- grep("Potential chimeras", x, fixed = TRUE)
-  if (keep_potential_chimeras) {
-    # Pop just the blank lines that delimit the chimeras at the bottom of the table
-    x <- x[-((chimera_line - 2):chimera_line)]
-  } else {
-    x <- x[-((chimera_line - 2):length(x))]
-  }
-  
-  ######################################## The tab-split character list, z
-  z <- strsplit(x, "\t", TRUE)
-  names(z) <- sapply(z, function(z) {
-    z[1]
-  })
-  
-  # The table switches from abundance to taxonomy at the '% Identity' column
-  taxonomy_table_column_index <- which(pyro_header == "% identity")
-  
-  ######################################## Initialize the two matrices (otu_table and taxonomyTable) Initialize abundance
-  ######################################## matrix, a
-  a <- matrix(0, nrow = length(x), ncol = (taxonomy_table_column_index - 2))
-  colnames(a) <- pyro_header[2:(taxonomy_table_column_index - 1)]
-  rownames(a) <- names(z)
-  
-  ###### Initialize the raw pyrotagger taxonomy matrix, w
-  ntax_tablecols <- (max(sapply(z, length)) - taxonomy_table_column_index + 1)
-  w <- matrix("", nrow = length(x), ncol = ntax_tablecols)
-  rownames(w) <- names(z)
-  colnamesw <- pyro_header[-(1:(taxonomy_table_column_index - 1))]
-  colnamesw <- colnamesw[1:which(colnamesw == "Taxonomy")]
-  colnamesw <- c(colnamesw, paste("col", (which(colnamesw == "Taxonomy") + 1):ntax_tablecols, 
-    sep = ""))
-  colnames(w) <- colnamesw
-  
-  # Rename the taxonomy columns
-  biotaxonomy <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species", 
-    "Strain")
-  colnames(w)[which(colnames(w) == "Taxonomy"):length(colnames(w))][1:length(biotaxonomy)] <- biotaxonomy
-  
-  # Loop through each line and add to appropriate matrix.
-  for (i in rownames(a)) {
-    # i <- rownames(a)[[1]] cut out just the abundance part, and convert to integer
-    y <- as.integer(z[[i]][2:(taxonomy_table_column_index - 1)])
-    y[is.na(y)] <- 0
-    a[i, ] <- y
-    
-    # Taxonomy data is jagged
-    taxi <- z[[i]][-(1:(taxonomy_table_column_index - 1))]
-    w[i, 1:length(taxi)] <- taxi
-  }
-  
-  # Create the component objects
-  OTU <- otu_table(a, taxa_are_rows = TRUE)
-  if (strict_taxonomy) {
-    TAX <- tax_table[, biotaxonomy]
-  } else {
-    TAX <- tax_table(w)
-  }
-  
-  return(phyloseq(OTU, TAX))
-  
+import_pyrotagger_tab <- function(pyrotagger_tab_file, 
+	strict_taxonomy=FALSE, keep_potential_chimeras=FALSE){
+
+	x <- readLines(pyrotagger_tab_file, warn=FALSE)
+	# Get the header
+	pyro_header <- strsplit(x[1], "\t", TRUE)[[1]]
+	# Pop the first (header) line from the list.
+	x <- x[-1]
+	
+	########################################
+	### There are "Potential chimeras" 
+	### listed in the typical output, separated by 2 completely blank lines
+	### after the last confidently-good OTU.
+	########################################
+	chimera_line <- grep("Potential chimeras", x, fixed=TRUE)
+	if( keep_potential_chimeras ){
+		# Pop just the blank lines that delimit the chimeras
+		# at the bottom of the table
+		x <- x[-((chimera_line-2):chimera_line)]
+	} else {
+		x <- x[-((chimera_line-2):length(x))]
+	}
+	
+	########################################
+	# The tab-split character list, z
+	########################################
+	z <- strsplit(x, "\t", TRUE)
+	names(z) <- sapply(z, function(z){z[1]})
+	
+	# The table switches from abundance to taxonomy at the "% Identity" column
+	taxonomy_table_column_index <- which( pyro_header == "% identity" )
+	
+	########################################
+	# Initialize the two matrices
+	# (otu_table and taxonomyTable)
+	########################################
+	### Initialize abundance matrix, a
+	a <- matrix(0, nrow=length(x), ncol=(taxonomy_table_column_index-2))
+	colnames(a) <- pyro_header[2:(taxonomy_table_column_index-1)]
+	rownames(a) <- names(z)
+	
+	###### Initialize the raw pyrotagger taxonomy matrix, w
+	ntax_tablecols <- (max(sapply(z, length)) - taxonomy_table_column_index + 1)
+	w <- matrix("", nrow=length(x), ncol=ntax_tablecols)
+	rownames(w) <- names(z)
+	colnamesw <- pyro_header[-(1:(taxonomy_table_column_index-1))]
+	colnamesw <- colnamesw[1:which(colnamesw=="Taxonomy")]
+	colnamesw <- c(colnamesw, paste("col", (which(colnamesw=="Taxonomy")+1):ntax_tablecols, sep="") )
+	colnames(w) <- colnamesw
+	
+	# Rename the taxonomy columns
+	biotaxonomy <- c("Domain", "Phylum", "Class", "Order",
+			 	"Family", "Genus", "Species", "Strain")
+	colnames(w)[which(colnames(w)=="Taxonomy"):length(colnames(w))][1:length(biotaxonomy)] <- biotaxonomy
+	
+	# Loop through each line and add to appropriate matrix.
+	for( i in rownames(a) ){
+		# i <- rownames(a)[[1]]
+		# cut out just the abundance part, and convert to integer
+		y <- as.integer(z[[i]][2:(taxonomy_table_column_index-1)])
+		y[is.na(y)] <- 0
+		a[i, ] <- y
+		
+		# Taxonomy data is jagged
+		taxi <- z[[i]][-(1:(taxonomy_table_column_index-1))]
+		w[i, 1:length(taxi)] <- taxi	
+	}
+	
+	# Create the component objects
+	OTU <- otu_table(a, taxa_are_rows=TRUE)
+	if( strict_taxonomy ){
+		TAX <- tax_table[, biotaxonomy]
+	} else {
+		TAX <- tax_table(w)
+	}
+	
+	return( phyloseq(OTU, TAX) )
+
 }
-################################################################################ 
+################################################################################
+################################################################################
 #' Show cutoff values available in a mothur file. 
 #'
 #' This is a helper function to report back to the user the different cutoff
@@ -1018,17 +1016,17 @@ import_pyrotagger_tab <- function(pyrotagger_tab_file, strict_taxonomy = FALSE, 
 #'
 #' @seealso \code{\link{import_mothur}}
 #'  
-show_mothur_cutoffs <- function(mothur_list_file) {
-  unique(scan(mothur_list_file, "character", comment.char = "\t", quiet = TRUE))
+show_mothur_cutoffs <- function(mothur_list_file){
+  unique(scan(mothur_list_file, "character", comment.char="\t", quiet=TRUE))
 }
-################################################################################ 
+################################################################################
 #' Import mothur list file and return as list object in R.
 #'
 #' This is a user-available module of a more comprehensive function for importing
 #' OTU clustering/abundance data using the \emph{mothur} package. The list object
 #' returned by this function is not immediately useable by other \emph{phyloseq}
 #' functions, and must be first parsed in conjunction with a separate \emph{mothur}
-#' \code{'group'} file. This function is made accessible to \emph{phyloseq} users
+#' \code{"group"} file. This function is made accessible to \emph{phyloseq} users
 #' for troubleshooting and inspection, but the \code{link{import_mothur()}} function
 #' is suggested if the goal is to import the OTU clustering results from \emph{mothur}
 #' into \emph{phyloseq}.
@@ -1037,7 +1035,7 @@ show_mothur_cutoffs <- function(mothur_list_file) {
 #'
 #' @param mothur_list_file The list file name and/or location as produced by \emph{mothur}.
 #'
-#' @param cutoff A character string indicating the cutoff value, (or \code{'unique'}), 
+#' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
 #'  that matches one of the cutoff-values used to produce the OTU clustering 
 #'  results contained within the list-file created by \emph{mothur}. The default
 #'  is to take the largest value among the cutoff values contained in the list
@@ -1056,61 +1054,59 @@ show_mothur_cutoffs <- function(mothur_list_file) {
 #' @seealso \code{\link{show_mothur_cutoffs}}, \code{\link{import_mothur}}
 #' @keywords internal
 #'  
-import_mothur_otulist <- function(mothur_list_file, cutoff = NULL) {
-  # mothur_list_file = system.file('extdata', 'esophagus.fn.list.gz',
-  # package='phyloseq') cutoff = 0.04
+import_mothur_otulist <- function(mothur_list_file, cutoff=NULL){
+  # mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package="phyloseq")
+  # cutoff = 0.04
   cutoffs = show_mothur_cutoffs(mothur_list_file)
   cutoff = select_mothur_cutoff(cutoff, cutoffs)
-  # Read only the line corresponding to that cutoff
+  # Read only the line corresponding to that cutoff  
   inputline = which(cutoffs == cutoff)
-  rawlines = scan(mothur_list_file, "character", sep = "\t", skip = (inputline - 
-    1), nlines = 1, na.strings = "", quiet = TRUE)
+  rawlines = scan(mothur_list_file, "character", sep="\t", skip=(inputline-1), nlines=1, na.strings="", quiet=TRUE)
   rawlines = rawlines[!is.na(rawlines)]
-  # The first two elements are the cutoff and the number of OTUs. skip, and read to
-  # first comma for OTUnames
-  OTUnames = scan(text = rawlines, what = "character", comment.char = ",", quiet = TRUE)[3:as.integer(rawlines[2])]
+  # The first two elements are the cutoff and the number of OTUs. skip, and read to first comma for OTUnames
+  OTUnames = scan(text=rawlines, what="character", comment.char=",", quiet=TRUE)[3:as.integer(rawlines[2])]
   # split each element on commas
-  OTUs <- strsplit(rawlines[3:as.integer(rawlines[2])], ",", fixed = TRUE)
-  # Name each OTU (currently as the first seq name in each cluster), and return the
-  # list
+  OTUs <- strsplit(rawlines[3:as.integer(rawlines[2])], ",", fixed=TRUE)
+  # Name each OTU (currently as the first seq name in each cluster), and return the list
   names(OTUs) <- OTUnames
   # return as-is
   return(OTUs)
 }
-################################################################################ Need to select a cutoff if none was provided by user.  Take the largest
-################################################################################ non-'unique' cutoff possible, if 'unique' is the only cutoff included in the
-################################################################################ list file, use that.  Multiple cutoffs are provided in both `.shared` and
-################################################################################ `.list` files.  This function consolidates the heuristic for selecting/checking
-################################################################################ a specified cutoff.
+################################################################################
+# Need to select a cutoff if none was provided by user. 
+# Take the largest non-"unique" cutoff possible,
+# if "unique" is the only cutoff included in the list file, use that.
+# Multiple cutoffs are provided in both `.shared` and `.list` files.
+# This function consolidates the heuristic for selecting/checking a specified cutoff.
 #' @keywords internal
-select_mothur_cutoff = function(cutoff, cutoffs) {
-  if (is.null(cutoff)) {
+select_mothur_cutoff = function(cutoff, cutoffs){
+  if( is.null(cutoff) ){
     # cutoff was NULL, need to select one.
-    if (length(cutoffs) > 1) {
-      # Select the largest value, avoiding the 'unique' option.
+    if( length(cutoffs) > 1 ){
+      # Select the largest value, avoiding the "unique" option.
       selectCutoffs <- as(cutoffs[cutoffs != "unique"], "numeric")
       cutoff <- as.character(max(selectCutoffs))
     } else {
-      # There is only one cutoff value, so use it.  Don't have to specify a cutoff, in
-      # this case
+      # There is only one cutoff value, so use it.
+      # Don't have to specify a cutoff, in this case
       cutoff <- cutoffs
     }
   } else {
     # Provided by user, non-null. Coerce to character for indexing
     cutoff <- as.character(cutoff)
     # Check that it is in set of available cutoffs.
-    if (!cutoff %in% cutoffs) {
+    if( !cutoff %in% cutoffs ){
       stop("The cutoff value you provided is not among those available. Try show_mothur_cutoffs()")
     }
   }
 }
-################################################################################ 
+################################################################################
 #' Parse mothur group file into a simple hash table.
 #'
 #' The data.frame object
 #' returned by this function is not immediately useable by other \emph{phyloseq}
 #' functions, and must be first parsed in conjunction with a separate \emph{mothur}
-#' \code{'list'} file. This function is made accessible to \emph{phyloseq} users
+#' \code{"list"} file. This function is made accessible to \emph{phyloseq} users
 #' for troubleshooting and inspection, but the \code{link{import_mothur()}} function
 #' is suggested if the goal is to import the OTU clustering results from \emph{mothur}
 #' into \emph{phyloseq}. You will need both a group file and a list file for that end.
@@ -1128,11 +1124,10 @@ select_mothur_cutoff = function(cutoff, cutoffs) {
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
 #'
-import_mothur_groups <- function(mothur_group_file) {
-  read.table(mothur_group_file, sep = "\t", as.is = TRUE, stringsAsFactors = FALSE, 
-    colClasses = "character", row.names = 1)
+import_mothur_groups <- function(mothur_group_file){
+	read.table(mothur_group_file, sep="\t", as.is=TRUE, stringsAsFactors=FALSE, colClasses="character", row.names=1)
 }
-################################################################################ 
+################################################################################
 #' Import mothur list and group files and return an otu_table
 #'
 #' @usage import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff=NULL)
@@ -1145,7 +1140,7 @@ import_mothur_groups <- function(mothur_group_file) {
 #'  species/taxa abundance table (\code{otu_table}). See
 #'  \code{http://www.mothur.org/wiki/Make.group}
 #'
-#' @param cutoff A character string indicating the cutoff value, (or \code{'unique'}), 
+#' @param cutoff A character string indicating the cutoff value, (or \code{"unique"}), 
 #'  that matches one of the cutoff-values used to produce the OTU clustering 
 #'  results contained within the list-file created by \emph{mothur} (and specified
 #'  by the \code{mothur_list_file} argument). 
@@ -1164,34 +1159,32 @@ import_mothur_groups <- function(mothur_group_file) {
 #' @keywords internal
 #' @importFrom plyr ldply
 #' @importFrom plyr ddply
-import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff = NULL) {
-  otulist <- import_mothur_otulist(mothur_list_file, cutoff)
-  mothur_groups <- import_mothur_groups(mothur_group_file)
-  # Initialize abundance matrix with zeros for sparse assignment
+import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff=NULL){
+	otulist       <- import_mothur_otulist(mothur_list_file, cutoff)
+	mothur_groups <- import_mothur_groups(mothur_group_file)
+	# Initialize abundance matrix with zeros for sparse assignment
   samplenames = unique(mothur_groups[, 1])
-  mothur_otu_table <- matrix(0, nrow = length(otulist), ncol = length(samplenames))
-  colnames(mothur_otu_table) <- samplenames
-  rownames(mothur_otu_table) <- names(otulist)
-  
-  # Write a sparse versino of the abundance table
-  df = ldply(otulist, function(x) {
-    data.frame(read = x, stringsAsFactors = FALSE)
-  })
-  colnames(df)[1] <- "OTU"
-  df = data.frame(df, sample = mothur_groups[df[, "read"], 1], stringsAsFactors = FALSE)
-  adf = ddply(df, c("OTU", "sample"), function(x) {
-    # x = subset(df, OTU=='59_3_17' & sample=='C')
-    data.frame(x[1, c("OTU", "sample"), drop = FALSE], abundance = nrow(x))
-  })
-  
-  # Vectorized for speed using matrix indexing.  See help('Extract') for details
-  # about matrix indexing. Diff than 2-vec index.
-  mothur_otu_table[as(adf[, c("OTU", "sample")], "matrix")] <- adf[, "abundance"]
-  
-  # Finally, return the otu_table as a phyloseq otu_table object.
-  return(otu_table(mothur_otu_table, taxa_are_rows = TRUE))
+	mothur_otu_table <- matrix(0, nrow=length(otulist), ncol=length(samplenames))
+	colnames(mothur_otu_table) <- samplenames
+	rownames(mothur_otu_table) <- names(otulist)
+
+	# Write a sparse versino of the abundance table
+	df = ldply(otulist, function(x){data.frame(read=x, stringsAsFactors=FALSE)})
+	colnames(df)[1] <- "OTU"
+	df = data.frame(df, sample=mothur_groups[df[, "read"], 1], stringsAsFactors=FALSE)
+	adf = ddply(df, c("OTU", "sample"), function(x){
+	  # x = subset(df, OTU=="59_3_17" & sample=="C")
+	  data.frame(x[1, c("OTU", "sample"), drop=FALSE], abundance=nrow(x))
+	})
+	
+	# Vectorized for speed using matrix indexing.
+	# See help("Extract") for details about matrix indexing. Diff than 2-vec index.
+	mothur_otu_table[as(adf[, c("OTU", "sample")], "matrix")] <- adf[, "abundance"] 
+	
+	# Finally, return the otu_table as a phyloseq otu_table object.
+	return(otu_table(mothur_otu_table, taxa_are_rows=TRUE))
 }
-################################################################################ 
+################################################################################
 #' Import mothur shared file and return an otu_table
 #'
 #' @param mothur_shared_file (Required). A 
@@ -1202,19 +1195,18 @@ import_mothur_otu_table <- function(mothur_list_file, mothur_group_file, cutoff 
 #'
 #' @seealso \code{\link{import_mothur}}
 #' @keywords internal
-import_mothur_shared = function(mothur_shared_file, cutoff = NULL) {
-  # mothur_shared_file = '~/github/phyloseq/inst/extdata/esophagus.fn.shared.gz'
+import_mothur_shared = function(mothur_shared_file, cutoff=NULL){
+  #mothur_shared_file = "~/github/phyloseq/inst/extdata/esophagus.fn.shared.gz"
   # Check that cutoff is in cutoffs, or select a cutoff if none given.
   cutoffs = show_mothur_cutoffs(mothur_shared_file)
   cutoffs = cutoffs[!cutoffs %in% "label"]
   cutoff = select_mothur_cutoff(cutoff, cutoffs)
   x = readLines(mothur_shared_file)
-  rawtab = read.table(text = x[grep(paste0("^", cutoff), x)], header = FALSE, row.names = 2, 
-    stringsAsFactors = FALSE)[, -(1:2)]
-  colnames(rawtab) <- strsplit(x[1], "\t")[[1]][4:(ncol(rawtab) + 3)]
-  return(otu_table(t(as.matrix(rawtab)), taxa_are_rows = TRUE))
+  rawtab = read.table(text=x[grep(paste0("^", cutoff), x)], header=FALSE, row.names=2, stringsAsFactors=FALSE)[, -(1:2)]
+  colnames(rawtab) <- strsplit(x[1], "\t")[[1]][4:(ncol(rawtab)+3)]
+  return(otu_table(t(as.matrix(rawtab)), taxa_are_rows=TRUE))
 }
-################################################################################ 
+################################################################################
 #' Import mothur constaxonomy file and return a taxonomyTable
 #'
 #' @param mothur_constaxonomy_file (Required). A 
@@ -1237,20 +1229,19 @@ import_mothur_shared = function(mothur_shared_file, cutoff = NULL) {
 #' \code{\link{phyloseq}}
 #' 
 #' @keywords internal
-import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction = parse_taxonomy_default) {
+import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction=parse_taxonomy_default){
   read.table(mothur_constaxonomy_file)
-  rawtab = read.table(mothur_constaxonomy_file, header = TRUE, row.names = 1, stringsAsFactors = FALSE)[, 
-    "Taxonomy", drop = FALSE]
-  if (identical(parseFunction, parse_taxonomy_default)) {
-    # Proceed with default parsing stuff.  Remove the confidence strings inside the
-    # parentheses, if present
+  rawtab = read.table(mothur_constaxonomy_file, header=TRUE, row.names=1, stringsAsFactors=FALSE)[, "Taxonomy", drop=FALSE]
+  if( identical(parseFunction, parse_taxonomy_default) ){
+    # Proceed with default parsing stuff.
+    # Remove the confidence strings inside the parentheses, if present
     rawtab[, "Taxonomy"] = gsub("\\([[:digit:]]+\\)", "", rawtab[, "Taxonomy"])
     # Remove the quotation marks, if present
     rawtab[, "Taxonomy"] = gsub("\"", "", rawtab[, "Taxonomy"])
     # Remove trailing semicolon
     rawtab[, "Taxonomy"] = gsub(";$", "", rawtab[, "Taxonomy"])
     # Split on semicolon
-    taxlist = strsplit(rawtab[, "Taxonomy"], ";", fixed = TRUE)
+    taxlist = strsplit(rawtab[, "Taxonomy"], ";", fixed=TRUE)
     taxlist = lapply(taxlist, parseFunction)
   } else {
     taxlist = lapply(rawtab[, "Taxonomy"], parseFunction)
@@ -1258,7 +1249,7 @@ import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction = 
   names(taxlist) <- rownames(rawtab)
   return(build_tax_table(taxlist))
 }
-################################################################################ 
+################################################################################
 #' General function for importing mothur data files into phyloseq.
 #'
 #' Technically all parameters are optional,
@@ -1286,9 +1277,9 @@ import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction = 
 #' @param mothur_tree_file (Optional). 
 #'  A tree file, presumably produced by \emph{mothur},
 #'  and readable by \code{\link{read_tree}}.
-#'  The file probably has extension \code{'.tree'}.
+#'  The file probably has extension \code{".tree"}.
 #'
-#' @param cutoff (Optional). A character string indicating the cutoff value, (or \code{'unique'}), 
+#' @param cutoff (Optional). A character string indicating the cutoff value, (or \code{"unique"}), 
 #'  that matches one of the cutoff-values used to produce the OTU clustering 
 #'  results contained within the list-file created by \emph{mothur} (and specified
 #'  by the \code{mothur_list_file} argument). The default
@@ -1350,53 +1341,54 @@ import_mothur_constaxonomy = function(mothur_constaxonomy_file, parseFunction = 
 #' @examples
 #' # # The following example assumes you have downloaded the esophagus example
 #' # # dataset from the mothur wiki:
-#' # # 'http://www.mothur.org/wiki/Esophageal_community_analysis'
-#' # # 'http://www.mothur.org/w/images/5/55/Esophagus.zip'
+#' # # "http://www.mothur.org/wiki/Esophageal_community_analysis"
+#' # # "http://www.mothur.org/w/images/5/55/Esophagus.zip"
 #' # # The path on your machine may (probably will) vary
-#' # mothur_list_file  <- '~/Downloads/mothur/Esophagus/esophagus.an.list'
-#' # mothur_group_file <- '~/Downloads/mothur/Esophagus/esophagus.good.groups'
-#' # mothur_tree_file  <- '~/Downloads/mothur/Esophagus/esophagus.tree'
+#' # mothur_list_file  <- "~/Downloads/mothur/Esophagus/esophagus.an.list"
+#' # mothur_group_file <- "~/Downloads/mothur/Esophagus/esophagus.good.groups"
+#' # mothur_tree_file  <- "~/Downloads/mothur/Esophagus/esophagus.tree"
 #' # # # Actual examples follow:
 #' # show_mothur_cutoffs(mothur_list_file)
 #' # test1 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file)
-#' # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff='0.02')
+#' # test2 <- import_mothur(mothur_list_file, mothur_group_file, mothur_tree_file, cutoff="0.02")
 #' # # Returns just a tree
 #' # import_mothur(mothur_list_file, mothur_tree_file=mothur_tree_file)
 #' # # Returns just an otu_table
 #' # import_mothur(mothur_list_file, mothur_group_file=mothur_group_file)
 #' # # Returns an error
 #' # import_mothur(mothur_list_file)
-#' # # Should return an 'OMG, you must provide the list file' error
+#' # # Should return an "OMG, you must provide the list file" error
 #' # import_mothur()
-import_mothur <- function(mothur_list_file = NULL, mothur_group_file = NULL, mothur_tree_file = NULL, 
-  cutoff = NULL, mothur_shared_file = NULL, mothur_constaxonomy_file = NULL, parseFunction = parse_taxonomy_default) {
-  
+import_mothur <- function(mothur_list_file=NULL,  mothur_group_file=NULL,
+  mothur_tree_file=NULL, cutoff=NULL,
+  mothur_shared_file=NULL, mothur_constaxonomy_file=NULL, parseFunction=parse_taxonomy_default){
+
   pslist = vector("list")
   
-  if (!is.null(mothur_group_file) & !is.null(mothur_list_file)) {
-    # If list & group files provided, you can make an OTU table.
-    groupOTU = import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff)
-    pslist = c(pslist, list(groupOTU))
-  }
+	if( !is.null(mothur_group_file) & !is.null(mothur_list_file) ){
+	  # If list & group files provided, you can make an OTU table.
+		groupOTU = import_mothur_otu_table(mothur_list_file, mothur_group_file, cutoff)
+		pslist = c(pslist, list(groupOTU))
+	} 
+	
+	if( !is.null(mothur_tree_file) ){
+		tree <- read_tree(mothur_tree_file)
+		pslist = c(pslist, list(tree))
+	}
   
-  if (!is.null(mothur_tree_file)) {
-    tree <- read_tree(mothur_tree_file)
-    pslist = c(pslist, list(tree))
-  }
-  
-  if (!is.null(mothur_shared_file)) {
+  if( !is.null(mothur_shared_file) ){
     OTUshared <- import_mothur_shared(mothur_shared_file)
     pslist = c(pslist, list(OTUshared))
   }
   
-  if (!is.null(mothur_constaxonomy_file)) {
+  if( !is.null(mothur_constaxonomy_file) ){
     tax <- import_mothur_constaxonomy(mothur_constaxonomy_file, parseFunction)
     pslist = c(pslist, list(tax))
-  }
+  }  
   
   return(do.call("phyloseq", pslist))
 }
-################################################################################ 
+################################################################################
 #' Import mothur-formatted distance file
 #'
 #' The mothur application will produce a file containing the pairwise distances
@@ -1416,43 +1408,37 @@ import_mothur <- function(mothur_list_file = NULL, mothur_group_file = NULL, mot
 #'
 #' @examples
 #' # # Take a look at the dataset shown here as an example:
-#' # # 'http://www.mothur.org/wiki/Esophageal_community_analysis'
-#' # # find the file ending with extension '.dist', download to your system
+#' # # "http://www.mothur.org/wiki/Esophageal_community_analysis"
+#' # # find the file ending with extension ".dist", download to your system
 #' # # The location of your file may vary
-#' # mothur_dist_file <- '~/Downloads/mothur/Esophagus/esophagus.dist'
+#' # mothur_dist_file <- "~/Downloads/mothur/Esophagus/esophagus.dist"
 #' # myNewDistObject  <- import_mothur_dist(mothur_dist_file)
-import_mothur_dist <- function(mothur_dist_file) {
-  # Read the raw distance matrix file produced by mothur:
-  raw_dist_lines <- readLines(mothur_dist_file)
-  
-  # split each line on white space, and begin modifying into dist-matrix format
-  dist_char <- strsplit(raw_dist_lines, "[[:space:]]+")
-  dist_char <- dist_char[-1]
-  # add name to each list element
-  names(dist_char) <- sapply(dist_char, function(i) {
-    i[1]
-  })
-  # pop out the names from each vector
-  dist_char <- sapply(dist_char, function(i) {
-    i[-1]
-  })
-  # convert to numeric vectors
-  dist_char <- sapply(dist_char, function(i) {
-    as(i, "numeric")
-  })
-  
-  # Initialize and fill the matrix
-  distm <- matrix(0, nrow = length(dist_char), ncol = length(dist_char))
-  rownames(distm) <- names(dist_char)
-  colnames(distm) <- names(dist_char)
-  for (i in names(dist_char)[-1]) {
-    distm[i, 1:length(dist_char[[i]])] <- dist_char[[i]]
-  }
-  diag(distm) <- 1
-  distd <- as.dist(distm)
-  return(distd)
+import_mothur_dist <- function(mothur_dist_file){
+	# Read the raw distance matrix file produced by mothur:
+	raw_dist_lines <- readLines(mothur_dist_file)
+	
+	# split each line on white space, and begin modifying into dist-matrix format
+	dist_char <- strsplit(raw_dist_lines, "[[:space:]]+")
+	dist_char <- dist_char[-1]
+	# add name to each list element
+	names(dist_char) <- sapply(dist_char, function(i){i[1]})
+	# pop out the names from each vector
+	dist_char <- sapply(dist_char, function(i){i[-1]})
+	# convert to numeric vectors
+	dist_char <- sapply(dist_char, function(i){as(i, "numeric")})
+	
+	# Initialize and fill the matrix
+	distm <- matrix(0, nrow=length(dist_char), ncol=length(dist_char))
+	rownames(distm) <- names(dist_char); colnames(distm) <- names(dist_char)
+	for( i in names(dist_char)[-1] ){
+		distm[i, 1:length(dist_char[[i]])] <- dist_char[[i]]
+	}
+	diag(distm) <- 1
+	distd <- as.dist(distm)
+	return(distd)
 }
-################################################################################ 
+################################################################################
+################################################################################
 #' Export a distance object as \code{.names} and \code{.dist} files for mothur
 #'
 #' The purpose of this function is to allow a user to easily export a distance object
@@ -1462,7 +1448,7 @@ import_mothur_dist <- function(mothur_dist_file) {
 #'
 #' @usage export_mothur_dist(x, out=NULL, makeTrivialNamesFile=NULL)
 #'
-#' @param x (Required). A \code{'dist'} object, or a symmetric matrix.
+#' @param x (Required). A \code{"dist"} object, or a symmetric matrix.
 #'
 #' @param out (Optional). The desired output filename for the \code{.dist} file, OR
 #'  left \code{NULL}, the default, in which case the mothur-formated distance table
@@ -1485,54 +1471,47 @@ import_mothur_dist <- function(mothur_dist_file) {
 #' data(esophagus) 
 #' myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
 #' export_mothur_dist(myDistObject)
-export_mothur_dist <- function(x, out = NULL, makeTrivialNamesFile = NULL) {
-  if (class(x) == "matrix") {
-    x <- as.dist(x)
-  }
-  if (class(x) != "dist") {
-    stop("x must be a dist object, or symm matrix")
-  }
-  
-  # While x is a dist-object, get the length of unique pairs to initialize the dist
-  # table.
-  distdf <- matrix("", nrow = length(x), ncol = 3)
-  
-  # Now convert x to matrix for looping, indexing.
-  x <- as(x, "matrix")
-  colnames(distdf) <- c("i", "j", "d")
-  # distdf row counter
-  z <- 1
-  
-  # The big loop.  i <- 2
-  for (i in 2:nrow(x)) {
-    thisvec <- x[i, 1:(i - 1)]
-    for (j in 1:length(thisvec)) {
-      # j <- 1
-      distdf[z, "i"] <- rownames(x)[i]
-      distdf[z, "j"] <- colnames(x)[j]
-      distdf[z, "d"] <- thisvec[j]
-      z <- z + 1
-    }
-  }
-  
-  # mothur requires a .names file, in case you removed identical sequences from
-  # within mothur and need to keep track and add them back.
-  if (!is.null(makeTrivialNamesFile)) {
-    namestab <- matrix(rownames(x), nrow = length(rownames(x)), ncol = 2)
-    write.table(namestab, file = makeTrivialNamesFile, quote = FALSE, sep = "\t", 
-      row.names = FALSE, col.names = FALSE)
-  }
-  
-  # If is.null(out)==TRUE, then return two-column table.  If it's a character,
-  # write.table-it
-  if (is.null(out)) {
-    return(distdf)
-  } else {
-    write.table(distdf, file = out, quote = FALSE, sep = "\t", row.names = FALSE, 
-      col.names = FALSE)
-  }
+export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
+	if( class(x)== "matrix" ){ x <- as.dist(x) }
+	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }
+
+	# While x is a dist-object, get the length of unique pairs
+	# to initialize the dist table.
+	distdf <- matrix("", nrow=length(x), ncol=3)
+
+	# Now convert x to matrix for looping, indexing.
+	x <- as(x, "matrix")
+	colnames(distdf) <- c("i", "j", "d") 
+	# distdf row counter
+	z <- 1
+	
+	# The big loop.
+	for( i in 2:nrow(x) ){ # i <- 2
+		thisvec <- x[i, 1:(i-1)]
+		for( j in 1:length(thisvec) ){ # j <- 1
+			distdf[z, "i"] <- rownames(x)[i]
+			distdf[z, "j"] <- colnames(x)[j]
+			distdf[z, "d"] <- thisvec[j]
+			z <- z + 1
+		}
+	}	
+
+	# mothur requires a .names file, in case you removed identical sequences
+	# from within mothur and need to keep track and add them back.
+	if( !is.null(makeTrivialNamesFile) ){
+		namestab <- matrix(rownames(x), nrow=length(rownames(x)), ncol=2)
+		write.table(namestab, file=makeTrivialNamesFile, quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+	}
+	
+	# If is.null(out)==TRUE, then return two-column table.
+	# If it's a character, write.table-it 
+	if( is.null(out) ){
+		return(distdf)
+	} else {
+		write.table(distdf, file=out, quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+	}
 }
-################################################################################ 
+################################################################################
 #' Export environment (ENV) file for UniFrac Server.
 #'
 #' Creates the environment table that is needed for the original UniFrac
@@ -1546,7 +1525,7 @@ export_mothur_dist <- function(x, out = NULL, makeTrivialNamesFile = NULL) {
 #'
 #' @param file (Optional). The file path for export. If not-provided, the 
 #'  expectation is that you will want to set \code{return} to \code{TRUE},
-#'  and manipulate the ENV table on your own. Default is \code{''}, skipping 
+#'  and manipulate the ENV table on your own. Default is \code{""}, skipping 
 #'  the ENV file from being written to a file.
 #'
 #' @param writeTree (Optional). Write the phylogenetic tree as well as the 
@@ -1561,54 +1540,59 @@ export_mothur_dist <- function(x, out = NULL, makeTrivialNamesFile = NULL) {
 #' @examples
 #' # # Load example data
 #' # data(esophagus)
-#' # export_env_file(esophagus, '~/Desktop/esophagus.txt')
-export_env_file <- function(physeq, file = "", writeTree = TRUE, return = FALSE) {
-  # data(esophagus) physeq <- esophagus
-  
-  # Create otu_table matrix and force orientation
-  OTU <- as(otu_table(physeq), "matrix")
-  if (!taxa_are_rows(physeq)) {
-    OTU <- t(OTU)
-  }
-  
-  # initialize sequence/sample names
-  seqs <- taxa_names(physeq)
-  samples <- sample_names(physeq)
-  
-  # initialize output table as matrix
-  ENV <- matrix("", nrow = sum(OTU >= 1), ncol = 3)
-  
-  # i counts the row of the output , ENV
-  i = 1
-  while (i < nrow(ENV)) {
-    for (j in seqs) {
-      for (k in which(OTU[j, ] > 0)) {
-        ENV[i, 1] <- j
-        ENV[i, 2] <- samples[k]
-        ENV[i, 3] <- OTU[j, k]
-        i <- i + 1
-      }
-    }
-  }
-  # If a file path is provided, write the table to that file
-  if (file != "") {
-    write.table(ENV, file = file, quote = FALSE, sep = "\t", row.names = FALSE, 
-      col.names = FALSE)
-  }
-  
-  # If needed, also write the associated tree-file.
-  if (writeTree) {
-    fileTree <- paste(file, ".nex", sep = "")
-    write.nexus(phy_tree(physeq), file = fileTree, original.data = FALSE)
-  }
-  
-  # If return argument is TRUE, return the environment table
-  if (return) {
-    return(ENV)
-  }
+#' # export_env_file(esophagus, "~/Desktop/esophagus.txt")
+export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
+	# data(esophagus)
+	# physeq <- esophagus
+
+	# Create otu_table matrix and force orientation
+	OTU     <- as(otu_table(physeq), "matrix")
+	if( !taxa_are_rows(physeq) ){ OTU <- t(OTU) }
+	
+	# initialize sequence/sample names
+	seqs    <- taxa_names(physeq)
+	samples <- sample_names(physeq)	
+	
+	# initialize output table as matrix
+	ENV <- matrix("", nrow=sum(OTU >= 1), ncol=3)
+	
+	# i counts the row of the output , ENV
+	i=1
+	while( i < nrow(ENV) ){
+		for( j in seqs){ 
+			for( k in which(OTU[j, ]>0) ){
+					ENV[i, 1] <- j
+					ENV[i, 2] <- samples[k]
+					ENV[i, 3] <- OTU[j, k]
+					i <- i + 1
+			}
+		}
+	}
+	# If a file path is provided, write the table to that file
+	if(file != ""){
+		write.table(ENV, file=file, quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
+	}
+	
+	# If needed, also write the associated tree-file. 
+	if( writeTree ){
+		fileTree <- paste(file, ".nex", sep="")
+		write.nexus(phy_tree(physeq), file=fileTree, original.data=FALSE)
+	}
+
+	# If return argument is TRUE, return the environment table
+	if(return){ return(ENV) }
 }
-################################################################################ UniFrac ENV files have the form: SEQ1 ENV1 1 SEQ1 ENV2 2 SEQ2 ENV1 15 SEQ3 ENV1
-################################################################################ 2 SEQ4 ENV2 8 SEQ5 ENV1 4 http://128.138.212.43/unifrac/help.psp#env_file
+################################################################################
+# UniFrac ENV files have the form:
+# 
+# SEQ1        ENV1        1
+# SEQ1        ENV2        2
+# SEQ2        ENV1        15
+# SEQ3        ENV1        2
+# SEQ4        ENV2        8
+# SEQ5        ENV1        4
+# http://128.138.212.43/unifrac/help.psp#env_file
+################################################################################
 #' Import phyloseq data from biom-format file
 #'
 #' New versions of QIIME produce a more-comprehensive and formally-defined
@@ -1768,95 +1752,104 @@ export_env_file <- function(physeq, file = "", writeTree = TRUE, return = FALSE)
 #' @export
 #' @examples
 #' # An included example of a rich dense biom file
-#' rich_dense_biom  <- system.file('extdata', 'rich_dense_otu_table.biom',  package='phyloseq')
+#' rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
 #' import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
 #' # An included example of a sparse dense biom file
-#' rich_sparse_biom <- system.file('extdata', 'rich_sparse_otu_table.biom', package='phyloseq')
+#' rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
 #' import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 #' # # # Example code for importing large file with parallel backend
-#' # library('doParallel')
+#' # library("doParallel")
 #' # registerDoParallel(cores=6)
-#' # import_biom('my/file/path/file.biom', parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
-import_biom <- function(BIOMfilename, treefilename = NULL, refseqfilename = NULL, 
-  refseqFunction = readDNAStringSet, refseqArgs = NULL, parseFunction = parse_taxonomy_default, 
-  parallel = FALSE, version = 1, ...) {
-  
-  # initialize the argument-list for phyloseq. Start empty.
-  argumentlist <- list()
-  
-  # Read the data
-  x = read_biom(biom_file = BIOMfilename)
-  
-  ######################################## OTU table:
-  otutab = otu_table(as(biom_data(x), "matrix"), taxa_are_rows = TRUE)
-  argumentlist <- c(argumentlist, list(otutab))
-  
-  ######################################## Taxonomy Table Need to check if taxonomy information is empty (minimal BIOM
-  ######################################## file)
-  if (all(sapply(sapply(x$rows, function(i) {
-    i$metadata
-  }), is.null))) {
-    taxtab <- NULL
+#' # import_biom("my/file/path/file.biom", parseFunction=parse_taxonomy_greengenes, parallel=TRUE)
+import_biom <- function(BIOMfilename, 
+	treefilename=NULL, refseqfilename=NULL, refseqFunction=readDNAStringSet, refseqArgs=NULL,
+	parseFunction=parse_taxonomy_default, parallel=FALSE, version=1.0, ...){
+
+	# initialize the argument-list for phyloseq. Start empty.
+	argumentlist <- list()
+	
+	# Read the data
+	x = read_biom(biom_file=BIOMfilename)
+	
+	########################################
+	# OTU table:
+	########################################
+	otutab = otu_table(as(biom_data(x), "matrix"), taxa_are_rows=TRUE)
+	argumentlist <- c(argumentlist, list(otutab))
+	
+	########################################
+	# Taxonomy Table
+	########################################
+	# Need to check if taxonomy information is empty (minimal BIOM file)
+	if(  all( sapply(sapply(x$rows, function(i){i$metadata}), is.null) )  ){
+	  taxtab <- NULL
   } else {
     # parse once each character vector, save as a list
-    taxlist = lapply(x$rows, function(i) {
+    taxlist = lapply(x$rows, function(i){
       parseFunction(i$metadata$taxonomy)
     })
-    names(taxlist) = sapply(x$rows, function(i) {
-      i$id
-    })
+    names(taxlist) = sapply(x$rows, function(i){i$id})
     taxtab = build_tax_table(taxlist)
-  }
-  argumentlist <- c(argumentlist, list(taxtab))
-  
-  ######################################## Sample Data ('columns' in QIIME/BIOM) If there is no metadata (all NULL), then
-  ######################################## set sam_data <- NULL
-  if (is.null(sample_metadata(x))) {
-    samdata <- NULL
-  } else {
-    samdata = sample_data(sample_metadata(x))
-  }
-  argumentlist <- c(argumentlist, list(samdata))
-  
-  ######################################## Tree data
-  if (!is.null(treefilename)) {
-    if (inherits(treefilename, "phylo")) {
-      # If argument is already a tree, don't read, just assign.
-      tree = treefilename
-    } else {
-      # NULL is silently returned if tree is not read properly.
-      tree <- read_tree(treefilename, ...)
-    }
-    # Add to argument list or warn
-    if (is.null(tree)) {
-      warning("treefilename failed import. It not included.")
-    } else {
-      argumentlist <- c(argumentlist, list(tree))
-    }
-  }
-  
-  ######################################## Reference Sequence data
-  if (!is.null(refseqfilename)) {
-    if (inherits(refseqfilename, "XStringSet")) {
-      # If argument is already a XStringSet, don't read, just assign.
-      refseq = refseqfilename
-    } else {
-      # call refseqFunction and read refseqfilename, either with or without additional
-      # args
-      if (!is.null(refseqArgs)) {
-        refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
-      } else {
-        refseq = refseqFunction(refseqfilename)
-      }
-    }
-    argumentlist <- c(argumentlist, list(refseq))
-  }
-  
-  ######################################## Put together into a phyloseq object
-  return(do.call("phyloseq", argumentlist))
-  
+	}
+	argumentlist <- c(argumentlist, list(taxtab))
+	
+	########################################
+	# Sample Data ("columns" in QIIME/BIOM)
+	########################################
+	# If there is no metadata (all NULL), then set sam_data <- NULL
+	if( is.null(sample_metadata(x)) ){
+		samdata <- NULL
+	} else {
+		samdata = sample_data(sample_metadata(x))
+	}
+	argumentlist <- c(argumentlist, list(samdata))
+
+	########################################
+	# Tree data
+	########################################
+	if( !is.null(treefilename) ){
+		if( inherits(treefilename, "phylo") ){
+			# If argument is already a tree, don't read, just assign.
+			tree = treefilename
+		} else {
+			# NULL is silently returned if tree is not read properly.
+			tree <- read_tree(treefilename, ...)		
+		}
+		# Add to argument list or warn
+		if( is.null(tree) ){
+			warning("treefilename failed import. It not included.")
+		} else {
+			argumentlist <- c(argumentlist, list(tree) )
+		}
+	}
+	
+	########################################
+	# Reference Sequence data
+	########################################	
+	if( !is.null(refseqfilename) ){
+		if( inherits(refseqfilename, "XStringSet") ){
+			# If argument is already a XStringSet, don't read, just assign.
+			refseq = refseqfilename
+		} else {
+			# call refseqFunction and read refseqfilename, either with or without additional args
+			if( !is.null(refseqArgs) ){
+				refseq = do.call("refseqFunction", c(list(refseqfilename), refseqArgs))
+			} else {
+				refseq = refseqFunction(refseqfilename)
+			}
+		}
+		argumentlist <- c(argumentlist, list(refseq) )
+	}
+	
+	########################################
+	# Put together into a phyloseq object
+	########################################
+	return( do.call("phyloseq", argumentlist) )
+
 }
-################################################################################ Need to export these parsing functions as examples...
+################################################################################
+# Need to export these parsing functions as examples...
+################################################################################
 #' Parse elements of a taxonomy vector
 #'
 #' These are provided as both example and default functions for
@@ -1881,7 +1874,7 @@ import_biom <- function(BIOMfilename, treefilename = NULL, refseqfilename = NULL
 #' \code{parse_taxonomy_greengenes} function clips the first 3 characters that 
 #' identify the rank, and uses these to name the corresponding element according
 #' to the appropriate taxonomic rank name used by greengenes
-#' (e.g. \code{'p__'} at the beginning of an element means that element is 
+#' (e.g. \code{"p__"} at the beginning of an element means that element is 
 #' the name of the phylum to which this OTU belongs).
 #' Most importantly, the expectations for these functions described above
 #' make them compatible to use during data import,
@@ -1898,8 +1891,8 @@ import_biom <- function(BIOMfilename, treefilename = NULL, refseqfilename = NULL
 #' 
 #' @return A character vector in which each element is a different
 #'  taxonomic rank of the same OTU, and each element name is the name of
-#'  the rank level. For example, an element might be \code{'Firmicutes'}
-#'  and named \code{'phylum'}.
+#'  the rank level. For example, an element might be \code{"Firmicutes"}
+#'  and named \code{"phylum"}.
 #'  These parsed, named versions of the taxonomic vector should
 #'  reflect embedded information, naming conventions,
 #'  desired length limits, etc; or in the case of \code{\link{parse_taxonomy_default}},
@@ -1913,58 +1906,60 @@ import_biom <- function(BIOMfilename, treefilename = NULL, refseqfilename = NULL
 #'  \code{\link{import_qiime}}
 #'
 #' @examples
-#'  taxvec1 = c('Root', 'k__Bacteria', 'p__Firmicutes', 'c__Bacilli', 'o__Bacillales', 'f__Staphylococcaceae')
+#'  taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
 #'  parse_taxonomy_default(taxvec1)
 #'  parse_taxonomy_greengenes(taxvec1)
-#'  taxvec2 = c('Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae')
+#'  taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
 #'  parse_taxonomy_qiime(taxvec2)
-parse_taxonomy_default = function(char.vec) {
-  # Remove any leading empty space
-  char.vec = gsub("^[[:space:]]{1,}", "", char.vec)
-  # Remove any trailing space
-  char.vec = gsub("[[:space:]]{1,}$", "", char.vec)
-  if (length(char.vec) > 0) {
-    # Add dummy element (rank) name
-    names(char.vec) = paste("Rank", 1:length(char.vec), sep = "")
-  } else {
-    warning("Empty taxonomy vector encountered.")
-  }
-  return(char.vec)
+parse_taxonomy_default = function(char.vec){
+	# Remove any leading empty space
+	char.vec = gsub("^[[:space:]]{1,}", "", char.vec)
+	# Remove any trailing space
+	char.vec = gsub("[[:space:]]{1,}$", "", char.vec)
+	if( length(char.vec) > 0 ){
+		# Add dummy element (rank) name
+		names(char.vec) = paste("Rank", 1:length(char.vec), sep="")
+	} else {
+		warning("Empty taxonomy vector encountered.")
+	}
+	return(char.vec)
 }
 #' @rdname parseTaxonomy-functions
 #' @aliases parse_taxonomy_default
 #' @export
-parse_taxonomy_greengenes <- function(char.vec) {
-  # Use default to assign names to elements in case problem with greengenes prefix
-  char.vec = parse_taxonomy_default(char.vec)
-  # Define the meaning of each prefix according to GreenGenes taxonomy
-  Tranks = c(k = "Kingdom", p = "Phylum", c = "Class", o = "Order", f = "Family", 
-    g = "Genus", s = "Species")
-  # Check for prefix using regexp, warn if there were none. trim indices, ti
-  ti = grep("[[:alpha:]]{1}\\_\\_", char.vec)
-  if (length(ti) == 0L) {
-    warning("No greengenes prefixes were found. \n", "Consider using parse_taxonomy_default() instead if true for all OTUs. \n", 
-      "Dummy ranks may be included among taxonomic ranks now.")
-    # Will want to return without further modifying char.vec
-    taxvec = char.vec
-    # Replace names of taxvec according to prefix, if any present...
-  } else {
-    # Remove prefix using sub-'' regexp, call result taxvec
-    taxvec = gsub("[[:alpha:]]{1}\\_\\_", "", char.vec)
-    # Define the ranks that will be replaced
-    repranks = Tranks[substr(char.vec[ti], 1, 1)]
-    # Replace, being sure to avoid prefixes not present in Tranks
-    names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
-  }
-  return(taxvec)
+parse_taxonomy_greengenes <- function(char.vec){
+	# Use default to assign names to elements in case problem with greengenes prefix
+	char.vec = parse_taxonomy_default(char.vec)
+	# Define the meaning of each prefix according to GreenGenes taxonomy
+	Tranks = c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
+	# Check for prefix using regexp, warn if there were none. trim indices, ti
+	ti = grep("[[:alpha:]]{1}\\_\\_", char.vec)
+	if( length(ti) == 0L ){
+		warning(
+			"No greengenes prefixes were found. \n",
+			"Consider using parse_taxonomy_default() instead if true for all OTUs. \n",
+			"Dummy ranks may be included among taxonomic ranks now."
+		)
+		# Will want to return without further modifying char.vec
+		taxvec = char.vec
+	# Replace names of taxvec according to prefix, if any present...
+	} else {
+		# Remove prefix using sub-"" regexp, call result taxvec
+		taxvec = gsub("[[:alpha:]]{1}\\_\\_", "", char.vec)
+		# Define the ranks that will be replaced
+		repranks = Tranks[substr(char.vec[ti], 1, 1)]
+		# Replace, being sure to avoid prefixes not present in Tranks
+		names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
+	}
+	return(taxvec)
 }
 #' @rdname parseTaxonomy-functions
 #' @aliases parse_taxonomy_default
 #' @export
-parse_taxonomy_qiime <- function(char.vec) {
-  parse_taxonomy_greengenes(strsplit(char.vec, ";", TRUE)[[1]])
+parse_taxonomy_qiime <- function(char.vec){
+	parse_taxonomy_greengenes(strsplit(char.vec, ";", TRUE)[[1]])
 }
-################################################################################ 
+################################################################################
 #' Build a \code{\link{tax_table}} from a named possibly-jagged list
 #'
 #' @param taxlist (Required). A list in which each element is a vector of 
@@ -1988,38 +1983,39 @@ parse_taxonomy_qiime <- function(char.vec) {
 #' @export
 #'
 #' @examples
-#'  taxvec1 = c('Root', 'k__Bacteria', 'p__Firmicutes', 'c__Bacilli', 'o__Bacillales', 'f__Staphylococcaceae')
+#'  taxvec1 = c("Root", "k__Bacteria", "p__Firmicutes", "c__Bacilli", "o__Bacillales", "f__Staphylococcaceae")
 #'  parse_taxonomy_default(taxvec1)
 #'  parse_taxonomy_greengenes(taxvec1)
-#'  taxvec2 = c('Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae')
+#'  taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
 #'  parse_taxonomy_qiime(taxvec2)
 #'  taxlist1 = list(OTU1=parse_taxonomy_greengenes(taxvec1), OTU2=parse_taxonomy_qiime(taxvec2))
 #'  taxlist2 = list(OTU1=parse_taxonomy_default(taxvec1), OTU2=parse_taxonomy_qiime(taxvec2))
 #'  build_tax_table(taxlist1)
 #'  build_tax_table(taxlist2)
-build_tax_table = function(taxlist) {
-  # Determine column headers (rank names) of taxonomy table
-  columns = unique(unlist(lapply(taxlist, names)))
-  # Initialize taxonomic character matrix
-  taxmat <- matrix(NA_character_, nrow = length(taxlist), ncol = length(columns))
-  colnames(taxmat) = columns
-  # Fill in the matrix by row.
-  for (i in 1:length(taxlist)) {
-    # Protect against empty taxonomy
-    if (length(taxlist[[i]]) > 0) {
-      # The extra column name check solves issues with raggedness, and disorder.
-      taxmat[i, names(taxlist[[i]])] <- taxlist[[i]]
-    }
-  }
-  # Convert functionally empty elements, '', to NA
-  taxmat[taxmat == ""] <- NA_character_
-  # Now coerce to matrix, name the rows as 'id' (the taxa name), coerce to
-  # taxonomyTable
-  taxmat <- as(taxmat, "matrix")
-  rownames(taxmat) = names(taxlist)
-  return(tax_table(taxmat))
+build_tax_table = function(taxlist){
+	# Determine column headers (rank names) of taxonomy table
+	columns = unique(unlist(lapply(taxlist, names)))
+	# Initialize taxonomic character matrix
+	taxmat <- matrix(NA_character_, nrow=length(taxlist), ncol=length(columns))
+	colnames(taxmat) = columns
+	# Fill in the matrix by row.
+	for( i in 1:length(taxlist) ){
+		# Protect against empty taxonomy
+		if( length(taxlist[[i]]) > 0 ){
+			# The extra column name check solves issues with raggedness, and disorder.
+			taxmat[i, names(taxlist[[i]])] <- taxlist[[i]]
+		}
+	}
+	# Convert functionally empty elements, "", to NA
+	taxmat[taxmat==""] <- NA_character_
+	# Now coerce to matrix, name the rows as "id" (the taxa name), coerce to taxonomyTable
+	taxmat			 <- as(taxmat, "matrix")
+	rownames(taxmat) = names(taxlist)
+	return( tax_table(taxmat) )
 }
-################################################################################ 
+################################################################################
+################################################################################
+################################################################################
 #' Download and import directly from microbio.me/qiime
 #' 
 #' This function is for accessing microbiome datasets from the
@@ -2052,8 +2048,8 @@ build_tax_table = function(taxlist) {
 #'  this function will complete the remainder of the ftp URL hosted at
 #'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
 #'  For example, instead of the full URL string, 
-#'  \code{'ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip'},
-#'  you could simply provide \code{494} or \code{'494'}
+#'  \code{"ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip"},
+#'  you could simply provide \code{494} or \code{"494"}
 #'  as the first (`zipftp`) argument.
 #'  
 #'  @param ext (Optional). A \code{\link{character}} string of the expected
@@ -2102,12 +2098,12 @@ build_tax_table = function(taxlist) {
 #' # This should return TRUE on your system if you have internet turned on
 #' # and a standard R installation. Indicates whether this is likely to
 #' # work on your system for a URL or local file, respectively.
-#' capabilities('http/ftp'); capabilities('fifo')
+#' capabilities("http/ftp"); capabilities("fifo")
 #' # A working example with a local example file included in phyloseq
-#' zipfile = 'study_816_split_library_seqs_and_mapping.zip'
-#' zipfile = system.file('extdata', zipfile, package='phyloseq')
-#' tarfile = 'study_816_split_library_seqs_and_mapping.tar.gz'
-#' tarfile = system.file('extdata', tarfile, package='phyloseq')
+#' zipfile = "study_816_split_library_seqs_and_mapping.zip"
+#' zipfile = system.file("extdata", zipfile, package="phyloseq")
+#' tarfile = "study_816_split_library_seqs_and_mapping.tar.gz"
+#' tarfile = system.file("extdata", tarfile, package="phyloseq")
 #' tarps = microbio_me_qiime(tarfile)
 #' zipps = microbio_me_qiime(zipfile) 
 #' identical(tarps, zipps)
@@ -2115,108 +2111,109 @@ build_tax_table = function(taxlist) {
 #' plot_heatmap(tarps)
 #' # A real example 
 #' # # Smokers dataset
-#' # smokezip = 'ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip'
+#' # smokezip = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip"
 #' # smokers1 = microbio_me_qiime(smokezip)
 #' # # Alternatively, just use the study number
 #' # smokers2 = microbio_me_qiime(524)
 #' # identical(smokers1, smokers2)
-microbio_me_qiime = function(zipftp, ext = ".zip", parsef = parse_taxonomy_greengenes, 
-  ...) {
-  # Define naming convention
-  front = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_"
-  if (!is.na(as.integer(zipftp))) {
-    # If study number instead of string, create the ftp URL using ext and convention
-    back = paste0("_split_library_seqs_and_mapping", ext)
-    zipftp = paste0(front, zipftp, back)
-  } else {
-    # Determine file extension from the file path itself
-    ext = substring(zipftp, regexpr("\\.([[:alnum:]]+)$", zipftp)[1])
-    back = paste0("_split_library_seqs_and_mapping", ext)
-  }
-  # Check if zipftp is clearly an externally located file, ftp, http, etc.
-  externprefixes = c("http://", "https://", "ftp://")
-  prefix = regexpr("^([[:alnum:]]+)\\://", zipftp)
-  if (substr(zipftp, 1, attr(prefix, "match.length")[1]) %in% externprefixes) {
-    # If external, then create temporary file and download
-    zipfile = tempfile()
-    download.file(zipftp, zipfile, ...)
-  } else {
-    # Else it is a local zipfile
-    zipfile = zipftp
-  }
-  # Use the apparent file naming convention for microbio.me/qiime as the de facto
-  # guide for this API. In particular, the expectation o fthe study name (already
-  # used above)
-  studyname = gsub("\\_split\\_.+$", "", basename(zipftp))
-  # The output of tempdir() is always the same in the same R session To avoid
-  # conflict with multiple microbio.me/qiime unpacks in the same session, pre-pend
-  # the study name and datestamp
+microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengenes, ...){
+	# Define naming convention
+	front = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_"	
+	if( !is.na(as.integer(zipftp)) ){
+		# If study number instead of string,
+		# create the ftp URL using ext and convention
+		back  = paste0("_split_library_seqs_and_mapping", ext)
+		zipftp = paste0(front, zipftp, back)
+	} else {
+		# Determine file extension from the file path itself
+		ext = substring(zipftp, regexpr("\\.([[:alnum:]]+)$", zipftp)[1])
+		back  = paste0("_split_library_seqs_and_mapping", ext)
+	}
+	# Check if zipftp is clearly an externally located file, ftp, http, etc.
+	externprefixes = c("http://", "https://", "ftp://")
+	prefix = regexpr("^([[:alnum:]]+)\\://", zipftp)
+	if( substr(zipftp, 1, attr(prefix, "match.length")[1]) %in% externprefixes ){
+		# If external, then create temporary file and download
+		zipfile = tempfile()
+		download.file(zipftp, zipfile, ...)
+	} else {
+		# Else it is a local zipfile
+		zipfile = zipftp
+	}
+	# Use the apparent file naming convention for microbio.me/qiime
+	# as the de facto guide for this API. In particular,
+  # the expectation o fthe study name (already used above)
+	studyname = gsub("\\_split\\_.+$", "", basename(zipftp))
+  # The output of tempdir() is always the same in the same R session
+  # To avoid conflict with multiple microbio.me/qiime unpacks 
+  # in the same session, pre-pend the study name and datestamp
   unpackdir = paste0(studyname, "_", gsub("[[:blank:][:punct:]]", "", date()))
   # Add the temp path
-  unpackdir = file.path(tempdir(), unpackdir)
+	unpackdir = file.path(tempdir(), unpackdir)
   # Create the unpack directory if needed (most likely).
-  if (!file.exists(unpackdir)) {
-    dir.create(unpackdir)
-  }
-  # Unpack to the temporary directory using unzip or untar
-  if (ext == ".zip") {
-    unzip(zipfile, exdir = unpackdir, overwrite = TRUE)
-  } else if (ext %in% c("tar.gz", ".tgz", ".gz", ".gzip", ".bzip2", ".xz")) {
-    # untar the tarfile to the new temp dir
-    untar(zipfile, exdir = unpackdir)
-  } else {
-    # The compression format was not recognized. Provide informative error msg.
-    msg = paste("Could not determine the compression type.", "Expected extensions are (mostly):", 
-      ".zip, .tgz, .tar.gz", sep = "\n")
-    stop(msg)
-  }
-  # Define a list of imported objects that might grow if the right file types are
-  # present and imported correctly.
-  imported_objects = vector("list")
-  # Search recursively in the unpacked directory for the .biom file and parse if it
-  # is.  There should be only one. Throw warning if more than one, take the first.
-  biomfile = list.files(unpackdir, "\\.biom", full.names = TRUE, recursive = TRUE)
-  if (length(biomfile) > 1) {
+  if( !file.exists(unpackdir) ){dir.create(unpackdir)}
+	# Unpack to the temporary directory using unzip or untar
+	if( ext == ".zip" ){	
+		unzip(zipfile, exdir=unpackdir, overwrite=TRUE)
+	} else if( ext %in% c("tar.gz", ".tgz", ".gz", ".gzip", ".bzip2", ".xz") ){
+		# untar the tarfile to the new temp dir
+		untar(zipfile, exdir=unpackdir)
+	} else {
+		# The compression format was not recognized. Provide informative error msg.
+    msg = paste("Could not determine the compression type.",
+                "Expected extensions are (mostly):",
+                ".zip, .tgz, .tar.gz", sep="\n")
+		stop(msg)
+	}  
+  # Define a list of imported objects that might grow 
+  # if the right file types are present and imported correctly.
+	imported_objects = vector("list")
+	# Search recursively in the unpacked directory for the .biom file
+  # and parse if it is.
+	# There should be only one. Throw warning if more than one, take the first.
+	biomfile = list.files(unpackdir, "\\.biom", full.names=TRUE, recursive=TRUE)
+  if( length(biomfile) > 1 ){
     warning("more than one .biom file found in compressed archive. Importing first only.")
     biomfile = biomfile[1]
-  } else if (length(biomfile) == 1) {
-    cat("Found biom-format file, now parsing it... \n")
-    biom = import_biom(biomfile, parseFunction = parsef)
-    cat("Done parsing biom... \n")
-    imported_objects = c(imported_objects, list(biom))
-  }
-  # Check if sample_data (qiime mapping) file present, and parse if it is.
-  sdfile = list.files(unpackdir, "\\_mapping\\_file\\.txt", full.names = TRUE, 
-    recursive = TRUE)
-  if (length(sdfile) > 1) {
-    warning("more than one mapping file found in compressed archive. Importing first only.")
-    sdfile = sdfile[1]
-  } else if (length(sdfile) == 1) {
-    cat("Importing Sample Metdadata from mapping file...", fill = TRUE)
-    sample_metadata = import_qiime_sample_data(sdfile)
-    imported_objects = c(imported_objects, list(sample_metadata))
-  }
-  # Check success, notify user, and return.
-  if (length(imported_objects) > 1) {
-    # If there are more than one imported objects, merge them and return
-    cat("Merging the imported objects... \n")
-    physeq = do.call("merge_phyloseq", imported_objects)
-    if (inherits(physeq, "phyloseq")) {
-      cat("Successfully merged, phyloseq-class created. \n Returning... \n")
-    }
-    return(physeq)
-  } else if (length(imported_objects) == 1) {
-    cat("Note: only on object in the zip file was imported. \n")
-    cat("It was ", class(imported_objects[[1]]), " class. \n")
-    return(imported_objects[[1]])
-  } else {
-    cat("PLEASE NOTE: No objects were imported. \n", "You chould check the zip file, \n", 
-      "as well as the naming conventions in the zipfile \n", "to make sure that they match microbio.me/qiime. \n", 
-      "Instead returning NULL... \n")
-    return(NULL)
-  }
+  } else if( length(biomfile) == 1 ){
+		cat("Found biom-format file, now parsing it... \n")
+		biom = import_biom(biomfile, parseFunction=parsef)
+		cat("Done parsing biom... \n")
+		imported_objects = c(imported_objects, list(biom))
+	}
+	# Check if sample_data (qiime mapping) file present, and parse if it is.
+	sdfile = list.files(unpackdir, "\\_mapping\\_file\\.txt", full.names=TRUE, recursive=TRUE)
+	if( length(sdfile) > 1 ){
+	  warning("more than one mapping file found in compressed archive. Importing first only.")
+	  sdfile = sdfile[1]
+	} else if( length(sdfile)==1 ){
+    cat("Importing Sample Metdadata from mapping file...", fill=TRUE)
+		sample_metadata = import_qiime_sample_data(sdfile)
+		imported_objects = c(imported_objects, list(sample_metadata))
+	}
+	# Check success, notify user, and return.
+	if( length(imported_objects) > 1 ){
+		# If there are more than one imported objects, merge them and return
+		cat("Merging the imported objects... \n")
+		physeq = do.call("merge_phyloseq", imported_objects)
+		if( inherits(physeq, "phyloseq") ){
+			cat("Successfully merged, phyloseq-class created. \n Returning... \n")	
+		}
+		return(physeq)
+	} else if( length(imported_objects) == 1 ){
+		cat("Note: only on object in the zip file was imported. \n")
+		cat("It was ", class(imported_objects[[1]]), " class. \n")
+		return(imported_objects[[1]])
+	} else {
+		cat("PLEASE NOTE: No objects were imported. \n", 
+				"You chould check the zip file, \n",
+				"as well as the naming conventions in the zipfile \n",
+				"to make sure that they match microbio.me/qiime. \n",
+				"Instead returning NULL... \n")
+		return(NULL)
+	}
 }
-################################################################################ 
+################################################################################
 #' Import usearch table format (\code{.uc}) to OTU table
 #' 
 #' UPARSE is an algorithm for OTU-clustering implemented within usearch.
@@ -2242,7 +2239,7 @@ microbio_me_qiime = function(zipftp, ext = ".zip", parsef = parse_taxonomy_green
 #' assumed that the 9th and 10th columns of the \code{.uc} table
 #' hold the read-label and OTU ID, respectively;
 #' and it is also assumed that the delimiter between sample-name and read
-#' in the read-name entries is a single \code{'_'}.
+#' in the read-name entries is a single \code{"_"}.
 #' 
 #' @param ucfile (Required). A file location character string 
 #'  or \code{\link{connection}}
@@ -2263,7 +2260,7 @@ microbio_me_qiime = function(zipftp, ext = ".zip", parsef = parse_taxonomy_green
 #'  This should be the delimiter that separates the sample ID
 #'  from the original ID in the demultiplexed read ID of your sequence file.
 #'  The default is plain underscore, which in this \code{\link{regex}} context
-#'  is \code{'_'}.
+#'  is \code{"_"}.
 #'  
 #' @param verbose (Optional). A \code{\link{logical}}.
 #'  Default is \code{TRUE}. 
@@ -2280,34 +2277,36 @@ microbio_me_qiime = function(zipftp, ext = ".zip", parsef = parse_taxonomy_green
 #' \code{\link{import_qiime}}
 #' 
 #' @examples
-#' usearchfile <- system.file('extdata', 'usearch.uc', package='phyloseq')
+#' usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
 #' import_usearch_uc(usearchfile)
-import_usearch_uc <- function(ucfile, colRead = 9, colOTU = 10, readDelimiter = "_", 
-  verbose = TRUE) {
-  if (verbose) {
-    cat("Reading `ucfile` into memory and parsing into table \n")
-  }
-  # fread is one of the fastest and most-efficient importers for R.  It creates a
-  # data.table object, suitable for large size objects
-  x = fread(ucfile, sep = "\t", header = FALSE, na.strings = c("*", "*", "NA", 
-    "N/A", ""), select = c(colRead, colOTU), colClasses = "character", showProgress = TRUE)
+import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
+                               readDelimiter="_", verbose=TRUE){
+  if(verbose){cat("Reading `ucfile` into memory and parsing into table \n")}
+  # fread is one of the fastest and most-efficient importers for R.
+  # It creates a data.table object, suitable for large size objects
+  x = fread(ucfile, sep="\t", header=FALSE, na.strings=c("*", '*', "NA","N/A",""),
+            select=c(colRead, colOTU), colClasses="character", showProgress=TRUE)
   setnames(x, c("read", "OTU"))
   NrawEntries = nrow(x)
-  if (verbose) {
+  if(verbose){
     cat("Initially read", NrawEntries, "entries. \n")
     cat("... Now removing unassigned OTUs (* or NA)... \n")
   }
   x = x[!is.na(OTU), ]
-  if (verbose) {
+  if(verbose){
     cat("Removed", NrawEntries - nrow(x), "entries that had no OTU assignment. \n")
     cat("A total of", nrow(x), "will be assigned to the OTU table.\n")
   }
   # Process sequence label to be sample label only
-  x[, `:=`(sample, gsub(paste0(readDelimiter, ".+$"), "", read))]
+  x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)] 
   # Convert long (melted) table into a sample-by-OTU OTU table, and return
   OTU <- as(table(x$sample, x$OTU), "matrix")
-  # system.time({setkey(x, OTU, sample) OTU2 <- dcast.data.table(x, sample ~ OTU,
-  # fun.aggregate=length, fill=0L) })
-  return(otu_table(OTU, taxa_are_rows = FALSE))
+  #   system.time({setkey(x, OTU, sample)
+  #              OTU2 <- dcast.data.table(x, sample ~ OTU, fun.aggregate=length, fill=0L)
+  #              })
+  return(otu_table(OTU, taxa_are_rows=FALSE))
 }
-################################################################################  
+################################################################################
+################################################################################
+################################################################################
+################################################################################

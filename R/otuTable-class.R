@@ -1,4 +1,4 @@
-################################################################################ 
+################################################################################
 #' Build or access the otu_table.
 #'
 #' This is the suggested method for both constructing and accessing
@@ -34,58 +34,56 @@
 #' @examples #
 #' # data(GlobalPatterns)
 #' # otu_table(GlobalPatterns)
-setGeneric("otu_table", function(object, taxa_are_rows, errorIfNULL = TRUE) {
-  standardGeneric("otu_table")
+setGeneric("otu_table", function(object, taxa_are_rows, errorIfNULL=TRUE){
+	standardGeneric("otu_table")	
 })
 # Access the otu_table slot.
 #' @aliases otu_table,phyloseq-method
 #' @rdname otu_table-methods
-setMethod("otu_table", "phyloseq", function(object, errorIfNULL = TRUE) {
-  access(object, "otu_table", errorIfNULL)
+setMethod("otu_table", "phyloseq", function(object, errorIfNULL=TRUE){
+	access(object, "otu_table", errorIfNULL) 
 })
 # return the otu_table as-is.
 #' @aliases otu_table,otu_table-method
 #' @rdname otu_table-methods
-setMethod("otu_table", "otu_table", function(object, errorIfNULL = TRUE) {
-  return(object)
-})
+setMethod("otu_table", "otu_table", function(object, errorIfNULL=TRUE){ return(object) })
 # Instantiate an otu_table from a raw abundance matrix.
 #' @aliases otu_table,matrix-method
 #' @rdname otu_table-methods
-setMethod("otu_table", "matrix", function(object, taxa_are_rows) {
-  # instantiate first to check validity
-  otutab <- new("otu_table", object, taxa_are_rows = taxa_are_rows)
-  # Want dummy species/sample index names if missing
-  if (taxa_are_rows) {
-    if (is.null(rownames(otutab))) {
-      rownames(otutab) <- paste("sp", 1:nrow(otutab), sep = "")
-    }
-    if (is.null(colnames(otutab))) {
-      colnames(otutab) <- paste("sa", 1:ncol(otutab), sep = "")
-    }
-  } else {
-    if (is.null(rownames(otutab))) {
-      rownames(otutab) <- paste("sa", 1:nrow(otutab), sep = "")
-    }
-    if (is.null(colnames(otutab))) {
-      colnames(otutab) <- paste("sp", 1:ncol(otutab), sep = "")
-    }
-  }
-  return(otutab)
+setMethod("otu_table", "matrix", function(object, taxa_are_rows){
+	# instantiate first to check validity
+	otutab <- new("otu_table", object, taxa_are_rows=taxa_are_rows)
+	# Want dummy species/sample index names if missing
+	if(taxa_are_rows){
+		if(is.null(rownames(otutab))){
+			rownames(otutab) <- paste("sp", 1:nrow(otutab), sep="")
+		}
+		if(is.null(colnames(otutab))){
+			colnames(otutab) <- paste("sa", 1:ncol(otutab), sep="")
+		}
+	} else {
+		if(is.null(rownames(otutab))){
+			rownames(otutab) <- paste("sa",1:nrow(otutab),sep="")
+		}
+		if(is.null(colnames(otutab))){
+			colnames(otutab) <- paste("sp",1:ncol(otutab),sep="")
+		}
+	}
+	return(otutab)
 })
 # # # Convert to matrix, then dispatch.
 #' @aliases otu_table,data.frame-method
 #' @rdname otu_table-methods
-setMethod("otu_table", "data.frame", function(object, taxa_are_rows) {
-  otu_table(as(object, "matrix"), taxa_are_rows)
+setMethod("otu_table", "data.frame", function(object, taxa_are_rows){
+	otu_table(as(object, "matrix"), taxa_are_rows)
 })
 # Any less-specific class, not inherited by those above.
 #' @aliases otu_table,ANY-method
 #' @rdname otu_table-methods
-setMethod("otu_table", "ANY", function(object, errorIfNULL = TRUE) {
-  access(object, "otu_table", errorIfNULL)
+setMethod("otu_table", "ANY", function(object, errorIfNULL=TRUE){
+  access(object, "otu_table", errorIfNULL) 
 })
-################################################################################ 
+################################################################################
 #' Returns the total number of individuals observed from each species/taxa/OTU.
 #' 
 #' A convenience function equivalent to rowSums or colSums, but where
@@ -106,15 +104,15 @@ setMethod("otu_table", "ANY", function(object, errorIfNULL = TRUE) {
 #' taxa_sums(enterotype)
 #' data(esophagus)
 #' taxa_sums(esophagus)
-taxa_sums <- function(x) {
-  x <- otu_table(x)
-  if (taxa_are_rows(x)) {
-    rowSums(x)
-  } else {
-    colSums(x)
-  }
+taxa_sums <- function(x){
+	x <- otu_table(x)
+	if( taxa_are_rows(x) ){
+		rowSums(x)
+	} else {
+		colSums(x)
+	}
 }
-################################################################################ 
+################################################################################
 #' Returns the total number of individuals observed from each sample.
 #' 
 #' A convenience function equivalent to rowSums or colSums, but where
@@ -136,12 +134,12 @@ taxa_sums <- function(x) {
 #' sample_sums(enterotype)
 #' data(esophagus)
 #' sample_sums(esophagus)
-sample_sums <- function(x) {
-  x <- otu_table(x)
-  if (taxa_are_rows(x)) {
-    colSums(x)
-  } else {
-    rowSums(x)
-  }
+sample_sums <- function(x){
+	x <- otu_table(x)
+	if( taxa_are_rows(x) ){
+		colSums(x)
+	} else {
+		rowSums(x)
+	}
 }
-################################################################################  
+################################################################################

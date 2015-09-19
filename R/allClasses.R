@@ -1,4 +1,4 @@
-################################################################################ 
+################################################################################
 #' The S4 class for storing taxa-abundance information.
 #'
 #' Because orientation of these tables can vary by method, the orientation is
@@ -10,7 +10,7 @@
 #'
 #' \describe{
 #'    \item{taxa_are_rows}{
-#'\t\tA single logical specifying the orientation of the abundance table.
+#'		A single logical specifying the orientation of the abundance table.
 #'    }
 #'
 #'    \item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
@@ -18,8 +18,8 @@
 #' @name otu_table-class
 #' @rdname otu_table-class
 #' @exportClass otu_table
-setClass("otu_table", representation(taxa_are_rows = "logical"), contains = "matrix")
-################################################################################ 
+setClass("otu_table", representation(taxa_are_rows="logical"), contains = "matrix")
+################################################################################
 #' The S4 for storing sample variables.
 #'
 #' Row indices represent samples, while column indices represent experimental
@@ -30,7 +30,7 @@ setClass("otu_table", representation(taxa_are_rows = "logical"), contains = "mat
 #'    \item{.Data}{data-frame data, inherited from the data.frame class.}
 #' 
 #'    \item{row.names}{
-#'\t     Also inherited from the data.frame class;
+#'	     Also inherited from the data.frame class;
 #'       it should contain the sample names.
 #'    }
 #' 
@@ -41,8 +41,8 @@ setClass("otu_table", representation(taxa_are_rows = "logical"), contains = "mat
 #' @name sample_data-class
 #' @rdname sample_data-class
 #' @exportClass sample_data
-setClass("sample_data", contains = "data.frame")
-################################################################################ 
+setClass("sample_data", contains="data.frame")
+################################################################################
 #' An S4 class that holds taxonomic classification data as a character
 #' matrix.
 #'
@@ -56,7 +56,8 @@ setClass("sample_data", contains = "data.frame")
 #' @rdname taxonomyTable-class
 #' @exportClass taxonomyTable
 setClass("taxonomyTable", contains = "matrix")
-# metaMDS
+#metaMDS
+################################################################################
 #' S3 class placeholder definition (list) for metaMDS
 #' 
 #' The ape package does export a version of its \code{\link[vegan]{metaMDS}}-class,
@@ -75,7 +76,10 @@ setClass("taxonomyTable", contains = "matrix")
 #' 
 #' @keywords internal
 metaMDS <- structure(list(), class = "metaMDS")
-### Remove if this ever works @importClassesFrom vegan metaMDS
+###
+# Remove if this ever works
+# @importClassesFrom vegan metaMDS
+################################################################################
 #' S3 class placeholder definition (list) for decorana
 #' 
 #' The ape package does export a version of its \code{\link[vegan]{decorana}}-class,
@@ -94,7 +98,10 @@ metaMDS <- structure(list(), class = "metaMDS")
 #' 
 #' @keywords internal
 decorana <- structure(list(), class = "decorana")
-### Remove if this ever works @importClassesFrom vegan decorana
+###
+# Remove if this ever works
+# @importClassesFrom vegan decorana
+################################################################################
 #' S3 class placeholder definition (list) for dpcoa
 #' 
 #' The ade4 package does not export a version of its \code{\link[ade4]{dpcoa}}-class,
@@ -121,8 +128,13 @@ decorana <- structure(list(), class = "decorana")
 #' 
 #' @keywords internal
 dpcoa <- structure(list(), class = "dpcoa")
-################################################################################ # @keywords internal print.dpcoa <- ade4:::print.dpcoa If this ever works
-################################################################################ @importClassesFrom ade4 dpcoa
+################################################################################
+## # @keywords internal
+## print.dpcoa <- ade4:::print.dpcoa
+################################################################################
+# If this ever works
+# @importClassesFrom ade4 dpcoa
+################################################################################
 #' S3 class for ape-calculated MDS results
 #' 
 #' Nothing to import, because ape doesn't (yet) export this S3 class.
@@ -134,7 +146,9 @@ dpcoa <- structure(list(), class = "dpcoa")
 #' 
 #' @keywords internal
 pcoa <- structure(list(), class = "pcoa")
-# @importMethodsFrom ape print phyloseq-specific definition of 'phylo' class,
+# @importMethodsFrom ape print
+# phyloseq-specific definition of "phylo" class,
+################################################################################
 #' S3 class placeholder definition (list) for phylogenetic trees.
 #' 
 #' The ape package does not export a version of its \code{\link[ape]{phylo}}-class,
@@ -162,7 +176,10 @@ pcoa <- structure(list(), class = "pcoa")
 #' 
 #' @keywords internal
 phylo <- structure(list(), class = "phylo")
-################################################################################ If this ever works @importClassesFrom ape phylo
+################################################################################
+# If this ever works
+# @importClassesFrom ape phylo
+################################################################################
 #' An S4 placeholder of the main phylogenetic tree class from the ape package.
 #'
 #' See the \code{\link[ape]{ape}} package for details about this type of
@@ -175,7 +192,7 @@ phylo <- structure(list(), class = "phylo")
 #' @rdname phylo-class
 #' @exportClass phylo
 setOldClass("phylo")
-################################################################################ 
+################################################################################
 #' An S4 placeholder for the \code{\link[stats]{dist}} class.
 #'
 #' See \code{\link[stats]{dist}} for details
@@ -187,10 +204,12 @@ setOldClass("phylo")
 #' @rdname dist-class
 #' @exportClass dist
 setOldClass("dist")
-################################################################################ Use setClassUnion to define the unholy NULL-data union as a virtual class.
-################################################################################ This is a way of dealing with the expected scenarios in which one or more of
-################################################################################ the component data classes is not available, in which case NULL will be used
-################################################################################ instead.
+################################################################################
+# Use setClassUnion to define the unholy NULL-data union as a virtual class.
+# This is a way of dealing with the expected scenarios in which one or more of
+# the component data classes is not available, in which case NULL will be used
+# instead.
+################################################################################
 #' @keywords internal
 setClassUnion("otu_tableOrNULL", c("otu_table", "NULL"))
 #' @keywords internal
@@ -215,15 +234,15 @@ setClassUnion("phyloOrNULL", c("phylo", "NULL"))
 #' @importClassesFrom Biostrings XStringSet
 #' @keywords internal
 setClassUnion("XStringSetOrNULL", c("XStringSet", "NULL"))
-################################################################################ 
+################################################################################
 #' The main experiment-level class for phyloseq data
 #'
 #' Contains all currently-supported component data classes: 
 #' \code{\link{otu_table-class}},
 #' \code{\link{sample_data-class}},
-#' \code{\link{taxonomyTable-class}} (\code{'tax_table'} slot),
-#' \code{\link[ape]{phylo}}-class (\code{'phy_tree'} slot),
-#' and the \code{\link[Biostrings]{XStringSet-class}} (\code{'refseq'} slot).
+#' \code{\link{taxonomyTable-class}} (\code{"tax_table"} slot),
+#' \code{\link[ape]{phylo}}-class (\code{"phy_tree"} slot),
+#' and the \code{\link[Biostrings]{XStringSet-class}} (\code{"refseq"} slot).
 #' There are several advantages
 #' to storing your phylogenetic sequencing experiment as an instance of the
 #' phyloseq class, not the least of which is that it is easy to return to the
@@ -264,8 +283,13 @@ setClassUnion("XStringSetOrNULL", c("XStringSet", "NULL"))
 #' @name phyloseq-class
 #' @rdname phyloseq-class
 #' @exportClass phyloseq
-setClass(Class = "phyloseq", representation = representation(otu_table = "otu_tableOrNULL", 
-  tax_table = "taxonomyTableOrNULL", sam_data = "sample_dataOrNULL", phy_tree = "phyloOrNULL", 
-  refseq = "XStringSetOrNULL"), prototype = prototype(otu_table = NULL, tax_table = NULL, 
-  sam_data = NULL, phy_tree = NULL, refseq = NULL))
-################################################################################  
+setClass(Class="phyloseq", 
+	representation=representation(
+		otu_table="otu_tableOrNULL",
+		tax_table="taxonomyTableOrNULL",
+		sam_data="sample_dataOrNULL",
+		phy_tree="phyloOrNULL",
+		refseq = "XStringSetOrNULL"),
+	prototype=prototype(otu_table=NULL, tax_table=NULL, sam_data=NULL, phy_tree=NULL, refseq=NULL)
+)
+################################################################################

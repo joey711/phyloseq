@@ -1,4 +1,4 @@
-################################################################################ 
+################################################################################
 #' Build or access sample_data.
 #'
 #' This is the suggested method for both constructing and accessing a table
@@ -40,29 +40,29 @@
 #' @examples #
 #' data(soilrep)
 #' head(sample_data(soilrep))
-setGeneric("sample_data", function(object, errorIfNULL = TRUE) standardGeneric("sample_data"))
+setGeneric("sample_data", function(object, errorIfNULL=TRUE) standardGeneric("sample_data"))
 #' @rdname sample_data-methods
 #' @aliases sample_data,ANY-method
-setMethod("sample_data", "ANY", function(object, errorIfNULL = TRUE) {
-  access(object, "sam_data", errorIfNULL)
+setMethod("sample_data", "ANY", function(object, errorIfNULL=TRUE){
+	access(object, "sam_data", errorIfNULL)
 })
 # constructor; for creating sample_data from a data.frame
 #' @rdname sample_data-methods
 #' @aliases sample_data,data.frame-method
-setMethod("sample_data", "data.frame", function(object) {
-  # Make sure there are no phantom levels in categorical variables
-  object <- reconcile_categories(object)
-  
-  # instantiate first to check validity
-  SM <- new("sample_data", object)
-  
-  # Want dummy samples index names if missing
-  if (all(rownames(SM) == as.character(1:nrow(SM)))) {
-    rownames(SM) <- paste("sa", 1:nrow(SM), sep = "")
-  }
-  return(SM)
+setMethod("sample_data", "data.frame", function(object){
+	# Make sure there are no phantom levels in categorical variables
+	object <- reconcile_categories(object)
+
+	# instantiate first to check validity
+	SM <- new("sample_data", object)
+		
+	# Want dummy samples index names if missing
+	if( all(rownames(SM) == as.character(1:nrow(SM))) ){
+		rownames(SM) <- paste("sa", 1:nrow(SM), sep="")
+	}	
+	return(SM)
 })
-################################################################################ 
+################################################################################
 #' Cleans absent levels in sample_data/data.frame.
 #'
 #' This is used internally by the builder method, \code{\link{sample_data}}, to
@@ -85,22 +85,22 @@ setMethod("sample_data", "data.frame", function(object) {
 #' # # # data(GlobalPatterns)
 #' # # # SM <- sample_data(GlobalPatterns)
 #' # # # DF <- data.frame(SM)
-#' # # # DF <- data.frame(DF, col1=1:nrow(DF), col2=paste(1:nrow(DF), 't', sep=''))
+#' # # # DF <- data.frame(DF, col1=1:nrow(DF), col2=paste(1:nrow(DF), "t", sep=""))
 #' # # # DF <- reconcile_categories(DF)
 #' # # # SM <- sample_data(reconcile_categories(SM))
 #' # # # sapply(DF, class)
 #' # # # sapply(SM, class)
-reconcile_categories <- function(DFSM) {
-  DF = as(DFSM, "data.frame")
-  # variable_classes <- sapply(DF, class) factor_cols <-
-  # names(variable_classes[variable_classes %in% c('factor', 'character')])
-  factor_cols = which(sapply(DF, inherits, what = "factor"))
-  for (j in factor_cols) {
-    DF[, j] <- factor(as(DF[, j], "character"))
-  }
-  return(DF)
+reconcile_categories <- function(DFSM){
+	DF = as(DFSM, "data.frame")
+	#variable_classes <- sapply(DF, class)
+	#factor_cols <- names(variable_classes[variable_classes %in% c("factor", "character")])
+	factor_cols = which(sapply(DF, inherits, what="factor"))
+	for( j in factor_cols){
+		DF[, j] <- factor( as(DF[, j], "character") )
+	}
+	return(DF)
 }
-################################################################################ 
+################################################################################
 #' Subset samples by sample_data expression
 #'
 #' This is a convenience wrapper around the \code{\link{subset}} function.
@@ -136,20 +136,20 @@ reconcile_categories <- function(DFSM) {
 #'
 #' @examples
 #'  # data(GlobalPatterns)
-#'  # subset_samples(GlobalPatterns, SampleType=='Ocean')
-subset_samples <- function(physeq, ...) {
-  if (is.null(sample_data(physeq))) {
-    cat("Nothing subset. No sample_data in physeq.\n")
-    return(physeq)
-  } else {
-    oldDF <- as(sample_data(physeq), "data.frame")
-    newDF <- subset(oldDF, ...)
-    if (class(physeq) == "sample_data") {
-      return(sample_data(newDF))
-    } else {
-      sample_data(physeq) <- sample_data(newDF)
-      return(physeq)
-    }
-  }
+#'  # subset_samples(GlobalPatterns, SampleType=="Ocean")
+subset_samples <- function(physeq, ...){
+	if( is.null(sample_data(physeq)) ){ 
+		cat("Nothing subset. No sample_data in physeq.\n")
+		return(physeq)
+	} else {
+		oldDF <- as(sample_data(physeq), "data.frame")
+		newDF <- subset(oldDF, ...)
+		if( class(physeq) == "sample_data" ){
+			return(sample_data(newDF))
+		} else {
+			sample_data(physeq) <- sample_data(newDF)
+			return(physeq)
+		}
+	}
 }
-################################################################################  
+################################################################################
