@@ -96,7 +96,8 @@ reconcile_categories <- function(DFSM){
 	#factor_cols <- names(variable_classes[variable_classes %in% c("factor", "character")])
 	factor_cols = which(sapply(DF, inherits, what="factor"))
 	for( j in factor_cols){
-		DF[, j] <- factor( as(DF[, j], "character") )
+		l = levels(DF[, j])
+		DF[, j] <- factor(DF[, j], l[l %in% DF[, j]])
 	}
 	return(DF)
 }
