@@ -22,7 +22,6 @@ Imports:
     DESeq2 (>= 1.4.0),
     foreach (>= 1.4.2),
     ggplot2 (>= 1.0.0),
-    GUniFrac (>= 1.0),
     igraph (>= 0.7.0),
     methods (>= 3.1.0),
     multtest (>= 2.16.0),
@@ -34,8 +33,9 @@ Depends:
     R (>= 3.1.0)
 Suggests:
     genefilter (>= 1.42.0),
-    testthat (>= 0.8),
-    knitr (>= 1.3)
+    GUniFrac (>= 1.0),
+    knitr (>= 1.3),
+    testthat (>= 0.8)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.1)
 biocViews: Sequencing, Microbiome, Metagenomics,
