@@ -28,13 +28,15 @@ Imports:
     plyr (>= 1.8),
     reshape2 (>= 1.2.2),
     scales (>= 0.2.3),
-    vegan (>= 2.0.10)
+    vegan (>= 2.0.10),
+    Biobase
 Depends:
     R (>= 3.1.0)
 Suggests:
     genefilter (>= 1.42.0),
     testthat (>= 0.8),
-    knitr (>= 1.3)
+    knitr (>= 1.3),
+    metagenomeSeq (>= 1.10.0)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.1)
 biocViews: Sequencing, Microbiome, Metagenomics,
@@ -68,3 +70,4 @@ Collate:
     'deprecated_functions.R'
     'extend_DESeq2.R'
     'phylo-class.R'
+    'extend_metagenomeSeq.R'
