@@ -184,6 +184,7 @@ treefilename = system.file("extdata", "biom-tree.phy",  package="phyloseq")
 refseqfilename = system.file("extdata", "biom-refseq.fasta",  package="phyloseq")
 
 test_that("Importing biom files yield phyloseq objects", {
+	library(biom)
 	rdbiom = read_biom(rich_sparse_biom)
 	rsbiom = read_biom(rich_sparse_biom)
 
@@ -211,7 +212,6 @@ test_that("Importing biom files yield phyloseq objects", {
 })
 
 test_that("The different types of biom files yield phyloseq objects",{
-	library(biom)
 	rich_dense = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	rich_sparse = import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	min_dense = import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
