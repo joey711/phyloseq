@@ -19,7 +19,6 @@ Imports:
     Biostrings (>= 2.28.0),
     cluster (>= 1.14.4),
     data.table (>= 1.9.4),
-    DESeq2 (>= 1.4.0),
     foreach (>= 1.4.2),
     ggplot2 (>= 1.0.0),
     igraph (>= 0.7.0),
@@ -33,6 +32,7 @@ Imports:
 Depends:
     R (>= 3.1.0)
 Suggests:
+    DESeq2 (>= 1.4.0),
     genefilter (>= 1.42.0),
     testthat (>= 0.8),
     knitr (>= 1.3),
