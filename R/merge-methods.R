@@ -446,7 +446,12 @@ setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L){
 	# # # Taxonomy is trivial in ranks after disagreement among merged taxa
 	# # # Make those values NA_character_
 	taxmerge  <- as(x, "matrix")[eqtaxa, ]
-	bad_ranks <- apply(taxmerge, 2, function(i){ length(unique(i)) != 1 })
+  
+	bad_ranks <- NULL
+  #single column tax-tables
+  if ( dim(as.matrix(taxmerge))[[2]] > 1){
+    bad_ranks <- apply(taxmerge, 2, function(i){ length(unique(i)) != 1 })
+  }
 	# Test if all taxonomies agree. If so, do nothing. Just continue to pruning.
 	if( any(bad_ranks) ){
 		# The col indices of the bad ranks
