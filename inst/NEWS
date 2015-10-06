@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.13.6
+-------------------------
+
+BUG FIXES
+
+  - droplevels suggestion for sample-data https://github.com/joey711/phyloseq/pull/476
+
+  - DESeq2 migrated to suggests https://github.com/joey711/phyloseq/pull/533
+  
+  - `extend_metagenomeSeq` functionality https://github.com/joey711/phyloseq/pull/533
+  
+  - bugs related to previous version distance uptick, mostly in tests and vignette
+
 CHANGES IN VERSION 1.13.5
 -------------------------
 

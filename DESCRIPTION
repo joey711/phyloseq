@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.13.5
-Date: 2015-09-17
+Version: 1.13.6
+Date: 2015-10-06
 Title: Handling and analysis of high-throughput microbiome
     census data
 Description: phyloseq provides a set of classes and tools
@@ -32,11 +32,11 @@ Imports:
 Depends:
     R (>= 3.1.0)
 Suggests:
-    DESeq2 (>= 1.4.0),
-    genefilter (>= 1.42.0),
-    testthat (>= 0.8),
-    knitr (>= 1.3),
-    metagenomeSeq (>= 1.10.0)
+    DESeq2 (>= 1.8),
+    genefilter (>= 1.50),
+    testthat (>= 0.10),
+    knitr (>= 1.10),
+    metagenomeSeq (>= 1.10)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.1)
 biocViews: Sequencing, Microbiome, Metagenomics,

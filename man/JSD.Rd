@@ -4,7 +4,7 @@
 \alias{JSD}
 \title{Calculate the Jensen-Shannon Divergence (distance)}
 \usage{
-JSD(physeq, parallel=FALSE)
+JSD(physeq)
 }
 \arguments{
 \item{physeq}{(Required). \code{\link{phyloseq-class}}.

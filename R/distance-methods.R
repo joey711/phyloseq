@@ -19,6 +19,8 @@
 #'  \code{\link[vegan]{designdist}}, or
 #'  \code{\link{dist}}.
 #' 
+#' @usage distance(physeq, method, type="samples", ...)
+#' 
 #' @param physeq (Required).  A \code{\link{phyloseq-class}} or
 #'  an \code{\link{otu_table-class}} object. The latter is only appropriate
 #'  for methods that do not require any additional data (one-table). 
@@ -82,17 +84,18 @@
 #' distance(esophagus, "g") # designdist method option "g"
 #' distance(esophagus, "minkowski") # invokes a method from the base dist() function.
 #' distance(esophagus, "(A+B-2*J)/(A+B)") # designdist custom distance
-#' distance("help")
-#' distance("list")
+#' distanceMethodList
 #' help("distance")
 setGeneric("distance", function(physeq, method, ...){
   standardGeneric("distance")
 })
+#' @rdname distance
 setMethod("distance", c("phyloseq", "ANY"), function(physeq, method){
   stop("You must specify a `method` argument as a character string.
        \nIt was missing/NA or not a character string.
        \nSee `?distanceMethodList`")
 })
+#' @rdname distance
 setMethod("distance", c("otu_table", "character"), function(physeq, method, type="samples", ...){
   OTU = physeq
   if( method == "jsd" ){
@@ -130,6 +133,7 @@ setMethod("distance", c("otu_table", "character"), function(physeq, method, type
   fun.args <- c(list(OTU, method=method), extrargs)	
   return( do.call(dfun, fun.args) )
 })
+#' @rdname distance
 setMethod("distance", c("phyloseq", "character"), function(physeq, method, type="samples", ...){
   # Only one method at a time.
   if(length(method) > 1){
@@ -270,8 +274,6 @@ phyloseq_JSD_pair <- function(x, y){
 #'
 #' One of the motivations for providing JSD in phyloseq was its recent use in 
 #' the analysis of the \code{\link{enterotype}} dataset. 
-#'
-#' @usage JSD(physeq, parallel=FALSE)
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}. 
 #'  The phyloseq data on which to compute the 

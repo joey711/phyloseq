@@ -4,7 +4,8 @@
 #' No testing is performed by this function. The phyloseq data is converted
 #' to the relevant \code{\link[metagenomeSeq]{MRexperiment-class}} object, which can then be
 #' tested in the zero-inflated mixture model framework
-#' of the \code{\link[metagenomeSeq]{fitFeatureModel}} or \code{\link[metagenomeSeq]{fitZig}} functions in the metagenomeSeq package.
+#' (e.g. \code{\link[metagenomeSeq]{fitZig}}) 
+#' in the metagenomeSeq package.
 #' See the
 #' \href{http://joey711.github.io/phyloseq-extensions}{phyloseq-extensions}
 #' tutorials for more details.
@@ -21,7 +22,6 @@
 #'
 #'  \code{\link[metagenomeSeq]{fitTimeSeries}}
 #'  \code{\link[metagenomeSeq]{fitLogNormal}}
-#'  \code{\link[metagenomeSeq]{fitFeatureModel}}
 #'  \code{\link[metagenomeSeq]{fitZig}}
 #'  \code{\link[metagenomeSeq]{MRtable}}
 #'  \code{\link[metagenomeSeq]{MRfulltable}}

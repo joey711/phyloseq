@@ -7,7 +7,7 @@
 #' supported method options.
 #'
 #' @param physeq (Required). Phylogenetic sequencing data
-#'  (\code{\link{phyloseq-class}}). The data on which you want to perform the
+#'  (\code{\link{phyloseq-class}}). The data on which you want to perform
 #'  the ordination. In general, these methods will be based in some fashion on
 #'  the abundance table ultimately stored as a contingency matrix 
 #'  (\code{\link{otu_table-class}}). If you're able to import data into 
@@ -75,9 +75,6 @@
 #'
 #'  Any supported \code{\link{distance}} methods 
 #'  are supported arguments to \code{distance} here. 
-#'  Try \code{distance("list")} for a explicitly supported distance method
-#'  abbreviations. User-specified custom distance equations should also work,
-#'  e.g. \code{"(A+B-2*J)/(A+B)"}. 
 #'  See \code{\link{distance}} for more details, examples.
 #' 
 #' @param formula (Optional). A model \code{\link{formula}}.
@@ -623,14 +620,14 @@ function(physeq, formula, distance, ...){
             "Attempting to use first element only.")
   }
   distance <- distance[1]
-  if(!distance %in% unlist(distance("list"))){
+  if(!distance %in% unlist(distanceMethodList)){
     # distance must be among the supported distance options
     # (which is a superset of vegdist).
     stop("The distance method you specified is not supported by phyloseq")
   }
   # Convert formula to character vector, compute on language.
   formchar = as.character(formula)
-  if(distance %in% distance("list")$vegdist){
+  if(distance %in% distanceMethodList$vegdist){
     # If it is among the vegdist distances, pass it along to vegan::capscale
     OTU = veganifyOTU(physeq)
     newFormula = as.formula(paste0("OTU ~ ", formchar[length(formchar)]))

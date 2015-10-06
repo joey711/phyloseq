@@ -8,7 +8,7 @@ ordinate(physeq, method = "DCA", distance = "bray", formula = NULL, ...)
 }
 \arguments{
 \item{physeq}{(Required). Phylogenetic sequencing data
- (\code{\link{phyloseq-class}}). The data on which you want to perform the
+ (\code{\link{phyloseq-class}}). The data on which you want to perform
  the ordination. In general, these methods will be based in some fashion on
  the abundance table ultimately stored as a contingency matrix
  (\code{\link{otu_table-class}}). If you're able to import data into
@@ -76,9 +76,6 @@ ordinate(physeq, method = "DCA", distance = "bray", formula = NULL, ...)
 
  Any supported \code{\link{distance}} methods
  are supported arguments to \code{distance} here.
- Try \code{distance("list")} for a explicitly supported distance method
- abbreviations. User-specified custom distance equations should also work,
- e.g. \code{"(A+B-2*J)/(A+B)"}.
  See \code{\link{distance}} for more details, examples.}
 
 \item{formula}{(Optional). A model \code{\link{formula}}.
