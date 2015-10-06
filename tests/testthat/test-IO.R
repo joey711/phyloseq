@@ -183,7 +183,35 @@ min_sparse_biom  <- system.file("extdata", "min_sparse_otu_table.biom",  package
 treefilename = system.file("extdata", "biom-tree.phy",  package="phyloseq")
 refseqfilename = system.file("extdata", "biom-refseq.fasta",  package="phyloseq")
 
-test_that("The different types of biom files yield phyloseq objects", {
+test_that("Importing biom files yield phyloseq objects", {
+	library(biom)
+	rdbiom = read_biom(rich_sparse_biom)
+	rsbiom = read_biom(rich_sparse_biom)
+
+	rich_dense = import_biom(rdbiom)
+	rich_sparse = import_biom(rsbiom)
+
+	expect_that(rich_dense,  is_a("phyloseq"))
+	expect_that(rich_sparse, is_a("phyloseq"))
+	
+	expect_that(ntaxa(rich_dense), equals(5L))
+	expect_that(ntaxa(rich_sparse), equals(5L))
+
+	# # Component classes
+	# sample_data
+	expect_that(access(rich_dense,  "sam_data"), is_a("sample_data"))
+	expect_that(access(rich_sparse, "sam_data"), is_a("sample_data"))
+
+	# taxonomyTable
+	expect_that(access(rich_dense,  "tax_table"), is_a("taxonomyTable"))
+	expect_that(access(rich_sparse, "tax_table"), is_a("taxonomyTable"))
+
+	# otu_table
+	expect_that(access(rich_dense,  "otu_table"), is_a("otu_table"))
+	expect_that(access(rich_sparse, "otu_table"), is_a("otu_table"))
+})
+
+test_that("The different types of biom files yield phyloseq objects",{
 	rich_dense = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	rich_sparse = import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	min_dense = import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
@@ -253,7 +281,7 @@ test_that("The different types of biom files yield phyloseq objects", {
 	
 	# Compare values in the taxonomyTable
 	expect_that(access(rich_dense, "tax_table"), is_equivalent_to(access(rich_sparse, "tax_table")))
-	
+
 })
 
 test_that("the import_biom and import(\"biom\", ) syntax give same result", {

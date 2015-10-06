@@ -1,3 +1,37 @@
+CHANGES IN VERSION 1.13.6
+-------------------------
+
+BUG FIXES
+
+  - droplevels suggestion for sample-data https://github.com/joey711/phyloseq/pull/476
+
+  - DESeq2 migrated to suggests https://github.com/joey711/phyloseq/pull/533
+  
+  - `extend_metagenomeSeq` functionality https://github.com/joey711/phyloseq/pull/533
+  
+  - bugs related to previous version distance uptick, mostly in tests and vignette
+
+CHANGES IN VERSION 1.13.5
+-------------------------
+
+USER-VISIBLE CHANGES
+
+  - Help avoid cryptic errors due to name collision of `distance` with external loaded packages by making `distance` a formal S4 method in phyloseq.
+  - Improve documentation of `distance` function and the downstream procedures on which it depends
+  - Migrate the list of supported methods to a documented, exported list object, called `distanceMethodList`.
+  - Improved distance unit tests with detailed checks that dispatch works and gives exactly expected distance matrices for all methods defined in distanceMethodList.
+  - Improved JSD doc, performance, code, deprecated unnecessary `parallel` argument in JSD
+
+
+CHANGES IN VERSION 1.13.4
+-------------------------
+
+BUG FIXES
+
+  - `psmelt` bug if user has also loaded the original "reshape" package, due to name collision on the function called `melt`. `psmelt` now explicitly calls `reshape2::melt` to avoid confusion. https://github.com/joey711/phyloseq/pull/489
+  
+  - Fix following note... There are ::: calls to the package's namespace in its code. A package almost never needs to use ::: for its own objects: ‘JSD.pair’
+
 CHANGES IN VERSION 1.11.3
 -------------------------
 

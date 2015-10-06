@@ -183,7 +183,8 @@ phylo <- structure(list(), class = "phylo")
 #' An S4 placeholder of the main phylogenetic tree class from the ape package.
 #'
 #' See the \code{\link[ape]{ape}} package for details about this type of
-#' representation of a phylogenetic tree. It is used throught ape.
+#' representation of a phylogenetic tree.
+#' It is used throughout the ape package.
 #'
 #' @seealso \code{\link[ape]{phylo}}, \code{\link{setOldClass}}
 #'
@@ -191,6 +192,18 @@ phylo <- structure(list(), class = "phylo")
 #' @rdname phylo-class
 #' @exportClass phylo
 setOldClass("phylo")
+################################################################################
+#' An S4 placeholder for the \code{\link[stats]{dist}} class.
+#'
+#' See \code{\link[stats]{dist}} for details
+#' about this type of a distance matrix object.
+#'
+#' @seealso \code{\link[stats]{dist}}, \code{\link{setOldClass}}
+#'
+#' @name dist-class
+#' @rdname dist-class
+#' @exportClass dist
+setOldClass("dist")
 ################################################################################
 # Use setClassUnion to define the unholy NULL-data union as a virtual class.
 # This is a way of dealing with the expected scenarios in which one or more of

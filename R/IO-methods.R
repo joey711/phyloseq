@@ -1769,7 +1769,13 @@ import_biom <- function(BIOMfilename,
 	argumentlist <- list()
 	
 	# Read the data
-	x = read_biom(biom_file=BIOMfilename)
+	if(class(BIOMfilename)=="character"){
+		x = read_biom(biom_file=BIOMfilename)
+	} else if (class(BIOMfilename)=="biom"){
+		x = BIOMfilename
+	} else {
+		stop("import_biom requires a 'character' string to a biom file or a 'biom-class' object")
+	}
 	
 	########################################
 	# OTU table:

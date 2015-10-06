@@ -45,8 +45,6 @@
 #'  \code{\link[DESeq2]{results}}
 #'
 #' @export
-#'
-#' @importFrom DESeq2 DESeqDataSetFromMatrix
 #'  
 #' @examples
 #'  # Check out the vignette phyloseq-mixture-models for more details.
@@ -64,7 +62,9 @@ phyloseq_to_deseq2 = function(physeq, design, ...){
   countData = round(as(otu_table(physeq), "matrix"), digits=0)
   colData = data.frame(sample_data(physeq))
   # Create the DESeq data set, dds.
-  dds <- DESeqDataSetFromMatrix(countData, colData, design, ...)
-  return(dds)
+  if(requireNamespace("DESeq2")){
+    dds <- DESeq2::DESeqDataSetFromMatrix(countData, colData, design, ...)
+    return(dds)
+  }
 }
 ################################################################################

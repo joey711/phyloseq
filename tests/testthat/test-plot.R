@@ -251,7 +251,7 @@ test_that("plot_ordination: CAP method", {
 })
 
 # Constrained CCA / RDA
-test_that("plot_ordination: CAP method", {
+test_that("plot_ordination: CCA, RDA method", {
   # Constrained RDA and CCA both work.
   GP.ord.cca = ordinate(GP, "CCA", NULL, formula=~SampleType)
   expect_is(GP.ord.cca, "cca")

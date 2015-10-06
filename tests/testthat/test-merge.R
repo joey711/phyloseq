@@ -50,7 +50,8 @@ test_that("Counts from merged-samples are summed...", {
 
 ################################################################################
 # merge_phyloseq
-test_that("merge_phyloseq: Break apart GP based on human-association, then merge back together.", {
+test_that("merge_phyloseq: Break apart GP based on human-association,
+          then merge back together.", {
 	data(GlobalPatterns)
 	GP  <- prune_taxa(taxa_names(GlobalPatterns)[1:100], GlobalPatterns)
 	sample_data(GP)$human <- factor(get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue"))
@@ -58,7 +59,8 @@ test_that("merge_phyloseq: Break apart GP based on human-association, then merge
 	h0 <- subset_samples(GP, human=="FALSE")
 	GP1 <- merge_phyloseq(h0, h1)
 
-	# The species order is fixed to the tree, so should be the same between the original and merged
+	# The species order is fixed to the tree, 
+	# so should be the same between the original and merged
 	expect_that(taxa_names(GP), is_identical_to(taxa_names(GP1)))
 	expect_that(phy_tree(h1), is_identical_to(phy_tree(h0)))
 
@@ -67,14 +69,57 @@ test_that("merge_phyloseq: Break apart GP based on human-association, then merge
 	sa.order <- sample_names(GP)
 	sa.order <- sa.order[sa.order %in% sample_names(GP1)]
 	otu_table(GP1) <- otu_table(GP1)[, sa.order]
-
+	expect_equal(sample_names(GP), sample_names(GP1))
+	expect_equal(sample_names(sample_data(GP)), sample_names(sample_data(GP1)))
+	# Sample data entries are the same, irrespective of factor levels
+	GPfactors = which(sapply(sample_data(GP1), inherits, "factor"))
+	for(j in GPfactors){
+	  expect_equal(as.character(get_variable(GP, j)),
+	               as.character(get_variable(GP1, j)))
+	}
+	# Reconcile factor level order for remaining tests
+	GP1factors = which(sapply(sample_data(GP1), inherits, "factor"))
+	for(j in names(GP1factors)){
+	  varj = as.character(get_variable(GP1, j))
+	  sample_data(GP1)[, j] <- factor(varj, levels = sort(unique(varj)))
+	}
+	GPfactors = which(sapply(sample_data(GP), inherits, "factor"))
+	for(j in names(GPfactors)){
+	  varj = as.character(get_variable(GP, j))
+	  sample_data(GP)[, j] <- factor(varj, levels = sort(unique(varj)))
+	}
+	# Check a specific variable
+	expect_equal(sample_data(GP1)$SampleType,
+	             sample_data(GP)$SampleType)
 	# Should be fixed now. Full object and components now identical
-	expect_that(GP1, equals(GP)) 
-	expect_that(GP1, is_identical_to(GP))
+	expect_equal(GP1, GP) 
+	expect_identical(GP1, GP)
 	expect_that(otu_table(GP1), is_identical_to(otu_table(GP)))
-	expect_that(sample_data(GP1), is_identical_to(sample_data(GP)))
 	expect_that(tax_table(GP1), is_identical_to(tax_table(GP)))
 	expect_that(phy_tree(GP1), is_identical_to(phy_tree(GP)))
+	
+	## Check factor levels
+	# The set
+	expect_identical(sort(levels(sample_data(GP1)$SampleType)),
+	                 sort(levels(sample_data(GP)$SampleType)))
+	# The order
+	expect_identical(levels(sample_data(GP1)$SampleType),
+	                 levels(sample_data(GP)$SampleType))	
+	# Overall
+	expect_identical(sample_data(GP1), sample_data(GP))
+	expect_identical(droplevels(sample_data(GP1)), droplevels(sample_data(GP)))
+	
+	# Check variable names are all there (set)
+	expect_equal(
+	  object = sort(intersect(colnames(sample_data(GP1)), colnames(sample_data(GP)))),
+	  expected = sort(colnames(sample_data(GP1))))
+	# Check column classes
+	expect_equal(sapply(sample_data(GP1), class), sapply(sample_data(GP), class))
+	# Check column names
+	expect_equal(colnames(sample_data(GP1)), colnames(sample_data(GP)))
+	# Check sample name order
+	expect_equal(sample_names(sample_data(GP1)), sample_names(sample_data(GP)))
+	expect_equal(sample_names(GP1), sample_names(GP))
 })
 
 ################################################################################

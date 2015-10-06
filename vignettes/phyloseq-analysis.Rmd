@@ -217,8 +217,7 @@ Interestingly, at this level of analysis and parameter-settings the two major su
 
 ```{r plot_sample_network, fig.width=11, fig.height=7, message=FALSE, warning=FALSE}
 data(enterotype)
-ig <- make_network(enterotype, max.dist=0.3)
-plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.4, label=NULL)
+plot_net(enterotype, maxdist=0.4, color="SeqTech", shape="Enterotype")
 ```
 
 Network representation of the relationship between microbiome samples in the "Enterotype" dataset ([Arumugam 2011](http://www.nature.com/nature/journal/v473/n7346/full/nature09944.html)).
@@ -379,12 +378,17 @@ mdf <- melt(p1$data[, c("CA1", "CA2", "Phylum", "Family", "Genus")],
 # Select some special outliers for labelling
 LF <- subset(mdf, variable=="CA2" & value < -1.0)
 # build plot: boxplot summaries of each CA-axis, with labels
-p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + geom_boxplot() + 
-  facet_wrap(~variable, 2) + scale_colour_hue(guide = FALSE) +
-  theme_bw() + theme( axis.text.x = element_text(angle = -90, hjust = 0) )
+p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + 
+  geom_boxplot() + 
+  facet_wrap(~variable, 2) + 
+  scale_colour_hue(guide = FALSE) +
+  theme_bw() + 
+  theme( axis.text.x = element_text(angle = -90, vjust = 0.5) )
 # Add the text label layer, and render ggplot graphic
-(p <- p + geom_text(aes(Phylum, value+0.1, color=Phylum, label=Family), 
-                    data=LF, vjust=0, size=2) )
+(p <- p + geom_text(data=subset(LF, !is.na(Family)),
+  mapping = aes(Phylum, value+0.1, color=Phylum, label=Family), 
+  vjust=0,
+  size=2))
 ```
 ###### Boxplot of taxa (species in this case) of the "Global Patterns" CA first two axes, shaded/separated by phylum. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the Bacteroidetes species (Prevotellaceae family) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.
 
@@ -419,7 +423,9 @@ A biplot representation of a Double Principal Coordinate Analysis (DPCoA), on a 
 plot_ordination(GP, GP.dpcoa, type="taxa", shape="Phylum")
 plot_ordination(GP, GP.dpcoa, type="samples", color="SampleType")
 # Split
-plot_ordination(GP, GP.dpcoa, type="split", color="SampleType", shape="Phylum")
+plot_ordination(GP, GP.dpcoa, type="split",
+                color="SampleType", shape="Phylum") +
+  ggplot2::scale_colour_discrete()
 ```
 
 
@@ -435,11 +441,10 @@ The function takes a `phyloseq-class` object and an argument indicating the dist
 
 ```{r distancefun}
 data(esophagus)
-distance(esophagus) # Unweighted UniFrac
-distance(esophagus, weighted=TRUE) # weighted UniFrac
+distance(esophagus, "bray") 
+distance(esophagus, "wunifrac") # weighted UniFrac
 distance(esophagus, "jaccard") # vegdist jaccard
 distance(esophagus, "g") # betadiver method option "g"
-distance("help")
 ```
 
 
@@ -450,15 +455,8 @@ The following is an example calculating the UniFrac distance (both weighted and 
 
 ```{r eval=FALSE, echo=TRUE}
 data(esophagus)
-UniFrac(esophagus, weighted=TRUE)
-# distance(esophagus, weighted=TRUE) # Alternative using the distance() function
-UniFrac(esophagus, weighted=FALSE)
-# distance(esophagus) # Alternative using the distance() function
-```
-
-```{r echo=FALSE}
-round( UniFrac(esophagus, weighted=TRUE), 3)
-round( UniFrac(esophagus, weighted=FALSE), 3)
+distance(esophagus, "wUniFrac")
+distance(esophagus, "uUniFrac")
 ```
 
 See the phyloseq demo page about fast parallel UniFrac.
