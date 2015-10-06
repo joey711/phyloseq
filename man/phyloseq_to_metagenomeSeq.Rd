@@ -9,10 +9,9 @@ phyloseq_to_metagenomeSeq(physeq, ...)
 \arguments{
 \item{physeq}{(Required). \code{\link{phyloseq-class}}.}
 
-\item{...}{(Optional). Additional named arguments passed to \code{\link[metagenomeSeq]{newMRexperiment}}.
- Most users will not need to pass any additional arguments here.
- Most testing-related options should be provided in
- a following call to \code{\link[metagenomeSeq]{fitFeatureModel}}.}
+\item{...}{(Optional). Additional named arguments passed
+ to \code{\link[metagenomeSeq]{newMRexperiment}}.
+ Most users will not need to pass any additional arguments here.}
 }
 \value{
 A \code{\link[metagenomeSeq]{MRexperiment-class}} object.

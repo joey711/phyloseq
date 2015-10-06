@@ -8,7 +8,7 @@
 \alias{distance,phyloseq,character-method}
 \title{Calculate distance, dissimilarity}
 \usage{
-distance(physeq, method, type="samples", ...)
+distance(physeq, method, type = "samples", ...)
 
 \S4method{distance}{phyloseq,ANY}(physeq, method)
 
@@ -36,7 +36,8 @@ distance(physeq, method, type="samples", ...)
  and accessed by the following \code{method} options:
 
  \describe{
-  \item{\code{"unifrac"}}{Original (unweighted) UniFrac distance, \code{\link[phyloseq]{UniFrac}}}
+  \item{\code{"unifrac"}}{Original (unweighted) UniFrac distance,
+        \code{\link[phyloseq]{UniFrac}}}
   \item{\code{"wunifrac"}}{weighted-UniFrac distance, \code{\link[phyloseq]{UniFrac}}}
   \item{\code{"dpcoa"}}{
     sample-wise distance used in
@@ -48,12 +49,12 @@ distance(physeq, method, type="samples", ...)
  a character string that defines a custom distance method, if it has the form
  described in \code{\link{designdist}}.}
 
-\item{...}{Additional arguments passed on to the appropriate distance
- function, determined by the \code{method} argument.}
-
 \item{type}{(Optional). A character string. The type of pairwise comparisons
  being calculated: sample-wise or taxa-wise. The default is
  \code{c("samples")}.}
+
+\item{...}{Additional arguments passed on to the appropriate distance
+ function, determined by the \code{method} argument.}
 }
 \value{
 An object of class ``\code{\link{dist}}'' suitable for certain

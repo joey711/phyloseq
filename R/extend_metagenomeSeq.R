@@ -11,10 +11,9 @@
 #' tutorials for more details.
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}}.
-#' @param ... (Optional). Additional named arguments passed to \code{\link[metagenomeSeq]{newMRexperiment}}.
+#' @param ... (Optional). Additional named arguments passed 
+#'  to \code{\link[metagenomeSeq]{newMRexperiment}}.
 #'  Most users will not need to pass any additional arguments here.
-#'  Most testing-related options should be provided in 
-#'  a following call to \code{\link[metagenomeSeq]{fitFeatureModel}}.
 #'  
 #' @return A \code{\link[metagenomeSeq]{MRexperiment-class}} object.
 #' 

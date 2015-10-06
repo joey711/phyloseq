@@ -19,8 +19,6 @@
 #'  \code{\link[vegan]{designdist}}, or
 #'  \code{\link{dist}}.
 #' 
-#' @usage distance(physeq, method, type="samples", ...)
-#' 
 #' @param physeq (Required).  A \code{\link{phyloseq-class}} or
 #'  an \code{\link{otu_table-class}} object. The latter is only appropriate
 #'  for methods that do not require any additional data (one-table). 
@@ -39,7 +37,8 @@
 #'  and accessed by the following \code{method} options:
 #'  
 #'  \describe{
-#'   \item{\code{"unifrac"}}{Original (unweighted) UniFrac distance, \code{\link[phyloseq]{UniFrac}}}
+#'   \item{\code{"unifrac"}}{Original (unweighted) UniFrac distance,
+#'         \code{\link[phyloseq]{UniFrac}}}
 #'   \item{\code{"wunifrac"}}{weighted-UniFrac distance, \code{\link[phyloseq]{UniFrac}}}
 #'   \item{\code{"dpcoa"}}{
 #'     sample-wise distance used in 
@@ -86,7 +85,7 @@
 #' distance(esophagus, "(A+B-2*J)/(A+B)") # designdist custom distance
 #' distanceMethodList
 #' help("distance")
-setGeneric("distance", function(physeq, method, ...){
+setGeneric("distance", function(physeq, method, type="samples", ...){
   standardGeneric("distance")
 })
 #' @rdname distance
