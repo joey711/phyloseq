@@ -2,6 +2,8 @@
 
 # [phyloseq](http://joey711.github.com/phyloseq/)
 
+[![Travis-CI Build Status](https://travis-ci.org/joey711/phyloseq.svg?branch=master)](https://travis-ci.org/joey711/phyloseq)
+
 ## Article on Improved Microbiome Analysis
 
 McMurdie and Holmes (2014)
