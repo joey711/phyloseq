@@ -414,10 +414,48 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# Define the OTU cliques to loop through
 	spCliques <- tapply(names(tax), factor(tax), list)
 	
-	# Successively merge taxa in physeq.
-	for( i in names(spCliques)){
-		physeq <- merge_taxa(physeq, spCliques[[i]])
+	#get phyloseq slots
+	comp_list   <- splat.phyloseq.objects(physeq)
+	
+	# if OTU slot exists, calc otus
+	otutablelist <- Filter(function(x){is(x,"otu_table")}, comp_list)
+	taxtablelist <- Filter(function(x){is(x,"taxonomyTable")}, comp_list)
+	hasOTU <- length(otutablelist) > 0
+	hasTAX <- length(taxtablelist) > 0
+	if (hasOTU) otuinfo <- merge_OTU_table(otutablelist[[1]], tax=tax)
+  
+	# process the rest, using otudata to determine the remaing OTU in the merge process
+	comp_list2   <- Filter(function(x){!is(x,"otu_table")}, comp_list)
+	
+	# if OTU and TAX are available, use the OTU indices to determine TAXA
+	if (hasOTU & hasTAX) { 
+	  comp_list2 <- Filter(function(x){!is(x,"taxonomyTable")}, comp_list2) 
 	}
+	
+	for( i in names(spCliques)){
+	  if (hasOTU) {
+	    # use the otutable to define which OTUs to keep.Without htis there will be a discrepancy
+	    clique <- spCliques[[i]]
+	    archetype=clique[clique %in% otuinfo$otunames]
+	    comp_list2 <- lapply(comp_list2, merge_taxa, spCliques[[i]], archetype[[1]])  
+	  } else {
+	    # use default archetype values
+	    comp_list2 <- lapply(comp_list2, merge_taxa, spCliques[[i]])  
+	  }
+	}
+	
+	#add OTU info to the phyloseq object list
+	if (hasOTU) comp_list2[["otu_table"]] <- otuinfo$otutable
+	
+	#update TAX info using OTU indexes
+	if (hasOTU & hasTAX) {
+	  taxtable <- tax_table(physeq)
+	  keepIndexes <- which(rownames(taxtable) %in% otuinfo$otunames)
+	  taxtable <- taxtable[keepIndexes,]
+	  comp_list2[["tax_table"]] <- tax_table(taxtable)
+	}
+	
+	physeq <- do.call("phyloseq", comp_list2)
 	
 	# "Empty" the values to the right of the rank, using NA_character_.
 	if( CN < length(rank_names(physeq)) ){
@@ -428,6 +466,45 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# Return.
 	return(physeq)
 }
+
+#'	Helper function to calculate new OTU table
+#'	@keywords internal
+merge_OTU_table <- function(otutable, tax) {
+  
+  # add a taxonomy column to the OTUtable
+  otab <- data.frame(otutable)
+  taxdf <- data.frame(tax)
+  otab <- merge(otab, taxdf, by = "row.names")
+  row.names(otab) <- otab$Row.names
+  otab <- otab[ , 2:ncol(otab)]
+  
+  # convert tax col to numeric
+  # needed to allow colSums to work
+  otab$tax <- as.numeric(factor(otab$tax, labels=c(1:length(unique(otab$tax)))))
+  
+  # split apply, combine
+  splits   <- split(otab, otab$tax)  
+  summed   <- Map(colSums, splits)
+  summeddf <- Reduce(rbind, summed, init = NULL)
+  
+  # get rownames of the OTU with the biggest abundance
+  newrownames <- Map(function(x){names(sort(rowSums(x), decreasing = TRUE))[[1]]},splits)
+  
+  #add back rowname and remove tax column
+  rownames(summeddf) <- newrownames
+  
+  #specialcase where ther is only one row,i.e Bacteria
+  if (length(newrownames) == 1){
+    summeddf <- data.frame(summeddf)
+  }
+  
+  summeddf <- summeddf[, !colnames(summeddf) %in% c("tax")]
+  
+  return(list(otutable = otu_table(summeddf, taxa_are_rows = TRUE),
+              otunames = newrownames))
+  
+}
+
 ################################################################################
 ################################################################################
 #' Prune unwanted OTUs / taxa from a phylogenetic object.
