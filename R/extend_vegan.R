@@ -137,7 +137,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #'
 #' Performs a number of standard alpha diversity estimates, 
 #' and returns the results as a \code{data.frame}.
-#' Strictly speaking, this function is not only estimating richness,
+#' This function estimates richness and evenness,
 #' despite its name. 
 #' It can operate on the cumulative population of all
 #' samples in the dataset, or by repeating the richness estimates for each
@@ -160,7 +160,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #'  Alternatively, you can specify one or more measures
 #'  as a character vector of measure names.
 #'  Values must be among those supported:
-#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
+#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Pielou", "Simpson", "InvSimpson", "SimpsonE", "Fisher")}.
 #'
 #' @return A \code{data.frame} of the richness estimates, and their standard error.
 #' 
@@ -214,8 +214,8 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	}
 	
 	# Define renaming vector:
-	renamevec = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")
-	names(renamevec) <- c("S.obs", "S.chao1", "S.ACE", "shannon", "simpson", "invsimpson", "fisher")
+	renamevec = c("Observed", "Chao1", "ACE", "Shannon", "Pielou", "Simpson", "InvSimpson", "SimpsonE", "Fisher")
+	names(renamevec) <- c("S.obs", "S.chao1", "S.ACE", "shannon", "pielou", "simpson", "invsimpson", "simpsone", "fisher")
 	# If measures was not explicitly provided (is NULL), set to all supported methods
 	if( is.null(measures) ){
 	  measures = as.character(renamevec)
@@ -240,12 +240,20 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	if( "Shannon" %in% measures ){
     outlist <- c(outlist, list(shannon = diversity(OTU, index="shannon")))
 	}
+  if( "Pielou" %in% measures){
+  	#print("Starting Pielou")
+  	outlist <- c(outlist, list(pielou = diversity(OTU, index = "shannon")/log(specnumber(OTU))))
+  }
 	if( "Simpson" %in% measures ){
 	  outlist <- c(outlist, list(simpson = diversity(OTU, index="simpson")))
 	}
 	if( "InvSimpson" %in% measures ){
 	  outlist <- c(outlist, list(invsimpson = diversity(OTU, index="invsimpson")))
 	}
+  if( "SimpsonE" %in% measures ){
+  	#print("Starting SimpsonE")
+  	outlist <- c(outlist, list(simpsone = diversity(OTU, index="invsimpson")/specnumber(OTU)))
+  }
 	if( "Fisher" %in% measures ){
     fisher = tryCatch(fisher.alpha(OTU, se=TRUE), 
       warning=function(w){
