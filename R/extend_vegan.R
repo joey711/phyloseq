@@ -179,7 +179,6 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @importFrom vegan estimateR
 #' @importFrom vegan diversity
 #' @importFrom vegan fisher.alpha
-#' @importFrom vegan specnumber
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
@@ -243,7 +242,7 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	}
   if( "Pielou" %in% measures){
   	#print("Starting Pielou")
-  	outlist <- c(outlist, list(pielou = diversity(OTU, index = "shannon")/log(specnumber(OTU))))
+  	outlist <- c(outlist, list(pielou = diversity(OTU, index = "shannon")/log(estimateR(OTU)["S.obs",])))
   }
 	if( "Simpson" %in% measures ){
 	  outlist <- c(outlist, list(simpson = diversity(OTU, index="simpson")))
@@ -253,7 +252,7 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
 	}
   if( "SimpsonE" %in% measures ){
   	#print("Starting SimpsonE")
-  	outlist <- c(outlist, list(simpsone = diversity(OTU, index="invsimpson")/specnumber(OTU)))
+  	outlist <- c(outlist, list(simpsone = diversity(OTU, index="invsimpson")/estimateR(OTU)["S.obs",]))
   }
 	if( "Fisher" %in% measures ){
     fisher = tryCatch(fisher.alpha(OTU, se=TRUE), 
