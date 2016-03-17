@@ -33,7 +33,7 @@ Imports:
     gridExtra (>= 2.2.1),
     edgeR (>= 3.10.5),
     venneuler (>= 1.1-0),
-    grid (>= 3.2.4),
+    grid (>= 3.2.3),
     Biobase
 Depends:
     R (>= 3.1.0)
