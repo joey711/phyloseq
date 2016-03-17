@@ -1184,3 +1184,27 @@ rm_outlierf <- function(f, na.rm=TRUE){
     }
 }
 ################################################################################
+
+################################################################################
+#' Transform the otu_table of a \code{\link{phyloseq-class}} object into a binary otu_table. Usefull to test if the results are not biaised by sequences bias that appended during PCR or NGS pipeline.  
+#' 
+#' @param physeq (Required): a \code{\link{phyloseq-class}} object.
+#' @param minNumber (default = 1): the minimum number of sequences to put 
+#' a 1 in the otu table.
+#' @author Adrien Taudiere
+#'
+#' @return A \code{physeq} object with only 0/1 in the OTU table
+#'
+#' @examples 
+#' data(enterotype)
+#' #enterotype.bin <- as.binaryOtuTable(enterotype)
+as.binaryOtuTable <- function(physeq, minNumber = 1) {
+  if (!inherits(physeq, "phyloseq")) {
+    stop("physeq must be a phyloseq object")
+  }
+  res <- physeq
+  res@otu_table[res@otu_table >= minNumber] <- 1
+  res@otu_table[res@otu_table <= minNumber] <- 0
+  return(res)
+}
+################################################################################

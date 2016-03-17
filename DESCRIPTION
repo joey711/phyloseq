@@ -28,11 +28,16 @@ Imports:
     reshape2 (>= 1.2.2),
     scales (>= 0.2.3),
     vegan (>= 2.0.10),
+    networkD3 (>= 0.2.8),
+    DESeq2 (>= 1.8),
+    gridExtra (>= 2.2.1),
+    edgeR (>= 3.10.5),
+    venneuler (>= 1.1-0),
+    grid (>= 3.2.4),
     Biobase
 Depends:
     R (>= 3.1.0)
-Suggests:
-    DESeq2 (>= 1.8),
+Suggests:    
     genefilter (>= 1.50),
     testthat (>= 0.10),
     knitr (>= 1.10),
@@ -69,6 +74,7 @@ Collate:
     'distance-methods.R'
     'deprecated_functions.R'
     'extend_DESeq2.R'
+    'extend_edgeR.R'
     'phylo-class.R'
     'extend_metagenomeSeq.R'
 RoxygenNote: 5.0.1

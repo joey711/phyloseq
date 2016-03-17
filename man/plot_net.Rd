@@ -100,7 +100,7 @@ and you may want to familiarize yourself with some of these options
 (see the \code{laymeth} argument).
 }
 \examples{
-data(enterotype)
+data("enterotype")
 plot_net(enterotype, color="SeqTech", maxdist = 0.3)
 plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "auto")
 plot_net(enterotype, color="SeqTech", maxdist = 0.3, laymeth = "svd")

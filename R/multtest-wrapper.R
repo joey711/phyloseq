@@ -170,4 +170,37 @@ mt.phyloseq.internal <- function(physeq, classlabel, minPmaxT="minP", ...){
 		print("Nothing calculated. minPmaxT argument must be either minP or maxT.")
 	}
 }
+
+
 ####################################################################################
+#Plot the result of a mt test
+####################################################################################
+#' Plot the result of a mt test (\code{\link[phyloseq]{mt}})
+#' @param mt (Required): result of a mt test
+#' @param alpha (default = 0.05): Choose the cut off p-value to plot taxa
+#' @param color_tax : A taxonomic level to color the points
+#' @param taxa : The taxonomic level choose for x-positioning
+#' @examples
+#' \dontrun{
+#' data("GlobalPatterns")
+#' res = mt(GlobalPatterns, "SampleType", test="f")
+#' plot_mt(res, color_tax = "Phylum") + scale_color_hue()
+#' }
+#' @author Adrien Taudiere
+#' 
+#' @return a \code{\link{ggplot}}2 plot of result of a mt test
+#' 
+#' @seealso \code{\link[phyloseq]{mt}}
+
+plot_mt <- function(mt = NULL, alpha = 0.05, color_tax = "Class", taxa = "Species"){
+  d <- mt[mt$plower < alpha,]
+  d$tax_col <- factor(as.character(d[, color_tax]))
+  d$tax_col[is.na(d$tax_col)] <- "unidentified"
+  d$tax <- as.character(d[, taxa])
+  d$tax[is.na(d$tax)] <- "unidentified"
+  d$tax <- factor(d$tax, levels = unique(factor(as.character(d[,"Species"]))[rev(order(d$teststat))]))
+  
+  p <- ggplot(d, aes(x = tax, y = teststat, color = tax_col)) + geom_point(size = 6) + 
+    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) 
+  p
+}
