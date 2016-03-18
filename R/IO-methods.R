@@ -514,7 +514,7 @@ read_tree_greengenes = function(treefile){
 #' @export
 #' @examples
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
-#'  import_qiime_otu_tax(otufile)
+#'  qiime_imported <- import_qiime_otu_tax(otufile)
 import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime,
                                  verbose=TRUE, parallel=FALSE){
   if(verbose){cat("Reading file into memory prior to parsing...\n")}
@@ -1470,7 +1470,7 @@ import_mothur_dist <- function(mothur_dist_file){
 #' @examples #
 #' data(esophagus) 
 #' myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
-#' export_mothur_dist(myDistObject)
+#' mothur_exported <- export_mothur_dist(myDistObject)
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
 	if( class(x)== "matrix" ){ x <- as.dist(x) }
 	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }

@@ -101,9 +101,9 @@ setMethod("otu_table", "ANY", function(object, errorIfNULL=TRUE){
 #' @export
 #' @examples
 #' data(enterotype)
-#' taxa_sums(enterotype)
+#' tx_sum <- taxa_sums(enterotype)
 #' data(esophagus)
-#' taxa_sums(esophagus)
+#' tx_sum <- taxa_sums(esophagus)
 taxa_sums <- function(x){
 	x <- otu_table(x)
 	if( taxa_are_rows(x) ){

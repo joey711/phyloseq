@@ -479,9 +479,9 @@ rank_names <- function(physeq, errorIfNULL=TRUE){
 #'
 #' @examples
 #' data(enterotype)
-#' get_taxa_unique(enterotype)
+#' tax_uniq <- get_taxa_unique(enterotype)
 #' data(GlobalPatterns)
-#' get_taxa_unique(GlobalPatterns, "Family")
+#' tax_uniq <- get_taxa_unique(GlobalPatterns, "Family")
 get_taxa_unique <- function(physeq, taxonomic.rank=rank_names(physeq)[1], errorIfNULL=TRUE){
 	unique(as(tax_table(physeq, errorIfNULL)[, taxonomic.rank], "character"))
 }
