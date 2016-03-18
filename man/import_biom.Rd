@@ -137,10 +137,10 @@ Project and is a Genomics Standards Consortium candidate project.''
 \examples{
 # An included example of a rich dense biom file
 rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
-import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
+physeqData <- import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
 # An included example of a sparse dense biom file
 rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
-import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
+physeqData <- import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 # # # Example code for importing large file with parallel backend
 # library("doParallel")
 # registerDoParallel(cores=6)

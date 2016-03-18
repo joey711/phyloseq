@@ -13,7 +13,7 @@ as.binaryOtuTable(physeq, minNumber = 1)
 a 1 in the otu table.}
 }
 \value{
-A \code{\phyoseq} object with only 0/1 in the OTU table
+A \code{physeq} object with only 0/1 in the OTU table
 }
 \description{
 Transform the otu_table of a \code{\link{phyloseq-class}} object into a binary otu_table. Usefull to test if the results are not biaised by sequences bias that appended during PCR or NGS pipeline.

@@ -63,7 +63,7 @@ a switch to a sparse matrix representation of the abundance
 }
 \examples{
  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
- import_qiime_otu_tax(otufile)
+ qiime_imported <- import_qiime_otu_tax(otufile)
 }
 \seealso{
 \code{\link{import}}

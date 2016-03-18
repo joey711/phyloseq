@@ -44,10 +44,10 @@ Get species / taxa names.
 data("esophagus")
 tree <- phy_tree(esophagus)
 OTU1 <- otu_table(esophagus)
-taxa_names(tree)
-taxa_names(OTU1)
+taxNames <- taxa_names(tree)
+taxNames <- taxa_names(OTU1)
 physeq1 <- phyloseq(OTU1, tree)
-taxa_names(physeq1)
+taxNames <- taxa_names(physeq1)
 }
 \seealso{
 ntaxa

@@ -41,14 +41,14 @@ Replace OTU identifier names
 }
 \examples{
 data("esophagus")
-taxa_names(esophagus)
+taxNames <- taxa_names(esophagus)
 # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
 taxa_names(esophagus) <- paste("OTU-", taxa_names(esophagus), sep="")
-taxa_names(esophagus)
+taxNames <- taxa_names(esophagus)
 # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
 ## non-characters are first coerced to characters.
-taxa_names(esophagus) <- 1:ntaxa(esophagus)
-taxa_names(esophagus)
+taxNames <- taxa_names(esophagus) <- 1:ntaxa(esophagus)
+taxNames <- taxa_names(esophagus)
 # plot_tree(esophagus, label.tips="taxa_names", ladderize="left")
 ## Cannot assign non-unique or differently-lengthed name vectors. Error.
 # taxa_names(esophagus) <- sample(c(TRUE, FALSE), ntaxa(esophagus), TRUE)

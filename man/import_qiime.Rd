@@ -129,7 +129,7 @@ example of where ot find the relevant files in the output directory.
  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
  mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
  trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
- import_qiime(otufile, mapfile, trefile)
+ physeqData <- import_qiime(otufile, mapfile, trefile)
 }
 \references{
 \url{http://qiime.org/}

@@ -20,9 +20,9 @@ the orientation of the otu_table is automatically handled.
 }
 \examples{
 data(enterotype)
-taxa_sums(enterotype)
+tx_sum <- taxa_sums(enterotype)
 data(esophagus)
-taxa_sums(esophagus)
+tx_sum <- taxa_sums(esophagus)
 }
 \seealso{
 \code{\link{sample_sums}}, \code{\link{rowSums}}, \code{\link{colSums}}

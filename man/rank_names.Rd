@@ -23,7 +23,7 @@ object.
 }
 \examples{
 data(enterotype)
-rank_names(enterotype)
+rankNames <- rank_names(enterotype)
 }
 \seealso{
 \code{\link{get_taxa}}

@@ -31,11 +31,11 @@ threshrank(a_vector, 5, keep0s=TRUE)
 data(GlobalPatterns)
 GP <- GlobalPatterns
 ## These three approaches result in identical otu_table
-(x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-(x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
-identical(x1, x2)
-(x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
-identical(x1, x3)
+# (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
+# (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+# identical(x1, x2)
+# (x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
+# identical(x1, x3)
 }
 \seealso{
 \code{\link{transform_sample_counts}}, \code{\link{rank}}, \code{\link{threshrankfun}}

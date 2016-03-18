@@ -31,7 +31,7 @@ a single sample-of-interest.
 \examples{
 data(esophagus)
 sample_names(esophagus)
-get_taxa(esophagus, "B")
+taxa_B <- get_taxa(esophagus, "B")
 }
 \seealso{
 \code{\link{get_sample}}
