@@ -206,10 +206,10 @@ setMethod("ntaxa", "XStringSet", function(physeq){
 #' data("esophagus")
 #' tree <- phy_tree(esophagus)
 #' OTU1 <- otu_table(esophagus)
-#' taxa_names(tree)
-#' taxa_names(OTU1)
+#' taxNames <- taxa_names(tree)
+#' taxNames <- taxa_names(OTU1)
 #' physeq1 <- phyloseq(OTU1, tree)
-#' taxa_names(physeq1)
+#' taxNames <- taxa_names(physeq1)
 setGeneric("taxa_names", function(physeq) standardGeneric("taxa_names"))	
 #' @rdname taxa_names-methods
 #' @aliases taxa_names,ANY-method
@@ -357,8 +357,8 @@ setMethod("sample_names", "otu_table", function(physeq){
 #'
 #' @examples
 #' data(esophagus)
-#' taxa_names(esophagus)
-#' get_sample(esophagus, "59_5_19")
+#' taxNames <- taxa_names(esophagus)
+#' sample_59_5_19 <- get_sample(esophagus, "59_5_19")
 setGeneric("get_sample", function(physeq, i) standardGeneric("get_sample"))
 ################################################################################
 #' @aliases get_sample,otu_table-method
@@ -403,7 +403,7 @@ setMethod("get_sample", "phyloseq", function(physeq, i){
 #' @examples
 #' data(esophagus)
 #' sample_names(esophagus)
-#' get_taxa(esophagus, "B")
+#' taxa_B <- get_taxa(esophagus, "B")
 setGeneric("get_taxa", function(physeq, i) standardGeneric("get_taxa"))
 #' @aliases get_taxa,otu_table-method
 #' @rdname get_taxa-methods
@@ -445,7 +445,7 @@ setMethod("get_taxa", "phyloseq", function(physeq, i){
 #'
 #' @examples
 #' data(enterotype)
-#' rank_names(enterotype)
+#' rankNames <- rank_names(enterotype)
 rank_names <- function(physeq, errorIfNULL=TRUE){
 	colnames(tax_table(physeq, errorIfNULL))	
 }

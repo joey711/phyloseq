@@ -236,7 +236,7 @@ import <- function(pipelineName, ...){
 #'  otufile <- system.file("extdata", "GP_otu_table_rand_short.txt.gz", package="phyloseq")
 #'  mapfile <- system.file("extdata", "master_map.txt", package="phyloseq")
 #'  trefile <- system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")
-#'  import_qiime(otufile, mapfile, trefile)
+#'  physeqData <- import_qiime(otufile, mapfile, trefile)
 import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 	treefilename=NULL, refseqfilename=NULL, 
   refseqFunction=readDNAStringSet, refseqArgs=NULL,
@@ -591,7 +591,7 @@ import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime,
 #' @export
 #' @examples 
 #'  mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
-#'  import_qiime_sample_data(mapfile)
+#'  qiime_mapfile <- import_qiime_sample_data(mapfile)
 import_qiime_sample_data <- function(mapfilename){
 	# Process mapfile. Name rows as samples.
 	QiimeMap <- read.table(file=mapfilename, header=TRUE,
@@ -1753,10 +1753,10 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' @examples
 #' # An included example of a rich dense biom file
 #' rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
-#' import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
+#' physeqData <- import_biom(rich_dense_biom,  parseFunction=parse_taxonomy_greengenes)
 #' # An included example of a sparse dense biom file
 #' rich_sparse_biom <- system.file("extdata", "rich_sparse_otu_table.biom", package="phyloseq")
-#' import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
+#' physeqData <- import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 #' # # # Example code for importing large file with parallel backend
 #' # library("doParallel")
 #' # registerDoParallel(cores=6)
@@ -2298,7 +2298,7 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' 
 #' @examples
 #' usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
-#' import_usearch_uc(usearchfile)
+#' usearchfile_imported <- import_usearch_uc(usearchfile)
 import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
                                readDelimiter="_", verbose=TRUE){
   if(verbose){cat("Reading `ucfile` into memory and parsing into table \n")}
