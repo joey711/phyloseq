@@ -1346,7 +1346,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #'
 #' The psmelt function is a specialized melt function for melting phyloseq objects
 #' (instances of the phyloseq class), usually for producing graphics
-#' with \code{\link{ggplot2}}. \code{psmelt} relies heavily on the 
+#' with \code{\link[ggplot2]{ggplot}2}. \code{psmelt} relies heavily on the 
 #' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions.
 #' The naming conventions used in downstream phyloseq graphics functions
 #' have reserved the following variable names that should not be used
@@ -2107,7 +2107,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' There are many useful examples of phyloseq tree graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #'
-#' @import scales
+#' @importFrom scales log_trans
 #' @import ggplot2
 #' @importFrom data.table setkey
 #' @importFrom data.table setkeyv
@@ -2489,7 +2489,7 @@ RadialTheta <- function(pos){
 #' \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' 
 #' @importFrom vegan scores
-#' @import scales 
+#' @importFrom scales log_trans
 #' 
 #' @export
 #' @examples
