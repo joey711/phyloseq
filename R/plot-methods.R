@@ -2107,7 +2107,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' There are many useful examples of phyloseq tree graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #'
-#' @import scales
+#' @importFrom scales log_trans
 #' @import ggplot2
 #' @importFrom data.table setkey
 #' @importFrom data.table setkeyv
@@ -2489,7 +2489,7 @@ RadialTheta <- function(pos){
 #' \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' 
 #' @importFrom vegan scores
-#' @import scales 
+#' @importFrom scales log_trans
 #' 
 #' @export
 #' @examples
