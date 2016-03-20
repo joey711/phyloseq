@@ -11,7 +11,7 @@ import_uparse(upFile, omitChimeras = TRUE, countTable = TRUE,
 \item{upFile}{(Required). A file location character string 
 or \code{\link{connection}}
 corresponding to the file that contains the UPARSE output table.
-This is passed directly to \code{\link[data.table]{read.table}}.
+This is passed directly to \code{\link[data.table]{fread}}.
 Please see its \code{file} argument documentation for further
 links and details.}
 

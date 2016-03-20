@@ -16,7 +16,7 @@ A \code{\link{data.frame}}-class table.
 \description{
 The psmelt function is a specialized melt function for melting phyloseq objects
 (instances of the phyloseq class), usually for producing graphics
-with \code{\link{ggplot2}}. \code{psmelt} relies heavily on the 
+with \code{\link[ggplot2]{ggplot}2}. \code{psmelt} relies heavily on the 
 \code{\link[reshape2]{melt}} and \code{\link{merge}} functions.
 The naming conventions used in downstream phyloseq graphics functions
 have reserved the following variable names that should not be used

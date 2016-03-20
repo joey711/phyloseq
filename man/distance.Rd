@@ -89,7 +89,7 @@ Depending on the \code{method}
 data(esophagus)
 distance(esophagus, "uunifrac") # Unweighted UniFrac
 distance(esophagus, "wunifrac") # weighted UniFrac
-distance(esophagus, "jaccard", binary = T) # vegdist jaccard
+distance(esophagus, "jaccard", binary = TRUE) # vegdist jaccard
 distance(esophagus, "gower") # vegdist option "gower"
 distance(esophagus, "g") # designdist method option "g"
 distance(esophagus, "minkowski") # invokes a method from the base dist() function.
