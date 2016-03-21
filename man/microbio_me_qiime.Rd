@@ -2,7 +2,7 @@
 % Please edit documentation in R/IO-methods.R
 \name{microbio_me_qiime}
 \alias{microbio_me_qiime}
-\title{Download and import directly from microbio.me/qiime}
+\title{Import microbio.me/qiime (QIIME-DB) data package}
 \usage{
 microbio_me_qiime(zipftp, ext = ".zip", parsef = parse_taxonomy_greengenes,
   ...)
@@ -19,22 +19,22 @@ this function will complete the remainder of the ftp URL hosted at
 For example, instead of the full URL string, 
 \code{"ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_494_split_library_seqs_and_mapping.zip"},
 you could simply provide \code{494} or \code{"494"}
-as the first (`zipftp`) argument.
+as the first (`zipftp`) argument.}
 
-@param ext (Optional). A \code{\link{character}} string of the expected
- file extension, which also indicates the compression type,
- if \code{zipftp} is a study number instead of the full path. 
- Note that this argument has no effect if \code{zipftp} is the full path,
- in which case the file extension is read directly from the downloaded file.
- 
-@param parsef (Optional). The type of taxonomic parsing to use for the
- OTU taxonomic classification, in the \code{.biom} file, if present.
- This is passed on to \code{\link{import_biom}}, but unlike that function
- the default parsing function is \code{\link{parse_taxonomy_greengenes}},
- rather than \code{\link{parse_taxonomy_default}}, because we know
- ahead of time that most (or all?) of the taxonomic classifications
- in the \code{microbio.me/qiime} repository will be based on 
- GreenGenes.
+\item{ext}{(Optional). A \code{\link{character}} string of the expected
+file extension, which also indicates the compression type,
+if \code{zipftp} is a study number instead of the full path. 
+Note that this argument has no effect if \code{zipftp} is the full path,
+in which case the file extension is read directly from the downloaded file.}
+
+\item{parsef}{(Optional). The type of taxonomic parsing to use for the
+OTU taxonomic classification, in the \code{.biom} file, if present.
+This is passed on to \code{\link{import_biom}}, but unlike that function
+the default parsing function is \code{\link{parse_taxonomy_greengenes}},
+rather than \code{\link{parse_taxonomy_default}}, because we know
+ahead of time that most (or all?) of the taxonomic classifications
+in the \code{microbio.me/qiime} repository will be based on 
+GreenGenes.
 
 @param ... (Optional, for advanced users). Additional arguments passed to 
  \code{\link{download.file}}. This is mainly for non-standard links to
@@ -54,26 +54,15 @@ A \code{\link{phyloseq-class}} object if possible, a component if only a
  download and import process.
 }
 \description{
-This function is for accessing microbiome datasets from the
+Originally, this function was for accessing microbiome datasets from the
 \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
 public repository from within R.
-I haven't yet figured out how to list the available studies at
-\href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
-from within R
-(and I don't know if they have made this possible),
-but I have provided illustrated instructions for finding 
-details about studies you might want to download and explore,
-as well as the FTP address that you will need. 
-Note that you likely need to create an account at
-\href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
-in order to explore the studies they have available for download.
-Please see a detailed tutorial for further help finding the FTP address 
-of the data that you want. Also note that this function will work
-on the full address to any \code{.zip} zipped file with microbiome
-data organized with the same naming conventions and file types as
-\href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
-Please also see the 
-\href{http://joey711.github.io/phyloseq/download-microbio.me.html}{microbio_me_qiime tutorial}
+As you can see by clicking on the above link,
+the QIIME-DB sever is down indefinitely.
+However, this function will remain supported here
+in case the FTP server goes back up, 
+and also for phyloseq users that have downloaded 
+one or more data packages prior to the server going down.
 }
 \examples{
 # This should return TRUE on your system if you have internet turned on

@@ -39,13 +39,14 @@ this parameter did not exist and sampling with replacement was the only
 random subsampling implemented in the \code{rarefy_even_depth} function.
 Note that this default behavior was selected for computational efficiency,
 but differs from analogous functions in related packages
-(e.g. subsampling in QIIME).
+(e.g. subsampling in QIIME).}
 
-@param trimOTUs (Optional). Logical. Whether to trim OTUs
- from the dataset that are no longer observed in any sample
- (have a count of zero in every sample). 
- The number of OTUs trimmed, if any, is printed to
- standard out as a reminder.}
+\item{trimOTUs}{(Optional). \code{\link{logical}(1)}.
+Whether to trim OTUs
+from the dataset that are no longer observed in any sample
+(have a count of zero in every sample). 
+The number of OTUs trimmed, if any, is printed to
+standard out as a reminder.}
 
 \item{verbose}{(Optional). Logical. Default is \code{TRUE}.
 If \code{TRUE}, extra non-warning, non-error messages are printed
