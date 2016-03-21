@@ -158,15 +158,13 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 
 \code{\link{read_tree_greengenes}}
 
-\code{\link[biom]{biom-package}}
+\code{\link[biomformat]{read_biom}}
 
-\code{\link[biom]{read_biom}}
+\code{\link[biomformat]{biom_data}}
 
-\code{\link[biom]{biom_data}}
+\code{\link[biomformat]{sample_metadata}}
 
-\code{\link[biom]{sample_metadata}}
-
-\code{\link[biom]{observation_metadata}}
+\code{\link[biomformat]{observation_metadata}}
 
 \code{\link[Biostrings]{XStringSet-io}}
 }

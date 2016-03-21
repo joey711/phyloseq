@@ -34,14 +34,14 @@ the default parsing function is \code{\link{parse_taxonomy_greengenes}},
 rather than \code{\link{parse_taxonomy_default}}, because we know
 ahead of time that most (or all?) of the taxonomic classifications
 in the \code{microbio.me/qiime} repository will be based on 
-GreenGenes.
+GreenGenes.}
 
-@param ... (Optional, for advanced users). Additional arguments passed to 
- \code{\link{download.file}}. This is mainly for non-standard links to
- resources (in this case, a zipped file) that are not being hosted by
- \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
- If you are using a FTP address or study number from their servers,
- then you shouldn't need to provide any additional arguments.}
+\item{...}{(Optional, for advanced users). Additional arguments passed to 
+\code{\link{download.file}}. This is mainly for non-standard links to
+resources (in this case, a zipped file) that are not being hosted by
+\href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+If you are using a FTP address or study number from their servers,
+then you shouldn't need to provide any additional arguments.}
 }
 \value{
 A \code{\link{phyloseq-class}} object if possible, a component if only a 

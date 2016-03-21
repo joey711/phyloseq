@@ -1730,26 +1730,26 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' 
 #' \code{\link{read_tree_greengenes}}
 #' 
-#' \code{\link[biom]{biom-package}}
-#' 
-#' \code{\link[biom]{read_biom}}
+#' \code{\link[biomformat]{read_biom}}
 #'
-#' \code{\link[biom]{biom_data}}
+#' \code{\link[biomformat]{biom_data}}
 #'
-#' \code{\link[biom]{sample_metadata}}
+#' \code{\link[biomformat]{sample_metadata}}
 #' 
-#' \code{\link[biom]{observation_metadata}}
+#' \code{\link[biomformat]{observation_metadata}}
 #'
 #' \code{\link[Biostrings]{XStringSet-io}}
 #'
 #' @references \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
 #' @importFrom Biostrings readDNAStringSet
-#' @importFrom biom read_biom
-#' @importFrom biom sample_metadata
-#' @importFrom biom biom_data
-#' @importFrom biom observation_metadata
+#' @importFrom biomformat read_biom
+#' @importFrom biomformat sample_metadata
+#' @importFrom biomformat biom_data
+#' @importFrom biomformat observation_metadata
+#' 
 #' @export
+#' 
 #' @examples
 #' # An included example of a rich dense biom file
 #' rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
@@ -2062,12 +2062,12 @@ build_tax_table = function(taxlist){
 #'  in the \code{microbio.me/qiime} repository will be based on 
 #'  GreenGenes.
 #'  
-#'  @param ... (Optional, for advanced users). Additional arguments passed to 
-#'   \code{\link{download.file}}. This is mainly for non-standard links to
-#'   resources (in this case, a zipped file) that are not being hosted by
-#'   \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
-#'   If you are using a FTP address or study number from their servers,
-#'   then you shouldn't need to provide any additional arguments.
+#' @param ... (Optional, for advanced users). Additional arguments passed to 
+#'  \code{\link{download.file}}. This is mainly for non-standard links to
+#'  resources (in this case, a zipped file) that are not being hosted by
+#'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+#'  If you are using a FTP address or study number from their servers,
+#'  then you shouldn't need to provide any additional arguments.
 #' 
 #' @return
 #'  A \code{\link{phyloseq-class}} object if possible, a component if only a 
