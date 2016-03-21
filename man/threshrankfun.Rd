@@ -26,9 +26,9 @@ like \code{\link{transform_sample_counts}}.
 \examples{
 data(esophagus)
 x1 = transform_sample_counts(esophagus, threshrankfun(50))
-otu_table(x1)
+OTUtab1 <- otu_table(x1)
 x2 = transform_sample_counts(esophagus, rank)
-otu_table(x2)
+OTUtab2 <- otu_table(x2)
 identical(x1, x2)
 }
 \seealso{

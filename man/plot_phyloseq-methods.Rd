@@ -32,7 +32,7 @@ for some examples of available graphics tools available in the
 \code{\link{phyloseq-package}}.
 }
 \examples{
-data(esophagus)
+data("esophagus")
 plot_phyloseq(esophagus)
 }
 \seealso{

@@ -684,11 +684,11 @@ setMethod("prune_samples", signature("logical", "ANY"), function(samples, x){
 #' data(GlobalPatterns)
 #' GP <- GlobalPatterns
 #' ## These three approaches result in identical otu_table
-#' (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
-#' (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
-#' identical(x1, x2)
-#' (x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
-#' identical(x1, x3)
+#' # (x1 <- transform_sample_counts( otu_table(GP), threshrankfun(500)) )
+#' # (x2 <- otu_table(apply(otu_table(GP), 2, threshrankfun(500)), taxa_are_rows(GP)) )
+#' # identical(x1, x2)
+#' # (x3 <- otu_table(apply(otu_table(GP), 2, threshrank, thresh=500), taxa_are_rows(GP)) )
+#' # identical(x1, x3)
 threshrank <- function(x, thresh, keep0s=FALSE, ...){
 	if( keep0s ){ index0 <- which(x == 0) }
 	x <- rank(x, ...)
@@ -720,9 +720,9 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 #' @examples
 #' data(esophagus)
 #' x1 = transform_sample_counts(esophagus, threshrankfun(50))
-#' otu_table(x1)
+#' OTUtab1 <- otu_table(x1)
 #' x2 = transform_sample_counts(esophagus, rank)
-#' otu_table(x2)
+#' OTUtab2 <- otu_table(x2)
 #' identical(x1, x2)
 threshrankfun <- function(thresh, keep0s=FALSE, ...){
 	function(x){
@@ -748,7 +748,7 @@ threshrankfun <- function(thresh, keep0s=FALSE, ...){
 #' @export
 #' @examples
 #' data(GlobalPatterns)
-#' otu_table(GlobalPatterns)
+#' OTU_tab <- otu_table(GlobalPatterns)
 #' t( otu_table(GlobalPatterns) )
 setGeneric("t")
 #' @aliases t,otu_table-method
@@ -1182,5 +1182,29 @@ rm_outlierf <- function(f, na.rm=TRUE){
 		y <- x / sum(x)
         return( y < f )
     }
+}
+################################################################################
+
+################################################################################
+#' Transform the otu_table of a \code{\link{phyloseq-class}} object into a binary otu_table. Usefull to test if the results are not biaised by sequences bias that appended during PCR or NGS pipeline.  
+#' 
+#' @param physeq (Required): a \code{\link{phyloseq-class}} object.
+#' @param minNumber (default = 1): the minimum number of sequences to put 
+#' a 1 in the otu table.
+#' @author Adrien Taudiere
+#'
+#' @return A \code{physeq} object with only 0/1 in the OTU table
+#'
+#' @examples 
+#' data(enterotype)
+#' #enterotype.bin <- as.binaryOtuTable(enterotype)
+as.binaryOtuTable <- function(physeq, minNumber = 1) {
+  if (!inherits(physeq, "phyloseq")) {
+    stop("physeq must be a phyloseq object")
+  }
+  res <- physeq
+  res@otu_table[res@otu_table >= minNumber] <- 1
+  res@otu_table[res@otu_table <= minNumber] <- 0
+  return(res)
 }
 ################################################################################

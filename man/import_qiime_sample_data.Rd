@@ -31,7 +31,7 @@ suggested function for importing QIIME-produced data files.
 }
 \examples{
  mapfile <- system.file("extdata", "master_map.txt", package = "phyloseq")
- import_qiime_sample_data(mapfile)
+ qiime_mapfile <- import_qiime_sample_data(mapfile)
 }
 \seealso{
 \code{\link{import}}

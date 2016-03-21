@@ -20,5 +20,3 @@ inst/tests/.Rapp.history
 .Rbuildignore
 
 R/.Rapp.history
-
-

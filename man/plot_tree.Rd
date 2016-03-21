@@ -168,7 +168,7 @@ For details see \code{\link{tree_layout}}.
 # # Please note that many more interesting examples are shown
 # # in the online tutorials"
 # # http://joey711.github.io/phyloseq/plot_tree-examples
-data(esophagus)
+data("esophagus")
 # plot_tree(esophagus)
 # plot_tree(esophagus, color="Sample")
 # plot_tree(esophagus, size="Abundance")

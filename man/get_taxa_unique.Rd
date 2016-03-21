@@ -27,9 +27,9 @@ in a given \code{\link{phyloseq-class}} object.
 }
 \examples{
 data(enterotype)
-get_taxa_unique(enterotype)
+tax_uniq <- get_taxa_unique(enterotype)
 data(GlobalPatterns)
-get_taxa_unique(GlobalPatterns, "Family")
+tax_uniq <- get_taxa_unique(GlobalPatterns, "Family")
 }
 \seealso{
 \code{\link{get_taxa}}

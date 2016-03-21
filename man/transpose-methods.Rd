@@ -26,7 +26,7 @@ Extends the base transpose method, \code{\link[base]{t}}.
 }
 \examples{
 data(GlobalPatterns)
-otu_table(GlobalPatterns)
+OTU_tab <- otu_table(GlobalPatterns)
 t( otu_table(GlobalPatterns) )
 }
 

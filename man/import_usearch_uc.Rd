@@ -77,7 +77,7 @@ If so, you'll want to import using the
 }
 \examples{
 usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
-import_usearch_uc(usearchfile)
+usearchfile_imported <- import_usearch_uc(usearchfile)
 }
 \seealso{
 \code{\link{import}}

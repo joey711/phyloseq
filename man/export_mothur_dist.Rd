@@ -35,6 +35,6 @@ ways, including via cataloguing the cophentic distances of a tree object.
 #
 data(esophagus) 
 myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
-export_mothur_dist(myDistObject)
+mothur_exported <- export_mothur_dist(myDistObject)
 }
 

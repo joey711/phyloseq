@@ -92,7 +92,7 @@ and special care should be given to considering the choice of this threshold.
 }
 \examples{
 
-data(enterotype)
+data("enterotype")
 ig <- make_network(enterotype, max.dist=0.3)
 plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 # Change distance parameter

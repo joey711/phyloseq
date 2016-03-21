@@ -98,7 +98,7 @@ sample variables.
 \examples{
 # See other examples at
 # http://joey711.github.io/phyloseq/plot_ordination-examples
-data(GlobalPatterns)
+data("GlobalPatterns")
 GP = prune_taxa(names(sort(taxa_sums(GlobalPatterns), TRUE)[1:50]), GlobalPatterns)
 gp_bray_pcoa = ordinate(GP, "CCA", "bray")
 plot_ordination(GP, gp_bray_pcoa, "samples", color="SampleType")

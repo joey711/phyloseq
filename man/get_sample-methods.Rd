@@ -29,8 +29,8 @@ a single species-of-interest.
 }
 \examples{
 data(esophagus)
-taxa_names(esophagus)
-get_sample(esophagus, "59_5_19")
+taxNames <- taxa_names(esophagus)
+sample_59_5_19 <- get_sample(esophagus, "59_5_19")
 }
 \seealso{
 \code{\link{get_taxa}}
