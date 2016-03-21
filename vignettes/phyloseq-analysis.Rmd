@@ -55,17 +55,13 @@ library("phyloseq")
 library("ggplot2")
 ```
 
-And because we will show examples of custom modifications to ggplot2 plots, we also loaded ggplot2 as well. Here are my favorite ggplot2 theming commands. These are completely optional, and modifiable.
+And because we will show examples of custom modifications to ggplot2 plots, 
+we also loaded ggplot2 as well. 
+Here I'll set as default my favorite ggplot2 theme.
+These are completely optional, and modifiable.
 
 ```{r ggplot2-themes}
 theme_set(theme_bw())
-pal = "Set1"
-scale_colour_discrete <- function(palname = pal, ...) {
-    scale_colour_brewer(palette = palname, ...)
-}
-scale_fill_discrete <- function(palname = pal, ...) {
-    scale_fill_brewer(palette = palname, ...)
-}
 ```
 
 

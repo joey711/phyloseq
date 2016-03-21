@@ -168,9 +168,6 @@ Here is a bar plot showing the log2-fold-change, showing Genus and Phylum. Uses 
 ```{r bar-plot}
 library("ggplot2")
 theme_set(theme_bw())
-scale_fill_discrete <- function(palname = "Set1", ...) {
-    scale_fill_brewer(palette = palname, ...)
-}
 sigtabgen = subset(sigtab, !is.na(Genus))
 # Phylum order
 x = tapply(sigtabgen$log2FoldChange, sigtabgen$Phylum, function(x) max(x))
