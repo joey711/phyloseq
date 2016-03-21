@@ -320,7 +320,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #'  Whether to rescale the distance values to be \code{[0, 1]}, in which the
 #'  min value is close to zero and the max value is 1.
 #' 
-#' @param point_size (Optional). Default \code{4}. 
+#' @param point_size (Optional). Default \code{5}. 
 #'  The size of the vertex points.
 #' 
 #' @param point_alpha (Optional). Default \code{1}.
@@ -350,6 +350,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @import ggplot2
 #' @import reshape2
 #' @importFrom data.table data.table
+#' @importFrom data.table copy
 #' @importFrom igraph layout.auto
 #' @importFrom igraph layout.random
 #' @importFrom igraph layout.circle
@@ -394,7 +395,8 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
     return(names(available_layouts))
   }
   if(!laymeth %in% names(available_layouts)){
-    stop("Unsupported argument to `laymeth` option. Please use an option returned by `plot_net(laymeth='list')`")
+    stop("Unsupported argument to `laymeth` option.
+         Please use an option returned by `plot_net(laymeth='list')`")
   }
   # 1. 
   # Calculate Distance
@@ -445,7 +447,7 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
     g = igraph::graph.data.frame(LinksData, directed=FALSE)
     vertexDT = data.table(laymeth(g, ...),
                           vertex=get.vertex.attribute(g, "name"))
-    setkey(vertexDT, vertex)
+    setkeyv(vertexDT, "vertex")
     setnames(vertexDT, old = c(1, 2), new = c("x", "y"))
     extraData = NULL
     if( type == "samples" & !is.null(sample_data(physeq, FALSE)) ){
@@ -455,9 +457,11 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
     }
     # Only mod vertexDT if extraData exists
     if(!is.null(extraData)){
-      # Join vertexDT, extraData using data.table syntax. Presumes `vertex` is key in both.
+      # Join vertexDT, extraData by vertex
       setnames(extraData, old = "rn", new = "vertex")
-      vertexDT <- vertexDT[extraData]
+      setkeyv(vertexDT, "vertex")
+      setkeyv(extraData, "vertex")
+      vertexDT <- copy(vertexDT[extraData])
       vertexDT <- vertexDT[!is.na(x), ]
     }
     return(vertexDT)
@@ -466,25 +470,30 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
   # 4.
   # Update the links layout for ggplot: x, y, xend, yend
   link_layout = function(LinksData, vertexDT){
-    linkstart = vertexDT[LinksData$v1, x, y]
-    linkend = vertexDT[LinksData$v2, x, y]
+    linkstart = copy(vertexDT[LinksData$v1, x, y])
+    linkend = copy(vertexDT[LinksData$v2, x, y])
     setnames(linkend, old = c("y", "x"), new = c("yend", "xend"))
-    LinksData <- cbind(LinksData, linkstart, linkend)
-    return(LinksData)  
+    LinksData <- copy(cbind(LinksData, linkstart, linkend))
+    return(LinksData)
   }
   LinksData = link_layout(LinksData0, vertexDT)
   # 5.
   # Define ggplot2 network plot
-  links_to_ggplot = function(LinksData, vertexDT, vertmap=aes(x, y)){
-    p0 = ggplot(data=LinksData) + 
-      geom_segment(aes(x, y, xend=xend, yend=yend, size=Distance, alpha=Distance)) +
-      geom_point(mapping = vertmap, data=vertexDT, size=5, na.rm = TRUE) +
-      scale_alpha(range = c(1, 0.1)) + 
-      scale_size(range = c(2, 0.25))
-    return(p0)
-  }
-  p = links_to_ggplot(LinksData, vertexDT,
-                      vertmap = aes_string(x="x", y="y", color=color, shape=shape))
+  p = ggplot(data=LinksData) + 
+    geom_segment(mapping = aes(x, y, 
+                               xend = xend, 
+                               yend = yend, 
+                               size = Distance, 
+                               alpha = Distance)) +
+    geom_point(mapping = aes_string(x="x", y="y", 
+                                    color = color, 
+                                    shape = shape), 
+               data = vertexDT,
+               size = point_size,
+               alpha = point_alpha,
+               na.rm = TRUE) +
+    scale_alpha(range = c(1, 0.1)) + 
+    scale_size(range = c(2, 0.25))
   # Add labels
   if(!is.null(point_label)){
     p <- p + geom_text(aes_string(x="x", y="y", label=point_label),
@@ -1346,7 +1355,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #'
 #' The psmelt function is a specialized melt function for melting phyloseq objects
 #' (instances of the phyloseq class), usually for producing graphics
-#' with \code{\link{ggplot2}}. \code{psmelt} relies heavily on the 
+#' with \code{\link[ggplot2]{ggplot}2}. \code{psmelt} relies heavily on the 
 #' \code{\link[reshape2]{melt}} and \code{\link{merge}} functions.
 #' The naming conventions used in downstream phyloseq graphics functions
 #' have reserved the following variable names that should not be used
@@ -2107,7 +2116,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' There are many useful examples of phyloseq tree graphics in the
 #' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #'
-#' @import scales
+#' @importFrom scales log_trans
 #' @import ggplot2
 #' @importFrom data.table setkey
 #' @importFrom data.table setkeyv
@@ -2489,7 +2498,7 @@ RadialTheta <- function(pos){
 #' \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' 
 #' @importFrom vegan scores
-#' @import scales 
+#' @importFrom scales log_trans
 #' 
 #' @export
 #' @examples

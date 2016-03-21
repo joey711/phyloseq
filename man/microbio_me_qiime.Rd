@@ -90,7 +90,7 @@ zipps = microbio_me_qiime(zipfile)
 identical(tarps, zipps)
 tarps; zipps
 plot_heatmap(tarps)
-# A real example 
+# An example that used to work, before the QIIME-DB server was turned off by its host.
 # # Smokers dataset
 # smokezip = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip"
 # smokers1 = microbio_me_qiime(smokezip)

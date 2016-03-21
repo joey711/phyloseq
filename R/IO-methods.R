@@ -2115,7 +2115,7 @@ build_tax_table = function(taxlist){
 #' identical(tarps, zipps)
 #' tarps; zipps
 #' plot_heatmap(tarps)
-#' # A real example 
+#' # An example that used to work, before the QIIME-DB server was turned off by its host.
 #' # # Smokers dataset
 #' # smokezip = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip"
 #' # smokers1 = microbio_me_qiime(smokezip)
@@ -2348,7 +2348,7 @@ import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
 #' @param upFile (Required). A file location character string 
 #'  or \code{\link{connection}}
 #'  corresponding to the file that contains the UPARSE output table.
-#'  This is passed directly to \code{\link[data.table]{read.table}}.
+#'  This is passed directly to \code{\link[data.table]{fread}}.
 #'  Please see its \code{file} argument documentation for further
 #'  links and details.
 #' 
