@@ -56,7 +56,7 @@ of points (graph vertices).}
 Whether to rescale the distance values to be \code{[0, 1]}, in which the
 min value is close to zero and the max value is 1.}
 
-\item{point_size}{(Optional). Default \code{4}. 
+\item{point_size}{(Optional). Default \code{5}. 
 The size of the vertex points.}
 
 \item{point_alpha}{(Optional). Default \code{1}.
