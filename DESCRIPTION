@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 1.15.4
+Version: 1.15.5
 Date: 2016-03-20
 Title: Handling and analysis of high-throughput microbiome
     census data
@@ -20,7 +20,7 @@ Imports:
     cluster (>= 1.14.4),
     data.table (>= 1.9.6),
     foreach (>= 1.4.2),
-    ggplot2 (>= 1.0.0),
+    ggplot2 (>= 2.0.0),
     igraph (>= 0.7.0),
     methods (>= 3.1.0),
     multtest (>= 2.16.0),
@@ -32,11 +32,13 @@ Imports:
 Depends:
     R (>= 3.1.0)
 Suggests:
+    BiocStyle (>= 1.6),
     DESeq2 (>= 1.8),
     genefilter (>= 1.50),
     testthat (>= 0.10),
     knitr (>= 1.10),
-    metagenomeSeq (>= 1.10)
+    metagenomeSeq (>= 1.10),
+    rmarkdown (>= 0.7)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.1)
 biocViews: Sequencing, Microbiome, Metagenomics,
