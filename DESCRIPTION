@@ -1,5 +1,5 @@
 Package: phyloseq
-Version: 1.15.7
+Version: 1.15.8
 Date: 2016-03-21
 Title: Handling and analysis of high-throughput microbiome
     census data
@@ -30,7 +30,7 @@ Imports:
     vegan (>= 2.0.10),
     Biobase
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.2.0)
 Suggests:
     BiocStyle (>= 1.6),
     DESeq2 (>= 1.8),
