@@ -1730,26 +1730,26 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' 
 #' \code{\link{read_tree_greengenes}}
 #' 
-#' \code{\link[biom]{biom-package}}
-#' 
-#' \code{\link[biom]{read_biom}}
+#' \code{\link[biomformat]{read_biom}}
 #'
-#' \code{\link[biom]{biom_data}}
+#' \code{\link[biomformat]{biom_data}}
 #'
-#' \code{\link[biom]{sample_metadata}}
+#' \code{\link[biomformat]{sample_metadata}}
 #' 
-#' \code{\link[biom]{observation_metadata}}
+#' \code{\link[biomformat]{observation_metadata}}
 #'
 #' \code{\link[Biostrings]{XStringSet-io}}
 #'
 #' @references \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{biom-format}
 #'
 #' @importFrom Biostrings readDNAStringSet
-#' @importFrom biom read_biom
-#' @importFrom biom sample_metadata
-#' @importFrom biom biom_data
-#' @importFrom biom observation_metadata
+#' @importFrom biomformat read_biom
+#' @importFrom biomformat sample_metadata
+#' @importFrom biomformat biom_data
+#' @importFrom biomformat observation_metadata
+#' 
 #' @export
+#' 
 #' @examples
 #' # An included example of a rich dense biom file
 #' rich_dense_biom  <- system.file("extdata", "rich_dense_otu_table.biom",  package="phyloseq")
@@ -2022,28 +2022,17 @@ build_tax_table = function(taxlist){
 ################################################################################
 ################################################################################
 ################################################################################
-#' Download and import directly from microbio.me/qiime
+#' Import microbio.me/qiime (QIIME-DB) data package
 #' 
-#' This function is for accessing microbiome datasets from the
+#' Originally, this function was for accessing microbiome datasets from the
 #' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
 #' public repository from within R.
-#' I haven't yet figured out how to list the available studies at
-#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
-#' from within R
-#' (and I don't know if they have made this possible),
-#' but I have provided illustrated instructions for finding 
-#' details about studies you might want to download and explore,
-#' as well as the FTP address that you will need. 
-#' Note that you likely need to create an account at
-#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}
-#' in order to explore the studies they have available for download.
-#' Please see a detailed tutorial for further help finding the FTP address 
-#' of the data that you want. Also note that this function will work
-#' on the full address to any \code{.zip} zipped file with microbiome
-#' data organized with the same naming conventions and file types as
-#' \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
-#' Please also see the 
-#' \href{http://joey711.github.io/phyloseq/download-microbio.me.html}{microbio_me_qiime tutorial}
+#' As you can see by clicking on the above link,
+#' the QIIME-DB sever is down indefinitely.
+#' However, this function will remain supported here
+#' in case the FTP server goes back up, 
+#' and also for phyloseq users that have downloaded 
+#' one or more data packages prior to the server going down.
 #' 
 #' @param zipftp (Required). A character string that is the full URL
 #'  path to a zipped file that follows the file naming conventions used by 
@@ -2058,27 +2047,27 @@ build_tax_table = function(taxlist){
 #'  you could simply provide \code{494} or \code{"494"}
 #'  as the first (`zipftp`) argument.
 #'  
-#'  @param ext (Optional). A \code{\link{character}} string of the expected
-#'   file extension, which also indicates the compression type,
-#'   if \code{zipftp} is a study number instead of the full path. 
-#'   Note that this argument has no effect if \code{zipftp} is the full path,
-#'   in which case the file extension is read directly from the downloaded file.
-#'   
-#'  @param parsef (Optional). The type of taxonomic parsing to use for the
-#'   OTU taxonomic classification, in the \code{.biom} file, if present.
-#'   This is passed on to \code{\link{import_biom}}, but unlike that function
-#'   the default parsing function is \code{\link{parse_taxonomy_greengenes}},
-#'   rather than \code{\link{parse_taxonomy_default}}, because we know
-#'   ahead of time that most (or all?) of the taxonomic classifications
-#'   in the \code{microbio.me/qiime} repository will be based on 
-#'   GreenGenes.
+#' @param ext (Optional). A \code{\link{character}} string of the expected
+#'  file extension, which also indicates the compression type,
+#'  if \code{zipftp} is a study number instead of the full path. 
+#'  Note that this argument has no effect if \code{zipftp} is the full path,
+#'  in which case the file extension is read directly from the downloaded file.
 #'  
-#'  @param ... (Optional, for advanced users). Additional arguments passed to 
-#'   \code{\link{download.file}}. This is mainly for non-standard links to
-#'   resources (in this case, a zipped file) that are not being hosted by
-#'   \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
-#'   If you are using a FTP address or study number from their servers,
-#'   then you shouldn't need to provide any additional arguments.
+#' @param parsef (Optional). The type of taxonomic parsing to use for the
+#'  OTU taxonomic classification, in the \code{.biom} file, if present.
+#'  This is passed on to \code{\link{import_biom}}, but unlike that function
+#'  the default parsing function is \code{\link{parse_taxonomy_greengenes}},
+#'  rather than \code{\link{parse_taxonomy_default}}, because we know
+#'  ahead of time that most (or all?) of the taxonomic classifications
+#'  in the \code{microbio.me/qiime} repository will be based on 
+#'  GreenGenes.
+#'  
+#' @param ... (Optional, for advanced users). Additional arguments passed to 
+#'  \code{\link{download.file}}. This is mainly for non-standard links to
+#'  resources (in this case, a zipped file) that are not being hosted by
+#'  \href{http://www.microbio.me/qiime/index.psp}{microbio.me/qiime}.
+#'  If you are using a FTP address or study number from their servers,
+#'  then you shouldn't need to provide any additional arguments.
 #' 
 #' @return
 #'  A \code{\link{phyloseq-class}} object if possible, a component if only a 
@@ -2115,7 +2104,7 @@ build_tax_table = function(taxlist){
 #' identical(tarps, zipps)
 #' tarps; zipps
 #' plot_heatmap(tarps)
-#' # A real example 
+#' # An example that used to work, before the QIIME-DB server was turned off by its host.
 #' # # Smokers dataset
 #' # smokezip = "ftp://thebeast.colorado.edu/pub/QIIME_DB_Public_Studies/study_524_split_library_seqs_and_mapping.zip"
 #' # smokers1 = microbio_me_qiime(smokezip)
@@ -2227,17 +2216,22 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' \code{-cluster_otu} option flag.
 #' For details about installing and running usearch, please refer to the
 #' \href{http://drive5.com/usearch/}{usearch website}.
+#' For details about the output format, please refer to the
+#' \href{http://www.drive5.com/usearch/manual/opt_uc.html}{uc format definition}.
 #' This importer is intended to read a particular table format output
-#' that is generated by usearch with the \code{-uc} option flag,
+#' that is generated by usearch,
+#' its so-called ``cluster format'',
 #' a file format that is often given the \code{.uc} extension
 #' in usearch documentation.
+#' 
 #' Because usearch is an external (non-R) application, there is no direct
 #' way to continuously check that these suggested arguments and file formats will 
 #' remain in their current state. 
 #' If there is a problem, please verify your version of usearch,
 #' create a small reproducible example of the problem,
 #' and post it as an issue on the phyloseq issues tracker.
-#' The version of usearch expected by this import function is \code{7.0.109}.
+#' The version of usearch upon which this import function 
+#' was created is \code{7.0.109}.
 #' Hopefully later versions of usearch maintain this function and format,
 #' but the phyloseq team has no way to guarantee this,
 #' and so any feedback about this will help maintain future functionality.
@@ -2246,6 +2240,15 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' hold the read-label and OTU ID, respectively;
 #' and it is also assumed that the delimiter between sample-name and read
 #' in the read-name entries is a single \code{"_"}.
+#' If this is not true, you may have to update these parameters,
+#' or even modify the current implementation of this function.
+#' 
+#' Also note that there is now a UPARSE-specific output file format,
+#' \href{http://www.drive5.com/usearch/manual/opt_uparseout.html}{uparseout},
+#' and it might make more sense to create and import that file
+#' for use in phyloseq.
+#' If so, you'll want to import using the
+#' \code{\link{import_uparse}()} function. 
 #' 
 #' @param ucfile (Required). A file location character string 
 #'  or \code{\link{connection}}
@@ -2261,7 +2264,7 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' @param colOTU (Optional). Numeric. The column index in the uc-table 
 #'  file that holds OTU IDs.
 #'  The default column index is \code{10}.
-#'   
+#'  
 #' @param readDelimiter (Optional). An R \code{\link{regex}} as a character string.
 #'  This should be the delimiter that separates the sample ID
 #'  from the original ID in the demultiplexed read ID of your sequence file.
@@ -2313,6 +2316,116 @@ import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
   return(otu_table(OTU, taxa_are_rows=FALSE))
 }
 ################################################################################
+#' Import \href{http://www.drive5.com/usearch/manual/opt_uparseout.html}{UPARSE file format}
+#' 
+#' UPARSE is an algorithm for OTU-clustering implemented within usearch.
+#' At last check, the UPARSE algortihm was accessed via the 
+#' \code{-cluster_otu} option flag.
+#' For details about installing and running usearch, please refer to the
+#' \href{http://drive5.com/usearch/}{usearch website}.
+#' For details about the output format, please refer to the
+#' \href{http://www.drive5.com/usearch/manual/opt_uparseout.html}{uparse format definition}.
+#' 
+#' Because UPARSE is an external (non-R) application, there is no direct
+#' way to continuously check that these suggested arguments and file formats will 
+#' remain in their current state. 
+#' If there is a problem, please verify your version of usearch,
+#' create a small reproducible example of the problem,
+#' and post it as an issue on the 
+#' \href{https://github.com/joey711/phyloseq/issues}{phyloseq issues tracker}.
+#' 
+#' @param upFile (Required). A file location character string 
+#'  or \code{\link{connection}}
+#'  corresponding to the file that contains the UPARSE output table.
+#'  This is passed directly to \code{\link[data.table]{fread}}.
+#'  Please see its \code{file} argument documentation for further
+#'  links and details.
+#' 
+#' @param omitChimeras (Optional). \code{logical(1)}. 
+#'  Default is \code{TRUE}.
+#'  Whether to omit entries that correspond to sequences/OTUs
+#'  that were identified as chimeras.
+#' 
+#' @param countTable (Optional). \code{logical(1)}. 
+#'  Default is \code{TRUE}.
+#'  Whether to return the result as a wide-format table
+#'  with dimensions OTU-by-sample,
+#'  or to leave the table in its original sparse long-format
+#'  that might be more suitable for certain \code{\link{data.table}} operations.
+#'  If \code{TRUE}, entries corresponding to the same sample and OTU
+#'  have their counts summed.
+#'  
+#' @param OTUtable (Optional). \code{logical(1)}. 
+#'  Default is \code{TRUE}.
+#'  Whether to coerce the result to \code{\link{otu_table}} format,
+#'  or leave it as a \code{\link{data.table}} format.
+#'  The former is appropriate for most \code{\link{phyloseq}} operations,
+#'  the latter is useful for a lot of custom operations
+#'  and custom \code{\link[ggplot2]{ggplot}} graphics calls.
+#'  
+#' @param verbose (Optional). A \code{\link{logical}}.
+#'  Default is \code{TRUE}. 
+#'  Should progresss messages
+#'  be \code{\link{cat}}ted to standard out?
+#' 
+#' @importFrom data.table fread
+#' @importFrom data.table setnames
+#' @importFrom data.table setkeyv
+#' 
+#' @export
+#' 
+#' @seealso 
+#'  \code{\link{import_usearch_uc}}
+#' 
+#' @examples
+#' ###
+import_uparse = function(upFile, 
+                         omitChimeras = TRUE, 
+                         countTable = TRUE,
+                         OTUtable = TRUE,
+                         verbose = TRUE){
+  if(verbose){message("Parsing UPARSE results table at:\n", upFile,
+                      "\nSee the following for details:\n",
+                      "http://www.drive5.com/usearch/manual/opt_uparseout.html")}
+  x = fread(upFile, header = FALSE)
+  setnames(x, "V5", "OTULabel")
+  if(ncol(x) > 5L){
+    # If relabel column provided, use that as OTULabel
+    setnames(x, "V6", "OTULabel")
+  }
+  setnames(x, "V1", "queryString")
+  x[, count := as.integer(gsub("^.+;size=(\\d+);$", "\\1", queryString))]
+  x[, queryID := gsub("^(.+);size=\\d+;$", "\\1", queryString)]
+  setnames(x, "V2", "Classification")
+  if(omitChimeras){
+    x <- x[(Classification != "chimera")]
+  }
+  if(countTable){
+    # If you want to create a wide-format table with summed counts
+    # key sort
+    sortVars = c("queryID", "OTULabel")
+    setkeyv(x, sortVars)
+    # turn into wide data.table
+    OTUwdt <- dcast.data.table(x, OTULabel ~ queryID,
+                               value.var = "count",
+                               fun.aggregate = sum,
+                               fill=0L)
+    if(OTUtable){
+      # If we want an OTU table version of this
+      taxaIDvec = OTUwdt$OTULabel
+      OTUwdt[, OTULabel := NULL]
+      # Coerce to integer matrix
+      OTU <- as.matrix(OTUwdt)
+      row.names(OTU) <- taxaIDvec
+      # Coerce to OTU table and return
+      return(otu_table(OTU, taxa_are_rows=TRUE))
+    } else {
+      return(OTUwdt)
+    }
+  } else {
+    return(x[, list(OTULabel, count, queryID, Classification)])
+  }
+}
 ################################################################################
 ################################################################################
 ################################################################################

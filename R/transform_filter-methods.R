@@ -81,7 +81,8 @@
 #'  but differs from analogous functions in related packages
 #'  (e.g. subsampling in QIIME).
 #'  
-#'  @param trimOTUs (Optional). Logical. Whether to trim OTUs
+#' @param trimOTUs (Optional). \code{\link{logical}(1)}.
+#'   Whether to trim OTUs
 #'   from the dataset that are no longer observed in any sample
 #'   (have a count of zero in every sample). 
 #'   The number of OTUs trimmed, if any, is printed to

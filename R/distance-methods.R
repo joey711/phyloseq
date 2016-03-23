@@ -32,6 +32,11 @@
 #'  of the supported options here,
 #'  and links to accompanying documentation.
 #'  
+#'  Note that for the common definition of \code{Jaccard} distance
+#'  using the \code{vegan-package} implementation,
+#'  an additional argument is needed, with the full call having the form:
+#'  \code{distance(physeq, method = "jaccard", binary = TRUE)}
+#'  
 #'  The following methods are implemented explicitly within
 #'  the \code{\link{phyloseq-package}}, 
 #'  and accessed by the following \code{method} options:
@@ -78,7 +83,7 @@
 #' data(esophagus)
 #' distance(esophagus, "uunifrac") # Unweighted UniFrac
 #' distance(esophagus, "wunifrac") # weighted UniFrac
-#' distance(esophagus, "jaccard") # vegdist jaccard
+#' distance(esophagus, "jaccard", binary = TRUE) # vegdist jaccard
 #' distance(esophagus, "gower") # vegdist option "gower"
 #' distance(esophagus, "g") # designdist method option "g"
 #' distance(esophagus, "minkowski") # invokes a method from the base dist() function.
