@@ -2,9 +2,6 @@
 # extension of plot methods for phyloseq object.
 # 
 ################################################################################
-################################################################################
-################################################################################
-################################################################################
 #' Generic plot defaults for phyloseq.
 #'
 #' There are many useful examples of phyloseq graphics functions in the
@@ -59,6 +56,11 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 	}
 })
 ################################################################################
+# For simplicity, the most common ggplot2 dependency functions/objects
+# will be imported only here.
+# Less-common functions will be listed in the roxygen header above those functions
+# but rarely will these common imports be re-listed elsewhere in other plot_ functions,
+# even though it is often good practice to do so.
 ################################################################################
 #' Microbiome Network Plot using ggplot2 
 #'
@@ -155,11 +157,24 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'  The code most directly used/modified was first posted here:
 #'  \url{http://www.r-bloggers.com/basic-ggplot2-network-graphs/}
 #' 
-#' @import ggplot2
+#' 
 #' @import reshape2
 #' @importFrom igraph layout.fruchterman.reingold
 #' @importFrom igraph get.edgelist
 #' @importFrom igraph get.vertex.attribute
+#' @importFrom igraph vcount
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 geom_text
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 geom_path
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 ggtitle
+#' 
 #' @export
 #' @examples 
 #' 
@@ -249,7 +264,6 @@ plot_network <- function(g, physeq=NULL, type="samples",
 	
 	return(p)
 }
-################################################################################
 ################################################################################
 #' Microbiome Network Plot using ggplot2 
 #'
@@ -347,10 +361,12 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' 
 #'  \code{\link{plot_network}}
 #' 
-#' @import ggplot2
+#' 
 #' @import reshape2
+#' 
 #' @importFrom data.table data.table
 #' @importFrom data.table copy
+#' 
 #' @importFrom igraph layout.auto
 #' @importFrom igraph layout.random
 #' @importFrom igraph layout.circle
@@ -365,6 +381,11 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @importFrom igraph layout.svd
 #' @importFrom igraph graph.data.frame
 #' @importFrom igraph get.vertex.attribute
+#' 
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 scale_alpha
+#' @importFrom ggplot2 scale_size
+#' 
 #' @export
 #' @examples 
 #' data(enterotype)
@@ -514,7 +535,6 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
   return(p)
 }
 ################################################################################
-################################################################################
 #' Plot alpha diversity, flexibly with ggplot2
 #'
 #' There are many useful examples of alpha-diversity graphics in the
@@ -625,9 +645,15 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
 #' There are many more interesting examples at the
 #' \href{http://joey711.github.io/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 #'
-#' @import ggplot2
+#' 
 #' @import reshape2
+#' 
 #' @importFrom plyr is.discrete
+#' 
+#' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 element_text
+#' 
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
@@ -749,7 +775,6 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 	return(p)
 }
 ################################################################################
-################################################################################
 # The general case, could plot samples, taxa, or both (biplot/split). Default samples.
 ################################################################################
 #' General ordination plotter based on ggplot2.
@@ -846,9 +871,17 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #'
 #' \code{\link{plot_phyloseq}}
 #'
-#' @import ggplot2
+#' 
 #' @importFrom vegan wascores
+#' 
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 update_labels
+#' @importFrom ggplot2 scale_size_manual
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' 
 #' @export
+#' 
 #' @examples 
 #' # See other examples at
 #' # http://joey711.github.io/phyloseq/plot_ordination-examples
@@ -1013,11 +1046,9 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   }
   # In "naked" OTU-table cases, `siteDF` or `specDF` could be matrix.
   if(!inherits(siteDF, "data.frame")){
-    #warning("Sample Co-variables apparently missing in provided `physeq` for this plot-type. Coercing coord matrix to data.frame.")
     siteDF <- as.data.frame(siteDF, stringsAsFactors = FALSE)
   }  
   if(!inherits(specDF, "data.frame")){
-    #warning("Taxonomy apparently missing in provided `physeq` for this plot-type. Coercing coord matrix to data.frame.")
     specDF <- as.data.frame(specDF, stringsAsFactors = FALSE)
   }
   # Define the main plot data frame, `DF`
@@ -1143,7 +1174,6 @@ rm.na.phyloseq <- function(DF, key.var){
 	return(DF)
 }
 ################################################################################
-################################################################################
 #' @keywords internal
 #' @importFrom plyr is.discrete
 rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
@@ -1217,7 +1247,7 @@ rp.joint.fill <- function(DF, map.var, id.type.rp="samples"){
 #'
 #'  \code{\link{plot_ordination}}
 #'
-#' @import ggplot2
+#' 
 #' @export
 #' @examples 
 #' ## See the online tutorials.
@@ -1251,7 +1281,6 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 	return(p$data[show.names, ])
 }
 ################################################################################
-################################################################################
 #' General ordination eigenvalue plotter using ggplot2.
 #'
 #' Convenience wrapper for plotting ordination eigenvalues (if available) 
@@ -1280,7 +1309,10 @@ subset_ord_plot <- function(p, threshold=0.05, method="farthest"){
 #' 
 #'  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq online tutorials}
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 element_text
+#' 
 #' @export
 #' @examples
 #' # First load and trim a dataset
@@ -1402,6 +1434,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #'  \code{\link{merge}}
 #' 
 #' @import reshape2
+#' 
 #' @export
 #'
 #' @examples
@@ -1514,7 +1547,6 @@ psmelt = function(physeq){
   return(mdf)
 }
 ################################################################################
-################################################################################
 #' A flexible, informative barplot phyloseq data
 #'
 #' There are many useful examples of phyloseq barplot graphics in the
@@ -1572,7 +1604,12 @@ psmelt = function(physeq){
 #' 
 #'  \code{\link{qplot}}
 #'
-#' @import ggplot2
+#' 
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 element_text
+#' 
 #' @export
 #'
 #' @examples
@@ -1612,9 +1649,7 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 	return(p)
 }
 ################################################################################
-################################################################################
 # plot_tree section.  
-################################################################################
 ################################################################################
 #' Returns a data table defining the line segments of a phylogenetic tree.
 #'
@@ -1660,8 +1695,10 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 #' 
 #' @importFrom ape ladderize
 #' @importFrom ape reorder.phylo
+#' 
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
+#' 
 #' @export
 #' @examples
 #' library("ggplot2")
@@ -1816,7 +1853,7 @@ howtolabnodes = function(physeq){
 #'
 #' \code{\link{plot_tree}}
 #'
-#' @import ggplot2
+#' 
 #' @export
 #' @examples
 #' data("esophagus")
@@ -1875,7 +1912,7 @@ nodeplotblank = function(p, nodelabdf){
 #'
 #' \code{\link{plot_tree}}
 #'
-#' @import ggplot2
+#' 
 #' @export
 #' @examples
 #' nodeplotboot()
@@ -1946,15 +1983,20 @@ nodeplotboot = function(highthresh=95L, lowcthresh=50L, size=2L, hjust=-0.2){
 #'
 #' \code{\link{plot_tree}}
 #'
-#' @import ggplot2
 #' @export
+#' 
 #' @examples
 #' nodeplotdefault()
 #' nodeplotdefault(3, -0.4)
 nodeplotdefault = function(size=2L, hjust=-0.2){
 	function(p, nodelabdf){
-		p = p + geom_text(mapping=aes(x=x, y=y, label=label), data=nodelabdf,
-                      size=size, hjust=hjust, na.rm=TRUE)
+		p = p + geom_text(mapping=aes(x=x, 
+		                              y=y,
+		                              label=label), 
+		                  data=nodelabdf,
+                      size=size, 
+		                  hjust=hjust, 
+		                  na.rm=TRUE)
 		return(p)
 	}
 }
@@ -2117,9 +2159,15 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 #'
 #' @importFrom scales log_trans
-#' @import ggplot2
+#' 
 #' @importFrom data.table setkey
 #' @importFrom data.table setkeyv
+#' 
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_size_continuous
+#' @importFrom ggplot2 element_blank
+#' 
 #' @export
 #' @examples
 #' # # Using plot_tree() with the esophagus dataset.
@@ -2132,7 +2180,6 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' # plot_tree(esophagus, size="Abundance")
 #' # plot_tree(esophagus, size="Abundance", color="samples")
 #' plot_tree(esophagus, size="Abundance", color="Sample", base.spacing=0.03)
-################################################################################
 #' plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
                        color=NULL, shape=NULL, size=NULL,
@@ -2322,8 +2369,6 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
   return(p)
 }
 ################################################################################
-################################################################################
-################################################################################
 # Adapted from NeatMap-package.
 # Vectorized for speed and simplicity, also only calculates theta and not r.
 #' @keywords internal
@@ -2498,7 +2543,14 @@ RadialTheta <- function(pos){
 #' \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 #' 
 #' @importFrom vegan scores
+#' 
 #' @importFrom scales log_trans
+#' 
+#' @importFrom ggplot2 scale_fill_gradient
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_fill_gradient
+#' @importFrom ggplot2 geom_raster
 #' 
 #' @export
 #' @examples
@@ -2767,8 +2819,11 @@ chunkReOrder = function(x, newstart = x[[1]]){
 #' 
 #' \code{\link[ggplot2]{ggplot}}
 #' 
-#' @import ggplot2
+#' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 geom_line
+#' 
 #' @export
+#' 
 #' @examples
 #' # Load and process data
 #' data("soilrep")

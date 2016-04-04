@@ -35,7 +35,7 @@ Whether to coerce the result to \code{\link{otu_table}} format,
 or leave it as a \code{\link{data.table}} format.
 The former is appropriate for most \code{\link{phyloseq}} operations,
 the latter is useful for a lot of custom operations
-and custom \code{\link[ggplot2]{ggplot}} graphics calls.}
+and custom \code{\link[ggplot2]{ggplot}2} graphics calls.}
 
 \item{verbose}{(Optional). A \code{\link{logical}}.
 Default is \code{TRUE}. 
