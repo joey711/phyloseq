@@ -444,20 +444,58 @@ For further information, I suggest reviewing literature such as
 - ["Waste Not, Want Not..."](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
 
 
-## Now there are negative numbers and I don't know what to do
+## Negative numbers in my transformed data table?
 
+This sort of question usually appears after someone used
+a log-like transformation / variance stabilizing transformation
+on their data, 
+in preparation for an exploratory analysis via ordination.
+Negative values in this context probably correspond
+to **"less than one count"** after rescaling.
+For many ordination methods, 
+like [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis),
+negative numbers are not a problem.
+
+Instead, the problem is often posed because a user
+also wants to use **a particular distance measure**
+that is undefined or unstable in the presence of negative entries.
+In this context, however, the more negative a value is,
+the more likely that it was zero, or very small, 
+in the original "raw" count matrix.
+For most distances and hypotheses, these values
+are probably not very important, or even negligible.
+Given this, it is probably quite reasonable to do one of the following:
+
+(1) Set to zero all values less than zero.
+If `X` is your matrix, you can accomplish this with
+`X[X < 0.0] <- 0.0`
+(2) Add a pseudocount prior to data transformation.
+This often curbs or prevents the presence of zeroes
+in the table of transformed values.
+Some people don't like this approach for their dataset,
+and they may or may not be correct.
+It is up to you to decide for your data.
 See [Discussion on Issue 445](https://github.com/joey711/phyloseq/issues/445).
+
+Please also note that taxa entries that are all negative after transformation,
+or equivalently are very small or almost always zero,
+should probably be filtered from your data
+prior to analysis. 
+There are many different reasons for this.
 
 
 ## I get an error regarding geometric mean
 
-See the discussion on [Issue 445](https://github.com/joey711/phyloseq/issues/445)
-regarding geometric means.
+See my [SO post on alternative geometric mean functions in R](http://stackoverflow.com/a/25555105/935950)
 There are several examples for alternative calculations of geometric mean,
 and some of these might solve the problem of having an error.
+
+See also the discussion on [Issue 445](https://github.com/joey711/phyloseq/issues/445)
+regarding geometric means.
+
 Alternative library size estimators may be appropriate for your data,
-and it remains your responsibility to determine
-if any specific approach is valid.
+and it remains your responsibility 
+to determine if any specific approach is valid.
 
 Mike Love (a developer for DESeq2), suggested the following consideration:
 
@@ -471,20 +509,22 @@ of the row sum of counts and the proportion of count
 which is in a single sample."
 
 
-## pseudocounts are not appropriate for my data
+## Pseudocounts are not appropriate for my data, because...
 
 See [Discussion on Issue 445](https://github.com/joey711/phyloseq/issues/445).
 
 Also, think carefully about what you mean here. 
-More likely, this statement could be more accurately stated as,
+I suspect this statement could be more accurately stated as,
 *pseudocounts are not appropriate for my experiment, data, and the analysis step I was about to perform*.
 Your position in this case is thus based on a combination 
 of how the data appears to behave,
 and your knowledge of how pseudocounts would affect
 the analysis you were going to use.
-Is there an alternative analysis method?
-Is the method you were about to use really that sensitive to adding a pseucocount?
-Is a pseudocount really needed, or were you copying/pasting this step
+Consider the following.
+
+- Is there an alternative analysis method?
+- Is the method you were about to use really that sensitive to adding a pseucocount?
+- Is a pseudocount really needed, or were you copying/pasting this step
 to an analysis script that you found somewhere?
 
 
