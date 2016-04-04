@@ -558,6 +558,7 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
 ################################################################################
 #' @importFrom ape prop.part
 #' @importFrom ape reorder.phylo
+#' @importFrom ape node.depth
 #' @keywords internal
 #' @import foreach
 fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
@@ -595,19 +596,28 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
   # `edge_array`
   #
 	# Create a list of descendants, starting from the first internal node (root)
-	descList <- prop.part(tree, check.labels = FALSE)
-	# Add the terminal edge descendants (tips). By definition, can only have one descendant
-	descList <- c(as.list(1:length(tree$tip.label)), descList)
-	# Convert `descList` to `edge_array` that matches the order of things in `tree$edge`
-	edge_array <- matrix(0, nrow=nrow(tree$edge), ncol=nsamples(physeq), 
-	                      dimnames=list(NULL, sample_names=sample_names(physeq)))
-	for(i in 1:nrow(tree$edge)){
-    # For each entry in the tree$edge table, sum the descendants for each sample
-    # `tree$edge[i, 2]` is the node ID.
-	  edge_array[i, ] <- colSums(OTU[descList[[tree$edge[i, 2]]], , drop=FALSE], na.rm = TRUE)
+	ntip <- length(tree$tip.label)
+	if(ntip != ntaxa(physeq)) stop("Incompatible tree and OTU table!")
+	# Create a matrix that maps each internal node to its 2 descendants
+	# This matrix doesn't include the tips, so must use node#-ntip to index into it
+	node.desc <- matrix(tree$edge[order(tree$edge[,1]),][,2],byrow=TRUE,ncol=2)
+	# Define the edge_array object
+	# Right now this is a node_array object, each row is a node (including tips)
+	# It will be subset and ordered to match tree$edge later
+	edge_array <- matrix(0, nrow=ntip+tree$Nnode, ncol=nsamples(physeq), 
+	                     dimnames=list(NULL, sample_names=sample_names(physeq)))
+	# Load the tip counts in directly
+	edge_array[1:ntip,] <- OTU
+	# Get a list of internal nodes ordered by increasing depth
+	ord.node <- order(node.depth(tree))[(ntip+1):(ntip+tree$Nnode)]
+	# Loop over internal nodes, summing their descendants to get that nodes count
+	for(i in ord.node){
+	  edge_array[i,] <- colSums(edge_array[node.desc[i-ntip,], , drop=FALSE], na.rm = TRUE)
 	}
-  # Remove unneeded variables. `descList` in particular could be large-ish.
-  rm(descList)
+	# Keep only those with a parental edge (drops root) and order to match tree$edge
+	edge_array <- edge_array[tree$edge[,2],]
+	# Remove unneeded variables.
+	rm(node.desc)
 	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
 	if(!weighted){
 		# For unweighted UniFrac, convert the edge_array to an occurrence (presence/absence binary) array

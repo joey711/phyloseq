@@ -56,5 +56,7 @@ tutorials.
  \code{\link[DESeq2]{DESeq}}
  
  \code{\link[DESeq2]{results}}
+ 
+ \code{\link[DESeq2]{DESeqDataSetFromMatrix}}
 }
 
