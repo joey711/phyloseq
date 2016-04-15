@@ -9,5 +9,5 @@ packageVersion("phyloseq")
 # Now, recommended practice is to put your tests in tests/testthat, and ensure R CMD check runs them by putting the following code in tests/test-all.R:
 # library(testthat)
 # test_check("yourpackage")
-# The advantage of this new structure is that the user has control over whether or not tests are installed using the –install-tests parameter to R CMD install, or INSTALL_opts = c(“–install-tests”) argument to install.packages(). I’m not sure why you wouldn’t want to install the tests, but now you have the flexibility as requested by CRAN maintainers.
+# The advantage of this new structure is that the user has control over whether or not tests are installed using the --install-tests parameter to R CMD install, or INSTALL_opts = c(“--install-tests”) argument to install.packages(). I'm not sure why you wouldn't want to install the tests, but now you have the flexibility as requested by CRAN maintainers.
 test_check("phyloseq")
