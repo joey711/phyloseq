@@ -48,8 +48,8 @@ test_that("import_mothur: imported files become S4 object", {
 	expect_that(isS4(esophman), is_true())
 })
 
-test_that("import_mothur: show method output tests",{
-	expect_that(esophman, prints_text("phyloseq-class experiment-level object"))
+test_that("import_mothur: show method output tests", {
+  expect_output(print(esophman), "phyloseq-class experiment-level object")
 })
 
 test_that("Test newer supported mothur output files, constaxonomy and shared files", {
@@ -66,14 +66,17 @@ test_that("Test newer supported mothur output files, constaxonomy and shared fil
 ################################################################################
 # import_RDP tests
 test_that("the import_RDP_otu function can properly read gzipped-example", {
-	otufile <- system.file("extdata", "rformat_dist_0.03.txt.gz", package="phyloseq")
+  # Setup data
+	otufile <- system.file("extdata",
+	                       "rformat_dist_0.03.txt.gz",
+	                       package="phyloseq")
 	ex_otu  <- import_RDP_otu(otufile)	
-
-	expect_that(head(t(ex_otu)), prints_text("OTU Table:"))
-	expect_that(ex_otu, is_a("otu_table"))
-	expect_that(ntaxa(ex_otu), equals(5276))
-	expect_that(nsamples(ex_otu), equals(14))
-	expect_that(sample_sums(ex_otu), is_a("numeric"))
+	# test expectations
+	expect_output(print(head(t(ex_otu))), "OTU Table:")
+	expect_is(ex_otu, "otu_table")
+	expect_equal(ntaxa(ex_otu), 5276)
+	expect_equal(nsamples(ex_otu), 14)
+	expect_is(sample_sums(ex_otu), "numeric")
 })
 
 
