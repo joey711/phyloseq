@@ -1,0 +1,562 @@
+---
+title: "phyloseq Frequently Asked Questions (FAQ)"
+date: "`r date()`"
+author: "Paul McMurdie and Susan Holmes"
+output: 
+  BiocStyle::html_document:
+    fig_height: 7
+    fig_width: 10
+    toc: yes
+    toc_depth: 2
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{phyloseq Frequently Asked Questions (FAQ)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+
+This vignette includes answers and supporting materials that address
+[frequently asked questions (FAQs)](https://en.wikipedia.org/wiki/FAQ),
+especially those posted on
+[the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues).
+
+For most issues 
+[the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues)
+should suffice; but occasionally there are questions
+that are asked repeatedly enough that it becomes appropriate 
+to canonize the answer here in this vignette.
+This is both 
+(1) to help users find solutions more quickly, and 
+(2) to mitigate redundancy on 
+[the issues tracker](https://github.com/joey711/phyloseq/issues).
+
+All users are encouraged to perform a google search
+and review other questions/responses to both open and closed issues
+on [the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues)
+before seeking an active response by posting a new issue.
+
+
+```{r, warning=FALSE, message=FALSE}
+library("phyloseq"); packageVersion("phyloseq")
+library("ggplot2"); packageVersion("ggplot2")
+theme_set(theme_bw())
+```
+
+
+# - I tried reading my biom file using phyloseq, but it didn’t work. What’s wrong?
+
+The most common cause for this errors
+is derived from a massive change to the way biom files are stored on disk.
+There are currently two "versions" of the biom-format, 
+each of which stores data very differently.
+The original format -- and original support in phyloseq -- 
+was for biom-format version 1 based on [JSON](https://en.wikipedia.org/wiki/JSON).
+
+The latest version -- version 2 -- is based on the
+[HDF5](https://www.hdfgroup.org/HDF5/doc/UG/index.html) file format, 
+and this new biom format version
+recently become the default file output format 
+for popular workflows like QIIME.
+
+## Good News: HDF5-biom should be supported in next release
+
+The *biomformat* package is the Bioconductor incarnation
+of R package support for the biom file format,
+written by Paul McMurdie (phyloseq author) 
+and Joseph Paulson (metagenomeSeq author).
+Although it has been available on GitHub and BioC-devel
+for many months now, 
+the first release version of *biomformat* 
+on Bioconductor will be in April 2016.
+In that same release, phyloseq will switch over
+from the JSON-only *biom* package hosted on CRAN
+to this new package, *biomformat*, 
+which simultaneously supports biom files 
+based on either HDF5 or JSON.
+
+This difference will be largely opaque to users,
+and phyloseq will "just work" after the next release in April.
+
+Use the `import_biom` function to read your recent
+QIIME or other biom-format data.
+
+Additional back details are described in 
+[Issue 443](https://github.com/joey711/phyloseq/issues/443).
+
+## HDF5 (Version 2.0) biom-format: *biomformat*
+
+As just described, 
+HDF5 biom format is currently supported 
+in the development version of phyloseq,
+via the new beta/development package called *biomformat*
+on BioC-devel and GitHub:
+
+https://github.com/joey711/biomformat
+
+If you need to use HDF5-based biom format files **immediately**
+and cannot wait for the upcoming release,
+then you should install the development version
+of the *biomformat* package by following the instructions
+at the link above.
+
+## Not every data component is included in .biom files
+
+Even though the biom-format supports the self-annotated inclusion
+of major components like that taxonomy table and sample data table,
+many tools that generate biom-format files
+(like QIIME, MG-RAST, mothur, etc.)
+do not export this data, even if you provided
+the information in your data input files.
+The reason for this boggles me,
+and I've shared my views on this with QIIME developers,
+but there nevertheless seems to be no plan to include your sample data
+in the ouput biom file.
+
+Furthermore, even though I have proposed it to the biom-format team,
+there is currently no support (or timeline for support) 
+for inclusion of a phylogenetic tree within a ".biom" file.
+
+A number of tutorials are available
+demonstrating how one can add components to a phyloseq object
+after it has been created/imported.
+The following tutorial is especially relevant
+
+http://joey711.github.io/phyloseq-demo/import-biom-sd-example.html
+
+Which makes use of the following functions:
+
+- `import_qiime_sample_data`
+- `merge_phyloseq`
+
+## Other issues related the biom-format
+
+There are a number of different Issue Tracker posts
+discussing this format with respect to phyloseq:
+
+https://github.com/joey711/phyloseq/issues/302
+
+https://github.com/joey711/phyloseq/issues/272
+
+https://github.com/joey711/phyloseq/issues/392
+
+[Issue 443](https://github.com/joey711/phyloseq/issues/443)
+has details for updated format.
+
+
+# - `microbio_me_qiime()` returned an error. What’s wrong?
+
+## The QIIME-DB Server is Permanently Down.
+
+The QIIME-DB server is permanently down.
+
+Users are suggested to migrate their queries over to Qiita.
+
+Indeed, the previous link to
+[microbio.me/qiime](http://www.microbio.me/qiime/index.psp)
+now sends users to the new Qiita website.
+
+## An interface to Qiita is Planned.
+
+Stay tuned. The Qiita API needs to be released by the Qiita developers first.
+The phyloseq developers have no control over this,
+as we are not affiliated directly with the QIIME developers.
+Once there is an official Qiita API with documentation,
+an interface for phyloseq will be added.
+
+We found the `microbio_me_qiime()` function
+to be very convenient while the QIIME-DB server lasted.
+Hopefully an equivalent is hosted soon.
+
+
+# - I want a phyloseq graphic that looks like...
+
+Great!
+
+**Every plot function in phyloseq returns a ggplot2 object**.
+When these objects are "printed" to standard output in an R session,
+for instance,
+
+```{r}
+data(esophagus)
+plot_tree(esophagus)
+```
+
+then the graphic is rendered in
+[the current graphic device](https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/Devices.html).
+
+Alternatively, if you save the object output from a phyloseq `plot_` function
+as a variable in your session,
+then you can further modify it, interactively, at your leisure. 
+For instance,
+
+```{r}
+p1 = plot_tree(esophagus, color = "Sample")
+p1
+p1 + 
+  ggtitle("This is my title.") +
+  annotate("text", 0.25, 3, 
+           color = "orange",
+           label = "my annotation")
+```
+
+There are lots of ways for you to generate custom graphics
+with phyloseq as a starting point.
+
+The following sections list some of my favorites.
+
+## Modify the ggplot object yourself.
+
+For example, 
+[the plot_ordination() examples tutorial](http://joey711.github.io/phyloseq/plot_ordination-examples.html)
+provides several examples of using additional ggplot2 commands
+to modify/customize the graphic encoded in the ggplot2 object
+returned by `plot_ordination`.
+
+[The ggplo2 documentation](http://docs.ggplot2.org/current/)
+is the current and canonical online reference
+for creating, modifying, and developing with ggplot2 objects.
+
+For simple changes to aesthetics and aesthetic mapping,
+[the aesthetic specifications vignette](http://docs.ggplot2.org/current/vignettes/ggplot2-specs.html)
+is a useful resource.
+
+
+## psmelt and ggplot2
+
+The `psmelt` function converts your phyloseq object 
+into a table (`data.frame`) 
+that is very friendly for defining a custom ggplot2 graphic.
+This function was originally created 
+as an internal (not user-exposed) tool
+within phyloseq to enable 
+a [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
+approach to building ggplot2 graphics
+from microbiome data represented as phyloseq objects.
+
+When applicable, the phyloseq `plot_` family of functions
+use `psmelt`.
+This function is now a documented
+and user-accessible function in phyloseq --
+for the main purpose of enabling users
+to create their own ggplot2 graphics as needed.
+
+There are lots of great documentation examples for ggplot2 at
+
+- [the ggplot2 official documentation site](http://docs.ggplot2.org/current/),
+- [ggplot2 on StackOverflow](http://stackoverflow.com/tags/ggplot2), and 
+- [phyloseq documentation pages](https://joey711.github.io/phyloseq/). 
+
+The following are two very simple examples of using
+`psmelt` to define your own ggplot2 object "from scratch". 
+It should be evident that you could include further ggplot2 commands
+to modify each plot further, as you see fit.
+
+```{r}
+data("esophagus")
+mdf = psmelt(esophagus)
+# Simple bar plot. See plot_bar() for more.
+ggplot(mdf, aes(x = Sample, 
+                y = Abundance)) + 
+  geom_bar(stat = "identity", position = "stack", color = "black")
+# Simple heat map. See plot_heatmap() for more.
+ggplot(mdf, aes(x = Sample, 
+                y = OTU, 
+                fill = Abundance)) +
+  geom_raster()
+```
+
+## Submit a Pull Request (Advanced)
+
+If your new custom plot function is awesome and you think others might use it,
+add it to the `"plot-methods.R"` source file 
+and submit a pull request on GitHub.
+
+[GitHub Official Pull Request Documentation](https://help.github.com/articles/using-pull-requests/)
+
+Please include example and test code
+in the code included in your pull request.
+
+I'll try and add it to the package by the next release.
+I will also give you authorship credit in the function doc.
+See the "typo fix" section below for further details about GitHub pull requests...
+
+## Define a ggplot2 extension (Advanced)
+
+Development of new R functions/commands 
+for creating/modifying new geometric objects
+is now formally documented in 
+[the ggplot2 extension vignette](http://docs.ggplot2.org/current/vignettes/extending-ggplot2.html).
+
+This may be related to the previous section,
+in that your ggplot2 extension for phyloseq 
+could be contributed to the phyloseq project as a pull request.
+
+
+# - There’s a typo in phyloseq documentation, tutorials, or vignettes
+
+This is something that is actually faster and less work
+for you to solve yourself
+and contribute back to the phyloseq package.
+For trivial typo fixes, 
+I will quickly include your fixes into the package code.
+Sometimes I accept them on my cell phone 
+while I'm still in bed. 
+No wasted time on either end! :-)
+
+The point is that this should be simple,
+and is simple if you follow one of the following suggestions.
+
+## Fix the typo directly on GitHub
+
+GitHub now provides the option to make changes
+to code/text of a repository
+directly from your web browser through an in-page editor.
+This handles all the Git details for you.
+If you have a GitHub account and you're logged in, 
+all you'd have to do is locate the file with the offending typo,
+then use the "edit" button to 
+make the changes and 
+send the to me as a pull request.
+
+## Minimal GIT and GitHub Exercise
+
+![](http://i.imgur.com/j9NYXiQ.png)
+
+(The following instructions are borrowed 
+from [Yihui Xie's site about fixing typos](http://yihui.name/en/2013/06/fix-typo-in-documentation/))
+
+Alternatively, for those who want to try GIT and Github pull requests, 
+which make it possible for you to contribute to open source 
+and fix obvious problems with no questions being asked -- 
+just do it yourself, and send the changes to the original author(s) through Github.
+
+The official documentation for Github pull requests 
+is a little bit verbose for beginners. 
+Basically what you need to do for simple tasks are:
+
+1. click the Fork button and clone the repository in your own account;
+2. make the changes in your cloned version;
+3. push to your repository;
+4. click the Pull Request button to send a request to the original author;
+
+
+
+# - I read ["Waste Not, Want Not..."](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531) but...
+
+Before getting to more specific issues, 
+let's start by keeping appropriately separate the concept of 
+
+- (1) denoising amplicon sequences, and/or denoising features in the contingency table, and 
+- (2) standardization
+
+These two concepts have been often-conflated --
+mostly by purveyors of methods that use rarefying --
+wrongly insisting that rarefying is somehow addressing both problems
+and the matter is settled. 
+Unfortunately rarefying is a very inefficient, noise-introducing method 
+that poorly addresses the data analysis challenges that motivate either concept.
+
+DESeq2 and related solutions can help you address
+the need for standardization (e.g. differing library sizes)
+at a particular step in your analysis
+while still making efficient inferences from your data. 
+
+The denoising problem is best addressed at the sequence-processing level, 
+and the best general-purpose option currently available is:
+
+- [The dada2 algorithm](http://benjjneb.github.io/dada2/), if your data works well with it. Current support is mainly Illumina sequence data, or 
+- [UPARSE](http://drive5.com/uparse/) in the usearch package, if you don't have sequencing data that works well with [dada2](http://benjjneb.github.io/dada2/)
+
+
+## I tried to [use DESeq2](http://joey711.github.io/phyloseq-extensions/DESeq2.html) to normalize my data, but now I don't know what to do...
+
+The answer to a question of this category depends a lot on your experiment,
+and what you want to learn from your data. 
+The following are some resources that may help.
+
+- [Waste Not, Want Not Supplemental Materials](http://joey711.github.io/waste-not-supplemental/)
+- [Differential Abundance Vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-mixture-models.html)
+- [The phyloseq front page](https://joey711.github.io/phyloseq/)
+
+
+## My libraries/samples had different total number of reads, what do I do?
+
+That is an expected artifact of current sequencing technologies,
+and not a "problem" on its own.
+In most cases, differences in total counts are uncorrelated
+with any variable in your experimental design.
+**You should check that this is the case**.
+It remains possible that there are structural/procedural artifacts
+in your experiment that have influenced the total counts.
+If library sizes are correlated with one of your design variables,
+then this *might* represent an artifact that you need to address more carefully.
+This is a decision that you will have to make and defend.
+No software package or workflow can address this for you,
+but phyloseq/R can certainly help you check for correlation.
+See the `sample_sums()` and `sample_data()` accessor functions.
+
+Other than the portent of structural biases in your experiment,
+you should recall that 
+comparisons between observation classes that have 
+**uneven sample sizes is not a new nor unsolved problem in statistics**.
+
+The most useful analytical methods you can use in this context
+are therefore methods that expect and account 
+for differences in total number of reads between samples.
+
+How you account for these *library size* differences
+should depend on the type of analysis in which you are engaged,
+and which methods you plan to use. 
+For instance, for a beta-diversity measure like 
+Bray-Curtis Dissimilarity, 
+you might simply use the relative abundance of each taxa in each sample,
+as the absolute counts are not appropriate to use directly
+in the context where count differences are not meaningful.
+
+For further information, see
+
+- ["Waste Not, Want Not..."](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
+- [Discussion for Issue 229](https://github.com/joey711/phyloseq/issues/229)
+- [Discussion for Issue 299](https://github.com/joey711/phyloseq/issues/299)
+
+## Should I normalize my data before alpha-diversity analysis
+
+**No.** Generally speaking, the answer is **no**.
+Most alpha diversity methods will be most effective 
+when provided with the originally-observed count values.
+
+The misleading notion --
+that normalization is necessary
+prior to alpha-diversity analysis --
+seems to be derived from various
+"one size fits all" pipeline tools like QIIME,
+in which it is often encouraged to 
+[*rarefy*](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
+counts as a normalizing transformation prior to any/all analysis.
+While this may simplify certain aspects of pipeline software development,
+it is analytical and statistical folly.
+**Rarefying microbiome data is statistically inadmissible**.
+
+For further information, I suggest reviewing literature such as
+
+- [Gotelli Colwell (2001)](http://onlinelibrary.wiley.com/doi/10.1046/j.1461-0248.2001.00230.x/abstract;jsessionid=A5EF264ABB5EADD5CCE9EF3AEE50CA41.f01t03), and of course,
+- ["Waste Not, Want Not..."](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
+
+
+## Negative numbers in my transformed data table?
+
+This sort of question usually appears after someone used
+a log-like transformation / variance stabilizing transformation
+on their data, 
+in preparation for an exploratory analysis via ordination.
+Negative values in this context probably correspond
+to **"less than one count"** after rescaling.
+For many ordination methods, 
+like [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis),
+negative numbers are not a problem.
+
+Instead, the problem is often posed because a user
+also wants to use **a particular distance measure**
+that is undefined or unstable in the presence of negative entries.
+In this context, however, the more negative a value is,
+the more likely that it was zero, or very small, 
+in the original "raw" count matrix.
+For most distances and hypotheses, these values
+are probably not very important, or even negligible.
+Given this, it is probably quite reasonable to do one of the following:
+
+(1) Set to zero all values less than zero.
+If `X` is your matrix, you can accomplish this with
+`X[X < 0.0] <- 0.0`
+(2) Add a pseudocount prior to data transformation.
+This often curbs or prevents the presence of zeroes
+in the table of transformed values.
+Some people don't like this approach for their dataset,
+and they may or may not be correct.
+It is up to you to decide for your data.
+See [Discussion on Issue 445](https://github.com/joey711/phyloseq/issues/445).
+
+Please also note that taxa entries that are all negative after transformation,
+or equivalently are very small or almost always zero,
+should probably be filtered from your data
+prior to analysis. 
+There are many different reasons for this.
+
+
+## I get an error regarding geometric mean
+
+See my [SO post on alternative geometric mean functions in R](http://stackoverflow.com/a/25555105/935950)
+There are several examples for alternative calculations of geometric mean,
+and some of these might solve the problem of having an error.
+
+See also the discussion on [Issue 445](https://github.com/joey711/phyloseq/issues/445)
+regarding geometric means.
+
+Alternative library size estimators may be appropriate for your data,
+and it remains your responsibility 
+to determine if any specific approach is valid.
+
+Mike Love (a developer for DESeq2), suggested the following consideration:
+
+"On the other hand, very sparse count datasets, 
+with large counts for single samples per row and the rest at 0, 
+don't fit well to the negative binomial distribution. 
+Here, the VST or simply shifted log, `log(count+k)`, 
+might be a safer choice than the `rlog`. 
+A way that I test for sparsity is looking at a plot 
+of the row sum of counts and the proportion of count 
+which is in a single sample."
+
+
+## Pseudocounts are not appropriate for my data, because...
+
+See [Discussion on Issue 445](https://github.com/joey711/phyloseq/issues/445).
+
+Also, think carefully about what you mean here. 
+I suspect this statement could be more accurately stated as,
+*pseudocounts are not appropriate for my experiment, data, and the analysis step I was about to perform*.
+Your position in this case is thus based on a combination 
+of how the data appears to behave,
+and your knowledge of how pseudocounts would affect
+the analysis you were going to use.
+Consider the following.
+
+- Is there an alternative analysis method?
+- Is the method you were about to use really that sensitive to adding a pseucocount?
+- Is a pseudocount really needed, or were you copying/pasting this step
+to an analysis script that you found somewhere?
+
+
+## I’m scared that the Negative Binomial doesn’t fit my data well
+
+See [Discussion on Issue 445](https://github.com/joey711/phyloseq/issues/445).
+
+
+## I don’t know how to test for differential abundance now. How do I do that?
+
+There is now lots of documentation on this topic.
+
+For starters, please see 
+[the phyloseq vignette devoted to this topic](http://bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-mixture-models.html).
+
+A Google search for "phyloseq differential abundance"
+will also likely turn up a number of useful, related resources.
+
+
+# - I need help analyzing my data. It has the following study design...
+
+I am currently a biostatistician at Second Genome, Inc., 
+which offers complete
+[end-to-end microbiome experiment solutions](http://www.secondgenome.com/solutions)
+as a fee-for-service.
+In some cases Second Genome clients already have their microbiome data
+and want to make use of our team of trained microbiome analysts 
+to get the most information from their expeirment.
+I recommend contacting one of the sales associates at the link above.
+
+My day-to-day efforts are in understanding the role of the microbiome
+in human health and disease.
+If you're looking for a collaboration on your microbiome
+data collection or data analysis,
+please contact [Second Genome Solutions](http://www.secondgenome.com/solutions).

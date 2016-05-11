@@ -1,4 +1,4 @@
-# Sample .travis.yml for R projects
+# Adapted from sample .travis.yml for R projects
 
 language: r
 bioc_required: true

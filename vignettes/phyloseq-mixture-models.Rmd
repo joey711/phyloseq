@@ -1,12 +1,39 @@
+---
+title: "Example using Negative Binomial in Microbiome Differential Abundance Testing"
+output:
+  BiocStyle::html_document:
+    fig_height: 7
+    fig_width: 10
+    toc: yes
+    toc_depth: 2
+    number_sections: true
+---
 <!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{phyloseq and DESeq2 on Colorectal Cancer Data}
+%% \VignetteEngine{knitr::rmarkdown}
+%% \VignetteIndexEntry{phyloseq and DESeq2 on Colorectal Cancer Data}
 -->
+
 `r library("knitr")`
 `r opts_chunk$set(cache=FALSE, fig.width=9, message=FALSE, warning=FALSE)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-# Example using Negative Binomial in Microbiome Differential Abundance Testing
+Paul J. McMurdie and Susan Holmes
+
+<mcmurdie@stanford.edu>
+
+[phyloseq Home Page](http://joey711.github.io/phyloseq/)
+
+If you find phyloseq and/or its tutorials useful, please acknowledge and cite phyloseq in your publications:
+
+**phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data** (2013) PLoS ONE 8(4):e61217
+http://dx.plos.org/10.1371/journal.pone.0061217
+
+# Other resources
+The phyloseq project also has a number of supporting online resources, most of which can by found at [the phyloseq home page](http://joey711.github.com/phyloseq/), or from the phyloseq stable release [page on Bioconductor](http://bioconductor.org/packages/release/bioc/html/phyloseq.html).
+
+To post feature requests or ask for help, try [the phyloseq Issue Tracker](https://github.com/joey711/phyloseq/issues).
+
+
+# The experimental data used in this example
 
 In this example I use the publicly available data from a study on colorectal cancer:
 
@@ -21,7 +48,7 @@ Project Name:	`Kostic_colorectal_cancer_fusobacterium`
 
 Study Abstract:	The tumor microenvironment of colorectal carcinoma is a complex community of genomically altered cancer cells, nonneoplastic cells, and a diverse collection of microorganisms. Each of these components may contribute to carcino genesis; however, the role of the microbiota is the least well understood. We have characterized the composition of the microbiota in colorectal carcinoma using whole genome sequences from nine tumor/normal pairs. Fusobacterium sequences were enriched in carcinomas, confirmed by quantitative PCR and 16S rDNA sequence analysis of 95 carcinoma/normal DNA pairs, while the Bacteroidetes and Firmicutes phyla were depleted in tumors. Fusobacteria were also visualized within colorectal tumors using FISH. These findings reveal alterations in the colorectal cancer microbiota; however, the precise role of Fusobacteria in colorectal carcinoma pathogenesis requires further investigation.
 
-## Import data with phyloseq, convert to DESeq2
+# Import data with phyloseq, convert to DESeq2
 
 Start by loading phyloseq.
 
@@ -50,7 +77,7 @@ kostic = microbio_me_qiime(1457)
 ```
 
 
-## Convert to DESeq2's DESeqDataSet class
+# Convert to DESeq2's DESeqDataSet class
 
 In this example I'm using the major sample covariate, `DIAGNOSIS`, as the study design factor. The focus of this study was to compare the microbiomes of pairs of healthy and cancerous tissues, so this makes sense. Your study could have a more complex or nested design, and you should think carefully about the study design formula, because this is critical to the test results and their meaning. You might even need to define a new factor if none of the variables in your current table appropriately represent your study's design. See [the DESeq2 home page](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html) for more details. 
 
@@ -60,7 +87,7 @@ kostic
 head(sample_data(kostic)$DIAGNOSIS, 10)
 ```
 
-### DESeq2 conversion and call
+# DESeq2 conversion and call
 
 First load DESeq2.
 
@@ -101,7 +128,8 @@ diagdds = DESeq(diagdds, fitType="local")
 ```
 Note: The default multiple-inference correction is Benjamini-Hochberg, and occurs within the `DESeq` function.
 
-### Investigate test results table
+
+# Investigate test results table
 
 The following `results` function call creates a table of the results of the tests. Very fast. The hard work was already stored with the rest of the DESeq2-related data in our latest version of the `diagdds` object (see above). I then order by the adjusted p-value, removing the entries with an `NA` value. The rest of this example is just formatting the results table with taxonomic information for nice(ish) display in the HTML output.
 
@@ -132,14 +160,14 @@ dummy = apply(posigtab, 1, function(x){
 
 As expected from the original study abstract and title, a *Fusobacterium* OTU was among the most-significantly differentially abundant between the cancerous and healthy samples.
 
+
+# Plot Results
+
 Here is a bar plot showing the log2-fold-change, showing Genus and Phylum. Uses some ggplot2 commands.
 
 ```{r bar-plot}
 library("ggplot2")
 theme_set(theme_bw())
-scale_fill_discrete <- function(palname = "Set1", ...) {
-    scale_fill_brewer(palette = palname, ...)
-}
 sigtabgen = subset(sigtab, !is.na(Genus))
 # Phylum order
 x = tapply(sigtabgen$log2FoldChange, sigtabgen$Phylum, function(x) max(x))
@@ -149,7 +177,9 @@ sigtabgen$Phylum = factor(as.character(sigtabgen$Phylum), levels=names(x))
 x = tapply(sigtabgen$log2FoldChange, sigtabgen$Genus, function(x) max(x))
 x = sort(x, TRUE)
 sigtabgen$Genus = factor(as.character(sigtabgen$Genus), levels=names(x))
-ggplot(sigtabgen, aes(x=Genus, y=log2FoldChange, color=Phylum)) + geom_point(size=6) + 
+ggplot(sigtabgen, aes(y=Genus, x=log2FoldChange, color=Phylum)) + 
+  geom_vline(xintercept = 0.0, color = "gray", size = 0.5) +
+  geom_point(size=6) + 
   theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
 ```
 
