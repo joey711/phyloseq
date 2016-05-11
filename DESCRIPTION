@@ -32,6 +32,7 @@ Imports:
 Depends:
     R (>= 3.2.0)
 Suggests:
+    RcppArmadillo (>= 0.6.7),
     BiocStyle (>= 1.6),
     DESeq2 (>= 1.8),
     genefilter (>= 1.50),
