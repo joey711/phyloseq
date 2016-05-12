@@ -15,31 +15,32 @@ install_phyloseq = function(branch = "release",
     }
     source("http://bioconductor.org/biocLite.R")
     biocLite("phyloseq", suppressUpdates=TRUE)
-    return("release")
+    return("phyloseq installed from BioC release branch (if no errors).")
   }
   if(branch == "devel"){
     if(verbose){
-      message("Installing the devel version from BioC")
+      message("\n\nInstalling phyloseq from the devel version from BioC...\n")
     }
     biocLite("phyloseq", 
              siteRepos="http://bioconductor.org/packages/devel/bioc",
              suppressUpdates=TRUE,
              type="source")
-    return("devel")
+    return("phyloseq installed from BioC devel branch (if no errors).")
   }
   if(branch == "github"){
     if(verbose){
-      message("Installing the devel version from joey711/mater from GitHub")
+      message("Installing the devel version from joey711/master from GitHub")
     }
     if(!require("devtools", quietly=TRUE)){
       # Note: needs Curl for RCurl
       install.packages("devtools")
     }
     library("devtools")
-    devtools::install_github("phyloseq", "joey711")
-    return("github")
+    devtools::install_github("joey711/phyloseq")
+    return("phyloseq installed from GitHub `joey711/phyloseq` (if no errors).")
   }
-  return("something didn't work well")
+  return("You probably selected an unsupported argument to `branch`.
+  Try again using 'release', 'devel', or 'github'.")
 }
 ###############
 # Execute the function w/ default params.
