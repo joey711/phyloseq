@@ -1,8 +1,8 @@
 ################################################################################
 # Use testthat to test that distance methods return correct results.
 ################################################################################
-library("phyloseq")
-library("testthat")
+library("phyloseq"); packageVersion("phyloseq")
+library("testthat"); packageVersion("testthat")
 ################################################################################
 # UniFrac testing section. Relies on pre-computed results from pycogent
 # The relevant python code is saved in `extdata/gp500-pycogent.py`

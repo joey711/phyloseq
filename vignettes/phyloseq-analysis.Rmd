@@ -1,29 +1,44 @@
+---
+title: "Vignette for phyloseq: Analysis of high-throughput microbiome census data"
+output:
+  BiocStyle::html_document:
+    fig_height: 7
+    fig_width: 10
+    toc: yes
+    toc_depth: 2
+    number_sections: true
+---
 <!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{phyloseq analysis vignette}
+%% \VignetteEngine{knitr::rmarkdown}
+%% \VignetteIndexEntry{analysis vignette}
 -->
+
 `r library("knitr")`
 `r opts_chunk$set(cache=FALSE, fig.width=9, message=FALSE, warning=FALSE)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-# Vignette for phyloseq: Analysis of high-throughput microbiome census data
+Paul J. McMurdie and Susan Holmes
+
+<mcmurdie@stanford.edu>
+
+[phyloseq Home Page](http://joey711.github.io/phyloseq/)
 
 If you find phyloseq and/or its tutorials useful, please acknowledge and cite phyloseq in your publications:
 
 **phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data** (2013) PLoS ONE 8(4):e61217
 http://dx.plos.org/10.1371/journal.pone.0061217
 
-## Other resources
+# Other resources
 The phyloseq project also has a number of supporting online resources, most of which can by found at [the phyloseq home page](http://joey711.github.com/phyloseq/), or from the phyloseq stable release [page on Bioconductor](http://bioconductor.org/packages/release/bioc/html/phyloseq.html).
 
 To post feature requests or ask for help, try [the phyloseq Issue Tracker](https://github.com/joey711/phyloseq/issues).
 
-## Summary
+
+# Summary
 
 The analysis of microbiological communities brings many challenges: the integration of many different types of data with methods from ecology, genetics, phylogenetics, network analysis, visualization and testing. The data itself may originate from widely different sources, such as the microbiomes of humans, soils, surface and ocean waters, wastewater treatment plants, industrial facilities, and so on; and as a result, these varied sample types may have very different forms and scales of related data that is extremely dependent upon the experiment and its question(s). The phyloseq package is a tool to import, store, analyze, and graphically display complex phylogenetic sequencing data that has already been clustered into Operational Taxonomic Units (OTUs), especially when there is associated sample data, phylogenetic tree, and/or taxonomic assignment of the OTUs. This package leverages many of the tools available in R for ecology and phylogenetic analysis (vegan, ade4, ape, picante), while also using advanced/flexible graphic systems (ggplot2) to easily produce publication-quality graphics of complex phylogenetic data. phyloseq uses a specialized system of S4 classes to store all related phylogenetic sequencing data as single experiment-level object, making it easier to share data and reproduce analyses. In general, phyloseq seeks to facilitate the use of R for efficient interactive and reproducible analysis of OTU-clustered high-throughput phylogenetic sequencing data.
 
 
-## About this vignette
+# About this vignette
 
 A separate vignette is included within the phyloseq-package that describes the basics of importing pre-clustered phylogenetic sequencing data, data filtering, as well as some transformations and some additional details about the package and installation. A quick way to load it is:
 
@@ -40,27 +55,23 @@ library("phyloseq")
 library("ggplot2")
 ```
 
-And because we will show examples of custom modifications to ggplot2 plots, we also loaded ggplot2 as well. Here are my favorite ggplot2 theming commands. These are completely optional, and modifiable.
+And because we will show examples of custom modifications to ggplot2 plots, 
+we also loaded ggplot2 as well. 
+Here I'll set as default my favorite ggplot2 theme.
+These are completely optional, and modifiable.
 
 ```{r ggplot2-themes}
 theme_set(theme_bw())
-pal = "Set1"
-scale_colour_discrete <- function(palname = pal, ...) {
-    scale_colour_brewer(palette = palname, ...)
-}
-scale_fill_discrete <- function(palname = pal, ...) {
-    scale_fill_brewer(palette = palname, ...)
-}
 ```
 
 
 
-## Data
+# Data
 
-### Interface with the microbio.me/qiime server
+## Interface with the microbio.me/qiime server
 See the [microbio_me_qiime tutorial](http://joey711.github.io/phyloseq/download-microbio.me.html) for more details and examples downloading and importing into phyloseq/R directly from this public database.
 
-### Included Data
+## Included Data
 To facilitate testing and exploration of tools in phyloseq, this package includes example data from published studies. Many of the examples in this vignette use either the [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107) or `enterotype` datasets as source data. The [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107) data was described in a [2011 article in PNAS](http://www.pnas.org/content/early/2010/06/02/1000080107)([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)), and compares the microbial communities of 25 environmental samples and three known "mock communities" --- a total of 9 sample types --- at a depth averaging 3.1 million reads per sample. The [human enterotype dataset](http://www.nature.com/nature/journal/v473/n7346/full/nature09944.html) was described in a [2011 article in Nature](http://www.nature.com/nature/journal/v473/n7346/full/nature09944.html) ([Arumugam 2011](http://www.nature.com/nature/journal/v473/n7346/full/nature09944.html)), which compares the faecal microbial communities from 22 subjects using complete shotgun DNA sequencing. The authors further compare these microbial communities with the faecal communities of subjects from other studies, for a total of 280 faecal samples / subjects, and 553 genera. Sourcing data from different studies invariable leads to gaps in the data for certain variables, and this is easily handled by `R's core `NA features.
 
 Because this data is included in the package, the examples can easily be run on your own computer using the code shown in this vignette. The data is loaded into memory using the `data` command. Let's start by loading the [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107) data.
@@ -81,9 +92,9 @@ sample_data(GP)$human <- factor(human)
 ```
 
 
-## Simple exploratory graphics
+# Simple exploratory graphics
 
-### Easy Richness Estimates
+## Easy Richness Estimates
 
 For further details, see the [plot_richness tutorial](http://joey711.github.io/phyloseq/plot_richness-examples.html)
 
@@ -99,10 +110,10 @@ Add a ggplot2 box plot layer to the previous plot
 ```{r richness_estimates, fig.width=13,height=7}
 p + geom_boxplot(data=p$data, aes(x=human, y=value, color=NULL), alpha=0.1)
 ```
-###### Alpha diversity estimators for samples in the *Global Patterns* dataset. Each panel shows a different type of estimator. Individual color-shaded points and brackets represent the richness estimate and the theoretical standard error range associated with that estimate, respectively. The colors group the sample-sources into "types". Within each panel, the samples are further organized into human-associated (`TRUE`) or not (`FALSE`), and a boxplot is overlayed on top of this for the two groups, illustrating that these human-associated samples are less rich than the environmental samples (although the type of environment appears to matter a great deal as well).
+Alpha diversity estimators for samples in the *Global Patterns* dataset. Each panel shows a different type of estimator. Individual color-shaded points and brackets represent the richness estimate and the theoretical standard error range associated with that estimate, respectively. The colors group the sample-sources into "types". Within each panel, the samples are further organized into human-associated (`TRUE`) or not (`FALSE`), and a boxplot is overlayed on top of this for the two groups, illustrating that these human-associated samples are less rich than the environmental samples (although the type of environment appears to matter a great deal as well).
 
----
-### Exploratory tree plots
+
+## Exploratory tree plots
 
 For further details, see the [plot_tree tutorial](http://joey711.github.io/phyloseq/plot_tree-examples.html)
 
@@ -122,7 +133,7 @@ plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="
 Phylogenetic tree representation of the Chlamydiae species in the microbiome samples of the "Global Patterns" dataset([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)).
 
 
-### Exploratory bar plots
+## Exploratory bar plots
 
 For further details, see the [plot_bar tutorial](http://joey711.github.io/phyloseq/plot_bar-examples.html)
 
@@ -138,7 +149,7 @@ par(mar = c(10, 4, 4, 2) + 0.1) # make more room on bottom margin
 N <- 30
 barplot(sort(taxa_sums(enterotype), TRUE)[1:N]/nsamples(enterotype), las=2)
 ```
-###### An example exploratory barplot using base `R graphics and the `taxa_sums and `nsamples functions.
+An example exploratory barplot using base `R graphics and the `taxa_sums and `nsamples functions.
 
 Note that this first barplot is clipped at the `r N`th OTU. This was chosen because `ntaxa(enterotype) =``r ntaxa(enterotype)` OTUs would not be legible on the plot. As you can see, the relative abundances have decreased dramatically by the 10th-ranked OTU.  
 
@@ -173,11 +184,11 @@ An example exploratory bar plot using the `plot_bar` function. In this case we h
 Figure summarizes quantitatively the increased abundances of Bacteroides and Prevotella in the Enterotypes 1 and 2, respectively. Interestingly, a large relative abundance of Blautia was observed for Enterotype 3, but only from 454-pyrosequencing data sets, not the Illumina or Sanger datasets. This suggests the increased Blautia might actually be an artifact. Similarly, Prevotella appears to be one of the most abundant genera in the Illumina-sequenced samples among Enterotype 3, but this is not reproduced in the 454-pyrosequencing or Sanger sequencing data.
 
 
----
 
-## Exploratory analysis and graphics
 
-### Exploratory Heat Map
+# Exploratory analysis and graphics
+
+## Exploratory Heat Map
 
 For further details, see the [plot_heatmap tutorial](http://joey711.github.io/phyloseq/plot_heatmap-examples.html)
 
@@ -202,10 +213,10 @@ by any of the ordination methods supported in the `ordinate` function;
 and also that the color scheme can be modified with additional arguments. 
 
 
-###### Heat map representation of the Crenarchaeota phylum abundance pattern across different sample types in the Global Patterns dataset.
+Heat map representation of the Crenarchaeota phylum abundance pattern across different sample types in the Global Patterns dataset.
 
 
-### Microbiome Network Representation
+## Microbiome Network Representation
 
 For further details, see the [plot_network tutorial](http://joey711.github.io/phyloseq/plot_network-examples.html)
 
@@ -223,9 +234,9 @@ plot_net(enterotype, maxdist=0.4, color="SeqTech", shape="Enterotype")
 Network representation of the relationship between microbiome samples in the "Enterotype" dataset ([Arumugam 2011](http://www.nature.com/nature/journal/v473/n7346/full/nature09944.html)).
 
 
----
 
-### Ordination Methods
+
+## Ordination Methods
 
 For further details, see the [plot_ordination tutorial](http://joey711.github.io/phyloseq/plot_ordination-examples.html)
 
@@ -246,7 +257,7 @@ help(plot_ordination)
 ```
 
 
-#### Principal Coordinates Analysis (PCoA)
+### Principal Coordinates Analysis (PCoA)
 
 We take as our first example, a reproduction of Figure 5 from the "Global Patterns" article([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)). The authors show a 3-dimensional representation of the first three axes of a Principal Coordinates Analysis (PCoA; This is also sometimes referred to as "Multi-Dimensional Scaling", or "MDS") performed on the unweighted-UniFrac distance using all of the available sequences (their approach included both 5' and 3' sequences). According to the authors, "the first axis [appears to be associated with a] host associated/free living [classification]," and similarly the third axis with "saline/nonsaline environment[s]."
 
@@ -289,10 +300,10 @@ Next, we will reproduce Figure 5 from the "Global Patterns" article([Caporaso 20
 (p13 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", axes=c(1, 3),
   color="SampleType") + geom_line() + geom_point(size=5) )
 ```
-###### A reproduction in phyloseq / R of the main panel of Figure 5 from the "Global Patterns" article([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)), on two plots. The horizontal axis represents the first axis in the PCoA ordination, while the top and bottom vertical axes represent the second and third axes, respectively. Different points represent different samples within the dataset, and are shaded according to the environment category to which they belong. The color scheme is the default used by ggplot. 
+A reproduction in phyloseq / R of the main panel of Figure 5 from the "Global Patterns" article([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)), on two plots. The horizontal axis represents the first axis in the PCoA ordination, while the top and bottom vertical axes represent the second and third axes, respectively. Different points represent different samples within the dataset, and are shaded according to the environment category to which they belong. The color scheme is the default used by ggplot. 
 
 
-#### non-metric Multi-Dimensional Scaling (NMDS)
+### non-metric Multi-Dimensional Scaling (NMDS)
 We repeat the previous example, but instead using non-metric multidimensional scaling (NMDS) limited to just two dimensions. This approach limits the amount of residual distance "not shown" in the first two (or three) axes, but forefeits some mathematical properties and does not always converge within the specified number of axes.
 
 ```{r GP_UF_NMDS0}
@@ -304,11 +315,11 @@ GP.NMDS <- ordinate(GlobalPatterns, "NMDS", GPUF)
 (p <- plot_ordination(GlobalPatterns, GP.NMDS, "samples", color="SampleType") +
   geom_line() + geom_point(size=5) )
 ```
-###### An example exploratory ordination using non-metric multidimensional scaling (NMDS) on the unweighted UniFrac distance between samples of the "Global Patterns" dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the "Global Patterns" article([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)).
+An example exploratory ordination using non-metric multidimensional scaling (NMDS) on the unweighted UniFrac distance between samples of the "Global Patterns" dataset. Sample points are shaded by environment type, and connected by a line if they belong to the same type. Compare with Figure 5 from the "Global Patterns" article([Caporaso 2011](http://www.pnas.org/content/early/2010/06/02/1000080107)).
 
 The figure nicely shows the relative dissimilarities between microbial communities from different habitats. However, it fails to indicate what was different between the communities. For an ordination method that provides information on the taxa that explain differences between samples (or groups of samples), we use Correspondence Analysis.
 
-#### Correspondence Analysis (CA)
+### Correspondence Analysis (CA)
 
 In the following section we will show continue our exploration of the "GlobalPatterns" dataset using various features of an ordination method called Correspondence Analysis. We give special emphasis to exploratory interpretations using the biplot, because it provides additional information that is not available from PCoA or NMDS.
 
@@ -390,19 +401,19 @@ p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) +
   vjust=0,
   size=2))
 ```
-###### Boxplot of taxa (species in this case) of the "Global Patterns" CA first two axes, shaded/separated by phylum. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the Bacteroidetes species (Prevotellaceae family) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.
+Boxplot of taxa (species in this case) of the "Global Patterns" CA first two axes, shaded/separated by phylum. Through this approach it is much easier to see particular species that cluster unusually relative to the rest of their phylum, for example the Bacteroidetes species (Prevotellaceae family) that is positioned most in the negative CA2 direction toward the Tongue/Skin samples.
 
 One way to relate some of the high-level patterns we observed from correspondence analysis is to directly visualize the abundances in an organized, quantitative way, to see if this does in fact support / explain the human/environment microbiome differences. Here is an example using the `plot_bar` function described in an earlier section.
 
 ```{r GPtaxaplot0}
 plot_bar(GP, x="human", fill="SampleType", facet_grid= ~ Phylum)
 ```
-###### Phylum-level comparison of relative abundance of taxa in samples that are from human microbiomes (or not).
+Phylum-level comparison of relative abundance of taxa in samples that are from human microbiomes (or not).
 
 In this figure we've used the `threshold` parameter to omit all but phyla accounting for the top 90% of phyla in any one sample. Some patterns emerging from this display appear to be: (1) Cyanobacteria, Actinobacteria appear under-represented in human samples; (2) conversely, Firmicutes appear over-represented in human samples; (3) Acidobacteria, Verrucomicrobia appear over-represented in the fecal samples; (4) the only Crenarchaeota were observed in the Mock sample, which is not really a community but a simulated community used as a control. These are not hugely surprising based on previous biological observations from the field, but it is hopefully useful code that can be applied on other datasets that you might have.
 
 
-#### Double Principle Coordinate Analysis (DPCoA)
+### Double Principle Coordinate Analysis (DPCoA)
 
 Here is a quick example illustrating the use of Double Principal Coordinate Analysis (DPCoA~\cite{Pavoine2004523), using the using the `ordinate()` function in phyloseq, as well as the "biplot" option for `plot_ordination(). For a description that includes an applied example using the "enterotype" dataset and comparison with UniFrac/PCoA, see Fukuyama et al~\cite{fukuyama2012com. 
 
@@ -429,9 +440,9 @@ plot_ordination(GP, GP.dpcoa, type="split",
 ```
 
 
-### Distance Methods
+## Distance Methods
 
-#### distance(): Central Distance Function
+### distance(): Central Distance Function
 
 Many comparisons of microbiome samples, including the graphical model and the PCoA analysis, require a calculation for the relative dissimilarity/distance between one microbial community and another. The phyloseq-package provides a general "wrapper" function for calculating ecological distance matrices between the samples in an experiment. 
 
@@ -448,7 +459,7 @@ distance(esophagus, "g") # betadiver method option "g"
 ```
 
 
-#### UniFrac and weighted UniFrac
+### UniFrac and weighted UniFrac
 UniFrac is a recently-defined~\cite{Lozupone:2005gn and popular distance metric to summarize the difference between pairs of ecological communities. All UniFrac variants use a phylogenetic tree of the relationship among taxa as central information to calculating the distance between two samples/communities. An unweighted UniFrac distance matrix only considers the presence/absence of taxa, while weighted UniFrac accounts for the relative abundance of taxa as well as their phylogenetic distance. Prior to phyloseq, a non-parallelized, non-Fast implementation of the unweighted UniFrac was available in \R{ packages (`picante::unifrac`~\cite{Kembel:2010ft). In the phyloseq package we provide optionally-parallelized implementations of Fast UniFrac~\cite{Hamady:2009fk (both weighted and unweighted, with plans for additional UniFrac variants), all of which return a sample-wise distance matrix from any `phyloseq-class object that contains a phylogenetic tree component. 
 
 The following is an example calculating the UniFrac distance (both weighted and unweighted) matrix using the "esophagus" example dataset:
@@ -462,7 +473,7 @@ distance(esophagus, "uUniFrac")
 See the phyloseq demo page about fast parallel UniFrac.
 
 
-### Hierarchical Clustering
+## Hierarchical Clustering
 Another potentially useful and popular way to visualize/decompose sample-distance matrices is through hierarchical clustering (e.g. `hclust`). In the following example, we reproduce Figure~4 from the ["Global Patterns" article](http://www.pnas.org/content/early/2010/06/02/1000080107), using the unweighted UniFrac distance and the UPGMA method (`hclust` parameter `method="average"`). Try `help("hclust")` for alternative clustering methods included in standard R.
 
 ```{r}
@@ -480,26 +491,16 @@ plot(GP.hclust, col=cols)
 
 An alternative means of summarizing a distance matrix via hierarchical clustering and plotting as an annotated dendrogram. Compare with Figure 4 from the [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107)). Some differences in Figure~\ref{fig:GPfig4 from the original article might be explained by [Global Patterns](http://www.pnas.org/content/early/2010/06/02/1000080107) in phyloseq being the summed observations from both primer directions (5' and 3'), while in the article they show the results separately. Furthermore, in the article the "mock" community is not included in the dataset, but an extra fecal sample is included.
 
-## Validation
 
-### Multiple Inference Correction
+# Multiple Testing and Differential Abundance
 
-The phyloseq package includes support for significance testing with correction for multiple inference. This is particularly important when testing for significance of the abundance patterns among thousands of microbes (OTUs). This is a common question of phylogenetic sequence data, that is, "what is the subset of microbes that significantly correlate with a scientifically-interesting sample variable". Although we plan to include support for other types of multiple-inference corrected tests, this "which taxa?" test is the only directly supported test at the moment.
+One of our recommended approaches to this problem was described in
+McMurdie and Holmes (2014) [Waste Not, Want Not: Why Rarefying Microbiome Data is Inadmissible](http://dx.plos.org/10.1371/journal.pcbi.1003531).
+PLoS Computational Biology. 10(4):e1003531
 
-Our initial implementation of this support is via an extension to the `mt.maxT` and `mt.minP` functions in the multtest package (Bioconductor repo). This uses permutation-adjusted p-values in a multiple testing procedure that provides strong control of the Family-Wise Error Rate (FWER) among the taxa being tested. The user specifies a sample-variable among the `sample_data` component, or alternatively provides a sample-wise vector or factor that classifies the samples into groups. Additional optional parameters can be provided that specify the type of test (`"test="`), the sidedness of the test (`"side="`), as well as some additional technical/computational parameters.
+Some reproducible demonstrations of this approach are included in 
+[the phyloseq extensions repository](http://joey711.github.io/phyloseq-extensions/extensions-index.html), the `phyloseq_to_deseq2` function,
+as well as a separate vignetted dedicated to this topic
+(phyloseq and DESeq2 on Colorectal Cancer Data).
 
-In the following example we test whether a particular genera correlates with the Enterotype classification of each sample. Note that we have to specify an alternate test, `test="f"`, because the default test (t-test) can only handle up to 2 classes, and there are three enterotype classes.
-
-```{r eval=FALSE}
-data(enterotype)
-# Filter samples that don't have Enterotype classification.
-x <- subset_samples(enterotype, !is.na(Enterotype))
-# Calculate the multiple-inference-adjusted P-values
-ent.p.table <- mt(x, "Enterotype", test="f", B=1000)
-print(head(ent.p.table, 10))
-```
-
-Not surprisingly, Prevotella and Bacteroides top the list, since they were major components of the "Enterotype" classification. 
-
-Please also note that we are planning to incorporate other tools from multtest that would allow for other types of multiple-inference correction procedures, for instance, strong control of the False Discovery Rate (FDR). These additional options will be made available shortly.
-
+Please make use of these materials for differential abundance testing.
