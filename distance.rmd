@@ -2,7 +2,7 @@
 
 # The distance function in phyloseq
 
-The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distance("list")` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
+The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distanceMethodList` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
 
 See the in-package documentation of `distance` for further details:
 
@@ -55,7 +55,7 @@ enterotype <- subset_species(enterotype, Genus != "-1")
 
 The available distance methods coded in `distance`
 ```{r}
-dist_methods <- unlist(distance("list"))
+dist_methods <- unlist(distanceMethodList)
 print(dist_methods)
 ```
 
@@ -159,4 +159,3 @@ htmlstems = gsub(".html", "", htmlfiles)
 mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
 cat(mdlines, sep="\n\n")
 ```
-
