@@ -2282,11 +2282,17 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #'  The default is plain underscore, which in this \code{\link{regex}} context
 #'  is \code{"_"}.
 #'  
-#' @param useSizeAnnotations (Optional). Boolean. 
+#' @param useSizeAnnotations (Optional).  An R \code{\link{regex}} as a character string.
 #'  USearch/UParse allows you to propogate readcounts during early derplication
 #'  and clustering steps. This option provides the ability to use the readcount
 #'  information.
 #'  The default is values is \code{FALSE}.
+#'  
+#' @param sizeRegex (Optional). Boolean. 
+#'  If using the \code{useSizeAnnotations} option, this regex value
+#'  is used to capture the size annotation from the \code{colRead} column
+#'  and this size annotation will for OTU aggregation.
+#'  The default value is \code{".*size=([0-9]*);?$"}.
 #'  
 #' @param verbose (Optional). A \code{\link{logical}}.
 #'  Default is \code{TRUE}. 
@@ -2307,7 +2313,8 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
 #' import_usearch_uc(usearchfile)
 import_usearch_uc <- function(ucfile, colRead=9, colOTU=10, colRecType=1, 
-                               readDelimiter="_", useSizeAnnotations=FALSE, verbose=TRUE){
+                               readDelimiter="_", useSizeAnnotations=FALSE, sizeRegex=".*size=([0-9]*);?$",
+                              verbose=TRUE){
   if(verbose){cat("Reading `ucfile` into memory and parsing into table \n")}
   # fread is one of the fastest and most-efficient importers for R.
   # It creates a data.table object, suitable for large size objects
@@ -2333,7 +2340,7 @@ import_usearch_uc <- function(ucfile, colRead=9, colOTU=10, colRecType=1,
     x[, OTU := ifelse(is.na(OTU), read, OTU)]
   
     # calculate sizes form usearch annotation
-    x[, size:= as.numeric( sub(".*size=([0-9]*);?$", "\\1", read) )]
+    x[, size:= as.numeric( sub(sizeRegex, "\\1", read) )]
     
     # create samplename
     x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)]

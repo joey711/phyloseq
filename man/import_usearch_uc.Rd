@@ -5,7 +5,8 @@
 \title{Import usearch table format (\code{.uc}) to OTU table}
 \usage{
 import_usearch_uc(ucfile, colRead = 9, colOTU = 10, colRecType = 1,
-  readDelimiter = "_", useSizeAnnotations = FALSE, verbose = TRUE)
+  readDelimiter = "_", useSizeAnnotations = FALSE,
+  sizeRegex = ".*size=([0-9]*);?$", verbose = TRUE)
 }
 \arguments{
 \item{ucfile}{(Required). A file location character string 
@@ -33,11 +34,17 @@ from the original ID in the demultiplexed read ID of your sequence file.
 The default is plain underscore, which in this \code{\link{regex}} context
 is \code{"_"}.}
 
-\item{useSizeAnnotations}{(Optional). Boolean. 
+\item{useSizeAnnotations}{(Optional).  An R \code{\link{regex}} as a character string.
 USearch/UParse allows you to propogate readcounts during early derplication
 and clustering steps. This option provides the ability to use the readcount
 information.
 The default is values is \code{FALSE}.}
+
+\item{sizeRegex}{(Optional). Boolean. 
+If using the \code{useSizeAnnotations} option, this regex value
+is used to capture the size annotation from the \code{colRead} column
+and this size annotation will for OTU aggregation.
+The default value is \code{".*size=([0-9]*);?$"}.}
 
 \item{verbose}{(Optional). A \code{\link{logical}}.
 Default is \code{TRUE}. 
