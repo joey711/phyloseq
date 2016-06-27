@@ -3,7 +3,7 @@
 
 # The distance function in phyloseq
 
-The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distance("list")` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
+The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distanceMethodList` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
 
 See the in-package documentation of `distance` for further details:
 
@@ -90,30 +90,30 @@ enterotype <- subset_species(enterotype, Genus != "-1")
 The available distance methods coded in `distance`
 
 ```r
-dist_methods <- unlist(distance("list"))
+dist_methods <- unlist(distanceMethodList)
 print(dist_methods)
 ```
 
 ```
-##      UniFrac        DPCoA          JSD     vegdist1     vegdist2 
-##    "unifrac"      "dpcoa"        "jsd"  "manhattan"  "euclidean" 
-##     vegdist3     vegdist4     vegdist5     vegdist6     vegdist7 
-##   "canberra"       "bray" "kulczynski"    "jaccard"      "gower" 
-##     vegdist8     vegdist9    vegdist10    vegdist11    vegdist12 
-##   "altGower"   "morisita"       "horn"  "mountford"       "raup" 
-##    vegdist13    vegdist14    vegdist15   betadiver1   betadiver2 
-##   "binomial"       "chao"        "cao"          "w"         "-1" 
-##   betadiver3   betadiver4   betadiver5   betadiver6   betadiver7 
-##          "c"         "wb"          "r"          "I"          "e" 
-##   betadiver8   betadiver9  betadiver10  betadiver11  betadiver12 
-##          "t"         "me"          "j"        "sor"          "m" 
-##  betadiver13  betadiver14  betadiver15  betadiver16  betadiver17 
-##         "-2"         "co"         "cc"          "g"         "-3" 
-##  betadiver18  betadiver19  betadiver20  betadiver21  betadiver22 
-##          "l"         "19"         "hk"        "rlb"        "sim" 
-##  betadiver23  betadiver24        dist1        dist2        dist3 
-##         "gl"          "z"    "maximum"     "binary"  "minkowski" 
-##   designdist 
+##      UniFrac        DPCoA          JSD     vegdist1     vegdist2
+##    "unifrac"      "dpcoa"        "jsd"  "manhattan"  "euclidean"
+##     vegdist3     vegdist4     vegdist5     vegdist6     vegdist7
+##   "canberra"       "bray" "kulczynski"    "jaccard"      "gower"
+##     vegdist8     vegdist9    vegdist10    vegdist11    vegdist12
+##   "altGower"   "morisita"       "horn"  "mountford"       "raup"
+##    vegdist13    vegdist14    vegdist15   betadiver1   betadiver2
+##   "binomial"       "chao"        "cao"          "w"         "-1"
+##   betadiver3   betadiver4   betadiver5   betadiver6   betadiver7
+##          "c"         "wb"          "r"          "I"          "e"
+##   betadiver8   betadiver9  betadiver10  betadiver11  betadiver12
+##          "t"         "me"          "j"        "sor"          "m"
+##  betadiver13  betadiver14  betadiver15  betadiver16  betadiver17
+##         "-2"         "co"         "cc"          "g"         "-3"
+##  betadiver18  betadiver19  betadiver20  betadiver21  betadiver22
+##          "l"         "19"         "hk"        "rlb"        "sim"
+##  betadiver23  betadiver24        dist1        dist2        dist3
+##         "gl"          "z"    "maximum"     "binary"  "minkowski"
+##   designdist
 ##        "ANY"
 ```
 
@@ -126,7 +126,7 @@ dist_methods[(1:2)]
 ```
 
 ```
-##   UniFrac     DPCoA 
+##   UniFrac     DPCoA
 ## "unifrac"   "dpcoa"
 ```
 
@@ -138,7 +138,7 @@ dist_methods["designdist"]
 ```
 
 ```
-## designdist 
+## designdist
 ##      "ANY"
 ```
 
@@ -185,7 +185,7 @@ p = p + ggtitle("MDS on various distance metrics for Enterotype dataset")
 p
 ```
 
-![plot of chunk distance-summary-plot](figure/distance-summary-plot.png) 
+![plot of chunk distance-summary-plot](figure/distance-summary-plot.png)
 
 
 Shade according to assigned **enterotype**
@@ -200,7 +200,7 @@ p = p + ggtitle("MDS on various distance metrics for Enterotype dataset")
 p
 ```
 
-![plot of chunk distance-summary-plot-enterotype](figure/distance-summary-plot-enterotype.png) 
+![plot of chunk distance-summary-plot-enterotype](figure/distance-summary-plot-enterotype.png)
 
 
 
@@ -214,7 +214,7 @@ Jensen-Shannon Divergence
 print(plist[["jsd"]])
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png)
 
 
 Jaccard
@@ -223,7 +223,7 @@ Jaccard
 print(plist[["jaccard"]])
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png)
 
 
 Bray-Curtis
@@ -232,7 +232,7 @@ Bray-Curtis
 print(plist[["bray"]])
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png)
 
 
 Gower
@@ -241,7 +241,7 @@ Gower
 print(plist[["gower"]])
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png)
 
 
 w
@@ -250,7 +250,7 @@ w
 print(plist[["w"]])
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png)
 
 
 
@@ -296,5 +296,3 @@ print(plist[["w"]])
 #### [subset_ord_plot-examples](subset_ord_plot-examples.html)
 
 #### [tutorials-index](tutorials-index.html)
-
-
