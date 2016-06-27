@@ -2241,7 +2241,13 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' and it is also assumed that the delimiter between sample-name and read
 #' in the read-name entries is a single \code{"_"}.
 #' If this is not true, you may have to update these parameters,
-#' or even modify the current implementation of this function.
+#' or even modify the current implementation of this function. It is common
+#' in Usearch-based workflows to carry size information from earlier steps 
+#' (e.g. dereplication, OTU size filtering, clustering) as an annottion in 
+#' the fasta files. To use these numbers in the parsing function, try setting
+#' the \code{useSizeAnnotations} to \code{TRUE}. As per the rest of this paragraph,
+#' this functionality relies on USearch maintaining its format.
+#' 
 #' 
 #' Also note that there is now a UPARSE-specific output file format,
 #' \href{http://www.drive5.com/usearch/manual/opt_uparseout.html}{uparseout},
@@ -2265,11 +2271,22 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #'  file that holds OTU IDs.
 #'  The default column index is \code{10}.
 #'  
+#' @param colRecType (Optional). Numeric. The column index in the uc-table 
+#'  file that holds OTU record type.
+#'  The default column index is \code{1}.
+#'  
+#'  
 #' @param readDelimiter (Optional). An R \code{\link{regex}} as a character string.
 #'  This should be the delimiter that separates the sample ID
 #'  from the original ID in the demultiplexed read ID of your sequence file.
 #'  The default is plain underscore, which in this \code{\link{regex}} context
 #'  is \code{"_"}.
+#'  
+#' @param useSizeAnnotations (Optional). Boolean. 
+#'  USearch/UParse allows you to propogate readcounts during early derplication
+#'  and clustering steps. This option provides the ability to use the readcount
+#'  information.
+#'  The default is values is \code{FALSE}.
 #'  
 #' @param verbose (Optional). A \code{\link{logical}}.
 #'  Default is \code{TRUE}. 
@@ -2278,6 +2295,7 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' 
 #' @importFrom data.table fread
 #' @importFrom data.table setnames
+#' @importFrom data.table dcast.data.table
 #' @export
 #' @seealso \code{\link{import}}
 #' 
@@ -2288,31 +2306,60 @@ microbio_me_qiime = function(zipftp, ext=".zip", parsef=parse_taxonomy_greengene
 #' @examples
 #' usearchfile <- system.file("extdata", "usearch.uc", package="phyloseq")
 #' import_usearch_uc(usearchfile)
-import_usearch_uc <- function(ucfile, colRead=9, colOTU=10,
-                               readDelimiter="_", verbose=TRUE){
+import_usearch_uc <- function(ucfile, colRead=9, colOTU=10, colRecType=1, 
+                               readDelimiter="_", useSizeAnnotations=FALSE, verbose=TRUE){
   if(verbose){cat("Reading `ucfile` into memory and parsing into table \n")}
   # fread is one of the fastest and most-efficient importers for R.
   # It creates a data.table object, suitable for large size objects
   x = fread(ucfile, sep="\t", header=FALSE, na.strings=c("*", '*', "NA","N/A",""),
-            select=c(colRead, colOTU), colClasses="character", showProgress=TRUE)
-  setnames(x, c("read", "OTU"))
+            select=c(colRecType, colRead, colOTU), colClasses="character", showProgress=TRUE)
+  setnames(x, c("rectype","read", "OTU"))
   NrawEntries = nrow(x)
-  if(verbose){
-    cat("Initially read", NrawEntries, "entries. \n")
-    cat("... Now removing unassigned OTUs (* or NA)... \n")
+  
+  # obtain size annotations and use those annotations in the columns
+  # Note that the original read annotations will be used for obtaining sizes but
+  # that the OTUs will be the sequences they hit against in USEARCH.
+  if (useSizeAnnotations){
+    
+    # keep the centroids, "C" and the hits, "H"
+    x <- x[rectype %in% c("H","C"), ]
+    
+    if(verbose){
+      cat("Retaining C & H records \n")
+      cat("A total of", nrow(x), "will be assigned to the OTU table.\n")
+    }
+    
+    # Add OTU data to OTU column
+    x[, OTU := ifelse(is.na(OTU), read, OTU)]
+  
+    # calculate sizes form usearch annotation
+    x[, size:= as.numeric( sub(".*size=([0-9]*);?$", "\\1", read) )]
+    
+    # create samplename
+    x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)]
+    
+    # cast the 
+    OTU <- dcast.data.table(x, sample ~ OTU, fun.aggregate = sum, value.var = "size",)
+    samplenames <- OTU$sample
+    OTU[,sample:=NULL]
+    OTU <- as(OTU, "matrix")
+    rownames(OTU) <- samplenames
+
+  } else {
+    if(verbose){
+      cat("Initially read", NrawEntries, "entries. \n")
+      cat("... Now removing unassigned OTUs (* or NA)... \n")
+    }
+    x = x[!is.na(OTU), ]
+    # Process sequence label to be sample label only
+    x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)] 
+    # Convert long (melted) table into a sample-by-OTU OTU table, and return
+    OTU <- as(table(x$sample, x$OTU), "matrix")
+    #   system.time({setkey(x, OTU, sample)
+    #              OTU2 <- dcast.data.table(x, sample ~ OTU, fun.aggregate=length, fill=0L)
+    #              })
+    
   }
-  x = x[!is.na(OTU), ]
-  if(verbose){
-    cat("Removed", NrawEntries - nrow(x), "entries that had no OTU assignment. \n")
-    cat("A total of", nrow(x), "will be assigned to the OTU table.\n")
-  }
-  # Process sequence label to be sample label only
-  x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)] 
-  # Convert long (melted) table into a sample-by-OTU OTU table, and return
-  OTU <- as(table(x$sample, x$OTU), "matrix")
-  #   system.time({setkey(x, OTU, sample)
-  #              OTU2 <- dcast.data.table(x, sample ~ OTU, fun.aggregate=length, fill=0L)
-  #              })
   return(otu_table(OTU, taxa_are_rows=FALSE))
 }
 ################################################################################

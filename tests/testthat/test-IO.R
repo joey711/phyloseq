@@ -366,7 +366,10 @@ test_that("Results of .tar.gz and .zip should be identical", {
 # import_usearch_uc
 ################################################################################
 usearchfile = system.file("extdata", "usearch.uc", package="phyloseq")
+usearchfilesizes = system.file("extdata", "usearchsizes.uc", package="phyloseq")
 OTU1 = import_usearch_uc(usearchfile)
+OTU2 = import_usearch_uc(usearchfilesizes, readDelimiter = "\\.", useSizeAnnotations = TRUE)
+
 test_that("import_usearch_uc: Properly omit entries from failed search", {  
   ucLines = readLines(usearchfile)
   expect_identical( sum(OTU1), (length(ucLines) - length(grep("*", ucLines, fixed=TRUE))) )
@@ -375,5 +378,14 @@ test_that("import_usearch_uc: Properly omit entries from failed search", {
   expect_identical( ncol(OTU1), ntaxa(OTU1))
   expect_identical( ncol(OTU1), 33L)
   expect_equivalent(colSums(OTU1)[1:6], c(6, 1, 2, 1, 1, 1))
+})
+test_that("import_usearch_uc: Properly import sized UC files", {  
+  expect_identical( nrow(OTU2), 14L)
+  expect_identical( ncol(OTU2), 39L)
+  expect_identical( sum(OTU2), 12613)
+  expect_identical( nrow(OTU2), nsamples(OTU2))
+  expect_identical( ncol(OTU2), ntaxa(OTU2))
+  expect_equivalent(rowSums(OTU2)[1:14], c( 8, 2864, 4, 464, 597, 1335, 492, 56, 680,
+                                            1359, 2141, 2037, 568, 8))
 })
 ################################################################################

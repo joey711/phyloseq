@@ -4,8 +4,8 @@
 \alias{import_usearch_uc}
 \title{Import usearch table format (\code{.uc}) to OTU table}
 \usage{
-import_usearch_uc(ucfile, colRead = 9, colOTU = 10, readDelimiter = "_",
-  verbose = TRUE)
+import_usearch_uc(ucfile, colRead = 9, colOTU = 10, colRecType = 1,
+  readDelimiter = "_", useSizeAnnotations = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{ucfile}{(Required). A file location character string 
@@ -23,11 +23,21 @@ The default column index is \code{9}.}
 file that holds OTU IDs.
 The default column index is \code{10}.}
 
+\item{colRecType}{(Optional). Numeric. The column index in the uc-table 
+file that holds OTU record type.
+The default column index is \code{1}.}
+
 \item{readDelimiter}{(Optional). An R \code{\link{regex}} as a character string.
 This should be the delimiter that separates the sample ID
 from the original ID in the demultiplexed read ID of your sequence file.
 The default is plain underscore, which in this \code{\link{regex}} context
 is \code{"_"}.}
+
+\item{useSizeAnnotations}{(Optional). Boolean. 
+USearch/UParse allows you to propogate readcounts during early derplication
+and clustering steps. This option provides the ability to use the readcount
+information.
+The default is values is \code{FALSE}.}
 
 \item{verbose}{(Optional). A \code{\link{logical}}.
 Default is \code{TRUE}. 
@@ -66,7 +76,12 @@ hold the read-label and OTU ID, respectively;
 and it is also assumed that the delimiter between sample-name and read
 in the read-name entries is a single \code{"_"}.
 If this is not true, you may have to update these parameters,
-or even modify the current implementation of this function.
+or even modify the current implementation of this function. It is common
+in Usearch-based workflows to carry size information from earlier steps 
+(e.g. dereplication, OTU size filtering, clustering) as an annottion in 
+the fasta files. To use these numbers in the parsing function, try setting
+the \code{useSizeAnnotations} to \code{TRUE}. As per the rest of this paragraph,
+this functionality relies on USearch maintaining its format.
 
 Also note that there is now a UPARSE-specific output file format,
 \href{http://www.drive5.com/usearch/manual/opt_uparseout.html}{uparseout},
