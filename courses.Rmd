@@ -6,19 +6,16 @@ There are a number of courses now including or featuring phyloseq. I will try an
 
 ## Open and Upcoming
 
-[Summer Institute in Statistics, Modeling in Infectious Diseases (SISMID): (2016 July 25th to July 27th) Module 14, Introduction to Metagenomic Data Analysis](http://www.biostat.washington.edu/suminst/sismid2016/modules/MD1614)
-
-[Workshop on Genomics, Český Krumlov, Czech Republic (2017 January)](http://evomics.org/workshops/workshop-on-genomics/)
+- [Summer Institute in Statistics, Modeling in Infectious Diseases (SISMID): (2016 July 25th to July 27th) Module 14, Introduction to Metagenomic Data Analysis](http://www.biostat.washington.edu/suminst/sismid2016/modules/MD1614)
+- [Workshop on Genomics, Český Krumlov, Czech Republic (2017 January)](http://evomics.org/workshops/workshop-on-genomics/)
 
 ## Concluded for 2016
 
-[Workshop on Genomics, Cesky Krumlov, Czech Republic (2016 Jan 10 - 23)](http://evomics.org/workshops/workshop-on-genomics/2016-workshop-on-genomics-cesky-krumlov/)
+- [Workshop on Genomics, Cesky Krumlov, Czech Republic (2016 Jan 10 - 23)](http://evomics.org/workshops/workshop-on-genomics/2016-workshop-on-genomics-cesky-krumlov/)
 
 ## Concluded for 2015
 
-[Harvard University Workshop on Metagenomics (2015 Sept 14 - 18)](http://evomics.org/workshops/harvard-university-workshops/2015-harvard-university-workshop-on-metagenomics/)
-
-[Summer Institute in Statistics, Modeling in Infectious Diseases (SISMID): Metagenomics Module](http://www.biostat.washington.edu/suminst/sismid/modules)
-
-[Strategies and Techniques for Analyzing Microbial Population Structure (STAMPS)](https://stamps.mbl.edu/index.php/Main_Page)
+- [Harvard University Workshop on Metagenomics (2015 Sept 14 - 18)](http://evomics.org/workshops/harvard-university-workshops/2015-harvard-university-workshop-on-metagenomics/)
+- [Summer Institute in Statistics, Modeling in Infectious Diseases (SISMID): Metagenomics Module](http://www.biostat.washington.edu/suminst/sismid/modules)
+- [Strategies and Techniques for Analyzing Microbial Population Structure (STAMPS)](https://stamps.mbl.edu/index.php/Main_Page)
 
