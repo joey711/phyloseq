@@ -1,5 +1,3 @@
-`r knitr::opts_chunk$set(cache=TRUE, fig.width=10)`
-
 # The distance function in phyloseq
 
 The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distanceMethodList` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
