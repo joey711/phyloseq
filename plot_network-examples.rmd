@@ -1,7 +1,6 @@
-`r knitr::opts_chunk$set(cache=TRUE, fig.width=8, warning=FALSE)`
 
-plot_network Examples
-========================================================
+# plot_network Examples
+
 ## Load phyloseq and the "enterotypes" dataset
 
 ```{r message=FALSE}

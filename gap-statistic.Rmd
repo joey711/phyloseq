@@ -1,8 +1,6 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
-
 
 # Gap Statistic
+
 ## How many clusters are there?
 
 From [the clusGap documentation](http://stat.ethz.ch/R-manual/R-devel/library/cluster/html/clusGap.html): 

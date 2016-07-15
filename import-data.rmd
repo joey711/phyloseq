@@ -1,5 +1,3 @@
-`r opts_chunk$set(cache=FALSE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
 # Importing phyloseq Data
 

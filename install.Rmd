@@ -1,15 +1,9 @@
 ---
 title: "Installing the phyloseq package"
 date: "`r date()`"
-output: 
-  BiocStyle::html_document:
-    fig_height: 7
-    fig_width: 10
-    toc: yes
-    toc_depth: 2
-    number_sections: true
 ---
 
+## Standard Bioconductor installer (recommended)
 
 Recommended two lines for installing phyloseq
 (execute from within a fresh R session).

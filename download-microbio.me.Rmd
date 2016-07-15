@@ -1,13 +1,3 @@
----
-output: 
-  html_document: 
-    fig_caption: yes
-    theme: readable
-    toc: yes
----
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
-
 # The QIIME-DB Server is Permanently Down.
 
 Users are suggested to migrate their queries over to Qiita.

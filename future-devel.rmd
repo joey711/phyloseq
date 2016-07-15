@@ -1,20 +1,12 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="markdown.css" rel="stylesheet"></link>
-
-Future Development of phyloseq
-========================================================
+# Future Development of phyloseq
 
 Additional development of phyloseq is ongoing, the details of which are documented heavily at [the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues).
 
 In broader strokes, the near-term plans include:
 
-1. The "compartmentalization" of the data infrastructure portion of the phyloseq package into a separate Bioconductor package called [phyloseqBase](https://github.com/joey711/phyloseq/issues/102). This may reduce the number of dependencies implied when reusing the data tools of phyloseq for other Bioconductor/R packages.
+1. The "compartmentalization" of the data infrastructure portion of the phyloseq package into a separate Bioconductor package, [a la this issue](https://github.com/joey711/phyloseq/issues/102). This may reduce the number of dependencies implied when reusing the data tools of phyloseq for other Bioconductor/R packages.
 
-1. The addition to phyloseqBase of interfaces to public repositories for integrated microbiome census data; for instance, [MG-RAST](http://metagenomics.anl.gov/) and [microbe.me](http://microbio.me/qiime).
-
-1. More advanced tree-based OTU clustering, leveraging tools already available in R.
-
-1. The development and calibration of additional tools in phyloseqBase for formal preprocessing, filtering, normalization, shrinkage and variance stabilization ([e.g. Allison 2006](http://www.nature.com/nrg/journal/v7/n1/full/nrg1749.html)) 
+1. The development and calibration of additional tools in phyloseq for formal preprocessing, filtering, normalization, shrinkage and variance stabilization ([e.g. Allison 2006](http://www.nature.com/nrg/journal/v7/n1/full/nrg1749.html)) 
 
 1. Additional structured wrapping tools to the [ade4](http://cran.r-project.org/web/packages/ade4/index.html) and [vegan](http://cran.r-project.org/web/packages/vegan/index.html) packages, with the most commonly-used tools given specific wrapping functions in phyloseq or phyloseqBase.
 
@@ -30,22 +22,10 @@ The firehose of new-gen sequencing data is making possible "big" datasets in thi
 ##### Sparse matrix classes
 Like in [the Matrix package](http://cran.r-project.org/web/packages/Matrix/index.html). This mainly applies to in-RAM computations, especially when the full matrix is actually needed. In principle, this might only apply be required to represent the preprocessed data, which could still be sparse.
 
-##### Store full dataset in a database
+##### Store full dataset in a comprehensive data type
 Some candidate packages are:
 
-- [the hdf5 package](http://cran.r-project.org/web/packages/hdf5/index.html)
+- HDF5 as in the rhdf5 package
 
 - [the ff package](http://cran.r-project.org/web/packages/ff/index.html)
 
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```

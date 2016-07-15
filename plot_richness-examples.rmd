@@ -1,8 +1,6 @@
-`r opts_chunk$set(cache=TRUE, fig.width=9)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-Alpha diversity graphics
-========================================================
+# Alpha diversity graphics
+
 
 ## plot_richness() examples
 Using the `plot_richness` function.

@@ -1,10 +1,6 @@
----
-output: html_document
----
-`r knitr::opts_chunk$set(cache=TRUE, fig.width=10)`
 
-plot_bar function: Powerful, flexible phyloseq bar plots
-========================================================
+# plot_bar function: Powerful, flexible phyloseq bar plots
+
 The following are examples to help get you started using the `plot_bar` function on your own phyloseq data.
 
 ## Global Patterns dataset examples

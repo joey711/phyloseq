@@ -1,8 +1,5 @@
-`r knitr::opts_chunk$set(cache=FALSE, fig.width=8)`
+# Functions for Accessing and (Pre)Processing Data
 
-
-Functions for Accessing and (Pre)Processing Data
-========================================================
 
 ```{r message=FALSE, warning=FALSE}
 library(phyloseq)

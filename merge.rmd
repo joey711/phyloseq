@@ -1,6 +1,5 @@
-`r knitr::opts_chunk$set(fig.width=10)`
-
 # Merge
+
 [The phyloseq project](http://joey711.github.com/phyloseq/) includes support 
 for two completely different categories of **merging**. 
 
