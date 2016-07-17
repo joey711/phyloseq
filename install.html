@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Installing the phyloseq package</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Installing the phyloseq package</h1>
+<h4 class="date"><em>Sat Jul 16 19:59:55 2016</em></h4>
+
+</div>
+
+
+<div id="bioconductor-installer-recommended" class="section level2">
+<h2>Bioconductor Installer (Recommended)</h2>
+<p>Recommended two lines for installing phyloseq (execute from within a fresh R session).</p>
+<pre class="r"><code>source(&#39;http://bioconductor.org/biocLite.R&#39;)
+biocLite(&#39;phyloseq&#39;)</code></pre>
+<p>Check version</p>
+<pre class="r"><code>packageVersion(&#39;phyloseq&#39;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<p>Alternatively, from a Unix bash terminal (e.g. Linux, Mac) the following one-liner should also work.</p>
+<pre><code>Rscript -e &quot;source(&#39;http://bioconductor.org/biocLite.R&#39;);biocLite(&#39;phyloseq&#39;)&quot;</code></pre>
+<p>Try this first. Read below if problems arise.</p>
+<p>Note: You must have a connection to the internet for this to work, and that connection must be available to your R session.</p>
+</div>
+<div id="quick-install" class="section level1">
+<h1>Quick Install</h1>
+<p>The following tutorial contains information for installing the phyloseq package for R. It includes details for navigating the various versions of the package that are available, and how to tackle some of the challenges that may come up depending on your operating system and familiarity with R.</p>
+<p>If one of the following methods in this section works with no errors, then you’re done. The phyloseq package has been installed and you can move on to <a href="http://joey711.github.com/phyloseq/">the phyloseq tutorials</a>. If not, see some of the additional troubleshooting recommendations below. Some of the issues might depend on your system. See if you can install all of the required packages ahead of time before attempting to install phyloseq. Lastly, check that the phyloseq version that you have installed matches well with what is shown in the tutorial you want to emulate. Typically the version used in the tutorial is shown at the top of the page. If your package version number is behind and the tutorial does not work as expected for you, please consider installing the latest devel version of phyloseq from GitHub, described below.</p>
+<p><strong>Special Note</strong> When installing a recent (“devel”) version of the phyloseq package from GitHub or Bioconductor, you may need to “install from source”. Although the commands for doing this are straightforward and shown below, one dependency that is often missed by users is <a href="http://latex-project.org/ftp.html">LaTeX2e</a>. For example, Mac users probably want to install the <a href="http://www.tug.org/mactex/">MacTeX</a> distro of LateX2e prior to any attempts at installing phyloseq from GitHub, as described in more detail in <a href="https://github.com/joey711/phyloseq/issues/174">Issue 174</a>.</p>
+<div id="bioconductor-release-version" class="section level2">
+<h2>Bioconductor Release Version</h2>
+<p>This is the version installed if you executed the recommended two lines above. It will not necessarily have the very latest features and fixes, but the installation should work easily using the <code>biocLite</code> tool. It should install all the necessary dependencies automatically, so these two lines should be all you need to enter in your R session to install the phyloseq package.</p>
+<pre class="r"><code>source(&quot;http://bioconductor.org/biocLite.R&quot;)</code></pre>
+<pre><code>## Bioconductor version 3.3 (BiocInstaller 1.22.2), ?biocLite for help</code></pre>
+<pre class="r"><code>biocLite(&quot;phyloseq&quot;)</code></pre>
+<p>If it asks to update old packages, you should probably choose option <code>a</code>, to update all packages.</p>
+</div>
+<div id="phyloseq-installer-script" class="section level2">
+<h2>phyloseq Installer Script</h2>
+<p>The phyloseq package includes its own installer script, which you can call from its “home” on GitHub. It has a few phyloseq-specific autochecks, and will attempt to install the latest release version of phyloseq by default (same version installed as above). It also temporarily loads a phyloseq installation function, <code>install_phyloseq()</code>, which you can execute with alternative options as shown in later sections.</p>
+<pre class="r"><code>source(&quot;https://raw.githubusercontent.com/joey711/phyloseq/master/inst/scripts/installer.R&quot;,
+       local = TRUE)</code></pre>
+</div>
+<div id="bioconductor-devel-version" class="section level2">
+<h2>Bioconductor Devel Version</h2>
+<p>There are <a href="http://bioconductor.org/developers/useDevel/">official instructions for using development versions of Bioconductor packages</a>, and these will apply to phyloseq as well as any other package in the BioC-devel repository. However, using their tool, especially the <code>useDevel()</code> command, appears to force you to use development versions of all your Bioconductor packages.</p>
+<p>This is overkill if you only want to use the devel version of phyloseq, but not necessarily the devel version of all other packages in Bioconductor. I recommend installing the stable release versions of all the packages on which phyloseq depends, especially the whichever version is explicitly listed in <a href="https://github.com/joey711/phyloseq/blob/master/DESCRIPTION">the DESCRIPTION file</a>. This is actually pretty easy.</p>
+<p>First let’s follow the previous instructions for installing the stable release version of phyloseq, shown again here. This is an easy way of installing the stable dependencies for phyloseq while also making sure there are no other strange problems. If it works you will already have the stable version of phyloseq installed as well as updated versions of the packages on which it depends, but this section is about installing the latest devel version.</p>
+<pre class="r"><code>source(&quot;https://raw.githubusercontent.com/joey711/phyloseq/master/inst/scripts/installer.R&quot;,
+       local = TRUE)
+install_phyloseq(branch = &quot;devel&quot;)</code></pre>
+<p>When executed, the first line called the latest installer script including a default-arguments call of <code>install_phyloseq()</code>, which installs the release version of phyloseq from precompiled binaries for your specific operating system, and any missing or out-of-date dependencies. The second line installed the latest <em>devel</em> version of phyloseq on Bioconductor, by modifying one of the arguments to <code>install_phyloseq()</code></p>
+</div>
+<div id="github-development-version" class="section level2">
+<h2>GitHub Development Version</h2>
+<p>This version is updated often, sometimes daily, and includes the latest fixes, documentation, and features. If you’ve requested a fix or feature on <a href="https://github.com/joey711/phyloseq/issues">the phyloseq Issue Tracker</a>, it will show up in this version first, and might be a while before the changes migrate to the official release version. This delay is for stability, testing, and because Bioconductor is on <a href="http://bioconductor.org/about/release-announcements/">a semi-annual release schedule</a>. This version is a “live” incrementally updated version of the package that we use to save, share, and collaboratively develop the package. For unstable code there are no guarantees. However, we try very hard not to push any changes to the “master” branch (the one that you see by default) that do not meet the same standards as the Bioconductor repository itself. Typically, changes that have not been fully tested will be pushed to a secondary branch or fork, and then merged into “master” only after they have passed the full suite of checks. Thus, in the vast majority of cases you should be able to install from GitHub and get the latest fixes and functionality that will eventually make its way into the Bioconductor release version.</p>
+<p>There are many different ways to obtain and install the GitHub version of the phyloseq package.</p>
+<div id="phyloseq-installer-script-1" class="section level3">
+<h3>phyloseq installer script</h3>
+<p>This is the easiest way to install the latest devel version of phyloseq from GitHub. It will attempt to install the latest master branch of the package. For alternative branches, you can modify the instructions in the <em>devtools installer</em> section (next).</p>
+<pre class="r"><code>install_phyloseq(branch = &quot;github&quot;)</code></pre>
+</div>
+<div id="devtools-installer" class="section level3">
+<h3>devtools installer</h3>
+<p>The second easiest way is to use the <code>install_github</code> function now included in the R development tools package, called <a href="http://cran.r-project.org/web/packages/devtools/index.html">devtools</a>. This is only useful if the <code>install_phyloseq</code> function didn’t work.</p>
+<p>Make sure that you have the devtools package installed,</p>
+<pre class="r"><code>install.packages(&quot;devtools&quot;)</code></pre>
+<p>then go ahead and load the devtools package and attempt to install phyloseq with the <code>install_github()</code> function.</p>
+<pre class="r"><code>library(&quot;devtools&quot;)
+install_github(&quot;phyloseq/joey711&quot;)</code></pre>
+</div>
+</div>
+</div>
+<div id="problem-with-r-core-version-number" class="section level1">
+<h1>Problem with R core version number</h1>
+<p>We are aware of a transient, but recurring error:</p>
+<pre><code>-----------------------------------
+ERROR: dependency &#39;multtest&#39; is not available for package &#39;phyloseq&#39;
+-----------------------------------
+In addition: Warning message:
+package &#39;multtest&#39; is not available (for R version 3.*.*)</code></pre>
+<p>This recurring problem arises when a new version of core R is released – for example <a href="http://cran.r-project.org/">version 3.0.0 was released</a> on 2013-04-03 – and any dependencies (see below) have not yet been built under that new version. This will typically create warnings or errors when you attempt to install phyloseq. In most cases this is not the result of the latest R version “breaking” a particular package (that kind of problem is rare); rather, it is most likely an overly cautious versioning check to ensure that the discrepancy does not go unnoticed (or so we guess). Most importantly, it is a <em>transient</em> problem that will fix itself as new “pre-built” versions of the packages are re-built with the latest release version of your core R installation. However, if you do not or cannot wait for that to happen, you will need to install those dependencies from source. Not to fear, it is hopefully not as scary as it sounds, and has the exact same challenges as those discussed in the following sections for installing the phyloseq package from source.</p>
+<p>For example, the above warning/error is probably solved by first installing the multtest package from source with the following code (note: it is a Bioconductor package, and you must have an active internet connection)</p>
+<pre class="r"><code>source(&quot;http://bioconductor.org/biocLite.R&quot;)
+biocLite(&quot;multtest&quot;, type=&quot;source&quot;)</code></pre>
+<p>Similarly, an offending dependency hosted by the CRAN repository could be installed from source with the following code (in this example, the ggplot2 package)</p>
+<pre class="r"><code>install.packages(&quot;ggplot2&quot;, type=&quot;source&quot;)</code></pre>
+<p>Note that this assumes that you have the necessary system requirements for building a package from source. This is mainly only an issue for Windows users. If the previous install code failed in your R session, do a google search of the error message that you got back. If that doesn’t reveal the solution and you are using Windows, see the section below entitled “Windows Users”.</p>
+<hr />
+</div>
+<div id="dependencies" class="section level1">
+<h1>Dependencies</h1>
+<p>Dependencies are other R packages that are required for proper functioning of phyloseq. They must be installed with at least a minimum version number specified by phyloseq for installation to work. If something went wrong in your installation of phyloseq, making sure you can actually install the dependencies is probably the best place to start. The following dependency installation code will usually attempt to upgrade your packages to the latest versions as well, potentially fixing a dependency version that is too old to work with the latest phyloseq version.</p>
+<div id="bioconductor-dependencies" class="section level2">
+<h2>Bioconductor Dependencies</h2>
+<p>Installing Bioconductor dependencies is supposed to be painless, and to work the same way as for the “Quick Install” of the release-version of phyloseq above:</p>
+<pre class="r"><code>source(&quot;http://bioconductor.org/biocLite.R&quot;)
+biocLite(&quot;multtest&quot;)</code></pre>
+<p>An explicit way to upgrade your packages using the new Bioconductor package upgrader:</p>
+<pre class="r"><code>source(&quot;http://bioconductor.org/biocLite.R&quot;)
+biocLite(&quot;BiocUpgrade&quot;)</code></pre>
+</div>
+<div id="cran-dependencies" class="section level2">
+<h2>CRAN Dependencies</h2>
+<p>The Comprehensive R Archive Network (CRAN) is the main repository for publicly available R packages. Most installation procedures will install these dependencies automagicaly from <a href="http://cran.r-project.org/web/packages/">the CRAN repository</a>. However, if you want to install them ahead of time, update, or help identify a troublesome dependency, the following is an example for installing one of the key phyloseq dependencies, <a href="https://cran.r-project.org/web/packages/ape/index.html">the ape package</a>, using the <code>install.packages</code> function.</p>
+<pre class="r"><code>install.packages(&quot;ape&quot;)</code></pre>
+<hr />
+</div>
+</div>
+<div id="windows-users-special-notes" class="section level1">
+<h1>Windows Users, special notes</h1>
+<p>There is no way for us to guarantee or troubleshoot all the possible issues that might arise for Windows users, but here is a short list of key recommendations and resources that might help you get going with phyloseq as soon as possible. These are only really relevant if you’re attempting to install phyloseq from source code. The recommended installation instructions at the very beginning should work for all Windows users for whom Bioconductor successfully installs under their recommended instructions. The <code>biocLite</code> function will auto-detect that your machine is Windows, and attempt to install the pre-compiled binary of phyloseq for Windows.</p>
+<p>If you need a devel, bleeding-edge, or modified source-code version of phyloseq, the following tips might be useful.</p>
+<ul>
+<li><p>Windows Users may first need to install <a href="http://cran.rproject.org/bin/windows/Rtools/">the Rtools application</a>, depending on how phyloseq is being installed, as Rtools is necessary to build anything from source on Windows.</p></li>
+<li><p>Make sure the R and Rtools <a href="http://geekswithblogs.net/renso/archive/2009/10/21/how-to-set-the-windows-path-in-windows-7.aspx">paths are added</a> in the environment variable.</p></li>
+<li><p>Here are the <a href="http://cran.r-project.org/doc/manuals/R-admin.html#Windows-packages">official instructions from CRAN for installing R packages on Windows</a>.</p></li>
+<li><p>For more detailed troubleshooting or system setup for Windows see <a href="http://cran.r-project.org/doc/manuals/R-admin.html#The-Windows-toolset">Appendix D The Windows toolset</a> published by CRAN.</p></li>
+</ul>
+</div>
+<div id="manual-download-and-local-install" class="section level1">
+<h1>Manual Download and Local Install</h1>
+<p>Depending on the problem that you’re having, it might help to download a compressed version of the phyloseq package, and then attempt to install it locally with standard R commands/tools.</p>
+<div id="bioc-devel-from-within-r-only" class="section level2">
+<h2>BioC devel from within R only</h2>
+<p>In this particular approach to installing the BioC-devel version of phyloseq, we need a specific URL for downloading the package file. We have provided example URLs below, but they may change slightly as package version numbers change. To check the links, go to <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">the phyloseq page for Bioconductor devel branch</a>.</p>
+<p>The URLs below are for installing from source (any properly configured system), from a Mac binary (Mac only), or from a Windows binary (Windows only).</p>
+<p>Now, using the links we just checked and the temporary system file that we initialized, we will download the package type appropriate for your system, and use the <code>install.packages</code> command that is part of standard R in order to install the just-downloaded package. Remember that you should only use one of the options below, depending on your system. All other things being equal, the binary versions are supposed to install faster and easier than source. If the binary installation doesn’t work, however, try “installing from source” as shown below.</p>
+<p>In all three examples, we first have to define a fresh new temporary file where your system will store the downloaded package file. We can simply call this <code>temp</code>, regardless of which system or package type.</p>
+<p>For Windows binary install</p>
+<pre class="r"><code>temp &lt;- tempfile()
+windowsURL = &quot;http://bioconductor.org/packages/devel/bioc/bin/windows/contrib/3.0/phyloseq_1.5.3.zip&quot;
+download.file(windowsURL, temp)
+install.packages(temp, repos=NULL, type=&quot;win.binary&quot;)</code></pre>
+<p>For Mac binary install</p>
+<pre class="r"><code>temp &lt;- tempfile()
+macURL = &quot;http://bioconductor.org/packages/devel/bioc/bin/macosx/leopard/contrib/3.0/phyloseq_1.5.3.tgz&quot;
+download.file(macURL, temp)
+install.packages(temp, repos=NULL, type=&quot;mac.binary.leopard&quot;)</code></pre>
+<p>For installing from source</p>
+<pre class="r"><code>temp &lt;- tempfile()
+sourceURL = &quot;http://bioconductor.org/packages/devel/bioc/src/contrib/phyloseq_1.5.3.tar.gz&quot;
+download.file(sourceURL, temp)
+install.packages(temp, repos=NULL, type=&quot;source&quot;)</code></pre>
+</div>
+<div id="manual-download-from-github" class="section level2">
+<h2>Manual <a href="https://github.com/joey711/phyloseq/tarball/master">Download from GitHub</a></h2>
+<p>The <code>tar.gz</code> “tarball” of the latest package build can be downloaded by clicking this <a href="https://github.com/joey711/phyloseq/tarball/master">phyloseq tarball</a> link. Both zipball and tarball versions of the repository are also linked from <a href="joey711.github.com/phyloseq/">the phyloseq front page</a>.</p>
+<p><em>Note:</em> The file name will have the form <code>joey711-phyloseq-*.tar.gz</code></p>
+</div>
+<div id="manual-download-from-bioconductor" class="section level2">
+<h2>Manual <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">Download from Bioconductor</a></h2>
+<p>The latest <a href="http://bioconductor.org/packages/release/bioc/html/phyloseq.html">stable release of phyloseq on Bioconductor</a> and the latest <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">development release of phyloseq on Bioconductor</a> can be found at these respective links, as well as some <a href="http://bioconductor.org/packages/stats/bioc/phyloseq.html">interesting phyloseq use data</a> in the form of the number of downloads of the respective versions each month from Bioconductor.</p>
+<p><em>Note:</em> The file name will have the form <code>phyloseq_1.*.tar.gz</code></p>
+</div>
+<div id="manual-download-from-bioconductor---devel" class="section level2">
+<h2>Manual <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">Download from Bioconductor - Devel</a></h2>
+<p><a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">The development branch of phyloseq on Bioconductor</a> is updated less often than the GitHub branch, but might contain recently-developed features in phyloseq that have not yet migrated to the release version. This is a good option if you are having problems installing the GitHub version, or have some other reason to use the slower-moving code.</p>
+<p>Download the BioC devel branch of phyloseq <a href="http://bioconductor.org/packages/devel/bioc/html/phyloseq.html">the devel page for phyloseq on Bioconductor</a>. It should be a link to download a file called something like <code>phyloseq_1.*.*.tar.gz</code>. Alternatively, you can download package binaries for Windows or Mac OS. These might install easier because you won’t need to install “from source”.</p>
+</div>
+<div id="local-install-on-mac-os-x-and-linuxunix" class="section level2">
+<h2>Local Install on Mac OS X and Linux/Unix</h2>
+<p>From a (<a href="http://en.wikipedia.org/wiki/Bash_(Unix_shell)">BASH</a>) command line, unpack and install (assuming you downloaded the package to the <code>~/Downloads</code> directory, as an example):</p>
+<pre><code>cd ~/Downloads
+tar -xvf joey711-phyloseq-*.tar.gz
+R CMD install joey711-phyloseq-*</code></pre>
+<p>(You need to replace the <code>*</code> or complete file name to match what you actually downloaded and unpacked. The final line refers to the directory you just unpacked, not the compressed file.)</p>
+<p>Alternatively, you might be able to build from source from within an R session, as mentioned above</p>
+<pre class="r"><code>install.packages(&quot;~/Downloads/joey711-phyloseq-*&quot;, repos = NULL, type=&quot;source&quot;)</code></pre>
+</div>
+<div id="local-install-on-windows" class="section level2">
+<h2>Local Install on Windows</h2>
+<p>Make sure you have <a href="http://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed.</p>
+<div id="windows-install-option-1-r-command-line-recommended" class="section level4">
+<h4>Windows Install Option 1: R command-line (recommended)</h4>
+<p>From within an R session, enter:</p>
+<pre class="r"><code>install.packages(&quot;C:/Desktop/joey711-phyloseq-*&quot;, repos=NULL, type=&quot;source&quot;)</code></pre>
+<p>Where <code>C:/Temp/</code> represents the full directory path to where you have saved the <code>joey711-phyloseq-*.tar.gz</code> file containing phyloseq.</p>
+</div>
+<div id="windows-install-option-2-dos" class="section level4">
+<h4>Windows Install Option 2: Dos</h4>
+<p>Command-line (dos) installation (only try if Option 1 fails): - Make sure the R and <a href="http://cran.r-project.org/bin/windows/Rtools/">Rtools</a> <a href="http://geekswithblogs.net/renso/archive/2009/10/21/how-to-set-the-windows-path-in-windows-7.aspx">paths are added</a> in the environment variable. - Open a dos command prompt and enter the following</p>
+<pre><code>R CMD INSTALL joey711-phyloseq-*.tar.gz`.</code></pre>
+</div>
+</div>
+</div>
+<div id="customization" class="section level1">
+<h1>Customization</h1>
+<p>If you want to make modifications to phyloseq on your own fork, and then install from your modified repository, just replace the <code>&quot;joey711&quot;</code> string to your GitHub username (and if you named the repository something other than <code>&quot;phyloseq&quot;</code>, change that too). See the advanced instructions above for using the <code>install_github</code> command.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

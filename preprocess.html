@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Functions for Accessing and (Pre)Processing Data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Functions for Accessing and (Pre)Processing Data</h1>
+<h4 class="date"><em>Sat Jul 16 20:01:40 2016</em></h4>
+
+</div>
+
+
+<pre class="r"><code>library(phyloseq)</code></pre>
+<p>For completeness, here is the version number of phyloseq used to build this instance of the tutorial – and also how you can check your own current version from the command line.</p>
+<pre class="r"><code>packageVersion(&quot;phyloseq&quot;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<p>Load the <code>GlobalPatterns</code> dataset, included with the phyloseq package.</p>
+<pre class="r"><code>data(&quot;GlobalPatterns&quot;)</code></pre>
+<div id="accessors" class="section level2">
+<h2>Accessors</h2>
+<p>Components of a phyloseq object, like the OTU Table, can be accessed by special accessor functions, or ``accessors’’, which return specific information about phylogenetic sequencing data, if present. These accessor functions are available for direct interaction by users and dependent functions/packages.</p>
+<pre class="r"><code>GlobalPatterns</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 19216 taxa and 26 samples ]
+## sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 19216 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 19216 tips and 19215 internal nodes ]</code></pre>
+<pre class="r"><code>ntaxa(GlobalPatterns)</code></pre>
+<pre><code>## [1] 19216</code></pre>
+<pre class="r"><code>nsamples(GlobalPatterns)</code></pre>
+<pre><code>## [1] 26</code></pre>
+<pre class="r"><code>sample_names(GlobalPatterns)[1:5]</code></pre>
+<pre><code>## [1] &quot;CL3&quot;     &quot;CC1&quot;     &quot;SV1&quot;     &quot;M31Fcsw&quot; &quot;M11Fcsw&quot;</code></pre>
+<pre class="r"><code>rank_names(GlobalPatterns)</code></pre>
+<pre><code>## [1] &quot;Kingdom&quot; &quot;Phylum&quot;  &quot;Class&quot;   &quot;Order&quot;   &quot;Family&quot;  &quot;Genus&quot;   &quot;Species&quot;</code></pre>
+<pre class="r"><code>sample_variables(GlobalPatterns)</code></pre>
+<pre><code>## [1] &quot;X.SampleID&quot;               &quot;Primer&quot;                  
+## [3] &quot;Final_Barcode&quot;            &quot;Barcode_truncated_plus_T&quot;
+## [5] &quot;Barcode_full_length&quot;      &quot;SampleType&quot;              
+## [7] &quot;Description&quot;</code></pre>
+<pre class="r"><code>otu_table(GlobalPatterns)[1:5, 1:5]</code></pre>
+<pre><code>## OTU Table:          [5 taxa and 5 samples]
+##                      taxa are rows
+##        CL3 CC1 SV1 M31Fcsw M11Fcsw
+## 549322   0   0   0       0       0
+## 522457   0   0   0       0       0
+## 951      0   0   0       0       0
+## 244423   0   0   0       0       0
+## 586076   0   0   0       0       0</code></pre>
+<pre class="r"><code>tax_table(GlobalPatterns)[1:5, 1:4]</code></pre>
+<pre><code>## Taxonomy Table:     [5 taxa by 4 taxonomic ranks]:
+##        Kingdom   Phylum          Class          Order         
+## 549322 &quot;Archaea&quot; &quot;Crenarchaeota&quot; &quot;Thermoprotei&quot; NA            
+## 522457 &quot;Archaea&quot; &quot;Crenarchaeota&quot; &quot;Thermoprotei&quot; NA            
+## 951    &quot;Archaea&quot; &quot;Crenarchaeota&quot; &quot;Thermoprotei&quot; &quot;Sulfolobales&quot;
+## 244423 &quot;Archaea&quot; &quot;Crenarchaeota&quot; &quot;Sd-NA&quot;        NA            
+## 586076 &quot;Archaea&quot; &quot;Crenarchaeota&quot; &quot;Sd-NA&quot;        NA</code></pre>
+<pre class="r"><code>phy_tree(GlobalPatterns)</code></pre>
+<pre><code>## 
+## Phylogenetic tree with 19216 tips and 19215 internal nodes.
+## 
+## Tip labels:
+##  549322, 522457, 951, 244423, 586076, 246140, ...
+## Node labels:
+##  , 0.858.4, 1.000.154, 0.764.3, 0.995.2, 1.000.2, ...
+## 
+## Rooted; includes branch lengths.</code></pre>
+<pre class="r"><code>taxa_names(GlobalPatterns)[1:10]</code></pre>
+<pre><code>##  [1] &quot;549322&quot; &quot;522457&quot; &quot;951&quot;    &quot;244423&quot; &quot;586076&quot; &quot;246140&quot; &quot;143239&quot;
+##  [8] &quot;244960&quot; &quot;255340&quot; &quot;144887&quot;</code></pre>
+<pre class="r"><code>myTaxa = names(sort(taxa_sums(GlobalPatterns), decreasing = TRUE)[1:10])
+ex1 = prune_taxa(myTaxa, GlobalPatterns)
+plot(phy_tree(ex1), show.node.label = TRUE)</code></pre>
+<p><img src="preprocess_files/figure-html/gp-sample-names-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(ex1, color = &quot;SampleType&quot;, label.tips = &quot;Phylum&quot;, ladderize = &quot;left&quot;, justify = &quot;left&quot; , size = &quot;Abundance&quot;)</code></pre>
+<p><img src="preprocess_files/figure-html/gp-sample-names-2.png" width="672" /></p>
+</div>
+<div id="preprocessing" class="section level2">
+<h2>Preprocessing</h2>
+<p>The phyloseq package also includes functions for filtering, subsetting, and merging abundance data. Filtering in phyloseq is designed in a modular fashion similar to the approach in the genefilter package. This includes the <code>prune_taxa</code> and <code>prune_samples</code> methods for directly removing unwanted indices, as well as the <code>filterfun_sample</code> and <code>genefilter_sample</code> functions for building arbitrarily complex sample-wise filtering criteria, and the <code>filter_taxa</code> function for taxa-wise filtering. In the following example, the <code>GlobalPatterns</code> data is first transformed to relative abundance, creating the new <code>GPr</code> object, which is then filtered such that only OTUs with a mean greater than 10^-5 are kept.</p>
+<pre class="r"><code>GPr  = transform_sample_counts(GlobalPatterns, function(x) x / sum(x) )
+GPfr = filter_taxa(GPr, function(x) mean(x) &gt; 1e-5, TRUE)</code></pre>
+<p>This results in a highly-subsetted object, <code>GPfr</code>, containing just 4624 of the original ~19216 OTUs. Note that in both lines we have provided a custom function for transformation and filtering, respectively.</p>
+<p>The subsetting methods <code>prune_taxa</code> and <code>prune_samples</code> are for cases where the complete subset of desired OTUs or samples is directly available. Alternatively, the <code>subset_taxa</code> and <code>subset_samples</code> functions are for subsetting based on auxiliary data contained in the Taxonomy Table or Sample Data components, respectively. These functions are analogous to the <code>subset</code> function in core R, in which the initial data argument is followed by an arbitrary logical expression that indicates elements or rows to keep. Thus, entire experiment-level data objects can be subset according to conditional expressions regarding the auxiliary data. For example, the following code will first assign to <code>GP.chl</code> the subset of the GlobalPatterns dataset that are part of the Chlamydiae phylum, and then remove samples with less than 20 total reads.</p>
+<pre class="r"><code>GP.chl = subset_taxa(GlobalPatterns, Phylum==&quot;Chlamydiae&quot;)
+GP.chl = prune_samples(sample_sums(GP.chl)&gt;=20, GP.chl)</code></pre>
+<p>Merging methods include <code>merge_taxa</code> and <code>merge_samples</code>, intended for merging specific OTUs or samples, respectively. There is also the <code>merge_phyloseq</code> function for a complete merge of two or more phyloseq-objects (or a phyloseq-object and one or more separate components). For example, the following code merges the first 5 OTUs in the Chlamydiae-only dataset.</p>
+<pre class="r"><code>GP.chl.merged = merge_taxa(GP.chl, taxa_names(GP.chl)[1:5])</code></pre>
+<p>Building on the <code>merge_taxa</code> methods, the phyloseq-package includes the agglomeration functions, <code>tip_glom</code> and <code>tax_glom</code>, for merging all OTUs in an experiment that are similar beyond a phylogenetic or taxonomic threshold, respectively. The following code demonstrates how to agglomerate the “Bacteroidetes-only” dataset (called <code>gpsfb</code>) at the taxonomic rank of Family, and create an annotated tree of the result.</p>
+<pre class="r"><code>gpsfbg = tax_glom(gpsfb, &quot;Family&quot;)
+plot_tree(gpsfbg, color=&quot;SampleType&quot;, shape=&quot;Class&quot;, size=&quot;abundance&quot;)</code></pre>
+<p>For transforming abundance values by an arbitrary R function, phyloseq includes the <code>transform_sample_counts</code> function. It takes as arguments a phyloseq-object and an R function, and returns a phyloseq-object in which the abundance values have been transformed, sample-wise, according to the transformations specified by the function. For example, the following command transforms <code>GP.chl</code> abundance counts to fractional abundance.</p>
+<pre class="r"><code>transform_sample_counts(GP.chl, function(OTU) OTU/sum(OTU) )</code></pre>
+<p>Finally, the following is the remaining set of preprocessing steps that was applied to the GlobalPatterns OTU counts prior to creating the figures in the main phyloseq manuscript.</p>
+<p>Remove taxa not seen more than 3 times in at least 20% of the samples. This protects against an OTU with small mean &amp; trivially large C.V.</p>
+<pre class="r"><code>GP = filter_taxa(GlobalPatterns, function(x) sum(x &gt; 3) &gt; (0.2*length(x)), TRUE)</code></pre>
+<p>Define a human versus non-human categorical variable, and add this new variable to sample data:</p>
+<pre class="r"><code>sample_data(GP)$human = factor( get_variable(GP, &quot;SampleType&quot;) %in% c(&quot;Feces&quot;, &quot;Mock&quot;, &quot;Skin&quot;, &quot;Tongue&quot;) )</code></pre>
+<p>Standardize abundances to the median sequencing depth</p>
+<pre class="r"><code>total = median(sample_sums(GP))
+standf = function(x, t=total) round(t * (x / sum(x)))
+gps = transform_sample_counts(GP, standf)</code></pre>
+<p>Filter the taxa using a cutoff of 3.0 for the Coefficient of Variation</p>
+<pre class="r"><code>gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) &gt; 3.0, TRUE)</code></pre>
+<p>Subset the data to Bacteroidetes, used in some plots</p>
+<pre class="r"><code>gpsfb = subset_taxa(gpsf, Phylum==&quot;Bacteroidetes&quot;)</code></pre>
+</div>
+<div id="graphic-summary" class="section level2">
+<h2>graphic summary</h2>
+<p>Now let’s summarize this slice of the data with some graphics.</p>
+<pre class="r"><code>title = &quot;plot_bar; Bacteroidetes-only&quot;
+plot_bar(gpsfb, &quot;SampleType&quot;, &quot;Abundance&quot;, title=title)</code></pre>
+<p><img src="preprocess_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>plot_bar(gpsfb, &quot;SampleType&quot;, &quot;Abundance&quot;, &quot;Family&quot;, title=title)</code></pre>
+<pre><code>## Warning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set1 is 9
+## Returning the palette you asked for with that many colors
+
+## Warning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set1 is 9
+## Returning the palette you asked for with that many colors</code></pre>
+<p><img src="preprocess_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>plot_bar(gpsfb, &quot;Family&quot;, &quot;Abundance&quot;, &quot;Family&quot;, 
+         title=title, facet_grid=&quot;SampleType~.&quot;)</code></pre>
+<pre><code>## Warning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set1 is 9
+## Returning the palette you asked for with that many colors
+
+## Warning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set1 is 9
+## Returning the palette you asked for with that many colors</code></pre>
+<p><img src="preprocess_files/figure-html/unnamed-chunk-9-1.png" width="768" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

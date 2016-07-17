@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Ordination Plots</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Ordination Plots</h1>
+<h4 class="date"><em>Sat Jul 16 20:00:53 2016</em></h4>
+
+</div>
+
+
+<p>The operation of the <code>plot_ordination</code> function also depends a lot on the</p>
+<div id="distance" class="section level3">
+<h3><a href="distance.html">distance</a></h3>
+<p>and</p>
+</div>
+<div id="ordinate" class="section level3">
+<h3><a href="ordinate.html">ordinate</a></h3>
+<p>functions.</p>
+<p>See their tutorials for further details and examples.</p>
+<p>Also, the phyloseq package includes a “convenience function” for subsetting from large collections of points in an ordination, called <code>subset_ord_plot</code>. There is a separate <a href="http://joey711.github.com/phyloseq/subset_ord_plot-examples">subset_ord_plot tutorial</a> for further details and examples.</p>
+</div>
+<div id="load-packages-prepare-data" class="section level1">
+<h1>Load Packages, Prepare Data</h1>
+<p>Load the necessary packages and data.</p>
+<pre class="r"><code>library(&quot;phyloseq&quot;); packageVersion(&quot;phyloseq&quot;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<pre class="r"><code>data(GlobalPatterns)
+library(&quot;ggplot2&quot;); packageVersion(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## [1] &#39;2.1.0&#39;</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;); packageVersion(&quot;plyr&quot;)</code></pre>
+<pre><code>## [1] &#39;1.8.4&#39;</code></pre>
+<p>ggplot2 package theme set. See <a href="http://docs.ggplot2.org/current/">the ggplot2 online documentation</a> for further help.</p>
+<pre class="r"><code>theme_set(theme_bw())</code></pre>
+<p>We want to filter low-occurrence, poorly-represented OTUs from this data, because they are essentially noise variables for the purposes of this tutorial. In practice, you should probably perform and clearly-document well-justified preprocessing steps, which are supported in the phyloseq package with examples and details on a <a href="http://joey711.github.io/phyloseq/preprocess.html">dedicated preprocessing tutorial</a>.</p>
+<p>In this case preprocessing is especially useful for showing graphically the high-level patterns in the data, as well as creating examples that compute in a short amount of time. Your reasoning and decisions in preprocessing are extremely important, and up to you. I am using several different methods of preprocessing here, for illustration and because the extent of data reduction is useful for my purposes. However, I make no assertion that these are the “optimum” approach(es) for your data and research goals, but rather, I highly recommend that you think hard about any preprocessing that you do, document it completely, and only commit to including it in your final analysis pipeline if you can defend the choices and have checked that they are robust.</p>
+<p>To quickly demonstrate and compare the results of different ordination methods, I will first further filter/preprocess the OTUs in <code>GP1</code>. I want to include some phylogenetic tree-based ordinations, which can be slow to calculate. Since the goal of this exercise is to demonstrate the <code>plot_ordination</code> capability, and not necessarily reveal any new knowledge about the Global Patterns dataset, the emphasis on this preprocessing will be on limiting the number of OTUs, not protecting intrinsic patterns in the data.</p>
+<p>Remove OTUs that do not show appear more than 5 times in more than half the samples</p>
+<pre class="r"><code>GP = GlobalPatterns
+wh0 = genefilter_sample(GP, filterfun_sample(function(x) x &gt; 5), A=0.5*nsamples(GP))
+GP1 = prune_taxa(wh0, GP)</code></pre>
+<p>Transform to even sampling depth.</p>
+<pre class="r"><code>GP1 = transform_sample_counts(GP1, function(x) 1E6 * x/sum(x))</code></pre>
+<p>Keep only the most abundant five phyla.</p>
+<pre class="r"><code>phylum.sum = tapply(taxa_sums(GP1), tax_table(GP1)[, &quot;Phylum&quot;], sum, na.rm=TRUE)
+top5phyla = names(sort(phylum.sum, TRUE))[1:5]
+GP1 = prune_taxa((tax_table(GP1)[, &quot;Phylum&quot;] %in% top5phyla), GP1)</code></pre>
+<p>That still leaves 204 OTUs in the dataset, <code>GP1</code>.</p>
+<p>We will want to investigate a major prior among the samples, which is that some are human-associated microbiomes, and some are not. Define a human-associated versus non-human categorical variable:</p>
+<pre class="r"><code>human = get_variable(GP1, &quot;SampleType&quot;) %in% c(&quot;Feces&quot;, &quot;Mock&quot;, &quot;Skin&quot;, &quot;Tongue&quot;)
+sample_data(GP1)$human &lt;- factor(human)</code></pre>
+</div>
+<div id="four-main-ordination-plots" class="section level1">
+<h1>Four main ordination plots</h1>
+<p>The <code>plot_ordination</code> function supports four basic representations of an ordination. For some methods, like <a href="http://en.wikipedia.org/wiki/Multidimensional_scaling">PCoA/MDS</a> on a distance matrix of samples, any methods displaying OTUs is not supported because OTUs are not part of the ordination in that case.</p>
+<div id="just-otus" class="section level2">
+<h2>(1) Just OTUs</h2>
+<p>Let’s start by plotting just the OTUs, and shading the points by Phylum. Note that even in our “trimmed” dataset there are <code>ntaxa(GP1)=</code> 204 OTUs.</p>
+<pre class="r"><code>GP.ord &lt;- ordinate(GP1, &quot;NMDS&quot;, &quot;bray&quot;)
+p1 = plot_ordination(GP1, GP.ord, type=&quot;taxa&quot;, color=&quot;Phylum&quot;, title=&quot;taxa&quot;)
+print(p1)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+<p>This is a complicated looking plot, but that’s not necessarily good. There is actually a lot of overplotting/occlusion, which means that the high number of points is getting in the way of our visual understanding of the data. There are several ways to deal with this in ggplot2, for example, facetting:</p>
+<pre class="r"><code>p1 + facet_wrap(~Phylum, 3)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+</div>
+<div id="just-samples" class="section level2">
+<h2>(2) Just samples</h2>
+<p>Next, let’s plot only the samples, and shade the points by “SampleType” while also modifying the shape according to whether they are human-associated. There are a few additional ggplot2 layers added to make the plot even nicer…</p>
+<pre class="r"><code>p2 = plot_ordination(GP1, GP.ord, type=&quot;samples&quot;, color=&quot;SampleType&quot;, shape=&quot;human&quot;) 
+p2 + geom_polygon(aes(fill=SampleType)) + geom_point(size=5) + ggtitle(&quot;samples&quot;)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+</div>
+<div id="biplot-graphic" class="section level2">
+<h2>(3) biplot graphic</h2>
+<p>The <code>plot_ordination</code> function can also automatically create two different graphic layouts in which both the samples and OTUs are plotted together in one “biplot”. Note that this requires methods that are not intrinsically samples-only ordinations. For example, this doesn’t work with UniFrac/PCoA.</p>
+<pre class="r"><code>p3 = plot_ordination(GP1, GP.ord, type=&quot;biplot&quot;, color=&quot;SampleType&quot;, shape=&quot;Phylum&quot;, title=&quot;biplot&quot;)
+# Some stuff to modify the automatic shape scale
+GP1.shape.names = get_taxa_unique(GP1, &quot;Phylum&quot;)
+GP1.shape &lt;- 15:(15 + length(GP1.shape.names) - 1)
+names(GP1.shape) &lt;- GP1.shape.names
+GP1.shape[&quot;samples&quot;] &lt;- 16
+p3 + scale_shape_manual(values=GP1.shape)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+</div>
+<div id="split-graphic" class="section level2">
+<h2>(4) split graphic</h2>
+<p>Hmmm. In the previous graphic the occlusion problem is pretty strong. In this case the <code>type=&quot;split&quot;</code> option can be helpful, in which the samples/OTUs are separated on two side-by-side panels…</p>
+<pre class="r"><code>p4 = plot_ordination(GP1, GP.ord, type=&quot;split&quot;, color=&quot;Phylum&quot;, shape=&quot;human&quot;, label=&quot;SampleType&quot;, title=&quot;split&quot;) 
+p4</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/unnamed-chunk-6-1.png" width="1248" /></p>
+<p>Probably much better if sample colors were black. The following function reproduces ggplot2’s default color scale. Solution borrowed from <a href="http://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette">a StackOverflow page on ggplot2</a>.</p>
+<pre class="r"><code>gg_color_hue &lt;- function(n){
+    hues = seq(15, 375, length=n+1)
+    hcl(h=hues, l=65, c=100)[1:n]
+}
+color.names &lt;- levels(p4$data$Phylum)
+p4cols &lt;- gg_color_hue(length(color.names))
+names(p4cols) &lt;- color.names
+p4cols[&quot;samples&quot;] &lt;- &quot;black&quot;
+p4 + scale_color_manual(values=p4cols)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/unnamed-chunk-7-1.png" width="1248" /></p>
+<hr />
+</div>
+</div>
+<div id="supported-ordination-methods" class="section level1">
+<h1>Supported Ordination Methods</h1>
+<p>In this section I loop through different <code>method</code> parameter options to the <code>plot_ordination</code> function, store the plot results in a list, and then plot these results in a combined graphic using ggplot2.</p>
+<pre class="r"><code>dist = &quot;bray&quot;
+ord_meths = c(&quot;DCA&quot;, &quot;CCA&quot;, &quot;RDA&quot;, &quot;DPCoA&quot;, &quot;NMDS&quot;, &quot;MDS&quot;, &quot;PCoA&quot;)
+plist = llply(as.list(ord_meths), function(i, physeq, dist){
+        ordi = ordinate(physeq, method=i, distance=dist)
+        plot_ordination(physeq, ordi, &quot;samples&quot;, color=&quot;SampleType&quot;)
+}, GP1, dist)</code></pre>
+<pre><code>## Square root transformation
+## Wisconsin double standardization
+## Run 0 stress 0.1333468 
+## Run 1 stress 0.146027 
+## Run 2 stress 0.1681661 
+## Run 3 stress 0.1333468 
+## ... Procrustes: rmse 6.731122e-06  max resid 2.00535e-05 
+## ... Similar to previous best
+## Run 4 stress 0.1385324 
+## Run 5 stress 0.1497848 
+## Run 6 stress 0.1385328 
+## Run 7 stress 0.1518734 
+## Run 8 stress 0.1497849 
+## Run 9 stress 0.146027 
+## Run 10 stress 0.1617651 
+## Run 11 stress 0.1333468 
+## ... Procrustes: rmse 1.045143e-05  max resid 2.333649e-05 
+## ... Similar to previous best
+## Run 12 stress 0.1469145 
+## Run 13 stress 0.1529686 
+## Run 14 stress 0.1690397 
+## Run 15 stress 0.1493143 
+## Run 16 stress 0.1545803 
+## Run 17 stress 0.1455344 
+## Run 18 stress 0.1470663 
+## Run 19 stress 0.1657628 
+## Run 20 stress 0.1547677 
+## *** Solution reached</code></pre>
+<pre class="r"><code>names(plist) &lt;- ord_meths</code></pre>
+<p>The previous code chunk performed each ordination method, created the corresponding graphic based on the first two axes of each ordination result, and then stored each ggplot2 plot object in a different named element of the list named <code>plist</code>. The following chunk will extract the data from each of those individual plots, and put it back together in one big <code>data.frame</code> suitable for including all plots in one graphic.</p>
+<pre class="r"><code>pdataframe = ldply(plist, function(x){
+    df = x$data[, 1:2]
+    colnames(df) = c(&quot;Axis_1&quot;, &quot;Axis_2&quot;)
+    return(cbind(df, x$data))
+})
+names(pdataframe)[1] = &quot;method&quot;</code></pre>
+<p>Now that all the ordination results are combined in one <code>data.frame</code>, called <code>pdataframe</code>, we can use this to make a standard faceted ggplot scatterplot.</p>
+<pre class="r"><code>p = ggplot(pdataframe, aes(Axis_1, Axis_2, color=SampleType, shape=human, fill=SampleType))
+p = p + geom_point(size=4) + geom_polygon()
+p = p + facet_wrap(~method, scales=&quot;free&quot;)
+p = p + scale_fill_brewer(type=&quot;qual&quot;, palette=&quot;Set1&quot;)
+p = p + scale_colour_brewer(type=&quot;qual&quot;, palette=&quot;Set1&quot;)
+p</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/ord-combine-facet-plot-1.png" width="672" /></p>
+<p>If you want to replot a larger version of an individual plot, you can do by printing from the original <code>plist</code> from which <code>pdataframe</code> was made. Each element of <code>plist</code> is already a ggplot2 graphic. For example, we can replot the detrended correspondence analysis (DCA) by printing the second element of the list.</p>
+<pre class="r"><code>plist[[2]] </code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/bigger-DCA-example-plot-01-1.png" width="672" /></p>
+<p>Now add some extra layers to make it look nicer.</p>
+<pre class="r"><code>p = plist[[2]] + scale_colour_brewer(type=&quot;qual&quot;, palette=&quot;Set1&quot;)
+p = p + scale_fill_brewer(type=&quot;qual&quot;, palette=&quot;Set1&quot;)
+p = p + geom_point(size=5) + geom_polygon(aes(fill=SampleType))
+p</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/bigger-DCA-plot-02-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="mds-pcoa-on-unifrac-distances" class="section level1">
+<h1>MDS (“PCoA”) on Unifrac Distances</h1>
+<p>Use the <code>ordinate</code> function to simultaneously perform weightd UniFrac and then perform a Principal Coordinate Analysis on that distance matrix (first line). Next pass that data and the ordination results to <code>plot_ordination</code> to create the ggplot2 output graphic with default ggplot2 settings.</p>
+<pre class="r"><code>ordu = ordinate(GP1, &quot;PCoA&quot;, &quot;unifrac&quot;, weighted=TRUE)
+plot_ordination(GP1, ordu, color=&quot;SampleType&quot;, shape=&quot;human&quot;)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/PCoA-UniFrac-1.png" width="672" /></p>
+<p>Now make the graphic look nicer with a few additional ggplot2 layers.</p>
+<pre class="r"><code>p = plot_ordination(GP1, ordu, color=&quot;SampleType&quot;, shape=&quot;human&quot;)
+p = p + geom_point(size=7, alpha=0.75)
+p = p + scale_colour_brewer(type=&quot;qual&quot;, palette=&quot;Set1&quot;)
+p + ggtitle(&quot;MDS/PCoA on weighted-UniFrac distance, GlobalPatterns&quot;)</code></pre>
+<p><img src="plot_ordination-examples_files/figure-html/PCoA-UniFrac-pretty-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

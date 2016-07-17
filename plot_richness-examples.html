@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Alpha diversity graphics</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Alpha diversity graphics</h1>
+
+</div>
+
+
+<p>Examples using the <code>plot_richness</code> function.</p>
+<p>Although the function name includes the word <code>richness</code>, which usually refers to the total number of species/OTUs/taxa in a sample or environment – either observed or estimated – this is actually a wrapper for all descriptions of <a href="http://en.wikipedia.org/wiki/Alpha_diversity">alpha diversity</a>. The name of this function may be changed in future versions to reflect this and avoid confusion.</p>
+<div id="load-packages-set-parameters" class="section level2">
+<h2>Load packages, set parameters</h2>
+<p>As usual, we must start by loading the phyloseq package, and then the dataset, in this case <code>&quot;GlobalPatterns&quot;</code>.</p>
+<pre class="r"><code>library(&quot;phyloseq&quot;); packageVersion(&quot;phyloseq&quot;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<pre class="r"><code>data(&quot;GlobalPatterns&quot;)</code></pre>
+<p>Some ggplot2 theming. First load <a href="http://docs.ggplot2.org/current/">the ggplot2 package</a>.</p>
+<pre class="r"><code>library(&quot;ggplot2&quot;); packageVersion(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## [1] &#39;2.1.0&#39;</code></pre>
+<pre class="r"><code>theme_set(theme_bw())
+pal = &quot;Set1&quot;
+scale_colour_discrete &lt;-  function(palname=pal, ...){
+  scale_colour_brewer(palette=palname, ...)
+}
+scale_fill_discrete &lt;-  function(palname=pal, ...){
+  scale_fill_brewer(palette=palname, ...)
+}</code></pre>
+</div>
+<div id="prepare-data" class="section level2">
+<h2>Prepare data</h2>
+<p>Since we are interested in alpha diversity, it is probably not a bad idea to prune OTUs that are not present in any of the samples (for some reason there are a few in <code>&quot;GlobalPatterns&quot;</code>) – <strong>BUT DON’T TRIM MORE THAN THAT!</strong> I know it is tempting to trim noise right away, but many richness estimates are modeled on singletons and doubletons in the abundance data. You need to leave them in the dataset if you want a meaningful estimate.</p>
+<pre class="r"><code>GP &lt;- prune_species(speciesSums(GlobalPatterns) &gt; 0, GlobalPatterns)</code></pre>
+<pre><code>## Warning: &#39;prune_species&#39; is deprecated.
+## Use &#39;prune_taxa&#39; instead.
+## See help(&quot;Deprecated&quot;) and help(&quot;phyloseq-deprecated&quot;).</code></pre>
+<pre><code>## Warning: &#39;speciesSums&#39; is deprecated.
+## Use &#39;taxa_sums&#39; instead.
+## See help(&quot;Deprecated&quot;) and help(&quot;phyloseq-deprecated&quot;).</code></pre>
+</div>
+<div id="plot-examples" class="section level2">
+<h2>Plot Examples</h2>
+<p>Here is the default graphic produced by the <code>plot_richness</code> function on the <code>GP</code> example dataset:</p>
+<pre class="r"><code>plot_richness(GP)</code></pre>
+<pre><code>## Warning: Removed 130 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="plot_richness-examples_files/figure-html/default-1.png" width="1344" /></p>
+<p>Note that in this case, the Fisher calculation results in a warning (but still plots). We can avoid this by specifying a <code>measures</code> argument to <code>plot_richness</code>, which will include just the alpha-diversity measures that we want.</p>
+<pre class="r"><code>plot_richness(GP, measures=c(&quot;Chao1&quot;, &quot;Shannon&quot;))</code></pre>
+<pre><code>## Warning: Removed 26 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="plot_richness-examples_files/figure-html/two-measures-sample-1.png" width="1344" /></p>
+<p>We can specify a sample variable on which to group/organize samples along the horizontal (<code>x</code>) axis. An experimentally meaningful categorical variable is usually a good choice – in this case, the <code>&quot;SampleType&quot;</code> variable works much better than attempting to interpret the sample names directly (as in the previous plot):</p>
+<pre class="r"><code>plot_richness(GP, x=&quot;SampleType&quot;, measures=c(&quot;Chao1&quot;, &quot;Shannon&quot;))</code></pre>
+<pre><code>## Warning: Removed 26 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="plot_richness-examples_files/figure-html/separate-sample-1.png" width="672" /></p>
+<p>Now suppose we wanted to use an external variable in the plot that isn’t in the <code>GP</code> dataset already – for example, a logical that indicated whether or not the samples are human-associated. First, define this new variable, <code>human</code>, as a factor (other vectors could also work; or other data you might have describing the samples).</p>
+<pre class="r"><code>sampleData(GP)$human &lt;- getVariable(GP, &quot;SampleType&quot;) %in% c(&quot;Feces&quot;, &quot;Mock&quot;, &quot;Skin&quot;, &quot;Tongue&quot;)</code></pre>
+<pre><code>## Warning: &#39;getVariable&#39; is deprecated.
+## Use &#39;get_variable&#39; instead.
+## See help(&quot;Deprecated&quot;) and help(&quot;phyloseq-deprecated&quot;).</code></pre>
+<pre><code>## Warning: &#39;sampleData&#39; is deprecated.
+## Use &#39;sample_data&#39; instead.
+## See help(&quot;Deprecated&quot;) and help(&quot;phyloseq-deprecated&quot;).</code></pre>
+<pre><code>## Warning: &#39;sampleData&lt;-&#39; is deprecated.
+## Use &#39;sample_data&lt;-&#39; instead.
+## See help(&quot;Deprecated&quot;) and help(&quot;phyloseq-deprecated&quot;).</code></pre>
+<p>Now tell <code>plot_richness</code> to map the new <code>human</code> variable on the horizontal axis, and shade the points in different color groups, according to which <code>&quot;SampleType&quot;</code> they belong.</p>
+<pre class="r"><code>plot_richness(GP, x=&quot;human&quot;, color=&quot;SampleType&quot;, measures=c(&quot;Chao1&quot;, &quot;Shannon&quot;))</code></pre>
+<pre><code>## Warning: Removed 26 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="plot_richness-examples_files/figure-html/plot-human-1-1.png" width="672" /></p>
+<p>We can merge samples that are from the environment (<code>SampleType</code>), and make the points bigger with a ggplot2 layer. First, merge the samples.</p>
+<pre class="r"><code>GPst = merge_samples(GP, &quot;SampleType&quot;)
+# repair variables that were damaged during merge (coerced to numeric)
+sample_data(GPst)$SampleType &lt;- factor(sample_names(GPst))
+sample_data(GPst)$human &lt;- as.logical(sample_data(GPst)$human)</code></pre>
+<p>Now we can plot this environment-merged version of the data. First store the default ggplot graphic as <code>p</code>, then add an additional <code>geom_point</code> layer with a large size and slight transparency.</p>
+<pre class="r"><code>p = plot_richness(GPst, x=&quot;human&quot;, color=&quot;SampleType&quot;, measures=c(&quot;Chao1&quot;, &quot;Shannon&quot;))
+p + geom_point(size=5, alpha=0.7)</code></pre>
+<pre><code>## Warning: Removed 9 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="plot_richness-examples_files/figure-html/plot-human-2-1.png" width="672" /></p>
+</div>
+<div id="more-details-about-ggplot2" class="section level2">
+<h2>More details about ggplot2</h2>
+<p>For those interested in why this works so concisely (<code>p + geom_point(size=4, alpha=0.7)</code>), it is because the rest of the aesthetic mapping and data are contained in the ggplot object, <code>p</code>, and so is inherited in the call to the ggplot2 geometric object layer function, <code>geom_point</code>, by default since we didn’t specify alternative <code>aes</code> or <code>data</code> arguments. Although we could have if we wanted to. This perhaps sounds more confusing than it is, and I find it easier to understand by inspecting the examples I’ve shown here.</p>
+<p>You’ll also notice that the original smaller points are still on the plot. This is because they were the first layer, and our larger points are semi-transparent. I find this kind of distracting, and doesn’t add any information or clarity. The good news is that layers can be removed from a ggplot object with standard list notation (using the dollar sign <code>$</code>).</p>
+<p>First, check which lists are present in <code>p</code>.</p>
+<pre class="r"><code>p$layers</code></pre>
+<pre><code>## [[1]]
+## geom_point: na.rm = TRUE
+## stat_identity: na.rm = TRUE
+## position_identity 
+## 
+## [[2]]
+## mapping: ymax = value + se, ymin = value - se 
+## geom_errorbar: na.rm = FALSE, width = 0.1
+## stat_identity: na.rm = FALSE
+## position_identity</code></pre>
+<p>We can see that the first layer is the one specifying the original points, which are small. We can use negative indexing to “pop” it out, then add a new <code>geom_point</code> layer with larger point size (the following two lines).</p>
+<pre class="r"><code>p$layers &lt;- p$layers[-1]
+p + geom_point(size=5, alpha=0.7)</code></pre>
+<pre><code>## Warning: Removed 9 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="plot_richness-examples_files/figure-html/remove-layers-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

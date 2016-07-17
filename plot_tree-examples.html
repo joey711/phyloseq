@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Powerful tree graphics with ggplot2</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Powerful tree graphics with ggplot2</h1>
+<h4 class="date"><em>Sat Jul 16 20:01:19 2016</em></h4>
+
+</div>
+
+
+<p>This page demos already-constructed examples of phylogenetic trees created via the <code>plot_tree</code> function in <a href="http://joey711.github.com/phyloseq/">the phyloseq package</a>, which in-turn uses the powerful graphics package called <a href="http://docs.ggplot2.org/current/">ggplot2</a>.</p>
+<div id="load-the-package-and-datasets" class="section level2">
+<h2>Load the package and datasets</h2>
+<pre class="r"><code>library(&quot;phyloseq&quot;)
+data(&quot;esophagus&quot;)
+data(&quot;GlobalPatterns&quot;)</code></pre>
+<p>For completeness, here is the version number of phyloseq used to build this instance of the tutorial – and also how you can check your own current version from the command line.</p>
+<pre class="r"><code>packageVersion(&quot;phyloseq&quot;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<p>We will also use ggplot2 commands in at least one section, so we will load ggplot2 now as well.</p>
+<pre class="r"><code>library(&quot;ggplot2&quot;); packageVersion(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## [1] &#39;2.1.0&#39;</code></pre>
+</div>
+<div id="example" class="section level1">
+<h1>Example</h1>
+<p>We want to plot trees, sometimes even bootstrap values, but notice that the node labels in the <code>GlobalPatterns</code> dataset are actually a bit strange. They look like they might be bootstrap values, but they sometimes have two decimals.</p>
+<pre class="r"><code>head(phy_tree(GlobalPatterns)$node.label, 10)</code></pre>
+<pre><code>##  [1] &quot;&quot;          &quot;0.858.4&quot;   &quot;1.000.154&quot; &quot;0.764.3&quot;   &quot;0.995.2&quot;  
+##  [6] &quot;1.000.2&quot;   &quot;0.943.7&quot;   &quot;0.971.6&quot;   &quot;0.766&quot;     &quot;0.611&quot;</code></pre>
+<p>Could systematically remove the second decimal, but why not just take the first 4 characters instead?</p>
+<pre class="r"><code>phy_tree(GlobalPatterns)$node.label = substr(phy_tree(GlobalPatterns)$node.label, 1, 4)</code></pre>
+<p>Great, now that we’re more happy with the node labels at least looking like bootstrap values, we can move on to using these along with other information about data mapped onto the tree graphic.</p>
+<p>The <code>GlobalPatterns</code> dataset has many OTUs, more than we would want to try to fit on a tree graphic</p>
+<pre class="r"><code>ntaxa(GlobalPatterns)</code></pre>
+<pre><code>## [1] 19216</code></pre>
+<p>So, let’s arbitrarily prune to just the first 50 OTUs in <code>GlobalPatterns</code>, and store this as <code>physeq</code>, which also happens to be the name for most main data parameters of function in the phyloseq package.</p>
+<pre class="r"><code>physeq = prune_taxa(taxa_names(GlobalPatterns)[1:50], GlobalPatterns)</code></pre>
+<p>Now let’s look at what happens with the default <code>plot_tree</code> settings.</p>
+<pre class="r"><code>plot_tree(physeq)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-8-1.png" width="672" /> By default, black dots are annotated next to tips (OTUs) in the tree, one for each sample in which that OTU was observed. Some have more dots than others. Also by default, the node labels that were stored in the tree were added next to each node without any processing (although we had trimmed their length to 4 characters in the previous step).</p>
+<p>What if we want to just see the tree with no sample points next to the tips?</p>
+<pre class="r"><code>plot_tree(physeq, &quot;treeonly&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-9-1.png" width="672" /> And what about without the node labels either?</p>
+<pre class="r"><code>plot_tree(physeq, &quot;treeonly&quot;, nodeplotblank)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-10-1.png" width="672" /> We can adjust the way branches are rotated to make it look nicer using the <code>ladderize</code> parameter.</p>
+<pre class="r"><code>plot_tree(physeq, &quot;treeonly&quot;, nodeplotblank, ladderize=&quot;left&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(physeq, &quot;treeonly&quot;, nodeplotblank, ladderize=TRUE)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-11-2.png" width="672" /> And what if we want to add the OTU labels next to each tip?</p>
+<pre class="r"><code>plot_tree(physeq, nodelabf=nodeplotblank, label.tips=&quot;taxa_names&quot;, ladderize=&quot;left&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Any <code>method</code> parameter argument other than <code>&quot;sampledodge&quot;</code> (the default) will not add dodged sample points next to the tips.</p>
+<pre class="r"><code>plot_tree(physeq, &quot;anythingelse&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div id="mapping-variables-in-data" class="section level2">
+<h2>Mapping Variables in Data</h2>
+<p>In the default argument to <code>method</code>, <code>&quot;sampledodge&quot;</code>, a point is added next to each OTU tip in the tree for every sample in which that OTU was observed. We can then map certain aesthetic features of these points to variables in our data.</p>
+</div>
+<div id="color" class="section level2">
+<h2>Color</h2>
+<p>Color is one of the most useful aesthetics in tree graphics when they are complicated. Color can be mapped to either taxonomic ranks or sample covariates. For instance, we can map color to the type of sample collected (environmental location).</p>
+<pre class="r"><code>plot_tree(physeq, nodelabf=nodeplotboot(), ladderize=&quot;left&quot;, color=&quot;SampleType&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-14-1.png" width="672" /> and we can alternatively map color to taxonomic class.</p>
+<pre class="r"><code>plot_tree(physeq, nodelabf=nodeplotboot(), ladderize=&quot;left&quot;, color=&quot;Class&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="shape" class="section level2">
+<h2>Shape</h2>
+<p>You can also map a variable to point shape if it has 6 or fewer categories, and this can be done even when color is also mapped. Here we map shape to taxonomic class so that we can still indicate it in the graphic while also mapping <code>SampleType</code> to point color.</p>
+<pre class="r"><code>plot_tree(physeq, nodelabf=nodeplotboot(), ladderize=&quot;left&quot;, color=&quot;SampleType&quot;, shape=&quot;Class&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="node-labels" class="section level2">
+<h2>Node labels</h2>
+<p>One of the most common reasons to label nodes is to add confidence measures, often a bootstrap value, to the nodes of the tree. The following graphics show different ways of doing this (labels are added by default if present in your tree).</p>
+<pre class="r"><code># The default
+plot_tree(physeq, color=&quot;SampleType&quot;, ladderize=&quot;left&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code># Special bootstrap label
+plot_tree(physeq, nodelabf=nodeplotboot(), color=&quot;SampleType&quot;, ladderize=&quot;left&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<pre class="r"><code># Special bootstrap label with alternative thresholds
+plot_tree(physeq, nodelabf=nodeplotboot(80,0,3), color=&quot;SampleType&quot;, ladderize=&quot;left&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-17-3.png" width="672" /></p>
+</div>
+<div id="tip-labels" class="section level2">
+<h2>Tip labels</h2>
+<ul>
+<li><strong>label.tips</strong> - The <code>label.tips</code> parameter controls labeling of tree tips (AKA leaves). Default is NULL, indicating that no tip labels will be printed. If <code>&quot;taxa_names&quot;</code> is a special argument resulting in the OTU name (try <code>taxa_names</code> function) being labelled next to the leaves or next to the set of points that label the leaves. Alternatively, if your data object contains a <code>tax_table</code>, then one of the rank names (from <code>rank_names(physeq)</code>) can be provided, and the classification of each OTU at that rank will be labeled instead.</li>
+<li><strong>text.size</strong> - A positive numeric argument indicating the ggplot2 size parameter for the taxa labels. Default is <code>NULL</code>. If left as <code>NULL</code>, this function will automatically calculate a (hopefully) optimal text size given the size constraints posed by the tree itself (for a vertical tree). This argument is included mainly in case the automatically-calculated size is wrong and you want to change it. Note that this parameter is only meaningful if <code>label.tips</code> is not <code>NULL</code></li>
+</ul>
+<pre class="r"><code>plot_tree(physeq, nodelabf=nodeplotboot(80,0,3), color=&quot;SampleType&quot;, label.tips=&quot;taxa_names&quot;, ladderize=&quot;left&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="radial-tree" class="section level2">
+<h2>Radial Tree</h2>
+<p>Making a radial tree is easy with ggplot2, simply recognizing that our vertically-oriented tree is a cartesian mapping of the data to a graphic – and that a radial tree is the same mapping, but with polar coordinates instead.</p>
+<pre class="r"><code>data(esophagus)
+plot_tree(esophagus, color=&quot;Sample&quot;, ladderize=&quot;left&quot;) + coord_polar(theta=&quot;y&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>The <code>GlobalPatterns</code> dataset has additional data we can map, so we will re-do some preliminary data loading/trimming to make this radial-tree example self contained, and then show the same plot as above.</p>
+<pre class="r"><code>plot_tree(physeq, nodelabf=nodeplotboot(60,60,3), color=&quot;SampleType&quot;, shape=&quot;Class&quot;, ladderize=&quot;left&quot;) + coord_polar(theta=&quot;y&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+</div>
+</div>
+<div id="the-esophagus-dataset." class="section level1">
+<h1>The esophagus dataset.</h1>
+<p>A simple dataset containing tree and OTU-table components.</p>
+<p>The esophagus is a small and relatively simple dataset by moderns standards. It only contains 3 samples, no sample-data, and a modest quantity of total sequencing per sample that is a relic of an earlier time when resources for this sort of investigation were sparse and sequencing was expensive. Nevertheless, it makes for a nice sized dataset to start displaying trees. (For more details about the dataset and its origin, try entering <code>?esophagus</code> into the command-line once you have loaded the phyloseq package)</p>
+<p>The default tree without any additional parameters is plot with black points that indicate in how many different samples each OTU was found. In this case, the term “OTU” is used quite loosely (it is a loose term, after all) to mean entries in the taxononmic data you are plotting; and in the specific case of trees, it means the tips, even if you have already agglomerated the data such that each tip is equivalent to a rank of class or phylum.</p>
+<pre class="r"><code>plot_tree(esophagus, title=&quot;Default tree.&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>If for some reason you just want an unadorned tree, the <code>&quot;treeonly&quot;</code> method can be selected. This tends to plot much faster than the annotated tree, and is still a ggplot2 object that you <em>might</em> be able to add further layers to manually.</p>
+<pre class="r"><code>plot_tree(esophagus, &quot;treeonly&quot;, title=&quot;method = \&quot;treeonly\&quot;&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>Now let’s shade tips according to the sample in which a particular OTU was observed.</p>
+<pre class="r"><code>plot_tree(esophagus, color=&quot;samples&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>We can also scale the size of tips according to abundance; usually related to number of sequencing reads, but depends on what you have done with the data prior to this step.</p>
+<pre class="r"><code>plot_tree(esophagus, size=&quot;abundance&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>Both graphical features included at once.</p>
+<pre class="r"><code>plot_tree(esophagus, size=&quot;abundance&quot;, color=&quot;samples&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p>There is some overlap of the tip points. Let’s adjust the base spacing to spread them out a little bit.</p>
+<pre class="r"><code>plot_tree(esophagus, size=&quot;abundance&quot;, color=&quot;samples&quot;, base.spacing=0.03)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p>Good, now what if we wanted to also display the specific numeric value of OTU abundances that occurred more than 3 times in a given sample? For that, <code>plot_tree</code> includes the <code>min.abundance</code> parameter, set to <code>Inf</code> by default to prevent any point labels from being written.</p>
+<pre class="r"><code>plot_tree(esophagus, size=&quot;abundance&quot;, color=&quot;samples&quot;, base.spacing=0.03, min.abundance=3)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+</div>
+<div id="more-examples-with-the-global-patterns-dataset" class="section level1">
+<h1>More Examples with the Global Patterns dataset</h1>
+<p>Subset Global Patterns dataset to just the observed Archaea.</p>
+<pre class="r"><code>gpa &lt;- subset_taxa(GlobalPatterns, Kingdom==&quot;Archaea&quot;)</code></pre>
+<p>The number of different Archaeal taxa from this dataset is small enough for a decent tree plot.</p>
+<pre class="r"><code>ntaxa(gpa)</code></pre>
+<pre><code>## [1] 208</code></pre>
+<p>That is to say, it is reasonable to consider displaying the phylogenetic tree directly for <code>gpa</code>. Too many OTUs means a tree that is pointless to attempt to display in its entirety in one graphic of a standard size and font. So the whole <code>GlobalPatterns</code> dataset probably a bad idea.</p>
+<pre class="r"><code>ntaxa(GlobalPatterns)</code></pre>
+<pre><code>## [1] 19216</code></pre>
+<p>Some patterns are immediately discernable with minimal parameter choices:</p>
+<pre class="r"><code>plot_tree(gpa, color=&quot;SampleType&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(gpa, color=&quot;Phylum&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(gpa, color=&quot;SampleType&quot;, shape=&quot;Phylum&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(gpa, color=&quot;Phylum&quot;, label.tips=&quot;Genus&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p>However, the text-label size scales with number of taxa, and with common graphics-divice sizes/resolutions, these ~200 taxa still make for a somewhat crowded graphic.</p>
+<p>Let’s instead subset further to just the Crenarchaeota</p>
+<pre class="r"><code>gpac &lt;- subset_taxa(gpa, Phylum==&quot;Crenarchaeota&quot;)
+plot_tree(gpac, color=&quot;SampleType&quot;, shape=&quot;Genus&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(gpac, color=&quot;SampleType&quot;, label.tips=&quot;Genus&quot;)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p>Let’s add some abundance information. Notice that the default spacing gets a little crowded when we map taxa-abundance to point-size:</p>
+<pre class="r"><code>plot_tree(gpac, color=&quot;SampleType&quot;, shape=&quot;Genus&quot;, size=&quot;abundance&quot;, plot.margin=0.4)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p>So let’s spread it out a little bit with the <code>base.spacing</code> parameter, and while we’re at it, let’s call off the node labels…</p>
+<pre class="r"><code>plot_tree(gpac, nodelabf=nodeplotblank, color=&quot;SampleType&quot;, shape=&quot;Genus&quot;, size=&quot;abundance&quot;, base.spacing=0.04, plot.margin=0.4)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<div id="chlamydiae-only-tree" class="section level2">
+<h2>Chlamydiae-only tree</h2>
+<pre class="r"><code>GP.chl &lt;- subset_taxa(GlobalPatterns, Phylum==&quot;Chlamydiae&quot;)
+plot_tree(GP.chl, color=&quot;SampleType&quot;, shape=&quot;Family&quot;, label.tips=&quot;Genus&quot;, size=&quot;abundance&quot;, plot.margin=0.6)</code></pre>
+<p><img src="plot_tree-examples_files/figure-html/unnamed-chunk-39-1.png" width="960" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Importing phyloseq Data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Importing phyloseq Data</h1>
+
+</div>
+
+
+<p>The custom functions that read external data files and return an instance of the phyloseq-class are called <em>importers</em>. Validity and coherency between data components are checked by the phyloseq-class constructor, <code>phyloseq()</code> which is invoked internally by the importers, and is also the recommended function for creating a phyloseq object from <a href="#manual">manually imported data</a>. The component indices representing OTUs or samples are checked for intersecting indices, and trimmed/reordered such that all available (non-) component data describe exactly the same OTUs and samples, in the same order.</p>
+<p>See <code>?import</code> after phyloseq has been loaded (<code>library(&quot;phyloseq&quot;)</code>), to get an overview of available import functions and documentation links to their specific doc pages, or see below for examples using some of the more popular import functions.</p>
+<hr />
+<div id="loading-included-data" class="section level1">
+<h1>Loading included data</h1>
+<p>See <a href="http://joey711.github.io/phyloseq/Example-Data">the tutorial on included example data in phyloseq</a> for more details.</p>
+<p>The <code>data</code> command in the R language loads pre-imported datasets that are included in packages. For example, the “Global Patterns” dataset can be loaded into the R workspace with the following command.</p>
+<pre class="r"><code>data(GlobalPatterns)</code></pre>
+<hr />
+</div>
+<div id="examples" class="section level1">
+<h1>Examples</h1>
+<pre class="r"><code>library(&quot;phyloseq&quot;); packageVersion(&quot;phyloseq&quot;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;); packageVersion(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## [1] &#39;2.1.0&#39;</code></pre>
+<p>Define a default theme for ggplot graphics.</p>
+<pre class="r"><code>theme_set(theme_bw())</code></pre>
+<div id="phyloseq-ize-data-already-in-r" class="section level2">
+<h2>phyloseq-ize Data already in R</h2>
+<p>Any data already in an R session can be annoated/coerced to be recognized by phyloseq’s functions and methods. This is important, because there are lots of ways you might receive data related to a microbiome project, and not all of these will come from a popular server or workflow that is already supported by a phyloseq import function. There are, however, lots of general-purpose tools available for reading any common file format into R. We also want to encourage users to create and share their own import code for special/new data formats as they arive.</p>
+<p>For these reasons especially, phyloseq provides tools for <em>constructing</em> phyloseq component data, and the experiment-level multi-component data object, the <em>phyloseq-class</em>. These are the same functions used internally by <a href="#import_functions">the currently available importers</a>.</p>
+<pre class="r"><code>?phyloseq
+?otu_table
+?sample_data
+?tax_table</code></pre>
+<p><img src="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0061217.g003/largerimage" width="750px" /></p>
+<p><strong>If you can get the data into R, then you can get it “into” phyloseq.</strong></p>
+<p>Constructors:</p>
+<ul>
+<li><code>otu_table</code> - Works on any numeric <code>matrix</code>. You must also specify if the species are rows or columns</li>
+<li><code>sample_data</code> - Works on any <code>data.frame</code>. The rownames must match the sample names in the <code>otu_table</code> if you plan to combine them as a phyloseq-object</li>
+<li><code>tax_table</code> - Works on any character <code>matrix</code>. The rownames must match the OTU names (<code>taxa_names</code>) of the <code>otu_table</code> if you plan to combine it with a phyloseq-object.</li>
+<li><code>phyloseq</code> - Takes as argument an <code>otu_table</code> and any unordered list of valid phyloseq components: <code>sample_data</code>, <code>tax_table</code>, <code>phylo</code>, or <code>XStringSet</code>. The tip labels of a phylo-object (tree) must match the OTU names of the <code>otu_table</code>, and similarly, the sequence names of an <code>XStringSet</code> object must match the OTU names of the <code>otu_table</code>.</li>
+<li><code>merge_phyloseq</code> - Can take any number of phyloseq objects and/or phyloseq components, and attempts to combine them into one larger phyloseq object. This is most-useful for adding separately-imported components to an already-created phyloseq object.</li>
+</ul>
+<p><strong>Note:</strong> OTUs and samples are included in the combined object only if they are present in all components. For instance, extra “leaves” on the tree will be trimmed off when that tree is added to a phyloseq object.</p>
+<p><strong>Example</strong> - In the following example, we will define random example data tables in R, and then combine these into a phyloseq object. If you are able to get your data tables into R, then you can apply the following method to manually create phyloseq instances of your own data.</p>
+<p>We’ll create the example vanilla R tables using base R code. No packages required yet.</p>
+<pre class="r"><code># Create a pretend OTU table that you read from a file, called otumat
+otumat = matrix(sample(1:100, 100, replace = TRUE), nrow = 10, ncol = 10)
+otumat</code></pre>
+<pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+##  [1,]   84   67   12    6   86   53   28   74   78    72
+##  [2,]   18   85   16   51   12   78   26   82   72    81
+##  [3,]   31   34    5   64   56   78   62   56   10    28
+##  [4,]   26   26   45   64   22   33   72   56    4    81
+##  [5,]   28   85   98   80   66   31   14   30    9    77
+##  [6,]  100    5   93   60   95   16   36   61   83    95
+##  [7,]   84   98   61    7   76   86   98   41   91    63
+##  [8,]   51   61   89   96   55   23  100   15   97    83
+##  [9,]   53   83   41   67   17   22   37   51   69    97
+## [10,]   92   71   93   58   75   54    3   99   19    83</code></pre>
+<p>It needs sample names and OTU names, the index names of the your own matrix might already have this.</p>
+<pre class="r"><code>rownames(otumat) &lt;- paste0(&quot;OTU&quot;, 1:nrow(otumat))
+colnames(otumat) &lt;- paste0(&quot;Sample&quot;, 1:ncol(otumat))
+otumat</code></pre>
+<pre><code>##       Sample1 Sample2 Sample3 Sample4 Sample5 Sample6 Sample7 Sample8
+## OTU1       84      67      12       6      86      53      28      74
+## OTU2       18      85      16      51      12      78      26      82
+## OTU3       31      34       5      64      56      78      62      56
+## OTU4       26      26      45      64      22      33      72      56
+## OTU5       28      85      98      80      66      31      14      30
+## OTU6      100       5      93      60      95      16      36      61
+## OTU7       84      98      61       7      76      86      98      41
+## OTU8       51      61      89      96      55      23     100      15
+## OTU9       53      83      41      67      17      22      37      51
+## OTU10      92      71      93      58      75      54       3      99
+##       Sample9 Sample10
+## OTU1       78       72
+## OTU2       72       81
+## OTU3       10       28
+## OTU4        4       81
+## OTU5        9       77
+## OTU6       83       95
+## OTU7       91       63
+## OTU8       97       83
+## OTU9       69       97
+## OTU10      19       83</code></pre>
+<p>Now we need a pretend taxonomy table</p>
+<pre class="r"><code>taxmat = matrix(sample(letters, 70, replace = TRUE), nrow = nrow(otumat), ncol = 7)
+rownames(taxmat) &lt;- rownames(otumat)
+colnames(taxmat) &lt;- c(&quot;Domain&quot;, &quot;Phylum&quot;, &quot;Class&quot;, &quot;Order&quot;, &quot;Family&quot;, &quot;Genus&quot;, &quot;Species&quot;)
+taxmat</code></pre>
+<pre><code>##       Domain Phylum Class Order Family Genus Species
+## OTU1  &quot;b&quot;    &quot;b&quot;    &quot;v&quot;   &quot;v&quot;   &quot;l&quot;    &quot;n&quot;   &quot;j&quot;    
+## OTU2  &quot;l&quot;    &quot;m&quot;    &quot;w&quot;   &quot;b&quot;   &quot;f&quot;    &quot;y&quot;   &quot;s&quot;    
+## OTU3  &quot;h&quot;    &quot;w&quot;    &quot;n&quot;   &quot;y&quot;   &quot;k&quot;    &quot;f&quot;   &quot;c&quot;    
+## OTU4  &quot;u&quot;    &quot;m&quot;    &quot;p&quot;   &quot;n&quot;   &quot;t&quot;    &quot;l&quot;   &quot;p&quot;    
+## OTU5  &quot;o&quot;    &quot;b&quot;    &quot;q&quot;   &quot;w&quot;   &quot;a&quot;    &quot;s&quot;   &quot;e&quot;    
+## OTU6  &quot;s&quot;    &quot;j&quot;    &quot;l&quot;   &quot;d&quot;   &quot;i&quot;    &quot;d&quot;   &quot;t&quot;    
+## OTU7  &quot;v&quot;    &quot;y&quot;    &quot;t&quot;   &quot;p&quot;   &quot;s&quot;    &quot;v&quot;   &quot;e&quot;    
+## OTU8  &quot;b&quot;    &quot;r&quot;    &quot;k&quot;   &quot;d&quot;   &quot;q&quot;    &quot;c&quot;   &quot;q&quot;    
+## OTU9  &quot;k&quot;    &quot;h&quot;    &quot;b&quot;   &quot;w&quot;   &quot;h&quot;    &quot;x&quot;   &quot;o&quot;    
+## OTU10 &quot;o&quot;    &quot;p&quot;    &quot;b&quot;   &quot;n&quot;   &quot;k&quot;    &quot;d&quot;   &quot;q&quot;</code></pre>
+<pre class="r"><code>class(otumat)</code></pre>
+<pre><code>## [1] &quot;matrix&quot;</code></pre>
+<pre class="r"><code>class(taxmat)</code></pre>
+<pre><code>## [1] &quot;matrix&quot;</code></pre>
+<p>Note how these are just vanilla R matrices. Now let’s tell phyloseq how to combine them into a phyloseq object. In the previous lines, we didn’t even need to have phyloseq loaded yet. Now we do.</p>
+<pre class="r"><code>library(&quot;phyloseq&quot;)
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+TAX = tax_table(taxmat)
+OTU</code></pre>
+<pre><code>## OTU Table:          [10 taxa and 10 samples]
+##                      taxa are rows
+##       Sample1 Sample2 Sample3 Sample4 Sample5 Sample6 Sample7 Sample8
+## OTU1       84      67      12       6      86      53      28      74
+## OTU2       18      85      16      51      12      78      26      82
+## OTU3       31      34       5      64      56      78      62      56
+## OTU4       26      26      45      64      22      33      72      56
+## OTU5       28      85      98      80      66      31      14      30
+## OTU6      100       5      93      60      95      16      36      61
+## OTU7       84      98      61       7      76      86      98      41
+## OTU8       51      61      89      96      55      23     100      15
+## OTU9       53      83      41      67      17      22      37      51
+## OTU10      92      71      93      58      75      54       3      99
+##       Sample9 Sample10
+## OTU1       78       72
+## OTU2       72       81
+## OTU3       10       28
+## OTU4        4       81
+## OTU5        9       77
+## OTU6       83       95
+## OTU7       91       63
+## OTU8       97       83
+## OTU9       69       97
+## OTU10      19       83</code></pre>
+<pre class="r"><code>TAX</code></pre>
+<pre><code>## Taxonomy Table:     [10 taxa by 7 taxonomic ranks]:
+##       Domain Phylum Class Order Family Genus Species
+## OTU1  &quot;b&quot;    &quot;b&quot;    &quot;v&quot;   &quot;v&quot;   &quot;l&quot;    &quot;n&quot;   &quot;j&quot;    
+## OTU2  &quot;l&quot;    &quot;m&quot;    &quot;w&quot;   &quot;b&quot;   &quot;f&quot;    &quot;y&quot;   &quot;s&quot;    
+## OTU3  &quot;h&quot;    &quot;w&quot;    &quot;n&quot;   &quot;y&quot;   &quot;k&quot;    &quot;f&quot;   &quot;c&quot;    
+## OTU4  &quot;u&quot;    &quot;m&quot;    &quot;p&quot;   &quot;n&quot;   &quot;t&quot;    &quot;l&quot;   &quot;p&quot;    
+## OTU5  &quot;o&quot;    &quot;b&quot;    &quot;q&quot;   &quot;w&quot;   &quot;a&quot;    &quot;s&quot;   &quot;e&quot;    
+## OTU6  &quot;s&quot;    &quot;j&quot;    &quot;l&quot;   &quot;d&quot;   &quot;i&quot;    &quot;d&quot;   &quot;t&quot;    
+## OTU7  &quot;v&quot;    &quot;y&quot;    &quot;t&quot;   &quot;p&quot;   &quot;s&quot;    &quot;v&quot;   &quot;e&quot;    
+## OTU8  &quot;b&quot;    &quot;r&quot;    &quot;k&quot;   &quot;d&quot;   &quot;q&quot;    &quot;c&quot;   &quot;q&quot;    
+## OTU9  &quot;k&quot;    &quot;h&quot;    &quot;b&quot;   &quot;w&quot;   &quot;h&quot;    &quot;x&quot;   &quot;o&quot;    
+## OTU10 &quot;o&quot;    &quot;p&quot;    &quot;b&quot;   &quot;n&quot;   &quot;k&quot;    &quot;d&quot;   &quot;q&quot;</code></pre>
+<pre class="r"><code>physeq = phyloseq(OTU, TAX)
+physeq</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 10 taxa and 10 samples ]
+## tax_table()   Taxonomy Table:    [ 10 taxa by 7 taxonomic ranks ]</code></pre>
+<pre class="r"><code>plot_bar(physeq, fill = &quot;Family&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Let’s add to this, pretending we also had other types of data available.</p>
+<p>Create random sample data, and add that to the combined dataset. Make sure that the sample names match the <code>sample_names</code> of the <code>otu_table</code>.</p>
+<pre class="r"><code>sampledata = sample_data(data.frame(
+  Location = sample(LETTERS[1:4], size=nsamples(physeq), replace=TRUE),
+  Depth = sample(50:1000, size=nsamples(physeq), replace=TRUE),
+  row.names=sample_names(physeq),
+  stringsAsFactors=FALSE
+))
+sampledata</code></pre>
+<pre><code>## Sample Data:        [10 samples by 2 sample variables]:
+##          Location Depth
+## Sample1         A   811
+## Sample2         A   424
+## Sample3         B   773
+## Sample4         D   556
+## Sample5         D   924
+## Sample6         C   383
+## Sample7         B   789
+## Sample8         A   899
+## Sample9         C   464
+## Sample10        B   552</code></pre>
+<p>Now create a random phylogenetic tree with the ape package, and add it to your dataset. Make sure its tip labels match your <code>OTU_table</code>.</p>
+<pre class="r"><code>library(&quot;ape&quot;)
+random_tree = rtree(ntaxa(physeq), rooted=TRUE, tip.label=taxa_names(physeq))
+plot(random_tree)</code></pre>
+<p><img src="import-data_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Now let’s combine these altogether. We can do this either by adding the new data components to the phyloseq object we already have by using <code>merge_phyloseq</code>, or we can use a fresh new call to <code>phyloseq</code> to build it again from scratch. The results should be identical, and we can check. You can always do either one with the help from accessor functions, and the choice is stylistic.</p>
+<p>Merge new data with current phyloseq object:</p>
+<pre class="r"><code>physeq1 = merge_phyloseq(physeq, sampledata, random_tree)
+physeq1</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 10 taxa and 10 samples ]
+## sample_data() Sample Data:       [ 10 samples by 2 sample variables ]
+## tax_table()   Taxonomy Table:    [ 10 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 10 tips and 9 internal nodes ]</code></pre>
+<p>Rebuild phyloseq data from scratch using all the simulated data components we just generated:</p>
+<pre class="r"><code>physeq2 = phyloseq(OTU, TAX, sampledata, random_tree)
+physeq2</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 10 taxa and 10 samples ]
+## sample_data() Sample Data:       [ 10 samples by 2 sample variables ]
+## tax_table()   Taxonomy Table:    [ 10 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 10 tips and 9 internal nodes ]</code></pre>
+<p>Are they identical?</p>
+<pre class="r"><code>identical(physeq1, physeq2)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Let’s build a couple tree plots with the new combined data.</p>
+<pre class="r"><code>plot_tree(physeq1, color=&quot;Location&quot;, label.tips=&quot;taxa_names&quot;, ladderize=&quot;left&quot;, plot.margin=0.3)</code></pre>
+<p><img src="import-data_files/figure-html/treeplot-1.png" width="672" /></p>
+<pre class="r"><code>plot_tree(physeq1, color=&quot;Depth&quot;, shape=&quot;Location&quot;, label.tips=&quot;taxa_names&quot;, ladderize=&quot;right&quot;, plot.margin=0.3)</code></pre>
+<p><img src="import-data_files/figure-html/treeplot-2.png" width="672" /></p>
+<p>Now how about some heatmaps.</p>
+<pre class="r"><code>plot_heatmap(physeq1)</code></pre>
+<p><img src="import-data_files/figure-html/heatmap-random-1.png" width="672" /></p>
+<pre class="r"><code>plot_heatmap(physeq1, taxa.label=&quot;Phylum&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/heatmap-random-2.png" width="672" /></p>
+<p>As you can see, you gain access to the all the typical phyloseq tools, but without relying on any of the import wrappers.</p>
+<hr />
+</div>
+<div id="mg-rast" class="section level2">
+<h2><a name="mgrast"></a> MG-RAST</h2>
+<p>A recent phyloseq issues tracker post discusses and demonstrates importing a <code>.biom</code> file exported by MG-RAST:</p>
+<p><a href="https://github.com/joey711/phyloseq/issues/272" class="uri">https://github.com/joey711/phyloseq/issues/272</a></p>
+<p>The otherwise-recommended <a href="#import_biom">import_biom</a> function does not work properly (for now) on this special variant of the BIOM-format. Or said another way, the <a href="#import_biom">import_biom</a> function anticipates a different special variant of the BIOM-format the is generated by recent versions of QIIME. The <a href="https://github.com/joey711/phyloseq/issues/272">issue post about MG-RAST and phyloseq</a> provides an example for <a href="#manual">importing the data manually</a> using coercion functions and phyloseq constructors.</p>
+<hr />
+</div>
+<div id="microbio_me_qiime-defunct" class="section level2">
+<h2><a name="microbio_me"></a> <a href="download-microbio.me.html">microbio_me_qiime</a> (DEFUNCT)</h2>
+<p><a href="download-microbio.me.html">microbio_me_qiime</a> is a function in phyloseq that USED TO interface with <a href="http://www.microbio.me/qiime/index.psp">QIIME_DB</a>. <strong>QIIME-DB IS DOWN INDEFINITELY</strong>. The function is listed here for reference only. The following details in this section are the most recent useful tutorial details when the server was still up.</p>
+<p>You will need to setup an account to browse the available data sets and their IDs. If you know a datasets ID already, or its assigned number, you can provide that as the sole argument to this function and it will download, unpack, and import the data into R, all in one command. Alternatively, if you have already downloaded the data from the QIIME server, and now have it locally on your hard drive, you can provide the local path to this tar-gz or zip file, and it will perform the unpacking and importing step for you. I’m finding this increasingly useful for creating demonstrations of methods and graphics, and can be a very effective way for you to provide fully reproducible analysis if your own data is already hosted on the <a href="http://www.microbio.me/qiime/index.psp">microbio.me</a> server.</p>
+<hr />
+</div>
+</div>
+<div id="the-import-family-of-functions" class="section level1">
+<h1>The import family of functions</h1>
+<div id="import_biom" class="section level2">
+<h2><a name="import_biom"></a>import_biom</h2>
+<p>Newer versions of <a href="http://www.qiime.org/">QIIME</a> produce a more-comprehensive and formally-defined JSON or HDF5 file format, called <a href="http://biom-format.org/">biom file format</a>:</p>
+<p>“The biom file format (canonically pronounced ‘biome’) is designed to be a general-use format for representing counts of observations in one or more biological samples. BIOM is a recognized standard for the Earth Microbiome Project and is a Genomics Standards Consortium candidate project.”</p>
+<p><a href="http://biom-format.org/" class="uri">http://biom-format.org/</a></p>
+<p>The phyloseq package includes small examples of biom files with different levels and organization of data. The following shows how to import each of the four main types of biom files (in practice, you don’t need to know which type your file is, only that it is a biom file). In addition, the <code>import_biom</code> function allows you to simultaneously import an associated phylogenetic tree file and reference sequence file (e.g. fasta).</p>
+<p>First, define the file paths. In this case, this will be within the phyloseq package, so we use special features of the <code>system.file</code> command to get the paths. This should also work on your system if you have phyloseq installed, regardless of your Operating System.</p>
+<pre class="r"><code>rich_dense_biom  = system.file(&quot;extdata&quot;, &quot;rich_dense_otu_table.biom&quot;,  package=&quot;phyloseq&quot;)
+rich_sparse_biom = system.file(&quot;extdata&quot;, &quot;rich_sparse_otu_table.biom&quot;, package=&quot;phyloseq&quot;)
+min_dense_biom   = system.file(&quot;extdata&quot;, &quot;min_dense_otu_table.biom&quot;,   package=&quot;phyloseq&quot;)
+min_sparse_biom  = system.file(&quot;extdata&quot;, &quot;min_sparse_otu_table.biom&quot;,  package=&quot;phyloseq&quot;)
+treefilename = system.file(&quot;extdata&quot;, &quot;biom-tree.phy&quot;,  package=&quot;phyloseq&quot;)
+refseqfilename = system.file(&quot;extdata&quot;, &quot;biom-refseq.fasta&quot;,  package=&quot;phyloseq&quot;)</code></pre>
+<p>Now that we’ve defined the file paths, let’s use these as argument to the <code>import_biom</code> function. Note that the tree and reference sequence files are both suitable for any of the example biom files, which is why we only need one path for each. In practice, you will be specifying a path to a sequence or tree file that matches the rest of your data (include tree tip names and sequence headers)</p>
+<pre class="r"><code>import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
+## tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]</code></pre>
+<pre class="r"><code>import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
+## tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]</code></pre>
+<pre class="r"><code>import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]</code></pre>
+<pre class="r"><code>import_biom(min_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]</code></pre>
+<p>In practice, you will store the result of your import as some variable name, like <code>myData</code>, and then use this data object in downstream data manipulations and analysis. For example,</p>
+<pre class="r"><code>myData = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
+myData</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
+## sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
+## tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 5 tips and 4 internal nodes ]
+## refseq()      DNAStringSet:      [ 5 reference sequences ]</code></pre>
+<pre class="r"><code>plot_tree(myData, color=&quot;Genus&quot;, shape=&quot;BODY_SITE&quot;, size=&quot;abundance&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>plot_richness(myData, x=&quot;BODY_SITE&quot;, color=&quot;Description&quot;)</code></pre>
+<pre><code>## Warning: Removed 33 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="import-data_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<pre class="r"><code>plot_bar(myData, fill=&quot;Genus&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/unnamed-chunk-12-3.png" width="672" /></p>
+<pre class="r"><code>refseq(myData)</code></pre>
+<pre><code>##   A DNAStringSet instance of length 5
+##     width seq                                          names               
+## [1]   334 AACGTAGGTCACAAGCGTTGT...TTCCGTGCCGGAGTTAACAC GG_OTU_1
+## [2]   465 TACGTAGGGAGCAAGCGTTAT...CCTTACCAGGGCTTGACATA GG_OTU_2
+## [3]   249 TACGTAGGGGGCAAGCGTTAT...GGCTCGAAAGCGTGGGGAGC GG_OTU_3
+## [4]   453 TACGTATGGTGCAAGCGTTAT...AAGCAACGCGAAGAACCTTA GG_OTU_4
+## [5]   178 AACGTAGGGTGCAAGCGTTGT...GGAATGCGTAGATATCGGGA GG_OTU_5</code></pre>
+<hr />
+</div>
+<div id="import_qiime" class="section level2">
+<h2><a name="import_qiime"></a> import_qiime</h2>
+<p>QIIME originally produced output files in its own uniquely-defined format. These legacy formats can be imported using phyloseq functions, including especially an OTU file that typically contains both OTU-abundance and taxonomic identity information. The map-file is also an important input to QIIME that stores sample covariates, converted naturally to the <code>sample_data-class</code> component data type in the phyloseq-package. QIIME may also produce a phylogenetic tree with a tip for each OTU, which can also be imported by this function, or separately using <code>read_tree</code>.</p>
+<p>See <a href="http://www.qiime.org/">qiime.org</a> for details on using QIIME. While there are many complex dependencies, QIIME can be downloaded as a pre-installed linux virtual machine that runs “off the shelf”.</p>
+<p>The different files useful for import to phyloseq are not collocated in a typical run of the QIIME pipeline. See the basics phyloseq vignette for an example of where to find the relevant files in the output directory.</p>
+<pre class="r"><code>otufile = system.file(&quot;extdata&quot;, &quot;GP_otu_table_rand_short.txt.gz&quot;, package=&quot;phyloseq&quot;)
+mapfile = system.file(&quot;extdata&quot;, &quot;master_map.txt&quot;, package=&quot;phyloseq&quot;)
+trefile = system.file(&quot;extdata&quot;, &quot;GP_tree_rand_short.newick.gz&quot;, package=&quot;phyloseq&quot;)
+rs_file = system.file(&quot;extdata&quot;, &quot;qiime500-refseq.fasta&quot;, package=&quot;phyloseq&quot;)
+qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)</code></pre>
+<pre><code>## Processing map file...
+## Processing otu/tax file...
+## Reading file into memory prior to parsing...
+## Detecting first header line...
+## Header is on line 2  
+## Converting input file to a table...
+## Defining OTU table... 
+## Parsing taxonomy table...
+## Processing phylogenetic tree...
+##  /Library/Frameworks/R.framework/Versions/3.3/Resources/library/phyloseq/extdata/GP_tree_rand_short.newick.gz ...
+## Processing Reference Sequences...</code></pre>
+<pre class="r"><code>qiimedata</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 500 taxa and 26 samples ]
+## sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 500 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 500 tips and 499 internal nodes ]
+## refseq()      DNAStringSet:      [ 500 reference sequences ]</code></pre>
+<p>So it has Let’s try some quick graphics built from our newly-imported dataset, <code>qiimedata</code>.</p>
+<pre class="r"><code>plot_bar(qiimedata, x=&quot;SampleType&quot;, fill=&quot;Phylum&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/import-qiime-graphics-1.png" width="672" /></p>
+<pre class="r"><code>plot_heatmap(qiimedata, sample.label=&quot;SampleType&quot;, species.label=&quot;Phylum&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/import-qiime-graphics-2.png" width="672" /></p>
+<hr />
+</div>
+<div id="import_mothur" class="section level2">
+<h2><a name="import_mothur"></a> import_mothur</h2>
+<p>The open-source, platform-independent, locally-installed software package, “mothur”“, can process barcoded amplicon sequences and perform OTU-clustering, among other things. It is extensively documented on a wiki at <a href="http://www.mothur.org/wiki/Main_Page">the mothur wiki</a>.</p>
+<pre class="r"><code>mothlist  = system.file(&quot;extdata&quot;, &quot;esophagus.fn.list.gz&quot;, package=&quot;phyloseq&quot;)
+mothgroup = system.file(&quot;extdata&quot;, &quot;esophagus.good.groups.gz&quot;, package=&quot;phyloseq&quot;)
+mothtree  = system.file(&quot;extdata&quot;, &quot;esophagus.tree.gz&quot;, package=&quot;phyloseq&quot;)
+show_mothur_cutoffs(mothlist)</code></pre>
+<pre><code>##  [1] &quot;unique&quot; &quot;0.00&quot;   &quot;0.01&quot;   &quot;0.02&quot;   &quot;0.03&quot;   &quot;0.04&quot;   &quot;0.05&quot;  
+##  [8] &quot;0.06&quot;   &quot;0.07&quot;   &quot;0.08&quot;   &quot;0.09&quot;   &quot;0.10&quot;</code></pre>
+<pre class="r"><code>cutoff    = &quot;0.10&quot;
+x = import_mothur(mothlist, mothgroup, mothtree, cutoff)
+x</code></pre>
+<pre><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 591 taxa and 3 samples ]
+## phy_tree()    Phylogenetic Tree: [ 591 tips and 590 internal nodes ]</code></pre>
+<pre class="r"><code>plot_tree(x, color=&quot;samples&quot;)</code></pre>
+<p><img src="import-data_files/figure-html/plot-mothur-phyloseq-tree-1.png" width="672" /></p>
+<pre class="r"><code>SDF = data.frame(samples=sample_names(x), row.names=sample_names(x))
+sample_data(x) &lt;- sample_data(SDF)
+plot_richness(x)</code></pre>
+<pre><code>## Warning: Removed 15 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="import-data_files/figure-html/plot-mothur-phyloseq-richness-1.png" width="672" /></p>
+<p>The class and data in the object returned by <code>import_mothur</code> depends on the arguments. If the first three arguments are provided, then a phyloseq object should be returned containing both a tree and its associated OTU table. If only a list and group file are provided, then an “otu_table” object is returned. Similarly, if only a list and tree file are provided, then only a tree is returned (“phylo” class).</p>
+<p>Returns just a tree</p>
+<pre class="r"><code>x1 = import_mothur(mothlist, mothur_tree_file=mothtree, cutoff=&quot;0.10&quot;)
+x2 = import_mothur(mothlist, mothur_tree_file=mothtree, cutoff=&quot;0.08&quot;)
+plot(x1)</code></pre>
+<p><img src="import-data_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Returns just an OTU table</p>
+<pre class="r"><code>OTU = import_mothur(mothlist, mothgroup, cutoff=&quot;0.08&quot;)
+dim(OTU)</code></pre>
+<pre><code>## [1] 591   3</code></pre>
+<pre class="r"><code>head(OTU)</code></pre>
+<pre><code>## OTU Table:          [6 taxa and 3 samples]
+##                      taxa are rows
+##        B C D
+## 9_6_14 2 0 0
+## 9_1_14 1 0 0
+## 9_1_15 1 0 0
+## 9_1_16 1 0 0
+## 9_1_18 1 0 0
+## 9_1_19 1 0 0</code></pre>
+<hr />
+</div>
+<div id="import_pyrotagger" class="section level2">
+<h2><a name="import_pyrotagger"></a> import_pyrotagger</h2>
+<p>PyroTagger is created and maintained by the <a href="http://pyrotagger.jgi-psf.org/">Joint Genome Institute</a></p>
+<p>The typical output form PyroTagger is a spreadsheet format “.xls”, which poses additional import challenges. However, virtually all spreadsheet applications support the “.xls” format, and can further export this file in a tab-delimited format. It is recommended that you convert the xls-file without any modification (as tempting as it might be once you have loaded it) into a tab-delimited text file. Deselect any options to encapsulate fields in quotes, as extra quotes around each cell’s contents might cause problems during file processing. These quotes will also inflate the file-size, so leave them out as much as possible, while also resisting any temptation to modify the xls-file “by hand”.</p>
+<p>A highly-functional and free spreadsheet application can be obtained as part of <a href="http://www.openoffice.org/">the cross-platform OpenOffice suite</a>, and works for the above required conversion.</p>
+<p>It is regrettable that this importer does not take the xls-file directly as input. However, because of the moving-target nature of spreadsheet file formats, there is limited support for direct import of these formats into R. Rather than add to the dependency requirements of emphphyloseq and the relative support of these xls-support packages, it seems more efficient to choose an arbitrary delimited text format, and focus on the data structure in the PyroTagger output. This will be easier to support in the long-run.</p>
+<p>For example, the path to a pyrotagger tab-delimited file might be saved as <code>pyrotagger_tab_file</code>, and can be imported using:</p>
+<pre class="r"><code>import_pyrotagger_tab(pyrotagger_tab_file)</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
