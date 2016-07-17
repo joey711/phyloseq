@@ -1,0 +1,7 @@
+base
+phyloseq
+ggplot2
+plyr
+cluster
+ape
+BiocInstaller
