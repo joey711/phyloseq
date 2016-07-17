@@ -1,8 +1,21 @@
-# Future Development of phyloseq
+---
+title: "Future Development of phyloseq"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
+
+
+## Issues Tracker
 
 Additional development of phyloseq is ongoing, the details of which are documented heavily at [the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues).
 
-In broader strokes, the near-term plans include:
+## High level goals
+
+In broader strokes, some near-term plans include:
 
 1. The "compartmentalization" of the data infrastructure portion of the phyloseq package into a separate Bioconductor package, [a la this issue](https://github.com/joey711/phyloseq/issues/102). This may reduce the number of dependencies implied when reusing the data tools of phyloseq for other Bioconductor/R packages.
 
@@ -19,13 +32,28 @@ In broader strokes, the near-term plans include:
 1. **Big(ger)** Data
 The firehose of new-gen sequencing data is making possible "big" datasets in this realm. For example, [the demo on importing the Human Microbiome Project data into R](http://joey711.github.com/phyloseq-demo/HMP_import_example.html) takes a considerable amount of time to run on a typical desktop/laptop and may push some less powerful machines to their limit. And that's just data import. We are considering some of the best approaches to help a tool like phyloseq address computational issues that are arising from dealing with this data of this size, without compromising some of the other features (interactivity, reproducibility, connection with existing R tools). Some promising tools already available for R that might help include:
 
-##### Sparse matrix classes
-Like in [the Matrix package](http://cran.r-project.org/web/packages/Matrix/index.html). This mainly applies to in-RAM computations, especially when the full matrix is actually needed. In principle, this might only apply be required to represent the preprocessed data, which could still be sparse.
 
-##### Store full dataset in a comprehensive data type
-Some candidate packages are:
+## Sparse Representation
 
-- HDF5 as in the rhdf5 package
+This is simply a back-end consideration for very-large datasets 
+that challenge available memory.
+This is not the case for most users, or datasets.
+
+[The Matrix package](http://cran.r-project.org/web/packages/Matrix/index.html)
+has a wonderful pantheon of data class extensions that could address this, for instance.
+
+
+## Improved Interoperability with biomformat
+
+Option to store full dataset in a comprehensive, cross-language data structure. 
+The biom-format is a good candidate, 
+especially now that it has an HDF5 definition
+to satisfy the case of very large datasets,
+where on-disk storage might make the most sense.
+
+Some candidate packages for storage are:
+
+- HDF5 via rhdf5, biomformat packages
 
 - [the ff package](http://cran.r-project.org/web/packages/ff/index.html)
 

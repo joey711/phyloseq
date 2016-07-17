@@ -1,9 +1,14 @@
 ---
 title: "Installing the phyloseq package"
 date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
 ---
 
-## Standard Bioconductor installer (recommended)
+## Bioconductor Installer (Recommended)
 
 Recommended two lines for installing phyloseq
 (execute from within a fresh R session).
@@ -11,6 +16,12 @@ Recommended two lines for installing phyloseq
 ```{r eval=FALSE}
 source('http://bioconductor.org/biocLite.R')
 biocLite('phyloseq')
+```
+
+Check version
+
+```{r}
+packageVersion('phyloseq')
 ```
 
 Alternatively, from a Unix bash terminal (e.g. Linux, Mac)
@@ -214,7 +225,8 @@ Note that this assumes that you have the necessary system requirements for build
 
 Dependencies are other R packages that are required for proper functioning of phyloseq. They must be installed with at least a minimum version number specified by phyloseq for installation to work. If something went wrong in your installation of phyloseq, making sure you can actually install the dependencies is probably the best place to start. The following dependency installation code will usually attempt to upgrade your packages to the latest versions as well, potentially fixing a dependency version that is too old to work with the latest phyloseq version.
 
-### Bioconductor Dependencies
+## Bioconductor Dependencies
+
 Installing Bioconductor dependencies is supposed to be painless, and to work the same way as for the "Quick Install" of the release-version of phyloseq above:
 
 ```{r eval=FALSE}
@@ -230,7 +242,7 @@ biocLite("BiocUpgrade")
 ```
 
 
-### CRAN Dependencies
+## CRAN Dependencies
 
 The Comprehensive R Archive Network (CRAN) is the main repository for publicly available R packages. Most installation procedures will install these dependencies automagicaly from
 [the CRAN repository](http://cran.r-project.org/web/packages/). 
@@ -340,11 +352,7 @@ The latest [stable release of phyloseq on Bioconductor](http://bioconductor.org/
 Download the BioC devel branch of phyloseq [the devel page for phyloseq on Bioconductor](http://bioconductor.org/packages/devel/bioc/html/phyloseq.html). It should be a link to download a file called something like `phyloseq_1.*.*.tar.gz`. Alternatively, you can download package binaries for Windows or Mac OS. These might install easier because you won't need to install "from source".	
 
 
-## Local Installation
-
-(Assumes you have already downloaded the version of phyloseq that you want to install.)
-
-### Local Install on Mac OS X and Linux/Unix
+## Local Install on Mac OS X and Linux/Unix
 
 From a ([BASH](http://en.wikipedia.org/wiki/Bash_(Unix_shell))) command line, unpack and install (assuming you downloaded the package to the `~/Downloads` directory, as an example):
 
@@ -362,7 +370,7 @@ install.packages("~/Downloads/joey711-phyloseq-*", repos = NULL, type="source")
 ```
 
 
-### Local Install on Windows
+## Local Install on Windows
 
 Make sure you have [Rtools](http://cran.r-project.org/bin/windows/Rtools/) installed.
 
@@ -386,8 +394,6 @@ R CMD INSTALL joey711-phyloseq-*.tar.gz`.
 ```
 
 
-
-
 # Customization
 
 If you want to make modifications to phyloseq on your own fork,
@@ -397,14 +403,3 @@ just replace the `"joey711"` string to your GitHub username
 See the advanced instructions above 
 for using the `install_github` command.
 
-
-
-
-# Other tutorial pages
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```

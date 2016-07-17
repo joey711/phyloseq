@@ -1,4 +1,13 @@
-# The QIIME-DB Server is Permanently Down.
+---
+title: "The QIIME-DB Server is Permanently Down."
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
+
 
 Users are suggested to migrate their queries over to Qiita.
 

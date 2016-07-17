@@ -1,6 +1,13 @@
 ---
 title: "The phyloseq Tutorials Index"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
 ---
+
 
 This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. 
 The date of this particular re-build is `r date()`.

@@ -1,13 +1,21 @@
+---
+title: "Alpha diversity graphics"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-# Alpha diversity graphics
 
+Examples using the `plot_richness` function.
 
-## plot_richness() examples
-Using the `plot_richness` function.
+Although the function name includes the word `richness`, which usually refers to the total number of species/OTUs/taxa in a sample or environment -- either observed or estimated -- 
+this is actually a wrapper for all descriptions of 
+[alpha diversity](http://en.wikipedia.org/wiki/Alpha_diversity). 
+The name of this function may be changed in future versions to reflect this and avoid confusion.
 
-Although the function name includes the word `richness`, which usually refers to the total number of species/OTUs in a sample or environment -- either observed or estimated -- this is actually a wrapper for all descriptions of [alpha diversity](http://en.wikipedia.org/wiki/Alpha_diversity). The name of this function may be changed in future versions to reflect this and avoid confusion.
-
-## Graphic Summary of Alpha Diversity estimators
+## Load packages, set parameters
 
 As usual, we must start by loading the phyloseq package, and then the dataset, in this case `"GlobalPatterns"`.
 
@@ -31,11 +39,16 @@ scale_fill_discrete <-  function(palname=pal, ...){
 ```
 
 
+## Prepare data
+
 Since we are interested in alpha diversity, it is probably not a bad idea to prune OTUs that are not present in any of the samples (for some reason there are a few in `"GlobalPatterns"`) -- **BUT DON'T TRIM MORE THAN THAT!** I know it is tempting to trim noise right away, but many richness estimates are modeled on singletons and doubletons in the abundance data. You need to leave them in the dataset if you want a meaningful estimate.
 
 ```{r pruning}
 GP <- prune_species(speciesSums(GlobalPatterns) > 0, GlobalPatterns)
 ```
+
+
+## Plot Examples
 
 Here is the default graphic produced by the `plot_richness` function on the `GP` example dataset:
 
@@ -84,7 +97,7 @@ p + geom_point(size=5, alpha=0.7)
 ```
 
 
-### More details about ggplot2
+## More details about ggplot2
 
 For those interested in why this works so concisely (`p + geom_point(size=4, alpha=0.7)`), it is because the rest of the aesthetic mapping and data are contained in the ggplot object, `p`, and so is inherited in the call to the ggplot2 geometric object layer function, `geom_point`, by default since we didn't specify alternative `aes` or `data` arguments. Although we could have if we wanted to. This perhaps sounds more confusing than it is, and I find it easier to understand by inspecting the examples I've shown here. 
 
@@ -100,18 +113,5 @@ We can see that the first layer is the one specifying the original points, which
 ```{r remove-layers}
 p$layers <- p$layers[-1]
 p + geom_point(size=5, alpha=0.7)
-```
-
-			
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
 ```
 

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Courses involving phyloseq</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Courses involving phyloseq</h1>
+<h4 class="date"><em>Sat Jul 16 19:58:04 2016</em></h4>
+
+</div>
+
+
+<div id="open-and-upcoming" class="section level1">
+<h1>Open and Upcoming</h1>
+<p>There are a number of courses now including or featuring phyloseq. I will try and link here to the ones I know about.</p>
+<div id="sismid-workshop-2016" class="section level2">
+<h2>SISMID Workshop, 2016</h2>
+<ul>
+<li><a href="http://www.biostat.washington.edu/suminst/sismid2016/modules/MD1614">Summer Institute in Statistics, Modeling in Infectious Diseases (SISMID): (2016 July 25th to July 27th) Module 14, Introduction to Metagenomic Data Analysis</a></li>
+</ul>
+<p>Week 3, Session 5</p>
+<p>Monday 8:30 AM - Wednesday 12:00 PM: Mon Jul 25 to Wed Jul 27</p>
+<p>Instructor(s): Alexander Alekseyenko and Paul McMurdie</p>
+<p>This course is concerned with multivariate statistical analysis of microbiome data. We will briefly cover foundational concepts in microbial ecology, molecular biology, bioinformatics, and DNA sequencing. The main focus of the course will be on developing an understanding of multivariate analysis of microbiome data. Practical skills to be developed in this course include managing high-dimensional and structured data in metagenomics, visualization and representation of high-dimensional data, normalization, filtering, and mixture-model noise modeling of count data, as well as clustering and predictive model building. Programming will be done in R and fluency at the level of ‘SISMID/SISG Module 4: Introduction to R’ will be expected. Pre-requisites: knowledge of Module 1, Probability and Statistical Inference.</p>
+</div>
+<div id="workshop-on-genomics-2017" class="section level2">
+<h2>Workshop on Genomics, 2017</h2>
+<ul>
+<li><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, Český Krumlov, Czech Republic (2017 January)</a></li>
+</ul>
+<p>The Workshop on Genomics was developed in response to the increasing demand for training on how to effectively analyze and manage data generated by modern sequencing technologies. The Workshop curriculum includes extensive coverage of fundamental techniques required of all studies utilizing modern sequence data. This includes management and modification of modern sequence data files, using the Unix command-line and editors to manipulate sequence data files, assembly (both mapping and de novo) and best practices for sequence data generation. The second-half of the Workshop is devoted to specific sub-disciplines within the genomic sciences. While these topics may change from Workshop to Workshop, efforts are made to devote significant amounts of time to techniques being used widely in the field (e.g. transcriptomics, genome assembly, metagenomics).</p>
+<p>A majority of the schedule is dedicated to hands-on learning activities designed by faculty and the workshop team. This interactive experience provides Workshop participants with the practical experience required to meet the challenges presented by modern genomic sciences.</p>
+<hr />
+</div>
+</div>
+<div id="concluded-for-2016" class="section level1">
+<h1>Concluded for 2016</h1>
+<div id="workshop-on-genomics-2016" class="section level2">
+<h2>Workshop on Genomics, 2016</h2>
+<ul>
+<li><a href="http://evomics.org/workshops/workshop-on-genomics/2016-workshop-on-genomics-cesky-krumlov/">Workshop on Genomics, Cesky Krumlov, Czech Republic (2016 Jan 10 - 23)</a></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="concluded-for-2015" class="section level1">
+<h1>Concluded for 2015</h1>
+<div id="workshop-on-metagenomics-harvard" class="section level2">
+<h2>Workshop on Metagenomics (Harvard)</h2>
+<ul>
+<li><a href="http://evomics.org/workshops/harvard-university-workshops/2015-harvard-university-workshop-on-metagenomics/">Harvard University Workshop on Metagenomics (2015 Sept 14 - 18)</a></li>
+</ul>
+<p>A week-long workshop focused exclusively on the analysis of metagenomic data. This intensive, hands-on course will feature morning and afternoon sessions taught by expert faculty and technical assistants from the Broad, Ragon Institute, Harvard School of Public Health, Stanford University and Washington University, St. Louis. All participants will acquire fundamental computational skills, appropriate study design, data interpretation, and overall literacy in bioinformatics.</p>
+<p>When: 2015 14-18, September : Morning Sessions 9:00 – 12:00 | Afternoon Sessions 2:00 – 5:00</p>
+<p>Where: Joseph B. Martin Conference Center Harvard Medical School 77 Avenue Louis Pasteur Boston, MA 02115.</p>
+</div>
+<div id="sismid-workshop-2015" class="section level2">
+<h2>SISMID Workshop, 2015</h2>
+<ul>
+<li><a href="http://www.biostat.washington.edu/suminst/sismid/modules">Summer Institute in Statistics, Modeling in Infectious Diseases (SISMID): Metagenomics Module</a></li>
+</ul>
+</div>
+<div id="stamps-workshop-2015" class="section level2">
+<h2>STAMPS Workshop, 2015</h2>
+<ul>
+<li><a href="https://stamps.mbl.edu/index.php/Main_Page">Strategies and Techniques for Analyzing Microbial Population Structure (STAMPS)</a></li>
+</ul>
+<p>Directors:</p>
+<p>David Mark Welch Marine Biological Laboratory</p>
+<p>Mitch Sogin Marine Biological Laboratory</p>
+<p>Course Date: August 5 - August 15, 2015</p>
+<p>Twitter hash: #STAMPS15</p>
+<p>Deep DNA sequencing using massively-parallel, next-generation technology has enabled nearly comprehensive environmental surveys that can describe the different kinds of microbes in a community and their relative abundance. These descriptions of richness and evenness make possible estimates of microbial diversity, but the size of the required data sets pose enormous computational challenges. The rapidly expanding flow of information from next generation DNA sequencing platforms has fueled healthy debate about best practices for data analysis while at the same time building a user demand for tools that can address important ecological questions. The STAMPS course will promote dialogue and the exchange of ideas between experts in analysis of metagenomic data and offer interdisciplinary bioinformatic and statistical training to practitioners of molecular microbial ecology and genomics.</p>
+<p>Topics to be covered include but are not limited to next-generation strategies for analysis of microbial communities; acquisition and organization of next generation sequence data; principles of quality control of sequence data; the theory of cluster and rarefaction analyses; taxonomic assignments for high-throughput data; statistical models for estimating microbial diversity; microbial community comparison methodology and metrics; and analysis of shotgun metagenomic data. The lectures will be augmented by a computer laboratory where students will have the opportunity to use state of the art facilities to test theoretical concepts described in the lectures series.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,15 +1,34 @@
+---
+title: "Gap Statistic"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-# Gap Statistic
 
 ## How many clusters are there?
 
 From [the clusGap documentation](http://stat.ethz.ch/R-manual/R-devel/library/cluster/html/clusGap.html): 
-The `clusGap` function from [the cluster package](http://cran.r-project.org/web/packages/cluster/index.html) calculates a goodness of clustering measure, called [the “gap” statistic](www.stanford.edu/~hastie/Papers/gap.pdf). For each number of clusters `k`, it compares \log(W(k)) with E^*[\log(W(k))] where the latter is defined via bootstrapping, i.e. simulating from a reference distribution.
+The `clusGap` function from 
+[the cluster package](http://cran.r-project.org/web/packages/cluster/index.html) 
+calculates a *goodness of clustering* measure, 
+called [the “gap” statistic](www.stanford.edu/~hastie/Papers/gap.pdf). 
+For each number of clusters `k`, 
+it compares \log(W(k)) with E^*[\log(W(k))] 
+where the latter is defined via bootstrapping, 
+i.e. simulating from a reference distribution.
 
-The following is an example performing the gap statistic on ordination results calculated using phyloseq tools, followed by an example of how a [ggplot](http://had.co.nz/ggplot2/)-based wrapper for this example might be included in [the phyloseq package](http://joey711.github.com/phyloseq/). 
+The following is an example performing the gap statistic 
+on ordination results calculated using phyloseq tools, 
+followed by an example of how a 
+[ggplot](http://had.co.nz/ggplot2/)-based wrapper 
+for this example might be included 
+in [the phyloseq package](http://joey711.github.com/phyloseq/). 
 
 
-### First perform an ordination
+## First perform an ordination
 
 In this case, MDS on the Bray-Curtis distance.
 
@@ -25,7 +44,7 @@ exord = ordinate(enterotype, method="MDS", distance="jsd")
 ```
 
 
-### Gap Statistic code
+## Compute Gap Statistic
 
 ```{r gapstat-regular}
 pam1 = function(x, k){list(cluster = pam(x,k, cluster.only=TRUE))}
@@ -53,6 +72,8 @@ gap_statistic_ordination = function(ord, FUNcluster, type="sites", K.max=6, axes
 }
 ```
 
+## Plot Results
+
 Define a plot method for results
 
 ```{r plot-clusgap}
@@ -66,7 +87,11 @@ plot_clusgap = function(clusgap, title="Gap Statistic calculation results"){
 }
 ```
 
-Now try out this function. Should work on ordination classes recognized by `scores` function, and provide a [ggplot](http://had.co.nz/ggplot2/) graphic instead of a base graphic. (Special Note: the phyloseq-defined `scores` extensions are not exported as regular functions to avoid conflict, so phyloseq-defined `scores` extensions can only be accessed with the `phyloseq:::` namespace prefix in front.)
+Now try out this function. 
+Should work on ordination classes recognized by `scores` function, 
+and provide a [ggplot](http://had.co.nz/ggplot2/) graphic 
+instead of a base graphic. 
+(Special Note: the phyloseq-defined `scores` extensions are not exported as regular functions to avoid conflict, so phyloseq-defined `scores` extensions can only be accessed with the `phyloseq:::` namespace prefix in front.)
 
 ```{r gapstat-inphyloseq-example}
 gs = gap_statistic_ordination(exord, "pam1", B=50, verbose=FALSE)
@@ -81,23 +106,3 @@ plot(gs, main = "Gap statistic for the 'Enterotypes' data")
 mtext("Looks like 4 clusters is best, with 3 and 5 close runners up.")	
 ```
 
-
----
-
-## Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```
-
-
----
-
-## Suggestions from Users/Developers
-
-Don't be afraid to post feedback / needs on [the phyloseq issues tracker](https://github.com/joey711/phyloseq/issues):
-
-https://github.com/joey711/phyloseq/issues

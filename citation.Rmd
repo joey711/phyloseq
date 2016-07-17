@@ -1,6 +1,12 @@
 ---
 title: "Citing phyloseq and related tools"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
 ---
+
 
 The phyloseq R package and associated tools and documentation are provided free of charge and open-source, with the expectation that work derived from these materials will be properly cited and attributed.
 The following serves as useful examples of the articles one might cite,
@@ -9,11 +15,13 @@ phyloseq,
 its associated tools, 
 and its theoretical motivations.
 
+
 ## Shiny-phyloseq: a phyloseq GUI Web Application
 
 - McMurdie and Holmes (2014)
 [Shiny-phyloseq: Web Application for Interactive Microbiome Analysis with Provenance Tracking](http://bioinformatics.oxfordjournals.org/content/early/2014/10/02/bioinformatics.btu616).
 Bioinformatics (Oxford, England) 31(2), 282–283.
+
 
 ## Improved Normalization and Feature Detection
 
@@ -24,9 +32,17 @@ PLoS Computational Biology. 10(4):e1003531
 [PDF version 2 (12 Dec 2013)](http://arxiv.org/pdf/1310.0424v2.pdf),
 [PDF version 1 (1 Oct 2013)](http://arxiv.org/pdf/1310.0424v1.pdf).
 
+
 ## The phyloseq R package citation
 
 McMurdie and Holmes (2013) phyloseq: 
 [An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data](http://dx.plos.org/10.1371/journal.pone.0061217).
 PLoS ONE. 8(4):e61217
+
+
+## "Full Stack" Example Workflow
+
+Callahan BJ, Sankaran K, Fukuyama JA et al.
+[Bioconductor workflow for microbiome data analysis: from raw reads to community analyses](http://f1000research.com/articles/5-1492/v1)
+F1000Research 2016, 5:1492 
 

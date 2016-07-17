@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>The distance function in phyloseq</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">phyloseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="install.html">
+    <span class="ion ion-android-archive"></span>
+     
+    Installation
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-newspaper-o"></span>
+     
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217">phyloseq in Bioconductor</a>
+    </li>
+    <li>
+      <a href="http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616">Shiny-phyloseq</a>
+    </li>
+    <li>
+      <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531">Rarefying Inadmissible</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="courses.html">
+    <span class="fa fa-graduation-cap"></span>
+     
+    Courses
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-university"></span>
+     
+    Tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Basics</li>
+    <li>
+      <a href="import-data.html">Data Import</a>
+    </li>
+    <li>
+      <a href="Example-Data.html">Example Data</a>
+    </li>
+    <li>
+      <a href="merge.html">Merge</a>
+    </li>
+    <li>
+      <a href="preprocess.html">Preprocess</a>
+    </li>
+    <li>
+      <a href="distance.html">Distances</a>
+    </li>
+    <li>
+      <a href="gap-statistic.html">Gap Statistic</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Graphics</li>
+    <li>
+      <a href="plot_ordination-examples.html">Plot Ordination</a>
+    </li>
+    <li>
+      <a href="plot_richness-examples.html">Plot Alpha Diversity</a>
+    </li>
+    <li>
+      <a href="plot_tree-examples.html">Plot Tree</a>
+    </li>
+    <li>
+      <a href="plot_bar-examples.html">
+        <span class="fa fa-bar-chart"></span>
+         
+        Plot Bars
+      </a>
+    </li>
+    <li>
+      <a href="plot_heatmap-examples.html">
+        <span class="fa fa-qrcode"></span>
+         
+        Plot Heatmap
+      </a>
+    </li>
+    <li>
+      <a href="plot_network-examples.html">Plot Network</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Differential Abundance</li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html">DESeq2 (Recommended)</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html">edgeR</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/joey711/phyloseq/issues">
+    <span class="fa fa-medkit"></span>
+     
+    Issues
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html">
+    <span class="fa fa-question"></span>
+     
+    FAQ
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/joey711">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">The distance function in phyloseq</h1>
+
+</div>
+
+
+<p>The <code>distance</code> function takes a phyloseq-class object and method option, and returns a <code>dist</code>-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to <code>vegan::designdist</code>. For the complete list of currently supported options/arguments to the method parameter, type <code>distanceMethodList</code> in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.</p>
+<p>See the in-package documentation of <code>distance</code> for further details:</p>
+<pre class="r"><code>?distance</code></pre>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<pre class="r"><code>distance(physeq, method=&quot;unifrac&quot;, type=&quot;samples&quot;, ...)</code></pre>
+</div>
+<div id="example-enterotypes-dataset-using-many-different-methods" class="section level2">
+<h2>Example: “Enterotypes” dataset using many different methods</h2>
+<p>Because the <code>distance()</code> function organizes distance calculations into one function, it is relatively straightforward to calculate all supported distance methods and investigate the results. The following code will perform such a loop on the “Enterotypes” dataset, perform multi-dimensional scaling (a.k.a. principle coordinates analysis), and plot the first two axes, shading and shaping the points in each plot according to sequencing technology and assigned “Enterotype” label.</p>
+<p>Note that we have omitted the options that require a phylogenetic tree because the <code>&quot;enterotype&quot;</code> example dataset currently included in the phyloseq-package does not have one.</p>
+<p>Note that this may take a little while to run, depending on the size of your data set, but you may not be interested in all supported distances…</p>
+<hr />
+</div>
+<div id="load-phyloseq" class="section level1">
+<h1>Load phyloseq</h1>
+<p>Of course we need to start this tutorial by loading <a href="http://joey711.github.com/phyloseq/">the phyloseq package</a>. This assumes you have already <a href="http://joey711.github.io/phyloseq/install">installed phyloseq</a>.</p>
+<pre class="r"><code>library(&quot;phyloseq&quot;); packageVersion(&quot;phyloseq&quot;)</code></pre>
+<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;); packageVersion(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## [1] &#39;2.1.0&#39;</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;); packageVersion(&quot;plyr&quot;)</code></pre>
+<pre><code>## [1] &#39;1.8.4&#39;</code></pre>
+<p>ggplot2 package theme set. See <a href="http://docs.ggplot2.org/current/">the ggplot2 online documentation</a> for further help.</p>
+<pre class="r"><code>theme_set(theme_bw())</code></pre>
+<p>Load the enterotype data</p>
+<pre class="r"><code>data(enterotype)</code></pre>
+<p>Some preliminary filtering. More advanced <a href="http://joey711.github.com/phyloseq/preprocess">preprocessing</a> is recommended.</p>
+<p>Remove the OTUs that included all unassigned sequences (<code>&quot;-1&quot;</code>)</p>
+<pre class="r"><code>enterotype &lt;- subset_species(enterotype, Genus != &quot;-1&quot;)</code></pre>
+<pre><code>## Warning: &#39;subset_species&#39; is deprecated.
+## Use &#39;subset_taxa&#39; instead.
+## See help(&quot;Deprecated&quot;) and help(&quot;phyloseq-deprecated&quot;).</code></pre>
+<p>The available distance methods coded in <code>distance</code></p>
+<pre class="r"><code>dist_methods &lt;- unlist(distanceMethodList)
+print(dist_methods)</code></pre>
+<pre><code>##     UniFrac1     UniFrac2        DPCoA          JSD     vegdist1 
+##    &quot;unifrac&quot;   &quot;wunifrac&quot;      &quot;dpcoa&quot;        &quot;jsd&quot;  &quot;manhattan&quot; 
+##     vegdist2     vegdist3     vegdist4     vegdist5     vegdist6 
+##  &quot;euclidean&quot;   &quot;canberra&quot;       &quot;bray&quot; &quot;kulczynski&quot;    &quot;jaccard&quot; 
+##     vegdist7     vegdist8     vegdist9    vegdist10    vegdist11 
+##      &quot;gower&quot;   &quot;altGower&quot;   &quot;morisita&quot;       &quot;horn&quot;  &quot;mountford&quot; 
+##    vegdist12    vegdist13    vegdist14    vegdist15   betadiver1 
+##       &quot;raup&quot;   &quot;binomial&quot;       &quot;chao&quot;        &quot;cao&quot;          &quot;w&quot; 
+##   betadiver2   betadiver3   betadiver4   betadiver5   betadiver6 
+##         &quot;-1&quot;          &quot;c&quot;         &quot;wb&quot;          &quot;r&quot;          &quot;I&quot; 
+##   betadiver7   betadiver8   betadiver9  betadiver10  betadiver11 
+##          &quot;e&quot;          &quot;t&quot;         &quot;me&quot;          &quot;j&quot;        &quot;sor&quot; 
+##  betadiver12  betadiver13  betadiver14  betadiver15  betadiver16 
+##          &quot;m&quot;         &quot;-2&quot;         &quot;co&quot;         &quot;cc&quot;          &quot;g&quot; 
+##  betadiver17  betadiver18  betadiver19  betadiver20  betadiver21 
+##         &quot;-3&quot;          &quot;l&quot;         &quot;19&quot;         &quot;hk&quot;        &quot;rlb&quot; 
+##  betadiver22  betadiver23  betadiver24        dist1        dist2 
+##        &quot;sim&quot;         &quot;gl&quot;          &quot;z&quot;    &quot;maximum&quot;     &quot;binary&quot; 
+##        dist3   designdist 
+##  &quot;minkowski&quot;        &quot;ANY&quot;</code></pre>
+<p>Remove the two distance-methods that require a tree, and the generic custom method that requires user-defined distance arguments.</p>
+<pre class="r"><code># These require tree
+dist_methods[(1:3)]</code></pre>
+<pre><code>##   UniFrac1   UniFrac2      DPCoA 
+##  &quot;unifrac&quot; &quot;wunifrac&quot;    &quot;dpcoa&quot;</code></pre>
+<pre class="r"><code># Remove them from the vector
+dist_methods &lt;- dist_methods[-(1:3)]
+# This is the user-defined method:
+dist_methods[&quot;designdist&quot;]</code></pre>
+<pre><code>## designdist 
+##      &quot;ANY&quot;</code></pre>
+<pre class="r"><code># Remove the user-defined distance
+dist_methods = dist_methods[-which(dist_methods==&quot;ANY&quot;)]</code></pre>
+<p>Loop through each distance method, save each plot to a list, called <code>plist</code>.</p>
+<pre class="r"><code>plist &lt;- vector(&quot;list&quot;, length(dist_methods))
+names(plist) = dist_methods
+for( i in dist_methods ){
+    # Calculate distance matrix
+    iDist &lt;- distance(enterotype, method=i)
+    # Calculate ordination
+    iMDS  &lt;- ordinate(enterotype, &quot;MDS&quot;, distance=iDist)
+    ## Make plot
+    # Don&#39;t carry over previous plot (if error, p will be blank)
+    p &lt;- NULL
+    # Create plot, store as temp variable, p
+    p &lt;- plot_ordination(enterotype, iMDS, color=&quot;SeqTech&quot;, shape=&quot;Enterotype&quot;)
+    # Add title to each plot
+    p &lt;- p + ggtitle(paste(&quot;MDS using distance method &quot;, i, sep=&quot;&quot;))
+    # Save the graphic to file.
+    plist[[i]] = p
+}</code></pre>
+<div id="combine-results" class="section level2">
+<h2>Combine results</h2>
+<p>Shade according to <strong>sequencing technology</strong></p>
+<pre class="r"><code>df = ldply(plist, function(x) x$data)
+names(df)[1] &lt;- &quot;distance&quot;
+p = ggplot(df, aes(Axis.1, Axis.2, color=SeqTech, shape=Enterotype))
+p = p + geom_point(size=3, alpha=0.5)
+p = p + facet_wrap(~distance, scales=&quot;free&quot;)
+p = p + ggtitle(&quot;MDS on various distance metrics for Enterotype dataset&quot;)
+p</code></pre>
+<p><img src="distance_files/figure-html/distance-summary-plot-1.png" width="1920" /></p>
+<p>Shade according to assigned <strong>enterotype</strong></p>
+<pre class="r"><code>df = ldply(plist, function(x) x$data)
+names(df)[1] &lt;- &quot;distance&quot;
+p = ggplot(df, aes(Axis.1, Axis.2, color=Enterotype, shape=SeqTech))
+p = p + geom_point(size=3, alpha=0.5)
+p = p + facet_wrap(~distance, scales=&quot;free&quot;)
+p = p + ggtitle(&quot;MDS on various distance metrics for Enterotype dataset&quot;)
+p</code></pre>
+<p><img src="distance_files/figure-html/distance-summary-plot-enterotype-1.png" width="1920" /></p>
+</div>
+<div id="compare-results" class="section level2">
+<h2>Compare results</h2>
+<p>The following are some selected examples among the created plots.</p>
+<p>Jensen-Shannon Divergence</p>
+<pre class="r"><code>print(plist[[&quot;jsd&quot;]])</code></pre>
+<p><img src="distance_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Jaccard</p>
+<pre class="r"><code>print(plist[[&quot;jaccard&quot;]])</code></pre>
+<p><img src="distance_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Bray-Curtis</p>
+<pre class="r"><code>print(plist[[&quot;bray&quot;]])</code></pre>
+<p><img src="distance_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Gower</p>
+<pre class="r"><code>print(plist[[&quot;gower&quot;]])</code></pre>
+<p><img src="distance_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>w</p>
+<pre class="r"><code>print(plist[[&quot;w&quot;]])</code></pre>
+<p><img src="distance_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
