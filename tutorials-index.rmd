@@ -1,14 +1,20 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+---
+title: "The phyloseq Tutorials Index"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-The phyloseq Tutorials Index
-========================================================
 
-This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. The date of this particular re-build is `r date()`.
+This page is automagically updated when I do a periodic full rebuild of the phyloseq tutorials pages. 
+The date of this particular re-build is `r date()`.
 
 Don't forget to checkout [the phyloseq demo repository](http://joey711.github.io/phyloseq-demo/) for other tutorials; some more in-depth or lengthy than can be easily maintained here, where the focus is documenting phyloseq package functionality rather than demonstrating use cases with new/large datasets.
 
----
+
 ## Available tutorials
 
 ```{r find-parse-tutorials, echo=FALSE, include=FALSE}

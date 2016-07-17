@@ -1,24 +1,34 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
-
-# plot_ordination examples
-
+---
+title: "Ordination Plots"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
 ---
 
 The operation of the `plot_ordination` function also depends a lot on the 
 
-### [distance](http://joey711.github.io/phyloseq/distance)
+### [distance](distance.html)
 
 and
 
-### [ordinate](http://joey711.github.io/phyloseq/ordinate)
+### [ordinate](ordinate.html)
 
-functions. See their tutorials for further details and examples.
+functions. 
 
-Also, the phyloseq package includes a "convenience function" for subsetting from large collections of points in an ordination, called `subset_ord_plot`. There is a separate [subset_ord_plot tutorial](http://joey711.github.com/phyloseq/subset_ord_plot-examples) for further details and examples. 
+See their tutorials for further details and examples.
+
+Also, the phyloseq package includes a "convenience function" 
+for subsetting from large collections of points in an ordination,
+called `subset_ord_plot`. 
+There is a separate 
+[subset_ord_plot tutorial](http://joey711.github.com/phyloseq/subset_ord_plot-examples) 
+for further details and examples. 
 
 
-## Examples
+# Load Packages, Prepare Data
 
 Load the necessary packages and data.
 ```{r message=FALSE, warning=FALSE}
@@ -41,6 +51,7 @@ In this case preprocessing is especially useful for showing graphically the high
 To quickly demonstrate and compare the results of different ordination methods, I will first further filter/preprocess the OTUs in `GP1`. I want to include some phylogenetic tree-based ordinations, which can be slow to calculate. Since the goal of this exercise is to demonstrate the `plot_ordination` capability, and not necessarily reveal any new knowledge about the Global Patterns dataset, the emphasis on this preprocessing will be on limiting the number of OTUs, not protecting intrinsic patterns in the data.
 
 Remove OTUs that do not show appear more than 5 times in more than half the samples
+
 ```{r preproc-2}
 GP = GlobalPatterns
 wh0 = genefilter_sample(GP, filterfun_sample(function(x) x > 5), A=0.5*nsamples(GP))
@@ -69,10 +80,11 @@ sample_data(GP1)$human <- factor(human)
 ```
 
 
-## Four main ordination plots
+# Four main ordination plots
+
 The `plot_ordination` function supports four basic representations of an ordination. For some methods, like [PCoA/MDS](http://en.wikipedia.org/wiki/Multidimensional_scaling) on a distance matrix of samples, any methods displaying OTUs is not supported because OTUs are not part of the ordination in that case. 
 
-### (1) Just OTUs
+## (1) Just OTUs
 
 Let's start by plotting just the OTUs, and shading the points by Phylum. Note that even in our "trimmed" dataset there are `ntaxa(GP1)=` `r ntaxa(GP1)` OTUs.
 
@@ -89,7 +101,7 @@ This is a complicated looking plot, but that's not necessarily good. There is ac
 p1 + facet_wrap(~Phylum, 3)
 ```
 
-### (2) Just samples
+## (2) Just samples
 
 Next, let's plot only the samples, and shade the points by "SampleType" while also modifying the shape according to whether they are human-associated. There are a few additional ggplot2 layers added to make the plot even nicer...
 
@@ -99,7 +111,7 @@ p2 + geom_polygon(aes(fill=SampleType)) + geom_point(size=5) + ggtitle("samples"
 ```
 
 
-### (3) biplot graphic
+## (3) biplot graphic
 
 The `plot_ordination` function can also automatically create two different graphic layouts in which both the samples and OTUs are plotted together in one "biplot". Note that this requires methods that are not intrinsically samples-only ordinations. For example, this doesn't work with UniFrac/PCoA.
 
@@ -113,7 +125,7 @@ GP1.shape["samples"] <- 16
 p3 + scale_shape_manual(values=GP1.shape)
 ```
 
-### (4) split graphic
+## (4) split graphic
 
 Hmmm. In the previous graphic the occlusion problem is pretty strong. In this case the `type="split"` option can be helpful, in which the samples/OTUs are separated on two side-by-side panels...
 
@@ -140,6 +152,7 @@ p4 + scale_color_manual(values=p4cols)
 ---
 
 # Supported Ordination Methods
+
 In this section I loop through different `method` parameter options to the `plot_ordination` function, store the plot results in a list, and then plot these results in a combined graphic using ggplot2.
 
 ```{r ord-options-loop}
@@ -191,8 +204,13 @@ p
 
 ---
 
-# PCoA on Unifrac Distances
-Use the `ordinate` function to simultaneously perform weightd UniFrac and then perform a Principal Coordinate Analysis on that distance matrix (first line). Next give that data and the ordination results to `plot_ordination` to create the ggplot2 output graphic with default ggplot2 settings.
+# MDS ("PCoA") on Unifrac Distances
+
+Use the `ordinate` function to simultaneously perform 
+weightd UniFrac and then perform a Principal Coordinate Analysis 
+on that distance matrix (first line).
+Next pass that data and the ordination results to `plot_ordination` 
+to create the ggplot2 output graphic with default ggplot2 settings.
 
 ```{r PCoA-UniFrac}
 ordu = ordinate(GP1, "PCoA", "unifrac", weighted=TRUE)
@@ -206,17 +224,5 @@ p = plot_ordination(GP1, ordu, color="SampleType", shape="human")
 p = p + geom_point(size=7, alpha=0.75)
 p = p + scale_colour_brewer(type="qual", palette="Set1")
 p + ggtitle("MDS/PCoA on weighted-UniFrac distance, GlobalPatterns")
-```
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
 ```
 

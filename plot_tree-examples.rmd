@@ -1,12 +1,21 @@
-`r opts_chunk$set(cache=TRUE, fig.width=9, fig.height=10, warning=FALSE)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+---
+title: "Powerful tree graphics with ggplot2"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-# plot_tree function -
-# Powerful tree graphics with ggplot2
+This page demos already-constructed examples of phylogenetic trees 
+created via the `plot_tree` function in 
+[the phyloseq package](http://joey711.github.com/phyloseq/), 
+which in-turn uses the powerful graphics package called 
+[ggplot2](http://docs.ggplot2.org/current/).
 
-This page demos already-constructed examples of phylogenetic trees created via the `plot_tree` function in [the phyloseq package](http://joey711.github.com/phyloseq/), which in turn uses the powerful graphics package called [ggplot2](http://docs.ggplot2.org/current/).
 
-Load the package and datasets
+## Load the package and datasets
 
 ```{r, message=FALSE}
 library("phyloseq")
@@ -27,7 +36,10 @@ library("ggplot2"); packageVersion("ggplot2")
 ```
 
 
+# Example
+
 We want to plot trees, sometimes even bootstrap values, but notice that the node labels in the `GlobalPatterns` dataset are actually a bit strange. They look like they might be bootstrap values, but they sometimes have two decimals.
+
 ```{r}
 head(phy_tree(GlobalPatterns)$node.label, 10)
 ```
@@ -79,9 +91,11 @@ plot_tree(physeq, "anythingelse")
 ```
 
 ## Mapping Variables in Data
+
 In the default argument to `method`, `"sampledodge"`, a point is added next to each OTU tip in the tree for every sample in which that OTU was observed. We can then map certain aesthetic features of these points to variables in our data.
 
-### Color
+## Color
+
 Color is one of the most useful aesthetics in tree graphics when they are complicated. Color can be mapped to either taxonomic ranks or sample covariates. For instance, we can map color to the type of sample collected (environmental location).
 ```{r}
 plot_tree(physeq, nodelabf=nodeplotboot(), ladderize="left", color="SampleType")
@@ -91,13 +105,15 @@ and we can alternatively map color to taxonomic class.
 plot_tree(physeq, nodelabf=nodeplotboot(), ladderize="left", color="Class")
 ```
 
-### Shape
+## Shape
+
 You can also map a variable to point shape if it has 6 or fewer categories, and this can be done even when color is also mapped. Here we map shape to taxonomic class so that we can still indicate it in the graphic while also mapping `SampleType` to point color.
 ```{r}
 plot_tree(physeq, nodelabf=nodeplotboot(), ladderize="left", color="SampleType", shape="Class")
 ```
 
-### node labels
+## Node labels
+
 One of the most common reasons to label nodes is to add confidence measures, often a bootstrap value, to the nodes of the tree. The following graphics show different ways of doing this (labels are added by default if present in your tree).
 ```{r}
 # The default
@@ -108,7 +124,8 @@ plot_tree(physeq, nodelabf=nodeplotboot(), color="SampleType", ladderize="left")
 plot_tree(physeq, nodelabf=nodeplotboot(80,0,3), color="SampleType", ladderize="left")
 ```
 
-### tip labels
+## Tip labels
+
 - **label.tips** - The `label.tips` parameter controls labeling of tree tips (AKA leaves).  Default is NULL, indicating that no tip labels will be printed. If `"taxa_names"` is a special argument resulting in the OTU name (try `taxa_names` function) being labelled next to the leaves or next to the set of points that label the leaves. Alternatively, if your data object contains a `tax_table`, then one of the rank names (from `rank_names(physeq)`) can be provided, and the classification of each OTU at that rank will be labeled instead.
 - **text.size** - A positive numeric argument indicating the ggplot2 size parameter for the taxa labels. Default is `NULL`. If left as `NULL`, this function will automatically calculate a (hopefully) optimal text size given the size constraints posed by the tree itself (for a vertical tree). This argument is included mainly in case the automatically-calculated size is wrong and you want to change it. Note that this parameter is only meaningful if `label.tips` is not `NULL`
 
@@ -122,7 +139,7 @@ Making a radial tree is easy with ggplot2, simply recognizing that our verticall
 
 ```{r}
 data(esophagus)
-plot_tree(esophagus, color="sample_names", ladderize="left") + coord_polar(theta="y")
+plot_tree(esophagus, color="Sample", ladderize="left") + coord_polar(theta="y")
 ```
 
 The `GlobalPatterns` dataset has additional data we can map, so we will re-do some preliminary data loading/trimming to make this radial-tree example self contained, and then show the same plot as above.
@@ -132,7 +149,8 @@ plot_tree(physeq, nodelabf=nodeplotboot(60,60,3), color="SampleType", shape="Cla
 ```
 
 
-## The esophagus dataset.
+# The esophagus dataset.
+
 A simple dataset containing tree and OTU-table components.
 
 The esophagus is a small and relatively simple dataset by moderns standards. It only contains 3 samples, no sample-data, and a modest quantity of total sequencing per sample that is a relic of an earlier time when resources for this sort of investigation were sparse and sequencing was expensive. Nevertheless, it makes for a nice sized dataset to start displaying trees. (For more details about the dataset and its origin, try entering `?esophagus` into the command-line once you have loaded the phyloseq package)
@@ -185,19 +203,19 @@ plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03, min.a
 Subset Global Patterns dataset to just the observed Archaea.
 
 ```{r}
-gpa <- subset_species(GlobalPatterns, Kingdom=="Archaea")
+gpa <- subset_taxa(GlobalPatterns, Kingdom=="Archaea")
 ```
 
-The number of different Archaeal species from this dataset is small enough for a decent tree plot.
+The number of different Archaeal taxa from this dataset is small enough for a decent tree plot.
 
 ```{r}
-nspecies(gpa)
+ntaxa(gpa)
 ```
 
 That is to say, it is reasonable to consider displaying the phylogenetic tree directly for `gpa`. Too many OTUs means a tree that is pointless to attempt to display in its entirety in one graphic of a standard size and font. So the whole `GlobalPatterns` dataset probably a bad idea.
 
 ```{r}
-nspecies(GlobalPatterns)
+ntaxa(GlobalPatterns)
 ```
 
 Some patterns are immediately discernable with minimal parameter choices:
@@ -221,12 +239,12 @@ plot_tree(gpa, color="SampleType", shape="Phylum")
 plot_tree(gpa, color="Phylum", label.tips="Genus")
 ```
 
-However, the text-label size scales with number of species, and with common graphics-divice sizes/resolutions, these ~200 taxa still make for a somewhat crowded graphic. 
+However, the text-label size scales with number of taxa, and with common graphics-divice sizes/resolutions, these ~200 taxa still make for a somewhat crowded graphic. 
 
 Let's instead subset further to just the Crenarchaeota
 
 ```{r}
-gpac <- subset_species(gpa, Phylum=="Crenarchaeota")
+gpac <- subset_taxa(gpa, Phylum=="Crenarchaeota")
 plot_tree(gpac, color="SampleType", shape="Genus")
 ```
 
@@ -235,7 +253,7 @@ plot_tree(gpac, color="SampleType", shape="Genus")
 plot_tree(gpac, color="SampleType", label.tips="Genus")
 ```
 
-Let's add some abundance information. Notice that the default spacing gets a little crowded when we map species-abundance to point-size:
+Let's add some abundance information. Notice that the default spacing gets a little crowded when we map taxa-abundance to point-size:
 
 ```{r}
 plot_tree(gpac, color="SampleType", shape="Genus", size="abundance", plot.margin=0.4)
@@ -250,18 +268,7 @@ plot_tree(gpac, nodelabf=nodeplotblank, color="SampleType", shape="Genus", size=
 ## Chlamydiae-only tree
 
 ```{r, fig.width=10}
-GP.chl <- subset_species(GlobalPatterns, Phylum=="Chlamydiae")
+GP.chl <- subset_taxa(GlobalPatterns, Phylum=="Chlamydiae")
 plot_tree(GP.chl, color="SampleType", shape="Family", label.tips="Genus", size="abundance", plot.margin=0.6)
 ```			
 			
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```

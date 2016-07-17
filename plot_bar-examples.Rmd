@@ -1,10 +1,13 @@
 ---
-output: html_document
+title: "Powerful, flexible phyloseq bar plots"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
 ---
-`r knitr::opts_chunk$set(cache=TRUE, fig.width=10)`
 
-plot_bar function: Powerful, flexible phyloseq bar plots
-========================================================
 The following are examples to help get you started using the `plot_bar` function on your own phyloseq data.
 
 ## Global Patterns dataset examples
@@ -28,7 +31,8 @@ data("GlobalPatterns")
 gp.ch = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 ```
 
-### Some Initial Basic Plots
+## Some initial basic plots
+
 The following is the default barplot when no parameters are given. The dataset is plotted with every sample mapped individually to the horizontal (`x`) axis, and abundance values mapped to the veritcal (`y`) axis. At each sample's horizontal position, the abundance values for each OTU are stacked in order from greatest to least, separate by a thin horizontal line. As long as the parameters you choose to separate the data result in more than one OTU abundance value at the respective position in the plot, the values will be stacked in order as a means of displaying both the sum total value while still representing the individual OTU abundances.
 
 ```{r}
@@ -47,7 +51,8 @@ plot_bar(gp.ch, x="SampleType", fill="Genus")
 ```
 Note that abundance values for the same OTU from the same `SampleType` will be stacked as separate bar segments, and so the segment lines may not accurately portray the observed richness (because the same OTU might be shown more than once for the same horizontal axis grouping). However, all other aspects of the representation are quantitative, with the total stacked bar height at each horizontal position indicating the sum of all reads for that sample(s). There is not attempt by `plot_bar` to normalize or standardize your data, which is your job to do (using other tools in the phyloseq pacakge, for instance) before attempting to interpret/compare these values between samples.
 
-### More Sophisticated Organization using Facets
+## More Sophisticated Organization using Facets
+
 In the following example we elected to further organize the data using "facets"  -- separate, adjacent sub-plots. In this case the facets allow us to according to the genus of each OTU. Within each genus facet, the data is further separated by sequencing technology, and the enterotype label for the sample from which each OTU originated is indicated by fill color.
 
 ```{r, fig.width=12, fig.height=6}
@@ -55,7 +60,7 @@ plot_bar(gp.ch, "Family", fill="Genus", facet_grid=~SampleType)
 ```
 
 
-### Further customization using ggplot2 layers
+## Further customization using ggplot2 layers
 
 Note that additional customizations of the plot are always possible using standard ggplot2 layers. For example, the following code chunk shows a plot with jittered points add using a second plot layer. 
 ```{r, fig.width=12, fig.height=6}
@@ -105,16 +110,3 @@ p = plot_bar(ent10, "Genus", fill="Genus", facet_grid=SeqTech~Enterotype)
 p + geom_bar(aes(color=Genus, fill=Genus), stat="identity", position="stack")
 ```
 			
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```
-

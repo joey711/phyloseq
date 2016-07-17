@@ -1,7 +1,16 @@
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
+---
+title: "Example Data in phyloseq"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-# Example Data for phyloseq
+There are multiple example data sets included in phyloseq. Many are from published investigations and include documentation with a summary and references, as well as some example code representing some aspect of analysis available in phyloseq.
+
+## Load Packages
 
 ```{r, message=FALSE, warning=FALSE}
 library("phyloseq"); packageVersion("phyloseq")
@@ -15,9 +24,7 @@ theme_set(theme_bw())
 ```
 
 
-# Example Data
-## Included Example Data
-There are multiple example data sets included in phyloseq. Many are from published investigations and include documentation with a summary and references, as well as some example code representing some aspect of analysis available in phyloseq.
+## Load Example Data
 
 To load example data into the working environment, use the `data()` command:
 
@@ -28,7 +35,8 @@ data(enterotype)
 data(soilrep)
 ```
 
-## Example Data Documentation
+## Documentation
+
 In the package index, go to the names beginning with "data-" to see the documentation of currently available example datasets.
 
 Try for example
@@ -39,22 +47,12 @@ Try for example
 
 to access the documentation for the so-called "GlobalPatterns" dataset.
 
-## Example Script Using Example Data
+
+## Run provided examples
+
 You can also try the examples included with the example data documentation (as well as examples for functions/methods) using the standard `example` command in R -- in this case the examples for the `enterotype` dataset.
 
 ```{r run-examples}
 example(enterotype, ask=FALSE)
 ```
 
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```

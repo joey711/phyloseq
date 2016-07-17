@@ -1,8 +1,13 @@
-`r knitr::opts_chunk$set(cache=TRUE, fig.width=8, warning=FALSE)`
+---
+title: "Plot Microbiome Network"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-plot_network Examples
-========================================================
-## Load phyloseq and the "enterotypes" dataset
+## Load Package and Example Data
 
 ```{r message=FALSE}
 library(phyloseq); packageVersion("phyloseq")
@@ -95,16 +100,3 @@ ig <- make_network(enterotype, dist.fun="bray", max.dist=0.3)
 plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.4, label=NULL)
 ```
 			
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```
-

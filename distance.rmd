@@ -1,6 +1,11 @@
-`r knitr::opts_chunk$set(cache=TRUE, fig.width=10)`
-
-# The distance function in phyloseq
+---
+title: "The distance function in phyloseq"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
 The `distance` function takes a phyloseq-class object and method option, and returns a `dist`-class distance object suitable for certain ordination methods and other distance-based analyses. There are currently 44 explicitly supported method options in the phyloseq package, as well as user-provided arbitrary methods via an interface to `vegan::designdist`. For the complete list of currently supported options/arguments to the method parameter, type `distanceMethodList` in the command-line of your R session. Only sample-wise distances are currently supported (the type argument), but eventually OTU-wise (e.g. species) distances will be supported as well.
 
@@ -17,6 +22,7 @@ distance(physeq, method="unifrac", type="samples", ...)
 ```
 
 ## Example: "Enterotypes" dataset using many different methods
+
 Because the `distance()` function organizes distance calculations into one function, it is relatively straightforward to calculate all supported distance methods and investigate the results. The following code will perform such a loop on the "Enterotypes" dataset, perform multi-dimensional scaling (a.k.a. principle coordinates analysis), and plot the first two axes, shading and shaping the points in each plot according to sequencing technology and assigned "Enterotype" label.
 
 Note that we have omitted the options that require a phylogenetic tree because the `"enterotype"` example dataset currently included in the phyloseq-package does not have one.
@@ -27,6 +33,7 @@ Note that this may take a little while to run, depending on the size of your dat
 ---
 
 # Load phyloseq
+
 Of course we need to start this tutorial by loading [the phyloseq package](http://joey711.github.com/phyloseq/). This assumes you have already [installed phyloseq](http://joey711.github.io/phyloseq/install).
 
 ```{r loadpkg, warning=FALSE, message=FALSE}
@@ -40,26 +47,30 @@ ggplot2 package theme set. See [the ggplot2 online documentation](http://docs.gg
 theme_set(theme_bw())
 ```
 
-
 Load the enterotype data
+
 ```{r}
 data(enterotype)
 ```
 
-Some preliminary filtering. More advanced [preprocessing](http://joey711.github.com/phyloseq/preprocess) is recommended.
+Some preliminary filtering. 
+More advanced [preprocessing](http://joey711.github.com/phyloseq/preprocess) is recommended.
 
 Remove the OTUs that included all unassigned sequences (`"-1"`)
+
 ```{r}
 enterotype <- subset_species(enterotype, Genus != "-1")
 ```
 
 The available distance methods coded in `distance`
+
 ```{r}
 dist_methods <- unlist(distanceMethodList)
 print(dist_methods)
 ```
 
 Remove the two distance-methods that require a tree, and the generic custom method that requires user-defined distance arguments.
+
 ```{r}
 # These require tree
 dist_methods[(1:3)]
@@ -72,6 +83,7 @@ dist_methods = dist_methods[-which(dist_methods=="ANY")]
 ```
 
 Loop through each distance method, save each plot to a list, called `plist`.
+
 ```{r warning=FALSE}
 plist <- vector("list", length(dist_methods))
 names(plist) = dist_methods
@@ -93,9 +105,10 @@ for( i in dist_methods ){
 ```
 
 
-## Combine all results
+## Combine results
 
 Shade according to **sequencing technology**
+
 ```{r distance-summary-plot, warning=FALSE, fig.width=20, fig.height=16}
 df = ldply(plist, function(x) x$data)
 names(df)[1] <- "distance"
@@ -107,6 +120,7 @@ p
 ```
 
 Shade according to assigned **enterotype**
+
 ```{r distance-summary-plot-enterotype, warning=FALSE, fig.width=20, fig.height=16}
 df = ldply(plist, function(x) x$data)
 names(df)[1] <- "distance"
@@ -118,44 +132,37 @@ p
 ```
 
 
-## Selected Results
+## Compare results
 
 The following are some selected examples among the created plots.
 
 Jensen-Shannon Divergence
+
 ```{r}
 print(plist[["jsd"]])
 ```
 
 Jaccard
+
 ```{r}
 print(plist[["jaccard"]])
 ```
 
 Bray-Curtis
+
 ```{r}
 print(plist[["bray"]])
 ```
 
 Gower
+
 ```{r}
 print(plist[["gower"]])
 ```
 
 w
+
 ```{r}
 print(plist[["w"]])
 ```
 
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```

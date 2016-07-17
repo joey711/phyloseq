@@ -1,9 +1,12 @@
-`r opts_chunk$set(cache=TRUE, fig.width=8)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
-
-
-Subset points in an ordination plot
-========================================================
+---
+title: "Subset points in an ordination plot"
+date: "`r date()`"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
 The `subset_ord_plot` function is a "convenience function" intended to make it easier to retrieve a plot-derived `data.frame` with a subset of points according to a `threshold` and `method`. The meaning of the `threshold` depends upon the `method`.
 
@@ -73,18 +76,5 @@ p0 + geom_point(data=subset_ord_plot(p1, 0.7, "radial"), size=1)
 Here is what the data retreived by `subset_ord_plot` actually looks like
 ```{r}
 head(subset_ord_plot(p1, 0.7, "radial"))
-```
-
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
 ```
 

@@ -1,14 +1,13 @@
 ---
+title: "The QIIME-DB Server is Permanently Down."
+date: "`r date()`"
 output: 
   html_document: 
-    fig_caption: yes
-    theme: readable
     toc: yes
+    toc_depth: 2
+    toc_float: true
 ---
-`r opts_chunk$set(cache=TRUE, fig.width=10)`
-<link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-# The QIIME-DB Server is Permanently Down.
 
 Users are suggested to migrate their queries over to Qiita.
 

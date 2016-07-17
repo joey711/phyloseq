@@ -1,0 +1,72 @@
+name: "phyloseq"
+output_dir: "."
+navbar:
+  title: "phyloseq"
+  type: inverse
+  left:
+    - text: "Installation"
+      icon: ion-android-archive
+      href: install.html
+    - text: "Articles"
+      icon: fa-newspaper-o
+      href: citation.html
+      menu:
+        - text: "phyloseq in Bioconductor"
+          href: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0061217
+        - text: "Shiny-phyloseq"
+          href: http://bioinformatics.oxfordjournals.org/content/early/2014/09/26/bioinformatics.btu616
+        - text: "Rarefying Inadmissible"
+          href: http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531
+        - text: "Full Stack Workflow"
+          href: http://f1000research.com/articles/5-1492/v1
+    - text: "Courses"
+      icon: fa-graduation-cap
+      href: courses.html
+    - text: "Tutorials"
+      icon: fa-university
+      href: tutorials-index.html
+      menu:
+        - text: "Basics"
+        - text: "Data Import"
+          href: import-data.html
+        - text: "Example Data"
+          href: Example-Data.html
+        - text: "Merge"
+          href: merge.html
+        - text: "Preprocess"
+          href: preprocess.html
+        - text: "Distances"
+          href: distance.html
+        - text: "Gap Statistic"
+          href: gap-statistic.html
+        - text: "---------"
+        - text: "Graphics"
+        - text: "Plot Ordination"
+          href: plot_ordination-examples.html
+        - text: "Plot Alpha Diversity"
+          href: plot_richness-examples.html
+        - text: "Plot Tree"
+          href: plot_tree-examples.html
+        - text: "Plot Bars"
+          icon: fa-bar-chart
+          href: plot_bar-examples.html
+        - text: "Plot Heatmap"
+          icon: fa-qrcode
+          href: plot_heatmap-examples.html
+        - text: "Plot Network"
+          href: plot_network-examples.html
+        - text: "---------"
+        - text: "Differential Abundance"
+        - text: "DESeq2 (Recommended)"
+          href: http://joey711.github.io/phyloseq-extensions/DESeq2.html
+        - text: "edgeR"
+          href: http://joey711.github.io/phyloseq-extensions/edgeR.html
+    - text: "Issues"
+      icon: fa-medkit
+      href: https://github.com/joey711/phyloseq/issues
+  right:
+    - text: "FAQ"
+      icon: fa-question
+      href: https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html
+    - icon: fa-twitter
+      href: https://twitter.com/joey711

@@ -1,19 +1,28 @@
-`r knitr::opts_chunk$set(fig.width=10)`
+---
+title: "Merge Data"
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+---
 
-# Merge
 [The phyloseq project](http://joey711.github.com/phyloseq/) includes support 
-for two completely different categories of **merging**. 
+for two completely different categories of **merging** data objects. 
 
 - **Merging the OTUs or samples in a phyloseq object**, based upon a taxonomic or sample variable:
 `merge_samples()`
 `merge_taxa()`
 
 Merging OTU or sample indices based on variables in the data can be a useful means of reducing noise or excess features in an analysis or graphic. Some examples might be to merge the samples in a dataset that are from the same environment, or orthogonally, to merge OTUs that are from the same taxonomic genera. 
+Often this takes the form of a table-join, where non-matching keys are omitted in the result.
+In this case, keys are Sample IDs or Taxa IDs, respectively.
 
 - **Merging two or more data objects** that come from the same experiment, so that their data becomes part of the same phyloseq object:
 `merge_phyloseq()`
 
 Merging separate data objects is especially useful for manually-imported data objects, especially when one of the data objects already has more than one component and so is a phyloseq-class. While the first category of merging functions is useful for direct manipulations of the data for analytical purposes, `merge_phyloseq` is a convenience/support tool to help get your data into the right format.
+
 
 # Examples
 
@@ -145,15 +154,3 @@ GP4
 identical(GP4, GlobalPatterns)
 ```
 
-
-
----
-
-### Other tutorial pages for the phyloseq package:
-
-```{r other-graphics-links, results='asis', echo=FALSE}
-htmlfiles = list.files(pattern="\\.html")
-htmlstems = gsub(".html", "", htmlfiles)
-mdlines = paste("#### [", htmlstems, "](", htmlfiles, ")", sep="")
-cat(mdlines, sep="\n\n")
-```
