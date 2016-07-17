@@ -95,7 +95,7 @@ navbar:
         href: http://stackoverflow.com/users/935950/paul-mcmurdie
       - icon: ai-google-scholar-square
         href: https://scholar.google.com/citations?user=nNQ1LtMAAAAJ
-      - icon: ai-researchgate
+      - icon: ai-researchgate-square
         href: https://www.researchgate.net/profile/Paul_Mcmurdie
       - icon: fa-github-alt 
         href: https://github.com/joey711/phyloseq
