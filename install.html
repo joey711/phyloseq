@@ -341,6 +341,23 @@ div.tocify {
       <a href="gap-statistic.html">Gap Statistic</a>
     </li>
     <li class="divider"></li>
+    <li class="dropdown-header">Workflows</li>
+    <li>
+      <a href="http://benjjneb.github.io/dada2/tutorial.html">DADA2</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/HMP_import_example.html">HMP-1</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/Restroom-Biogeography.html">Restroom Biogeography</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/unifrac.html">UniFrac</a>
+    </li>
+    <li class="divider"></li>
     <li class="dropdown-header">Graphics</li>
     <li>
       <a href="plot_ordination-examples.html">Plot Ordination</a>
@@ -366,7 +383,11 @@ div.tocify {
       </a>
     </li>
     <li>
-      <a href="plot_network-examples.html">Plot Network</a>
+      <a href="plot_network-examples.html">
+        <span class="ion ion-network"></span>
+         
+        Plot Network
+      </a>
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Differential Abundance</li>
@@ -395,10 +416,56 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/joey711">
-    <span class="fa fa-twitter"></span>
+  <a href="https://github.com/joey711/phyloseq">
+    <span class="fa fa-github-alt"></span>
      
   </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-twitter"></span>
+     
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://twitter.com/joey711">
+        <span class="fa fa-twitter"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/in/joey711">
+        <span class="fa fa-linkedin-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="http://stackoverflow.com/users/935950/paul-mcmurdie">
+        <span class="fa fa-stack-overflow"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://scholar.google.com/citations?user=nNQ1LtMAAAAJ">
+        <span class="ai ai-google-scholar-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://www.researchgate.net/profile/Paul_Mcmurdie">
+        <span class="ai ai-researchgate"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/joey711/phyloseq">
+        <span class="fa fa-github-alt"></span>
+         
+      </a>
+    </li>
+  </ul>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -410,7 +477,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Installing the phyloseq package</h1>
-<h4 class="date"><em>Sat Jul 16 19:59:55 2016</em></h4>
+<h4 class="date"><em>Sun Jul 17 12:28:19 2016</em></h4>
 
 </div>
 
@@ -437,7 +504,7 @@ biocLite(&#39;phyloseq&#39;)</code></pre>
 <h2>Bioconductor Release Version</h2>
 <p>This is the version installed if you executed the recommended two lines above. It will not necessarily have the very latest features and fixes, but the installation should work easily using the <code>biocLite</code> tool. It should install all the necessary dependencies automatically, so these two lines should be all you need to enter in your R session to install the phyloseq package.</p>
 <pre class="r"><code>source(&quot;http://bioconductor.org/biocLite.R&quot;)</code></pre>
-<pre><code>## Bioconductor version 3.3 (BiocInstaller 1.22.2), ?biocLite for help</code></pre>
+<pre><code>## Bioconductor version 3.3 (BiocInstaller 1.22.3), ?biocLite for help</code></pre>
 <pre class="r"><code>biocLite(&quot;phyloseq&quot;)</code></pre>
 <p>If it asks to update old packages, you should probably choose option <code>a</code>, to update all packages.</p>
 </div>

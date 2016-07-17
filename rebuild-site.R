@@ -1,5 +1,11 @@
 # http://rmarkdown.rstudio.com/rmarkdown_websites.html
+# Rebuild the complete site.
 rmarkdown::render_site()
+
+# Test rebuild of just the top-level menus
+# rmarkdown::render_site("index.Rmd")
+# rmarkdown::render_site("courses.Rmd")
+# rmarkdown::render_site("install.Rmd")
 
 # Cleaning Up
 

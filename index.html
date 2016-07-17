@@ -341,6 +341,23 @@ div.tocify {
       <a href="gap-statistic.html">Gap Statistic</a>
     </li>
     <li class="divider"></li>
+    <li class="dropdown-header">Workflows</li>
+    <li>
+      <a href="http://benjjneb.github.io/dada2/tutorial.html">DADA2</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/HMP_import_example.html">HMP-1</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/Restroom-Biogeography.html">Restroom Biogeography</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/unifrac.html">UniFrac</a>
+    </li>
+    <li class="divider"></li>
     <li class="dropdown-header">Graphics</li>
     <li>
       <a href="plot_ordination-examples.html">Plot Ordination</a>
@@ -366,7 +383,11 @@ div.tocify {
       </a>
     </li>
     <li>
-      <a href="plot_network-examples.html">Plot Network</a>
+      <a href="plot_network-examples.html">
+        <span class="ion ion-network"></span>
+         
+        Plot Network
+      </a>
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Differential Abundance</li>
@@ -395,10 +416,56 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/joey711">
-    <span class="fa fa-twitter"></span>
+  <a href="https://github.com/joey711/phyloseq">
+    <span class="fa fa-github-alt"></span>
      
   </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-twitter"></span>
+     
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://twitter.com/joey711">
+        <span class="fa fa-twitter"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/in/joey711">
+        <span class="fa fa-linkedin-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="http://stackoverflow.com/users/935950/paul-mcmurdie">
+        <span class="fa fa-stack-overflow"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://scholar.google.com/citations?user=nNQ1LtMAAAAJ">
+        <span class="ai ai-google-scholar-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://www.researchgate.net/profile/Paul_Mcmurdie">
+        <span class="ai ai-researchgate"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/joey711/phyloseq">
+        <span class="fa fa-github-alt"></span>
+         
+      </a>
+    </li>
+  </ul>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -414,6 +481,7 @@ div.tocify {
 </div>
 
 
+<p><link rel="stylesheet" href="site_libs/academicons-1.7.0/css/academicons.css"/></p>
 <p>The analysis of microbiological communities brings many challenges: the integration of many different types of data with methods from ecology, genetics, phylogenetics, network analysis, visualization and testing. The data itself may originate from widely different sources, such as the microbiomes of humans, soils, surface and ocean waters, wastewater treatment plants, industrial facilities, and so on; and as a result, these varied sample types may have very different forms and scales of related data that is extremely dependent upon the experiment and its question(s). The phyloseq package is a tool to import, store, analyze, and graphically display complex phylogenetic sequencing data that has already been clustered into Operational Taxonomic Units (OTUs), especially when there is associated sample data, phylogenetic tree, and/or taxonomic assignment of the OTUs. This package leverages many of the tools available in R for ecology and phylogenetic analysis (vegan, ade4, ape, picante), while also using advanced/flexible graphic systems (ggplot2) to easily produce publication-quality graphics of complex phylogenetic data. phyloseq uses a specialized system of S4 classes to store all related phylogenetic sequencing data as single experiment-level object, making it easier to share data and reproduce analyses. In general, phyloseq seeks to facilitate the use of R for efficient interactive and reproducible analysis of OTU-clustered high-throughput phylogenetic sequencing data.</p>
 <p>More concretely, phyloseq provides:</p>
 <ul>

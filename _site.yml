@@ -27,6 +27,7 @@ navbar:
       href: tutorials-index.html
       menu:
         - text: "Basics"
+          icon: fa-list-ol
         - text: "Data Import"
           href: import-data.html
         - text: "Example Data"
@@ -39,6 +40,19 @@ navbar:
           href: distance.html
         - text: "Gap Statistic"
           href: gap-statistic.html
+        - text: "---------"
+        - text: "Workflows"
+          icon: glyphicon-sort-by-attributes
+        - text: "DADA2"
+          href: http://benjjneb.github.io/dada2/tutorial.html
+        - text: "Full Stack"
+          href: http://f1000research.com/articles/5-1492/v1
+        - text: "HMP-1"
+          href: http://joey711.github.io/phyloseq-demo/HMP_import_example.html
+        - text: "Restroom Biogeography"
+          href: http://joey711.github.io/phyloseq-demo/Restroom-Biogeography.html
+        - text: "UniFrac"
+          href: http://joey711.github.io/phyloseq-demo/unifrac.html
         - text: "---------"
         - text: "Graphics"
         - text: "Plot Ordination"
@@ -55,6 +69,7 @@ navbar:
           href: plot_heatmap-examples.html
         - text: "Plot Network"
           href: plot_network-examples.html
+          icon: ion-network
         - text: "---------"
         - text: "Differential Abundance"
         - text: "DESeq2 (Recommended)"
@@ -68,5 +83,20 @@ navbar:
     - text: "FAQ"
       icon: fa-question
       href: https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html
+    - icon: fa-github-alt 
+      href: https://github.com/joey711/phyloseq
     - icon: fa-twitter
-      href: https://twitter.com/joey711
+      menu:
+      - icon: fa-twitter
+        href: https://twitter.com/joey711
+      - icon: fa-linkedin-square
+        href: https://www.linkedin.com/in/joey711
+      - icon: fa-stack-overflow
+        href: http://stackoverflow.com/users/935950/paul-mcmurdie
+      - icon: ai-google-scholar-square
+        href: https://scholar.google.com/citations?user=nNQ1LtMAAAAJ
+      - icon: ai-researchgate
+        href: https://www.researchgate.net/profile/Paul_Mcmurdie
+      - icon: fa-github-alt 
+        href: https://github.com/joey711/phyloseq
+
