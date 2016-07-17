@@ -8,6 +8,8 @@ output:
     toc_float: true
 ---
 
+<link rel="stylesheet" href="site_libs/academicons-1.7.0/css/academicons.css"/>
+
 ## Bioconductor Installer (Recommended)
 
 Recommended two lines for installing phyloseq
