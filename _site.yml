@@ -1,5 +1,8 @@
 name: "phyloseq"
 output_dir: "."
+output:
+  html_document:
+    theme: cosmo
 navbar:
   title: "phyloseq"
   type: inverse

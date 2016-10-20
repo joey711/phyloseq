@@ -1,5 +1,5 @@
 ---
-title: "phyloseq: Import, share, and analyze microbiome census data using R"
+title: "phyloseq: Analyze microbiome census data using R"
 output: 
   html_document: 
     toc: yes
