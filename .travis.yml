@@ -1,7 +1,19 @@
 # Adapted from sample .travis.yml for R projects
 
 language: r
+cache: packages
+
 bioc_required: true
+bioc_packages: 
+  - DESeq2
+  - BiocStyle
+  - genefilter
+  - metagenomeSeq
+r_packages:
+  - testthat
+  - knitr
+  - rmarkdown
+
 warnings_are_errors: true
 sudo: required
 
