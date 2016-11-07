@@ -2332,7 +2332,7 @@ import_usearch_uc <- function(ucfile, colRead=9, colOTU=10, colRecType=1,
     x <- x[rectype %in% c("H","C"), ]
     
     if(verbose){
-      cat("Retaining C & H records \n")
+      cat("Retaining rows annotated as centroids, 'C', or hits 'H' \n")
       cat("A total of", nrow(x), "will be assigned to the OTU table.\n")
     }
     
@@ -2345,7 +2345,15 @@ import_usearch_uc <- function(ucfile, colRead=9, colOTU=10, colRecType=1,
     # create samplename
     x[, sample:=gsub(paste0(readDelimiter, ".+$"), "", read)]
     
-    # cast the 
+    #check for large numbers of samples. This can happen if the regex for the readDelimiter is incorrect.
+    samplenum <- length(unique(x$samples))
+    if (samplenum > 1000) {
+      warning("We have detected greater than 1000 samples in this dataset. If this is correct, don't worry. However, if you
+              are expecting fewer than 1000 samples, check the readDelimieter to make dure you are splitting
+              your sample IDs correctly.")
+    }
+
+    # cast the table to wide format
     OTU <- dcast.data.table(x, sample ~ OTU, fun.aggregate = sum, value.var = "size",)
     samplenames <- OTU$sample
     OTU[,sample:=NULL]
