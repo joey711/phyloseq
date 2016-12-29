@@ -1,13 +1,13 @@
 Package: phyloseq
-Version: 1.17.2
-Date: 2016-05-13
+Version: 1.19.1
+Date: 2016-12-29
 Title: Handling and analysis of high-throughput microbiome
     census data
 Description: phyloseq provides a set of classes and tools
     to facilitate the import, storage, analysis, and
     graphical display of microbiome census data.
-Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
-Author: Paul J. McMurdie <mcmurdie@stanford.edu>,
+Maintainer: Paul J. McMurdie <joey711@gmail.com>
+Author: Paul J. McMurdie <joey711@gmail.com>,
     Susan Holmes <susan@stat.stanford.edu>, with
     contributions from Gregory Jordan and Scott Chamberlain
 License: AGPL-3
