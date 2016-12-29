@@ -1,46 +1,46 @@
 Package: phyloseq
 Version: 1.19.1
-Date: 2016-04-16
+Date: 2016-12-29
 Title: Handling and analysis of high-throughput microbiome
     census data
 Description: phyloseq provides a set of classes and tools
     to facilitate the import, storage, analysis, and
     graphical display of microbiome census data.
-Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
-Author: Paul J. McMurdie <mcmurdie@stanford.edu>,
+Maintainer: Paul J. McMurdie <joey711@gmail.com>
+Author: Paul J. McMurdie <joey711@gmail.com>,
     Susan Holmes <susan@stat.stanford.edu>, with
     contributions from Gregory Jordan and Scott Chamberlain
 License: AGPL-3
 Imports:
-    BiocGenerics (>= 0.14.0),
-    ade4 (>= 1.7-2),
-    ape (>= 3.1.1),
-    biomformat (>= 0.4.0),
-    Biostrings (>= 2.28.0),
-    cluster (>= 1.14.4),
+    BiocGenerics (>= 0.18.0),
+    ade4 (>= 1.7.4),
+    ape (>= 3.4),
+    biomformat (>= 1.0.0),
+    Biostrings (>= 2.40.0),
+    cluster (>= 2.0.4),
     data.table (>= 1.9.6),
-    foreach (>= 1.4.2),
+    foreach (>= 1.4.3),
     ggplot2 (>= 2.1.0),
-    igraph (>= 0.7.0),
-    methods (>= 3.1.0),
-    multtest (>= 2.16.0),
-    plyr (>= 1.8),
-    reshape2 (>= 1.2.2),
-    scales (>= 0.3.0),
-    vegan (>= 2.0.10),
+    igraph (>= 1.0.1),
+    methods (>= 3.3.0),
+    multtest (>= 2.28.0),
+    plyr (>= 1.8.3),
+    reshape2 (>= 1.4.1),
+    scales (>= 0.4.0),
+    vegan (>= 2.3.5),
     Biobase
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.3.0)
 Suggests:
-    BiocStyle (>= 1.6),
-    DESeq2 (>= 1.8),
-    genefilter (>= 1.50),
-    testthat (>= 0.10),
-    knitr (>= 1.10),
-    metagenomeSeq (>= 1.10),
-    rmarkdown (>= 0.7)
+    BiocStyle (>= 2.0.0),
+    DESeq2 (>= 1.12.0),
+    genefilter (>= 1.54),
+    testthat (>= 1.0.2),
+    knitr (>= 1.13),
+    metagenomeSeq (>= 1.14),
+    rmarkdown (>= 0.9.6)
 VignetteBuilder: knitr
-Enhances: doParallel (>= 1.0.1)
+Enhances: doParallel (>= 1.0.10)
 biocViews: Sequencing, Microbiome, Metagenomics,
     Clustering, Classification, MultipleComparison,
     GeneticVariability

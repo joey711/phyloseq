@@ -187,7 +187,7 @@ treefilename = system.file("extdata", "biom-tree.phy",  package="phyloseq")
 refseqfilename = system.file("extdata", "biom-refseq.fasta",  package="phyloseq")
 
 test_that("Importing biom files yield phyloseq objects", {
-	library(biom)
+	library("biomformat")
 	rdbiom = read_biom(rich_sparse_biom)
 	rsbiom = read_biom(rich_sparse_biom)
 
