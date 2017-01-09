@@ -1423,6 +1423,8 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #'
 #' @param physeq (Required). An \code{\link{otu_table-class}} or 
 #'  \code{\link{phyloseq-class}}. Function most useful for phyloseq-class.
+#'  
+#' @param columns  (Optional) Specify columns to subset priot to melting
 #'
 #' @return A \code{\link{data.frame}}-class table.
 #'
@@ -1450,7 +1452,7 @@ extract_eigenvalue.decorana = function(ordination) ordination$evals
 #' p = ggplot(mdf, aes(x=SampleType, y=Abundance, fill=Genus))
 #' p = p + geom_bar(color="black", stat="identity", position="stack")
 #' print(p)
-psmelt = function(physeq){
+psmelt = function(physeq, columns=NULL){
   # Access covariate names from object, if present
   if(!inherits(physeq, "phyloseq")){
     rankNames = NULL
@@ -1460,6 +1462,10 @@ psmelt = function(physeq){
     rankNames = rank_names(physeq, FALSE)
     sampleVars = sample_variables(physeq, FALSE) 
   }
+  #find colums for taxtabel and sampletable
+  rankCols   <- if (is.null(columns)) NULL else columns[columns %in% rankNames]
+  sampleCols <- if (is.null(columns)) NULL else columns[columns %in% sampleVars]
+  
   # Define reserved names
   reservedVarnames = c("Sample", "Abundance", "OTU")  
   # type-1a conflict: between sample_data 
@@ -1524,8 +1530,18 @@ psmelt = function(physeq){
   if(!is.null(sampleVars)){
     sdf = data.frame(sample_data(physeq), stringsAsFactors=FALSE)
     sdf$Sample <- sample_names(physeq)
-    # merge the sample-data and the melted otu table
-    mdf <- merge(mdf, sdf, by.x="Sample")
+    
+    if (is.null(sampleCols)){
+      # merge the sample-data and the melted otu table
+      mdf <- merge(mdf, sdf, by.x="Sample")
+    } else {
+      print("SampleCols")
+      print(sampleCols)
+      sdf <- sdf[c("Sample", sampleCols)]
+      mdf <- merge(mdf, sdf, by=c("Sample"))
+    }
+    
+    
   }
   # Next merge taxonomy data, if present
   if(!is.null(rankNames)){
@@ -1538,8 +1554,16 @@ psmelt = function(physeq){
       TT <- TT[, keepTTcols]
       # Add TT to the "psmelt" data.frame
       tdf = data.frame(TT, OTU=taxa_names(physeq))
-      # Now add to the "psmelt" output data.frame, `mdf`
-      mdf <- merge(mdf, tdf, by.x="OTU")
+      
+      #if columns are specified, include only those columns
+      if(is.null(rankCols)){
+        # Now add to the "psmelt" output data.frame, `mdf`
+        mdf <- merge(mdf, tdf, by.x="OTU")  
+      } else {
+        tdf = tdf[c("OTU",rankCols)]
+        mdf <- merge(mdf, tdf, by.x="OTU")  
+      }
+      
     }
   }
   # Sort the entries by abundance
@@ -1623,8 +1647,37 @@ psmelt = function(physeq){
 plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 	title=NULL, facet_grid=NULL){
 		
+  #get column names from facet_grid:
+  if (!is.null(facet_grid)){
+    
+    #code lifted from ggplot facet-grid-.r
+    if (is.character(facet_grid)) {
+      facet_grid <- as.formula(facet_grid)
+    }
+    if (is.character(facet_grid)) {
+      facet_grid <- plyr::as.formula(facet_grid)
+    }
+    if (plyr::is.formula(facet_grid)) {
+      lhs <- function(x) if(length(x) == 2) NULL else x[-3]
+      rhs <- function(x) if(length(x) == 2) x else x[-2]
+      
+      rows <- plyr::as.quoted(lhs(facet_grid))
+      rows <- rows[!sapply(rows, identical, as.name("."))]
+      cols <- plyr::as.quoted(rhs(facet_grid))
+      cols <- cols[!sapply(cols, identical, as.name("."))]
+    }
+    if (is.list(facet_grid)) {
+      rows <- plyr::as.quoted(facet_grid[[1]])
+      cols <- plyr::as.quoted(facet_grid[[2]])
+    }
+    cols = c(x,y,fill,title,rows,cols)
+  }else{
+    cols = c(x,y,fill,title)
+  }
+  
+  
 	# Start by melting the data in the "standard" way using psmelt.
-	mdf = psmelt(physeq)
+	mdf = psmelt(physeq, columns=as.character(cols))
 	
 	# Build the plot data structure
 	p = ggplot(mdf, aes_string(x=x, y=y, fill=fill))
@@ -2291,7 +2344,7 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
   # Initialize the species/taxa/OTU data.table
   dodgeDT = treeSegs$edgeDT[!is.na(OTU), ]
   # Merge with psmelt() result, to make all co-variables available
-  dodgeDT = merge(x=dodgeDT, y=data.table(psmelt(physeq), key="OTU"), by="OTU")
+  dodgeDT = merge(x=dodgeDT, y=data.table(psmelt(physeq, columns=c(color,shape,size,label.tips)), key="OTU"), by="OTU")
   if(justify=="jagged"){
     # Remove 0 Abundance value entries now, not later, for jagged.
     dodgeDT <- dodgeDT[Abundance > 0, ]    
