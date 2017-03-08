@@ -14,22 +14,21 @@
 <title>Courses involving phyloseq</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/default.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -99,6 +98,7 @@ button.code-folding-btn:focus {
 }
 </style>
 
+
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
@@ -155,7 +155,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -181,7 +180,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
@@ -240,8 +239,9 @@ div.tocify {
 }
 
 .tocify-subheader .tocify-item {
-  font-size: 0.9em;
-  padding-left: 5px;
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -477,7 +477,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Courses involving phyloseq</h1>
-<h4 class="date"><em>Sun Jul 17 12:34:49 2016</em></h4>
+<h4 class="date"><em>Tue Mar 7 18:09:11 2017</em></h4>
 
 </div>
 
@@ -489,6 +489,41 @@ div.tocify {
 <h1>Open and Upcoming</h1>
 <p>There are a number of courses now including or featuring phyloseq. I will try and link here to the ones I know about.</p>
 <hr />
+<p> </p>
+<div id="sismid-2017" class="section level2">
+<h2><a href="http://www.biostat.washington.edu/suminst/sismid2017/modules/MD1706">SISMID, 2017</a></h2>
+<ul>
+<li><a href="http://www.biostat.washington.edu/suminst/sismid2017/modules/MD1706">SISMID Module 6: Microbiome Data Analysis</a></li>
+</ul>
+<p>Week 1, Session 2</p>
+<p><code>Wed Jul 12 1:30 PM - Fri Jul 14 5:00 PM</code></p>
+<p>Instructor(s): Alexander Alekseyenko and Paul McMurdie</p>
+<p>Programming will be done in R and fluency at the level of <em>Module 4: Introduction to R</em> will be expected.</p>
+<p><strong>Pre-requisites</strong>: Knowledge of <em>Module 1, Probability and Statistical Inference</em>.</p>
+<p>This course is concerned with multivariate statistical analysis of microbiome data. We will briefly cover foundational concepts in microbial ecology, molecular biology, bioinformatics, and DNA sequencing.</p>
+<p>The main focus of the course will be on developing an understanding of multivariate analysis of microbiome data. Practical skills to be developed in this course include managing high-dimensional and structured data in metagenomics, visualization and representation of high-dimensional data, normalization, filtering, and mixture-model noise modeling of count data, as well as clustering and predictive model building.</p>
+<p> </p>
+</div>
+<div id="stamps-2017" class="section level2">
+<h2><a href="https://stamps.mbl.edu/index.php/Main_Page">STAMPS 2017</a></h2>
+<p>I understand this course is going on again this year, but the web page was not updated at the time I wrote this.</p>
+<p>My unofficial information on scheduling is:</p>
+<p>Evening of Sunday July 31 – morning on Wednesday Aug 9.</p>
+<p> </p>
+</div>
+<div id="workshop-on-genomics-2018" class="section level2">
+<h2><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, 2018</a></h2>
+<ul>
+<li><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, Český Krumlov, Czech Republic (2018 January)</a></li>
+</ul>
+<p>The Workshop on Genomics was developed in response to the increasing demand for training on how to effectively analyze and manage data generated by modern sequencing technologies. The Workshop curriculum includes extensive coverage of fundamental techniques required of all studies utilizing modern sequence data. This includes management and modification of modern sequence data files, using the Unix command-line and editors to manipulate sequence data files, assembly (both mapping and de novo) and best practices for sequence data generation. The second-half of the Workshop is devoted to specific sub-disciplines within the genomic sciences. While these topics may change from Workshop to Workshop, efforts are made to devote significant amounts of time to techniques being used widely in the field (e.g. transcriptomics, genome assembly, metagenomics).</p>
+<p>A majority of the schedule is dedicated to hands-on learning activities designed by faculty and the workshop team. This interactive experience provides Workshop participants with the practical experience required to meet the challenges presented by modern genomic sciences.</p>
+<p> </p>
+<hr />
+</div>
+</div>
+<div id="concluded" class="section level1">
+<h1>Concluded</h1>
 <p> </p>
 <div id="sismid-workshop-2016" class="section level2">
 <h2>SISMID Workshop, 2016</h2>
@@ -524,12 +559,7 @@ div.tocify {
 <p>The Workshop on Genomics was developed in response to the increasing demand for training on how to effectively analyze and manage data generated by modern sequencing technologies. The Workshop curriculum includes extensive coverage of fundamental techniques required of all studies utilizing modern sequence data. This includes management and modification of modern sequence data files, using the Unix command-line and editors to manipulate sequence data files, assembly (both mapping and de novo) and best practices for sequence data generation. The second-half of the Workshop is devoted to specific sub-disciplines within the genomic sciences. While these topics may change from Workshop to Workshop, efforts are made to devote significant amounts of time to techniques being used widely in the field (e.g. transcriptomics, genome assembly, metagenomics).</p>
 <p>A majority of the schedule is dedicated to hands-on learning activities designed by faculty and the workshop team. This interactive experience provides Workshop participants with the practical experience required to meet the challenges presented by modern genomic sciences.</p>
 <p> </p>
-<hr />
 </div>
-</div>
-<div id="concluded-for-2016" class="section level1">
-<h1>Concluded for 2016</h1>
-<p> </p>
 <div id="workshop-on-genomics-2016" class="section level2">
 <h2>Workshop on Genomics, 2016</h2>
 <ul>
@@ -582,9 +612,13 @@ div.tocify {
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
+
 
 </script>
 
