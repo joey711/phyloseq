@@ -35,7 +35,7 @@ Alexander Alekseyenko and Paul McMurdie
 
 Programming will be done in R and fluency at the level of *Module 4: Introduction to R* will be expected.
 
-**Pre-requisites**: Knowledge of *Module 1, Probability and Statistical Inference*.
+**Pre-requisites**: Knowledge of *Module 4: Introduction to R*.
 
 This course is concerned with multivariate statistical analysis of microbiome data. We will briefly cover foundational concepts in microbial ecology, molecular biology, bioinformatics, and DNA sequencing.
 
