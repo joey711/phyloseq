@@ -19,14 +19,14 @@ should return an object without error.}
  and return a new \code{dist}ance object that is Euclidean.
  If testing a distance object, try \code{\link[ade4]{is.euclid}}.
 
- In most real-life, real-data applications, the phylogenetic tree 
- will not provide a Euclidean distance matrix, and so a correction
- will be needed. 
- Two recommended correction methods are
+ 
+ Although the distance matrix should always be Euclidean, for numerical 
+reasons it will sometimes appear non-Euclidean and a correction method must 
+be applied. Two recommended correction methods are
  \code{\link[ade4]{cailliez}} and \code{\link[ade4]{lingoes}}.
  The default is \code{cailliez},
- but not for any particularly special reason. If the patristic 
- distance matrix turns out to be Euclidian, no correction will be 
+ but not for any particularly special reason. If the
+ distance matrix is Euclidian, no correction will be 
  performed, regardless of the value of the \code{correction} argument.}
 
 \item{scannf}{(Optional). Logical. Default is \code{FALSE}. This
@@ -48,13 +48,13 @@ phylogenetic (\code{\link[ape]{phylo}}) components of a
 to perform a
 Double Principle Coordinate Analysis (DPCoA), relying heavily on 
 the underlying (and more general) function, \code{\link[ade4]{dpcoa}}.
-The distance object ultimately provided as the cophenetic/patristic
-(\code{\link[ape]{cophenetic.phylo}}) distance between the species.
-}
-\details{
-In most real-life, real-data applications, the phylogenetic tree 
-will not provide a Euclidean distance matrix, and so a correction
-will be performed, if needed. See \code{correction} argument.
+The distance object ultimately provided is the square root of the 
+cophenetic/patristic (\code{\link[ape]{cophenetic.phylo}}) distance 
+between the species, which is always Euclidean. 
+ 
+Although this distance is Euclidean, for numerical reasons it 
+will sometimes look non-Euclidean, and a correction will be performed. 
+See \code{correction} argument.
 }
 \examples{
 # # # # # # Esophagus
@@ -75,10 +75,6 @@ GP       <- prune_taxa(keepTaxa, GlobalPatterns)
 GP.dpcoa <- DPCoA(GP)
 plot_ordination(GP, GP.dpcoa, color="SampleType")
 }
-\author{
-Julia Fukuyama \email{julia.fukuyama@gmail.com}.
- Adapted for phyloseq by Paul J. McMurdie.
-}
 \references{
 Pavoine, S., Dufour, A.B. and Chessel, D. (2004) 
 From dissimilarities among species to dissimilarities among communities: 
@@ -88,4 +84,7 @@ Journal of Theoretical Biology, 228, 523-537.
 \seealso{
 \code{\link[ade4]{dpcoa}}
 }
-
+\author{
+Julia Fukuyama \email{julia.fukuyama@gmail.com}.
+ Adapted for phyloseq by Paul J. McMurdie.
+}

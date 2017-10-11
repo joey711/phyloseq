@@ -123,4 +123,3 @@ sample_sums(esorepF)
 
 \code{\link{set.seed}}
 }
-

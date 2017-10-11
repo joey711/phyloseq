@@ -73,4 +73,3 @@ distanceMethodList
 \code{\link[phyloseq]{distance}}
 }
 \keyword{datasets}
-

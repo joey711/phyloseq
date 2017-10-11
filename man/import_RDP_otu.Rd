@@ -41,4 +41,3 @@ An alternative ``cluster'' file importer for RDP results:
 The main RDP-pyrosequencing website
 \url{http://pyro.cme.msu.edu/index.jsp}
 }
-

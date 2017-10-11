@@ -37,4 +37,3 @@ get_sample(esophagus, "59_5_19")
  \code{\link{taxa_names}}
  \code{\link{sample_names}}
 }
-

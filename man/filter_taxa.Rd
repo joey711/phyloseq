@@ -52,4 +52,3 @@ it returns the already-trimmed version of the phyloseq object.
 \code{\link{genefilter_sample}},
 \code{\link{filterfun_sample}}
 }
-

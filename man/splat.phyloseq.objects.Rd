@@ -33,4 +33,3 @@ other tools that leave the multi-component object in one piece.
 merge_phyloseq
 }
 \keyword{internal}
-

@@ -17,4 +17,3 @@ for generic extraction of coordinates and possibly other features from
 any ordination results.
 }
 \keyword{internal}
-

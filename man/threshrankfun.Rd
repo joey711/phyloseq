@@ -35,4 +35,3 @@ identical(x1, x2)
 \code{\link{transform_sample_counts}}, \code{\link{threshrankfun}},
  \code{\link{threshrank}}
 }
-

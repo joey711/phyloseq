@@ -15,4 +15,3 @@ For now this only entails replacing each missing (\code{NA}) branch-length
 value with 0.0.
 }
 \keyword{internal}
-

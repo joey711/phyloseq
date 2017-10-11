@@ -34,4 +34,3 @@ prune_taxa(wh2, testOTU)
 \seealso{
 \code{\link[genefilter]{filterfun}}, \code{\link{genefilter_sample}}
 }
-

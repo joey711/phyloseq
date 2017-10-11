@@ -4,8 +4,8 @@
 \name{tax_table}
 \alias{tax_table}
 \alias{tax_table,ANY-method}
-\alias{tax_table,data.frame-method}
 \alias{tax_table,matrix-method}
+\alias{tax_table,data.frame-method}
 \title{Build or access the taxonomyTable.}
 \usage{
 tax_table(object, errorIfNULL=TRUE)
@@ -54,4 +54,3 @@ contain a \code{taxonomyTable}.
 \code{\link{phy_tree}}, \code{\link{sample_data}}, \code{\link{otu_table}}
  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 }
-

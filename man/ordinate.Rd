@@ -153,4 +153,3 @@ supported method options.
 
 \href{http://cran.r-project.org/web/views/Multivariate.html}{Multivariate Statistics}
 }
-

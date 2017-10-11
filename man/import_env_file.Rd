@@ -39,4 +39,3 @@ the number of times the sequence was observed.
 
 \code{\link{tip_glom}}
 }
-

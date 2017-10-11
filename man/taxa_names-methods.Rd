@@ -4,12 +4,12 @@
 \name{taxa_names}
 \alias{taxa_names}
 \alias{taxa_names,ANY-method}
-\alias{taxa_names,XStringSet-method}
-\alias{taxa_names,otu_table-method}
-\alias{taxa_names,phylo-method}
 \alias{taxa_names,phyloseq-method}
-\alias{taxa_names,sample_data-method}
+\alias{taxa_names,otu_table-method}
 \alias{taxa_names,taxonomyTable-method}
+\alias{taxa_names,sample_data-method}
+\alias{taxa_names,phylo-method}
+\alias{taxa_names,XStringSet-method}
 \title{Get species / taxa names.}
 \usage{
 taxa_names(physeq)
@@ -52,4 +52,3 @@ taxa_names(physeq1)
 \seealso{
 ntaxa
 }
-

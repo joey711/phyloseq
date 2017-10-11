@@ -24,4 +24,3 @@ judiciously and within phyloseq.
 \code{\link[vegan]{decorana}}
 }
 \keyword{internal}
-

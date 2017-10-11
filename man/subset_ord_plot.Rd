@@ -67,4 +67,3 @@ There are many useful examples of phyloseq ordination graphics in the
 
  \code{\link{plot_ordination}}
 }
-

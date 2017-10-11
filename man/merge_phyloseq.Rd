@@ -64,4 +64,3 @@ of that component type is returned.
 ## merge_phyloseq(x, y)
 ## merge_phyloseq(y, y, y, y)
 }
-

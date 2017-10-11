@@ -4,11 +4,11 @@
 \name{ntaxa}
 \alias{ntaxa}
 \alias{ntaxa,ANY-method}
-\alias{ntaxa,XStringSet-method}
-\alias{ntaxa,otu_table-method}
-\alias{ntaxa,phylo-method}
 \alias{ntaxa,phyloseq-method}
+\alias{ntaxa,otu_table-method}
 \alias{ntaxa,taxonomyTable-method}
+\alias{ntaxa,phylo-method}
+\alias{ntaxa,XStringSet-method}
 \title{Get the number of taxa/species.}
 \usage{
 ntaxa(physeq)
@@ -45,4 +45,3 @@ ntaxa(phy_tree(esophagus))
 \seealso{
 taxa_names
 }
-

@@ -11,4 +11,3 @@ It is used throughout the ape package.
 \seealso{
 \code{\link[ape]{phylo}}, \code{\link{setOldClass}}
 }
-

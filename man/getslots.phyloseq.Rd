@@ -31,4 +31,3 @@ is component data object.
 \seealso{
 merge_phyloseq
 }
-

@@ -71,4 +71,3 @@ plot_bar(gp.ch, "SampleType", fill="Genus", facet_grid=~Family)
 
  \code{\link{qplot}}
 }
-

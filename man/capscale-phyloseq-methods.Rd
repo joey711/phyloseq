@@ -3,8 +3,8 @@
 \docType{methods}
 \name{capscale.phyloseq}
 \alias{capscale.phyloseq}
-\alias{capscale.phyloseq,phyloseq,formula,character-method}
 \alias{capscale.phyloseq,phyloseq,formula,dist-method}
+\alias{capscale.phyloseq,phyloseq,formula,character-method}
 \title{Constrained Analysis of Principal Coordinates, \code{\link[vegan]{capscale}}.}
 \usage{
 capscale.phyloseq(physeq, formula, distance, ...)
@@ -67,4 +67,3 @@ plot_ordination(GP, ordcap, "samples", color="SampleType")
  \code{\link[vegan]{capscale}}
 }
 \keyword{internal}
-

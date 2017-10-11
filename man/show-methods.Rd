@@ -3,9 +3,9 @@
 \docType{methods}
 \name{show,otu_table-method}
 \alias{show,otu_table-method}
-\alias{show,phyloseq-method}
 \alias{show,sample_data-method}
 \alias{show,taxonomyTable-method}
+\alias{show,phyloseq-method}
 \title{method extensions to show for phyloseq objects.}
 \usage{
 \S4method{show}{otu_table}(object)
@@ -31,4 +31,3 @@ expected behavior.
 \seealso{
 \code{\link[methods]{show}}
 }
-

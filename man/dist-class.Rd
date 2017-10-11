@@ -10,4 +10,3 @@ about this type of a distance matrix object.
 \seealso{
 \code{\link[stats]{dist}}, \code{\link{setOldClass}}
 }
-

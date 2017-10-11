@@ -203,4 +203,3 @@ Because this function relies so heavily in principle, and in code, on some of th
 Please see further examples in the 
 \href{http://joey711.github.io/phyloseq/plot_heatmap-examples}{phyloseq online tutorials}.
 }
-

@@ -59,4 +59,3 @@ tutorials.
  
  \code{\link[DESeq2]{DESeqDataSetFromMatrix}}
 }
-

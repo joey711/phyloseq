@@ -4,13 +4,13 @@
 \name{prune_taxa}
 \alias{prune_taxa}
 \alias{prune_taxa,NULL,ANY-method}
-\alias{prune_taxa,character,XStringSet-method}
-\alias{prune_taxa,character,otu_table-method}
-\alias{prune_taxa,character,phylo-method}
-\alias{prune_taxa,character,phyloseq-method}
-\alias{prune_taxa,character,sample_data-method}
-\alias{prune_taxa,character,taxonomyTable-method}
 \alias{prune_taxa,logical,ANY-method}
+\alias{prune_taxa,character,phylo-method}
+\alias{prune_taxa,character,otu_table-method}
+\alias{prune_taxa,character,sample_data-method}
+\alias{prune_taxa,character,phyloseq-method}
+\alias{prune_taxa,character,taxonomyTable-method}
+\alias{prune_taxa,character,XStringSet-method}
 \title{Prune unwanted OTUs / taxa from a phylogenetic object.}
 \usage{
 prune_taxa(taxa, x)
@@ -68,4 +68,3 @@ identical(x1, x2)
 
  \href{http://cran.at.r-project.org/web/packages/picante/index.html}{prune.sample}
 }
-

@@ -29,9 +29,6 @@ data(enterotype)
 ig <- make_network(enterotype, "samples", max.dist=0.3)
 plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 }
-\author{
-Arumugam, M., Raes, J., et al.
-}
 \references{
 Arumugam, M., et al. (2011). Enterotypes of the human gut microbiome.
 
@@ -44,5 +41,7 @@ OTU-clustered data was downloaded from the publicly-accessible:
 
 \url{http://www.bork.embl.de/Docu/Arumugam_et_al_2011/downloads.html}
 }
+\author{
+Arumugam, M., Raes, J., et al.
+}
 \keyword{data}
-

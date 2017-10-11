@@ -27,4 +27,3 @@ taxa_sums(esophagus)
 \seealso{
 \code{\link{sample_sums}}, \code{\link{rowSums}}, \code{\link{colSums}}
 }
-

@@ -44,4 +44,3 @@ non-trivial \code{otu_table}.
 \code{\link{otu_table}}
 }
 \keyword{internal}
-

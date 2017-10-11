@@ -168,4 +168,3 @@ import_biom(rich_sparse_biom, parseFunction=parse_taxonomy_greengenes)
 
 \code{\link[Biostrings]{XStringSet-io}}
 }
-

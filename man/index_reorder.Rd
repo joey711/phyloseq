@@ -27,4 +27,3 @@ Force index order of phyloseq objects
 ## GP = index_reorder(GlobalPatterns)
 }
 \keyword{internal}
-

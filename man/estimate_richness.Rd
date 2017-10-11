@@ -61,4 +61,3 @@ Check out the custom plotting function, \code{\link{plot_richness}},
  
  \code{\link[vegan]{fisherfit}}
 }
-

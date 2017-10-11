@@ -67,4 +67,3 @@ plot_tree(tip_glom(esophagus, h=0.2), label.tips="taxa_names", size="abundance",
 
 \code{\link[ape]{phylo}}
 }
-

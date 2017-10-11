@@ -70,9 +70,6 @@ data(soilrep)
 man.col <- c(WC="red", WU="brown", UC="blue", UU="darkgreen")
 plot_richness(soilrep, x="Treatment", color="Treatment", measures=c("Observed", "Chao1", "Shannon"))
 }
-\author{
-Jizhong Zhou, et al.
-}
 \references{
 Zhou, J., Wu, L., Deng, Y., Zhi, X., Jiang, Y.-H., Tu, Q., Xie, J., et al. 
  Reproducibility and quantitation of amplicon sequencing-based detection. 
@@ -80,5 +77,7 @@ Zhou, J., Wu, L., Deng, Y., Zhi, X., Jiang, Y.-H., Tu, Q., Xie, J., et al.
 
 The article can be accessed online at \url{http://www.nature.com/ismej/journal/v5/n8/full/ismej201111a.html}
 }
+\author{
+Jizhong Zhou, et al.
+}
 \keyword{data}
-

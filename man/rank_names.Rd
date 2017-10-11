@@ -30,4 +30,3 @@ rank_names(enterotype)
  \code{\link{taxa_names}}
  \code{\link{sample_names}}
 }
-

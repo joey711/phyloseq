@@ -2,8 +2,8 @@
 % Please edit documentation in R/assignment-methods.R
 \docType{methods}
 \name{phy_tree<-}
-\alias{assign-phy_tree}
 \alias{phy_tree<-}
+\alias{assign-phy_tree}
 \alias{phy_tree<-,phyloseq,phylo-method}
 \alias{phy_tree<-,phyloseq,phyloseq-method}
 \title{Assign a (new) phylogenetic tree to \code{x}}
@@ -32,4 +32,3 @@ ex2b <- ex2a
 phy_tree(ex2b) <- phy_tree(esophagus)
 identical(ex2a, ex2b)
 }
-

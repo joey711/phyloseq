@@ -70,4 +70,3 @@ For RDP pipeline, see:
 
 \code{\link{import_RDP_otu}}
 }
-

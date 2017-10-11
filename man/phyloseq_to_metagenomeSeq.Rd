@@ -39,4 +39,3 @@ tutorials for more details.
  \code{\link[metagenomeSeq]{MRtable}}
  \code{\link[metagenomeSeq]{MRfulltable}}
 }
-

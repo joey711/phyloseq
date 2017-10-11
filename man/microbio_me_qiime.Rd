@@ -96,4 +96,3 @@ See \code{\link{download.file}} and \code{\link{url}}
  
  \code{\link{import_qiime}}
 }
-

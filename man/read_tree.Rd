@@ -48,4 +48,3 @@ read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phylos
  
 \code{\link[ape]{read.nexus}}
 }
-

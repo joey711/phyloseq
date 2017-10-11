@@ -32,4 +32,3 @@ analysis.
 # # # sapply(SM, class)
 }
 \keyword{internal}
-

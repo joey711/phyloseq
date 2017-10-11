@@ -1695,6 +1695,8 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 #' 
 #' @importFrom ape ladderize
 #' @importFrom ape reorder.phylo
+#' @importFrom ape node.depth.edgelength
+#' @importFrom ape node.height
 #' 
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
@@ -1740,29 +1742,13 @@ tree_layout = function(phy, ladderize=FALSE){
   # Descending order of left-hand side of edge (the ancestor to the node)
   z = reorder.phylo(phy, order="postorder")
   # Initialize some characteristics of the tree.
-  Nedge = nrow(phy$edge)[1]
-  Nnode = phy$Nnode
   Ntip = length(phy$tip.label)
   ROOT = Ntip + 1
-  TIPS = phy$edge[(phy$edge[, 2] <= Ntip), 2]
-  NODES = (ROOT):(Ntip + Nnode)
   nodelabels = phy$node.label
-  # Call phyloseq-internal function that in-turn calls ape's internal
-  # horizontal position function, in C, using the re-ordered phylo object.
-  xx = ape_node_depth_edge_length(Ntip, Nnode, z$edge, Nedge, z$edge.length)
-  # Initialize `yy`, before passing to ape internal function in C.
-  yy <- numeric(Ntip + Nnode)
-  yy[TIPS] <- 1:Ntip
-  # Define the ape_node_height wrapping function
-  ape_node_height <- function(Ntip, Nnode, edge, Nedge, yy){
-    .C(ape:::node_height, PACKAGE="ape",
-       as.integer(Ntip), as.integer(Nnode),
-       as.integer(edge[, 1]), as.integer(edge[, 2]),
-       as.integer(Nedge), as.double(yy))[[6]]
-  }
-  # The call in ape
-  #yy <- .nodeHeight(Ntip, Nnode, z$edge, Nedge, yy)
-  yy <- ape_node_height(Ntip, Nnode, z$edge, Nedge, yy)
+  # Horizontal positions
+  xx = node.depth.edgelength(phy)
+  # vertical positions
+  yy = node.height(phy = phy, clado.style = FALSE)
   # Initialize an edge data.table 
   # Don't set key, order matters
   edgeDT = data.table(phy$edge, edge.length=phy$edge.length, OTU=NA_character_)

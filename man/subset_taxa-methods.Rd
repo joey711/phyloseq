@@ -38,4 +38,3 @@ somewhere in the expression.
 \seealso{
 \code{\link{subset_samples}}
 }
-

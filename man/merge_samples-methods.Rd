@@ -3,9 +3,9 @@
 \docType{methods}
 \name{merge_samples}
 \alias{merge_samples}
+\alias{merge_samples,sample_data-method}
 \alias{merge_samples,otu_table-method}
 \alias{merge_samples,phyloseq-method}
-\alias{merge_samples,sample_data-method}
 \title{Merge samples based on a sample variable or factor.}
 \usage{
 merge_samples(x, group, fun=mean)
@@ -70,4 +70,3 @@ otu_table(mGP10)["Ocean", ]
 \seealso{
 \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
 }
-

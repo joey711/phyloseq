@@ -30,4 +30,3 @@ sample_variables(enterotype)
  \code{\link{taxa_names}}
  \code{\link{sample_names}}
 }
-

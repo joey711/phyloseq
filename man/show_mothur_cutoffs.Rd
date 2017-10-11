@@ -26,4 +26,3 @@ for instance, a list or shared file.
 \seealso{
 \code{\link{import_mothur}}
 }
-

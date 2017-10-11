@@ -28,4 +28,3 @@ sample_sums(esophagus)
 \seealso{
 \code{\link{taxa_sums}}, \code{\link{rowSums}}, \code{\link{colSums}}
 }
-

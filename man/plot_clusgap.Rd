@@ -56,4 +56,3 @@ plot_clusgap(gs.pam.RU)
 
 \code{\link[ggplot2]{ggplot}}
 }
-

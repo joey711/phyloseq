@@ -32,4 +32,3 @@ Different than relevel.
 # chunkReOrder(LETTERS, "g") 
 }
 \keyword{internal}
-

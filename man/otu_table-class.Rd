@@ -21,4 +21,3 @@ to the \code{otu_table} class, including square-bracket, \code{\link{t}}, etc.
 \item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
  }
 }
-

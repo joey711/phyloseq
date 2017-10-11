@@ -66,4 +66,3 @@ and post it as an issue on the
 \seealso{
 \code{\link{import_usearch_uc}}
 }
-

@@ -559,6 +559,7 @@ setMethod("UniFrac", "phyloseq", function(physeq, weighted=FALSE, normalized=TRU
 #' @importFrom ape prop.part
 #' @importFrom ape reorder.phylo
 #' @importFrom ape node.depth
+#' @importFrom ape node.depth.edgelength
 #' @keywords internal
 #' @import foreach
 fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE){
@@ -631,11 +632,7 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	  z = reorder.phylo(tree, order="postorder")
 	  # Call phyloseq-internal function that in-turn calls ape's internal
 	  # horizontal position function, in C, using the re-ordered phylo object, `z`
-	  tipAges = ape_node_depth_edge_length(Ntip = length(tree$tip.label),
-	                                       Nnode = tree$Nnode, 
-	                                       edge = z$edge, 
-	                                       Nedge = nrow(tree$edge)[1],
-	                                       edge.length = z$edge.length)
+	  tipAges = node.depth.edgelength(tree)
 	  # Keep only the tips, and add the tip labels in case `z` order differs from `tree`
 	  tipAges <- tipAges[1:length(tree$tip.label)]
 	  names(tipAges) <- z$tip.label	

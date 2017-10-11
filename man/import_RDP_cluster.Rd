@@ -46,4 +46,3 @@ coerced to an \code{\link{otu_table}} object, and returned.
 \references{
 \url{http://pyro.cme.msu.edu/index.jsp}
 }
-

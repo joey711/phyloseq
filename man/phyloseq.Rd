@@ -46,4 +46,3 @@ identical(x1, esophagus)
 \seealso{
 \code{\link{merge_phyloseq}}
 }
-

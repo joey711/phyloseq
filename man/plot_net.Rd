@@ -114,4 +114,3 @@ Original network plotting functions:
 
  \code{\link{plot_network}}
 }
-

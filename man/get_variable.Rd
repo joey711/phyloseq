@@ -32,4 +32,3 @@ get_variable(GlobalPatterns, "SampleType")
 
  \code{\link{sample_variables}}
 }
-

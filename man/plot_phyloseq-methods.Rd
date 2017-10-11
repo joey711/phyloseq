@@ -45,4 +45,3 @@ plot_phyloseq(esophagus)
  \code{\link{plot_bar}}
  \code{\link{plot_richness}}
 }
-
