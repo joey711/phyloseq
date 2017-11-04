@@ -109,4 +109,3 @@ This code was adapted from a repo original hosted on GitHub by Scott Chamberlain
 \seealso{
 \code{\link{make_network}}
 }
-

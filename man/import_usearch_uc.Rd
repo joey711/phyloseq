@@ -86,4 +86,3 @@ import_usearch_uc(usearchfile)
 
 \code{\link{import_qiime}}
 }
-

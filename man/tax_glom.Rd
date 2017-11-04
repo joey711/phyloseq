@@ -70,4 +70,3 @@ because they should be meaningless following agglomeration.
 
 \code{\link{merge_taxa}}
 }
-

@@ -46,4 +46,3 @@ suggested function for importing QIIME-produced data files.
 
 \code{\link{import_env_file}}
 }
-

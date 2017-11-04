@@ -21,4 +21,3 @@ Import mothur shared file and return an otu_table
 \code{\link{import_mothur}}
 }
 \keyword{internal}
-

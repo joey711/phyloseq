@@ -52,4 +52,3 @@ plot_ordination(GP, ordinate(GP, "DCA"), type="scree")
 
  \href{http://joey711.github.io/phyloseq/plot_ordination-examples}{phyloseq online tutorials}
 }
-

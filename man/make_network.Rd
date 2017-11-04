@@ -94,4 +94,3 @@ ij <- make_network(esophagus, "samples", "unifrac", weighted=TRUE)
 \seealso{
 \code{\link{plot_network}}
 }
-

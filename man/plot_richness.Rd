@@ -131,4 +131,3 @@ plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSim
 There are many more interesting examples at the
 \href{http://joey711.github.io/phyloseq/plot_richness-examples}{phyloseq online tutorials}.
 }
-

@@ -38,4 +38,3 @@ Import mothur list and group files and return an otu_table
 \code{\link{import_mothur}}
 }
 \keyword{internal}
-

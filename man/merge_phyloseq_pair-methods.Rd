@@ -3,11 +3,11 @@
 \docType{methods}
 \name{merge_phyloseq_pair}
 \alias{merge_phyloseq_pair}
-\alias{merge_phyloseq_pair,XStringSet,XStringSet-method}
 \alias{merge_phyloseq_pair,otu_table,otu_table-method}
-\alias{merge_phyloseq_pair,phylo,phylo-method}
-\alias{merge_phyloseq_pair,sample_data,sample_data-method}
 \alias{merge_phyloseq_pair,taxonomyTable,taxonomyTable-method}
+\alias{merge_phyloseq_pair,sample_data,sample_data-method}
+\alias{merge_phyloseq_pair,phylo,phylo-method}
+\alias{merge_phyloseq_pair,XStringSet,XStringSet-method}
 \title{Merge pair of phyloseq component data objects of the same class.}
 \usage{
 merge_phyloseq_pair(x, y)
@@ -76,4 +76,3 @@ Special note: non-identical trees are merged using \code{\link[ape]{consensus}}.
 \seealso{
 \code{\link{merge_phyloseq}} \code{\link{merge_taxa}}
 }
-

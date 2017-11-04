@@ -55,4 +55,3 @@ must be named to match the results of
  \code{\link{refseq}},
  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 }
-

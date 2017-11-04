@@ -2,13 +2,13 @@
 % Please edit documentation in R/assignment-methods.R
 \docType{methods}
 \name{sample_names<-}
-\alias{assign-sample_names}
 \alias{sample_names<-}
+\alias{assign-sample_names}
 \alias{sample_names<-,ANY,ANY-method}
 \alias{sample_names<-,ANY,character-method}
 \alias{sample_names<-,otu_table,character-method}
-\alias{sample_names<-,phyloseq,character-method}
 \alias{sample_names<-,sample_data,character-method}
+\alias{sample_names<-,phyloseq,character-method}
 \title{Replace OTU identifier names}
 \usage{
 sample_names(x) <- value
@@ -48,4 +48,3 @@ sample_names(esophagus)
 # sample_names(esophagus) <- sample(c(TRUE, FALSE), nsamples(esophagus), TRUE)
 # sample_names(esophagus) <- sample(sample_names(esophagus), nsamples(esophagus)-1, FALSE)
 }
-

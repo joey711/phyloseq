@@ -4,9 +4,9 @@
 \name{sample_names}
 \alias{sample_names}
 \alias{sample_names,ANY-method}
-\alias{sample_names,otu_table-method}
 \alias{sample_names,phyloseq-method}
 \alias{sample_names,sample_data-method}
+\alias{sample_names,otu_table-method}
 \title{Get sample names.}
 \usage{
 sample_names(physeq)
@@ -36,4 +36,3 @@ sample_names(esophagus)
 \seealso{
 \code{\link{taxa_names}}, \code{\link{nsamples}}
 }
-

@@ -36,4 +36,3 @@ get_taxa_unique(GlobalPatterns, "Family")
  \code{\link{taxa_names}}
  \code{\link{sample_names}}
 }
-

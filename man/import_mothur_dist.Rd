@@ -29,4 +29,3 @@ dealing with distance matrices.
 \seealso{
 \code{\link{import_mothur}}
 }
-

@@ -70,4 +70,3 @@ and transpose (\code{\link[phyloseq]{t}}) if needed.
 \keyword{agglomerate}
 \keyword{cluster}
 \keyword{tree}
-

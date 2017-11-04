@@ -3,11 +3,11 @@
 \docType{methods}
 \name{cca.phyloseq}
 \alias{cca.phyloseq}
+\alias{rda.phyloseq}
+\alias{cca.phyloseq,phyloseq,formula-method}
 \alias{cca.phyloseq,otu_table,ANY-method}
 \alias{cca.phyloseq,otu_table-method}
 \alias{cca.phyloseq,phyloseq,NULL-method}
-\alias{cca.phyloseq,phyloseq,formula-method}
-\alias{rda.phyloseq}
 \title{Constrained Correspondence Analysis and Redundancy Analysis.}
 \usage{
 cca.phyloseq(physeq, formula = NULL, method = "CCA", ...)
@@ -57,4 +57,3 @@ to these methods is optional, and results in an unconstrained ordination.
  \code{\link[vegan]{rda}}, \code{\link[vegan]{cca}}
 }
 \keyword{internal}
-

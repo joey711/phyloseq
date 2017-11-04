@@ -29,4 +29,3 @@ data(GlobalPatterns)
 otu_table(GlobalPatterns)
 t( otu_table(GlobalPatterns) )
 }
-

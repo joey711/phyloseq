@@ -50,4 +50,3 @@ head(sample_data(soilrep))
 \code{\link{phy_tree}}, \code{\link{tax_table}}, \code{\link{otu_table}}
  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 }
-

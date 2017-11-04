@@ -153,4 +153,3 @@ Nature Methods, 2010; doi:10.1038/nmeth.f.303
 
 \code{\link[Biostrings]{XStringSet-io}}
 }
-

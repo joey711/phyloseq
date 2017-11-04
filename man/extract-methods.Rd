@@ -2,10 +2,10 @@
 % Please edit documentation in R/extract-methods.R
 \docType{methods}
 \name{[,otu_table,ANY,ANY,ANY-method}
-\alias{[,XStringSet,character,ANY,ANY-method}
 \alias{[,otu_table,ANY,ANY,ANY-method}
 \alias{[,sample_data,ANY,ANY,ANY-method}
 \alias{[,taxonomyTable,ANY,ANY,ANY-method}
+\alias{[,XStringSet,character,ANY,ANY-method}
 \title{Method extensions to extraction operator for phyloseq objects.}
 \usage{
 \S4method{[}{otu_table,ANY,ANY,ANY}(x, i, j, ..., drop = TRUE)
@@ -77,4 +77,3 @@ nrow(otu_table(esophagus)[1:5, ])
 \seealso{
 \code{\link[base]{Extract}}
 }
-

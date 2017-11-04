@@ -70,4 +70,3 @@ print(p)
 
  \code{\link{merge}}
 }
-

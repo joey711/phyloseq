@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.19.1
-Date: 2016-12-29
+Version: 1.21.3
+Date: 2017-11-04
 Title: Handling and analysis of high-throughput microbiome
     census data
 Description: phyloseq provides a set of classes and tools
@@ -12,13 +12,14 @@ Author: Paul J. McMurdie <joey711@gmail.com>,
     contributions from Gregory Jordan and Scott Chamberlain
 License: AGPL-3
 Imports:
-    BiocGenerics (>= 0.18.0),
     ade4 (>= 1.7.4),
-    ape (>= 3.4),
+    ape (>= 5.0),
+    Biobase (>= 2.36.2),
+    BiocGenerics (>= 0.22.0),
     biomformat (>= 1.0.0),
     Biostrings (>= 2.40.0),
     cluster (>= 2.0.4),
-    data.table (>= 1.9.6),
+    data.table (>= 1.10.4),
     foreach (>= 1.4.3),
     ggplot2 (>= 2.1.0),
     igraph (>= 1.0.1),
@@ -27,18 +28,17 @@ Imports:
     plyr (>= 1.8.3),
     reshape2 (>= 1.4.1),
     scales (>= 0.4.0),
-    vegan (>= 2.3.5),
-    Biobase
+    vegan (>= 2.4)
 Depends:
     R (>= 3.3.0)
 Suggests:
-    BiocStyle (>= 2.0.0),
-    DESeq2 (>= 1.12.0),
-    genefilter (>= 1.54),
-    testthat (>= 1.0.2),
-    knitr (>= 1.13),
+    BiocStyle (>= 2.4),
+    DESeq2 (>= 1.16.1),
+    genefilter (>= 1.58),
+    knitr (>= 1.16),
     metagenomeSeq (>= 1.14),
-    rmarkdown (>= 0.9.6)
+    rmarkdown (>= 1.6),
+    testthat (>= 1.0.2)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.10)
 biocViews: Sequencing, Microbiome, Metagenomics,
@@ -73,4 +73,4 @@ Collate:
     'extend_DESeq2.R'
     'phylo-class.R'
     'extend_metagenomeSeq.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

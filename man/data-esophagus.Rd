@@ -32,9 +32,6 @@ show_mothur_cutoffs(mothlist)
 cutoff    <- "0.10"
 esophman  <- import_mothur(mothlist, mothgroup, mothtree, cutoff)	
 }
-\author{
-Pei et al. \email{zhiheng.pei@med.nyu.edu}
-}
 \references{
 Pei, Z., Bini, E. J., Yang, L., Zhou, M., Francois, F., & Blaser, M. J. (2004). 
 Bacterial biota in the human distal esophagus.
@@ -45,5 +42,7 @@ mothur-processed files and the sequence data can be downloaded from a zip-file,
 along with additional description, from the following URL:
 \url{http://www.mothur.org/wiki/Esophageal_community_analysis}
 }
+\author{
+Pei et al. \email{zhiheng.pei@med.nyu.edu}
+}
 \keyword{data}
-

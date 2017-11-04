@@ -33,4 +33,3 @@ prune_taxa(wh2, testOTU)
 \code{\link{topk}}, \code{\link{topf}},
  \code{\link{topp}}, \code{\link{rm_outlierf}}
 }
-

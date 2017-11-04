@@ -37,4 +37,3 @@ plot_tree(esophagus, nodelabf=nodeplotblank)
 
 \code{\link{plot_tree}}
 }
-

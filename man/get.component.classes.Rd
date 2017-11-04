@@ -19,4 +19,3 @@ when called, which can then be used for tests of component data types, etc.
 #get.component.classes()
 }
 \keyword{internal}
-

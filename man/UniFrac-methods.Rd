@@ -171,4 +171,3 @@ communities.'' Appl Environ Microbiol. 2005 71 (12):8228-35.
 
 \code{unifrac} in the picante package.
 }
-

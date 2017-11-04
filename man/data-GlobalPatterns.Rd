@@ -2,8 +2,8 @@
 % Please edit documentation in R/allData.R
 \docType{data}
 \name{data-GlobalPatterns}
-\alias{GlobalPatterns}
 \alias{data-GlobalPatterns}
+\alias{GlobalPatterns}
 \title{(Data) Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample (2011)}
 \description{
 Published in PNAS in early 2011. This work compared the microbial 
@@ -28,9 +28,6 @@ for inclusion in this package.
 data(GlobalPatterns)
 plot_richness(GlobalPatterns, x="SampleType", measures=c("Observed", "Chao1", "Shannon"))
 }
-\author{
-Caporaso, J. G., et al.
-}
 \references{
 Caporaso, J. G., et al. (2011). 
 Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample.
@@ -46,5 +43,7 @@ The examples on the phyloseq wiki page for \code{\link{plot_ordination}} show
 
 \url{https://github.com/joey711/phyloseq/wiki/plot_ordination}
 }
+\author{
+Caporaso, J. G., et al.
+}
 \keyword{data}
-

@@ -38,4 +38,3 @@ get_taxa(esophagus, "B")
  \code{\link{taxa_names}}
  \code{\link{sample_names}}
 }
-

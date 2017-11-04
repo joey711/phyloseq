@@ -2,12 +2,12 @@
 % Please edit documentation in R/assignment-methods.R
 \docType{methods}
 \name{tax_table<-}
-\alias{assign-tax_table}
 \alias{tax_table<-}
-\alias{tax_table<-,phyloseq,ANY-method}
+\alias{assign-tax_table}
 \alias{tax_table<-,phyloseq,taxonomyTable-method}
-\alias{tax_table<-,taxonomyTable,ANY-method}
+\alias{tax_table<-,phyloseq,ANY-method}
 \alias{tax_table<-,taxonomyTable,taxonomyTable-method}
+\alias{tax_table<-,taxonomyTable,ANY-method}
 \title{Assign a (new) Taxonomy Table to \code{x}}
 \usage{
 tax_table(x) <- value
@@ -50,4 +50,3 @@ Assign a (new) Taxonomy Table to \code{x}
 # tax_table(ex2c) <- as(tax_table(ex2b), "matrix")
 # identical(ex2a, ex2c)
 }
-

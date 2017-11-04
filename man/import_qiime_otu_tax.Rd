@@ -80,4 +80,3 @@ a switch to a sparse matrix representation of the abundance
 
 \code{\link{import_env_file}}
 }
-

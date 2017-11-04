@@ -2,15 +2,15 @@
 % Please edit documentation in R/assignment-methods.R
 \docType{methods}
 \name{taxa_names<-}
-\alias{assign-taxa_names}
 \alias{taxa_names<-}
+\alias{assign-taxa_names}
 \alias{taxa_names<-,ANY,ANY-method}
 \alias{taxa_names<-,ANY,character-method}
-\alias{taxa_names<-,XStringSet,character-method}
 \alias{taxa_names<-,otu_table,character-method}
-\alias{taxa_names<-,phylo,character-method}
-\alias{taxa_names<-,phyloseq,character-method}
 \alias{taxa_names<-,taxonomyTable,character-method}
+\alias{taxa_names<-,phylo,character-method}
+\alias{taxa_names<-,XStringSet,character-method}
+\alias{taxa_names<-,phyloseq,character-method}
 \title{Replace OTU identifier names}
 \usage{
 taxa_names(x) <- value
@@ -54,4 +54,3 @@ taxa_names(esophagus)
 # taxa_names(esophagus) <- sample(c(TRUE, FALSE), ntaxa(esophagus), TRUE)
 # taxa_names(esophagus) <- sample(taxa_names(esophagus), ntaxa(esophagus)-5, FALSE)
 }
-

@@ -33,4 +33,3 @@ workspace, and the tree component can be exported as Nexus format
 # data(esophagus)
 # export_env_file(esophagus, "~/Desktop/esophagus.txt")
 }
-

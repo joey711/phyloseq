@@ -40,4 +40,3 @@ Build a \code{\link{tax_table}} from a named possibly-jagged list
 \code{\link{import_biom}}
  \code{\link{import_qiime}}
 }
-

@@ -33,4 +33,3 @@ Import mothur constaxonomy file and return a taxonomyTable
 \code{\link{phyloseq}}
 }
 \keyword{internal}
-

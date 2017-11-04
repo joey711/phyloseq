@@ -4,8 +4,8 @@
 \name{prune_samples}
 \alias{prune_samples}
 \alias{prune_samples,character,otu_table-method}
-\alias{prune_samples,character,phyloseq-method}
 \alias{prune_samples,character,sample_data-method}
+\alias{prune_samples,character,phyloseq-method}
 \alias{prune_samples,logical,ANY-method}
 \title{Define a subset of samples to keep in a phyloseq object.}
 \usage{
@@ -47,4 +47,3 @@ by defining those you want to keep.
 \seealso{
 \code{\link{subset_samples}}
 }
-

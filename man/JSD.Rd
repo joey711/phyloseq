@@ -39,10 +39,6 @@ the analysis of the \code{\link{enterotype}} dataset.
 # p <- plot_ordination(enterotype, ent.PCoA, color="Enterotype", shape="SeqTech") 
 # (p <- p + geom_point(size=5, alpha=0.5))
 }
-\author{
-Susan Holmes \email{susan@stat.stanford.edu}.
- Adapted for phyloseq by Paul J. McMurdie.
-}
 \references{
 Jensen-Shannon Divergence and Hilbert space embedding.  
 Bent Fuglede and Flemming Topsoe University of Copenhagen,
@@ -56,5 +52,8 @@ Department of Mathematics
 
  \url{http://en.wikipedia.org/wiki/Jensen-Shannon_divergence}
 }
+\author{
+Susan Holmes \email{susan@stat.stanford.edu}.
+ Adapted for phyloseq by Paul J. McMurdie.
+}
 \keyword{internal}
-

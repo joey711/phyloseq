@@ -111,4 +111,3 @@ Also see the general wrapping function:
 
 \code{\link{plot_phyloseq}}
 }
-

@@ -3,11 +3,11 @@
 \docType{methods}
 \name{merge_taxa}
 \alias{merge_taxa}
-\alias{merge_taxa,XStringSet-method}
-\alias{merge_taxa,otu_table-method}
-\alias{merge_taxa,phylo-method}
 \alias{merge_taxa,phyloseq-method}
 \alias{merge_taxa,sample_data-method}
+\alias{merge_taxa,otu_table-method}
+\alias{merge_taxa,phylo-method}
+\alias{merge_taxa,XStringSet-method}
 \alias{merge_taxa,taxonomyTable-method}
 \title{Merge a subset of the species in \code{x} into one species/taxa/OTU.}
 \usage{
@@ -75,4 +75,3 @@ otutree1 <- merge_taxa(otutree0, 1:8, 2)
 \code{\link{tip_glom}}, \code{\link{tax_glom}}, \code{\link{merge_phyloseq}},
  \code{\link{merge_samples}}
 }
-

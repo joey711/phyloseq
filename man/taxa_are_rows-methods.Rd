@@ -28,4 +28,3 @@ Access taxa_are_rows slot from otu_table objects.
 \seealso{
 \code{\link{otu_table}}
 }
-

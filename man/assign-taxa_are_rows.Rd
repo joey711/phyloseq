@@ -2,8 +2,8 @@
 % Please edit documentation in R/assignment-methods.R
 \docType{methods}
 \name{taxa_are_rows<-}
-\alias{assign-taxa_are_rows}
 \alias{taxa_are_rows<-}
+\alias{assign-taxa_are_rows}
 \alias{taxa_are_rows<-,otu_table,logical-method}
 \alias{taxa_are_rows<-,phyloseq,logical-method}
 \title{Manually change taxa_are_rows through assignment.}
@@ -30,4 +30,3 @@ abundance table contained in object \code{x}.
  taxa_are_rows(esophagus)
  taxa_are_rows(otu_table(esophagus))
 }
-

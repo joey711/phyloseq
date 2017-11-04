@@ -3,12 +3,12 @@
 \docType{methods}
 \name{mt}
 \alias{mt}
+\alias{mt,phyloseq,ANY-method}
+\alias{mt,otu_table,integer-method}
+\alias{mt,otu_table,numeric-method}
+\alias{mt,otu_table,logical-method}
 \alias{mt,otu_table,character-method}
 \alias{mt,otu_table,factor-method}
-\alias{mt,otu_table,integer-method}
-\alias{mt,otu_table,logical-method}
-\alias{mt,otu_table,numeric-method}
-\alias{mt,phyloseq,ANY-method}
 \title{Multiple testing of taxa abundance according to sample categories/classes}
 \usage{
 mt(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
@@ -90,4 +90,3 @@ head(res, 10)
 
 \code{\link[stats]{p.adjust}}
 }
-

@@ -182,4 +182,3 @@ plot_tree(esophagus, size="abundance", color="samples", base.spacing=0.03)
 There are many useful examples of phyloseq tree graphics in the
 \href{http://joey711.github.io/phyloseq/plot_tree-examples}{phyloseq online tutorials}.
 }
-

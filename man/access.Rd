@@ -46,4 +46,3 @@ be set to \code{TRUE} if an error is desired.
 \seealso{
 \code{\link{getslots.phyloseq}}, \code{\link{merge_phyloseq}}
 }
-

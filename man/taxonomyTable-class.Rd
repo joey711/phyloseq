@@ -13,4 +13,3 @@ Row indices represent taxa, columns represent taxonomic classifiers.
    \item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
 }
 }
-

@@ -45,4 +45,3 @@ nodeplotdefault(3, -0.4)
 
 \code{\link{plot_tree}}
 }
-

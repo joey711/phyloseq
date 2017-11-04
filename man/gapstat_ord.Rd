@@ -67,4 +67,3 @@ gs = gapstat_ord(sord, axes=1:3, verbose=FALSE)
 plot_clusgap(gs)
 print(gs, method="Tibs2001SEmax")
 }
-

@@ -29,4 +29,3 @@ into \emph{phyloseq}. You will need both a group file and a list file for that e
 \code{\link{import_mothur}}
 }
 \keyword{internal}
-

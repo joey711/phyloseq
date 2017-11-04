@@ -46,4 +46,3 @@ contain reference sequences (the component data type you are trying to access in
  \code{\link{phy_tree}},
  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 }
-

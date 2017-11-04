@@ -64,4 +64,3 @@ function that utilizes performance enhancements from standard
 \code{\link{data.table}} magic as well as \code{\link{ape-package}}
 internal C code.
 }
-

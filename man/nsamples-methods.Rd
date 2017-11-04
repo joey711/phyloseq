@@ -4,8 +4,8 @@
 \name{nsamples}
 \alias{nsamples}
 \alias{nsamples,ANY-method}
-\alias{nsamples,otu_table-method}
 \alias{nsamples,phyloseq-method}
+\alias{nsamples,otu_table-method}
 \alias{nsamples,sample_data-method}
 \title{Get the number of samples.}
 \usage{
@@ -42,4 +42,3 @@ nsamples(physeq1)
 \code{\link{taxa_names}}, \code{\link{sample_names}},
  \code{\link{ntaxa}}
 }
-

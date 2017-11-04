@@ -3,8 +3,8 @@
 \docType{methods}
 \name{distance}
 \alias{distance}
-\alias{distance,otu_table,character-method}
 \alias{distance,phyloseq,ANY-method}
+\alias{distance,otu_table,character-method}
 \alias{distance,phyloseq,character-method}
 \title{Calculate distance, dissimilarity}
 \usage{
@@ -107,4 +107,3 @@ help("distance")
  \code{\link[vegan]{designdist}},
  \code{\link{dist}}.
 }
-

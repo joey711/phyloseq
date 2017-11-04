@@ -48,4 +48,3 @@ The constructor, \code{\link{phyloseq}},
  constructor/accessors \code{\link{otu_table}}, \code{\link{sample_data}},
  \code{\link{tax_table}}, \code{\link{phy_tree}}, and \code{\link{refseq}}.
 }
-

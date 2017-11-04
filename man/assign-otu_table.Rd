@@ -2,10 +2,10 @@
 % Please edit documentation in R/assignment-methods.R
 \docType{methods}
 \name{otu_table<-}
-\alias{assign-otu_table}
 \alias{otu_table<-}
-\alias{otu_table<-,otu_table,otu_table-method}
+\alias{assign-otu_table}
 \alias{otu_table<-,phyloseq,otu_table-method}
+\alias{otu_table<-,otu_table,otu_table-method}
 \alias{otu_table<-,phyloseq,phyloseq-method}
 \title{Assign a new OTU Table to \code{x}}
 \usage{
@@ -43,4 +43,3 @@ Assign a new OTU Table to \code{x}
 # otu_table(ex2c) <- ex2b
 # identical(ex2a, ex2c)
 }
-

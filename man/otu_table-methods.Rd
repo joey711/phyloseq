@@ -3,11 +3,11 @@
 \docType{methods}
 \name{otu_table}
 \alias{otu_table}
-\alias{otu_table,ANY-method}
-\alias{otu_table,data.frame-method}
-\alias{otu_table,matrix-method}
-\alias{otu_table,otu_table-method}
 \alias{otu_table,phyloseq-method}
+\alias{otu_table,otu_table-method}
+\alias{otu_table,matrix-method}
+\alias{otu_table,data.frame-method}
+\alias{otu_table,ANY-method}
 \title{Build or access the otu_table.}
 \usage{
 otu_table(object, taxa_are_rows, errorIfNULL=TRUE)
@@ -56,4 +56,3 @@ object, then the corresponding \code{otu_table} is returned.
 \code{\link{phy_tree}}, \code{\link{sample_data}}, \code{\link{tax_table}}
  \code{\link{phyloseq}}, \code{\link{merge_phyloseq}}
 }
-

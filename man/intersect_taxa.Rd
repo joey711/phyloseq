@@ -30,4 +30,3 @@ strictly common species.
 \code{\link{Reduce}}, \code{\link{intersect}}
 }
 \keyword{internal}
-

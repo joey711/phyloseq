@@ -40,4 +40,3 @@ into \emph{phyloseq}.
 \code{\link{show_mothur_cutoffs}}, \code{\link{import_mothur}}
 }
 \keyword{internal}
-

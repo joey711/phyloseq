@@ -33,4 +33,3 @@ the ape package if possible and available.
 \code{\link[ape]{phylo}}
 }
 \keyword{internal}
-

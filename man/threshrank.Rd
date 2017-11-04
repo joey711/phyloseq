@@ -40,4 +40,3 @@ identical(x1, x3)
 \seealso{
 \code{\link{transform_sample_counts}}, \code{\link{rank}}, \code{\link{threshrankfun}}
 }
-
