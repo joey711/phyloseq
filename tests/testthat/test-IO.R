@@ -319,8 +319,9 @@ test_that("The specialized read_tree_greengenes function works:", {
   expect_match(x$tip.label, "[[:digit:]]+")
   # All tip/OTU names should be unique
   expect_false(any(duplicated(taxa_names(x))))
-  # The more general read_tree function should fail to read and return NULL
-  expect_is(read_tree(treefile), "NULL")
+  # The more general read_tree function reads, but they are not equal
+  y = read_tree(treefile)
+  expect_false(all.equal(x, y))
 })
 ################################################################################
 # microbio_me_qiime tests

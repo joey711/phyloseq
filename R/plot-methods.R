@@ -1130,7 +1130,7 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   }
   # Add text labels to points
   if( !is.null(label) ){
-    label_map <- aes_string(x=x, y=y, label=label, na.rm=TRUE)
+    label_map <- aes_string(x=x, y=y, label=label)
     p = p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
                       size=2, vjust=1.5, na.rm=TRUE)
   }
