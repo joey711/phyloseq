@@ -1959,6 +1959,49 @@ parse_taxonomy_greengenes <- function(char.vec){
 	}
 	return(taxvec)
 }
+
+parse_taxonomy_silva <- function(char.vec){
+  # Use default to assign names to elements in case problem with greengenes prefix
+  char.vec = parse_taxonomy_default(char.vec)
+  # Check for unassigned taxa
+  if (char.vec["Rank1"] == "Unassigned") {
+    char.vec <- c(Rank1="D_0__Unassigned", Rank2="D_1__Unassigned", Rank3="D_2__Unassigned", Rank4="D_3__Unassigned",
+                  Rank5="D_4__Unassigned", Rank6="D_5__Unassigned", Rank7="D_6__Unassigned")
+  }
+  # Define the meaning of each prefix according to GreenGenes taxonomy
+  Tranks = c(D_0="Kingdom", D_1="Phylum", D_2="Class", D_3="Order", D_4="Family", D_5="Genus", D_6="Species")
+  # Check for prefix using regexp, warn if there were none. trim indices, ti
+  ti = grep("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", char.vec)
+  if( length(ti) == 0L ){
+    warning(
+      "No silva prefixes were found. \n",
+      "Consider using parse_taxonomy_delfault() instead if true for all OTUs. \n",
+      "Dummy ranks may be included among taxonomic ranks now."
+    )
+    # Will want to return without further modifying char.vec
+    taxvec = char.vec
+    # Replace names of taxvec according to prefix, if any present...
+  } else {
+    # Format character vectors for Ambiguous taxa
+    if( length(ti) < 7 ){
+        for (key in names(char.vec)) {
+          if ( char.vec[key] == "Ambiguous_taxa" ) {
+            tax_no <- (as.numeric(substr(key, 5, 5)) - 1)
+            char.vec[key] = sprintf("D_%s__Ambiguous_taxa", tax_no)
+          }
+        }
+      # Reset the trimmed indicies if Ambiguous taxa
+      ti = grep("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", char.vec)
+    }
+    # Remove prefix using sub-"" regexp, call result taxvec
+    taxvec = gsub("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", "", char.vec)
+    # Define the ranks that will be replaced
+    repranks = Tranks[substr(char.vec[ti], 1, 3)]
+    # Replace, being sure to avoid prefixes notK present in Tranks
+    names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
+  }
+  return(taxvec)
+}
 #' @rdname parseTaxonomy-functions
 #' @aliases parse_taxonomy_default
 #' @export
