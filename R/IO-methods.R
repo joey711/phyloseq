@@ -1968,7 +1968,9 @@ parse_taxonomy_greengenes <- function(char.vec){
 	}
 	return(taxvec)
 }
-
+#' @rdname parseTaxonomy-functions
+#' @aliases parse_taxonomy_default
+#' @export
 parse_taxonomy_silva <- function(char.vec){
   # Use default to assign names to elements in case problem with greengenes prefix
   char.vec = parse_taxonomy_default(char.vec)
@@ -1977,7 +1979,7 @@ parse_taxonomy_silva <- function(char.vec){
     char.vec <- c(Rank1="D_0__Unassigned", Rank2="D_1__Unassigned", Rank3="D_2__Unassigned", Rank4="D_3__Unassigned",
                   Rank5="D_4__Unassigned", Rank6="D_5__Unassigned", Rank7="D_6__Unassigned")
   }
-  # Define the meaning of each prefix according to GreenGenes taxonomy
+  # Define the meaning of each prefix according to SILVA taxonomy
   Tranks = c(D_0="Kingdom", D_1="Phylum", D_2="Class", D_3="Order", D_4="Family", D_5="Genus", D_6="Species")
   # Check for prefix using regexp, warn if there were none. trim indices, ti
   ti = grep("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", char.vec)
