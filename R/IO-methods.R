@@ -1861,7 +1861,7 @@ import_biom <- function(BIOMfilename,
 #' These are provided as both example and default functions for
 #' parsing a character vector of taxonomic rank information for a single taxa.
 #' As default functions, these are intended for cases where the data adheres to
-#' the naming convention used by greengenes
+#' the naming convention used by greengenes and silva.
 #' (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
 #' or where the convention is unknown, respectively.
 #' To work, these functions -- and any similar custom function you may want to
@@ -1882,6 +1882,12 @@ import_biom <- function(BIOMfilename,
 #' to the appropriate taxonomic rank name used by greengenes
 #' (e.g. \code{"p__"} at the beginning of an element means that element is 
 #' the name of the phylum to which this OTU belongs).
+#' If you taxonomy data is based on SILVA, the \code{parse_taxonomy_silva} function
+#' clips the first 5 characters that identify rank, and uses these to name the
+#' corresponding element according to the appropriate taxonomic rank name used
+#' by SILVA (e.g. \code{"D_1__"} at the beginning of an element means that element
+#' is the name of the phylum to which this OTU belongs.
+#' Alternatively you can create your own function to parse this data.
 #' Most importantly, the expectations for these functions described above
 #' make them compatible to use during data import,
 #' specifcally the \code{\link{import_biom}} function, but 
@@ -1890,6 +1896,7 @@ import_biom <- function(BIOMfilename,
 #'
 #' @usage parse_taxonomy_default(char.vec)
 #' @usage parse_taxonomy_greengenes(char.vec)
+#' @usage parse_taxonomy_silva(char.vec)
 #' @usage parse_taxonomy_qiime(char.vec)
 #'
 #' @param char.vec (Required). A single character vector of taxonomic
@@ -1917,6 +1924,8 @@ import_biom <- function(BIOMfilename,
 #'  parse_taxonomy_greengenes(taxvec1)
 #'  taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
 #'  parse_taxonomy_qiime(taxvec2)
+#' taxvec3 = c("D_0__Bacteria", "D_1__Firmicutes", "D_2__Bacilli", "D_3__Staphylococcaceae")
+#' parse_taxonomy_silva(taxvec3)
 parse_taxonomy_default = function(char.vec){
 	# Remove any leading empty space
 	char.vec = gsub("^[[:space:]]{1,}", "", char.vec)
