@@ -1971,7 +1971,7 @@ parse_taxonomy_greengenes <- function(char.vec){
 #' @rdname parseTaxonomy-functions
 #' @aliases parse_taxonomy_default
 #' @export
-parse_taxonomy_silva <- function(char.vec){
+parse_taxonomy_silva_128 <- function(char.vec){
   # Use default to assign names to elements in case problem with greengenes prefix
   char.vec = parse_taxonomy_default(char.vec)
   # Check for unassigned taxa
