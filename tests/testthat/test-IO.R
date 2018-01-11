@@ -157,7 +157,7 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	
 	# All the greengenes/sivla entries get trimmed by parse_taxonomy_greengenes/silva
 	expect_that(all(sapply(chvec2, nchar) > sapply(parse_taxonomy_greengenes(chvec2), nchar)), is_true())
-	expect_that(all(sapply(chvec6, nchar) > sapply(parse_taxonomy_silva(chvec6), nchar)), is_true())
+	expect_that(all(sapply(chvec6, nchar) > sapply(parse_taxonomy_silva_128(chvec6), nchar)), is_true())
 	# None of the greengenes/silva entries are trimmed by parse_taxonomy_default
 	expect_that(any(sapply(chvec2, nchar) > sapply(parse_taxonomy_default(chvec2), nchar)), is_false())
 	expect_that(any(sapply(chvec6, nchar) > sapply(parse_taxonomy_default(chvec6), nchar)), is_false())
