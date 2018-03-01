@@ -179,6 +179,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @importFrom vegan estimateR
 #' @importFrom vegan diversity
 #' @importFrom vegan fisher.alpha
+#' @importFrom vegan specnumber
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
