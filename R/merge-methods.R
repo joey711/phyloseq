@@ -478,8 +478,10 @@ setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L){
 #'  the number of samples in \code{x}.
 #'
 #' @param fun (Optional). The function that will be used to merge the values that
-#'  correspond to the same group for each variable. It must take a numeric vector
-#'  as first argument and return a single value. Default is \code{\link[base]{mean}}.
+#'  correspond to the same group for each variable. It must take a vector
+#'  as first argument and return a single value. Default is to propagate the single
+#'  value if all values are the same, and to otherwise coerce to numeric and call
+#'  \code{\link[base]{mean}}.
 #'  Note that this is (currently) ignored for the otu_table, where the equivalent
 #'  function is \code{\link[base]{sum}}, but evaluated via \code{\link[base]{rowsum}}
 #'  for efficiency.
@@ -518,7 +520,8 @@ setGeneric("merge_samples", function(x, group, fun=mean) standardGeneric("merge_
 ################################################################################
 #' @aliases merge_samples,sample_data-method
 #' @rdname merge_samples-methods
-setMethod("merge_samples", signature("sample_data"), function(x, group, fun=mean){
+setMethod("merge_samples", signature("sample_data"), 
+          function(x, group, fun=function(v) ifelse(length(unique(v)) == 1, v[[1]], mean(as.numeric(v))) ){
 	x1    <- data.frame(x)
 
 	# Check class of group and modify if "character"
@@ -531,15 +534,8 @@ setMethod("merge_samples", signature("sample_data"), function(x, group, fun=mean
 		group <- factor(group)
 	}
 
-	# Remove any non-coercable columns.
-	# Philosophy is to keep as much as possible. If it is coercable at all, keep.
-	# Coerce all columns to numeric matrix
-	coercable    <- sapply(x1, canCoerce, "numeric")
-	x2           <- sapply(x1[, coercable], as, "numeric")
-	rownames(x2) <- rownames(x1)	
-	
 	# Perform the aggregation.
-	outdf <- aggregate(x2, list(group), fun)
+	outdf <- aggregate(x1, list(group), fun)
 	# get rownames from the "group" column (always first)
 	# rownames(outdf) <- as.character(outdf[, 1])
 	rownames(outdf) <- levels(group)
@@ -566,7 +562,8 @@ setMethod("merge_samples", signature("otu_table"), function(x, group){
 ################################################################################
 #' @aliases merge_samples,phyloseq-method
 #' @rdname merge_samples-methods
-setMethod("merge_samples", signature("phyloseq"), function(x, group, fun=mean){
+setMethod("merge_samples", signature("phyloseq"), 
+          function(x, group, fun=function(v) ifelse(length(unique(v)) == 1, v[[1]], mean(as.numeric(v))) ){
 
 	# Check if phyloseq object has a sample_data
 	if( !is.null(sample_data(x, FALSE)) ){
