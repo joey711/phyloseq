@@ -317,7 +317,7 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #' Agglomerate taxa of the same type.
 #'
 #' This method merges species that have the same taxonomy at a certain 
-#' taxaonomic rank. 
+#' taxonomic rank. 
 #' Its approach is analogous to \code{\link{tip_glom}}, but uses categorical data
 #' instead of a tree. In principal, other categorical data known for all taxa
 #' could also be used in place of taxonomy,
