@@ -2,10 +2,10 @@ name: "phyloseq"
 output_dir: "."
 output:
   html_document:
-    theme: cosmo
+    theme: flatly
 navbar:
   title: "phyloseq"
-  type: inverse
+  #type: inverse
   left:
     - text: "Installation"
       icon: ion-android-archive
@@ -22,6 +22,10 @@ navbar:
           href: http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531
         - text: "Full Stack Workflow"
           href: http://f1000research.com/articles/5-1492/v1
+        - text: "DADA2"
+          href: https://www.nature.com/articles/nmeth.3869
+        - text: "Amplicon Sequence Variants > OTUs"
+          href: https://www.nature.com/articles/ismej2017119
     - text: "Courses"
       icon: fa-graduation-cap
       href: courses.html

@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -14,32 +14,33 @@
 <title>Importing phyloseq Data</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/default.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -99,37 +100,38 @@ button.code-folding-btn:focus {
 }
 </style>
 
+
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 51px;
+  padding-top: 60px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 
 .section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 .section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 65px;
+  margin-top: -65px;
 }
 </style>
 
@@ -155,7 +157,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -181,7 +182,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
@@ -240,8 +241,9 @@ div.tocify {
 }
 
 .tocify-subheader .tocify-item {
-  font-size: 0.9em;
-  padding-left: 5px;
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -263,7 +265,7 @@ div.tocify {
 
 
 
-<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -303,6 +305,12 @@ div.tocify {
     <li>
       <a href="http://f1000research.com/articles/5-1492/v1">Full Stack Workflow</a>
     </li>
+    <li>
+      <a href="https://www.nature.com/articles/nmeth.3869">DADA2</a>
+    </li>
+    <li>
+      <a href="https://www.nature.com/articles/ismej2017119">Amplicon Sequence Variants &gt; OTUs</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -341,6 +349,23 @@ div.tocify {
       <a href="gap-statistic.html">Gap Statistic</a>
     </li>
     <li class="divider"></li>
+    <li class="dropdown-header">Workflows</li>
+    <li>
+      <a href="http://benjjneb.github.io/dada2/tutorial.html">DADA2</a>
+    </li>
+    <li>
+      <a href="http://f1000research.com/articles/5-1492/v1">Full Stack</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/HMP_import_example.html">HMP-1</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/Restroom-Biogeography.html">Restroom Biogeography</a>
+    </li>
+    <li>
+      <a href="http://joey711.github.io/phyloseq-demo/unifrac.html">UniFrac</a>
+    </li>
+    <li class="divider"></li>
     <li class="dropdown-header">Graphics</li>
     <li>
       <a href="plot_ordination-examples.html">Plot Ordination</a>
@@ -366,7 +391,11 @@ div.tocify {
       </a>
     </li>
     <li>
-      <a href="plot_network-examples.html">Plot Network</a>
+      <a href="plot_network-examples.html">
+        <span class="ion ion-network"></span>
+         
+        Plot Network
+      </a>
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Differential Abundance</li>
@@ -395,10 +424,56 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="https://twitter.com/joey711">
-    <span class="fa fa-twitter"></span>
+  <a href="https://github.com/joey711/phyloseq">
+    <span class="fa fa-github-alt"></span>
      
   </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-twitter"></span>
+     
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://twitter.com/joey711">
+        <span class="fa fa-twitter"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/in/joey711">
+        <span class="fa fa-linkedin-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="http://stackoverflow.com/users/935950/paul-mcmurdie">
+        <span class="fa fa-stack-overflow"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://scholar.google.com/citations?user=nNQ1LtMAAAAJ">
+        <span class="ai ai-google-scholar-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://www.researchgate.net/profile/Paul_Mcmurdie">
+        <span class="ai ai-researchgate-square"></span>
+         
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/joey711/phyloseq">
+        <span class="fa fa-github-alt"></span>
+         
+      </a>
+    </li>
+  </ul>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -427,9 +502,9 @@ div.tocify {
 <div id="examples" class="section level1">
 <h1>Examples</h1>
 <pre class="r"><code>library(&quot;phyloseq&quot;); packageVersion(&quot;phyloseq&quot;)</code></pre>
-<pre><code>## [1] &#39;1.16.2&#39;</code></pre>
+<pre><code>## [1] &#39;1.22.3&#39;</code></pre>
 <pre class="r"><code>library(&quot;ggplot2&quot;); packageVersion(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## [1] &#39;2.1.0&#39;</code></pre>
+<pre><code>## [1] &#39;2.2.1&#39;</code></pre>
 <p>Define a default theme for ggplot graphics.</p>
 <pre class="r"><code>theme_set(theme_bw())</code></pre>
 <div id="phyloseq-ize-data-already-in-r" class="section level2">
@@ -457,58 +532,58 @@ div.tocify {
 otumat = matrix(sample(1:100, 100, replace = TRUE), nrow = 10, ncol = 10)
 otumat</code></pre>
 <pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-##  [1,]   84   67   12    6   86   53   28   74   78    72
-##  [2,]   18   85   16   51   12   78   26   82   72    81
-##  [3,]   31   34    5   64   56   78   62   56   10    28
-##  [4,]   26   26   45   64   22   33   72   56    4    81
-##  [5,]   28   85   98   80   66   31   14   30    9    77
-##  [6,]  100    5   93   60   95   16   36   61   83    95
-##  [7,]   84   98   61    7   76   86   98   41   91    63
-##  [8,]   51   61   89   96   55   23  100   15   97    83
-##  [9,]   53   83   41   67   17   22   37   51   69    97
-## [10,]   92   71   93   58   75   54    3   99   19    83</code></pre>
+##  [1,]   96   50   36   35   59   80   83   63   38    35
+##  [2,]   52   67   39   39   37   57   20   15   64    94
+##  [3,]   94   18   15   11   14   75    1   12   42    58
+##  [4,]   27   88   98  100   59   27   30   30   94    78
+##  [5,]   26   66   93   85   41   30  100   41   92   100
+##  [6,]   17   16   97   86   18   25   94   31   62    37
+##  [7,]   63   19   16   43   89   25   17   63   15    82
+##  [8,]   31   92   22   14   58    1   45    2   25    35
+##  [9,]  100   33   19   77   43    1   14   69   42    18
+## [10,]   13   35   80   43   34   45   24   47   71    72</code></pre>
 <p>It needs sample names and OTU names, the index names of the your own matrix might already have this.</p>
 <pre class="r"><code>rownames(otumat) &lt;- paste0(&quot;OTU&quot;, 1:nrow(otumat))
 colnames(otumat) &lt;- paste0(&quot;Sample&quot;, 1:ncol(otumat))
 otumat</code></pre>
 <pre><code>##       Sample1 Sample2 Sample3 Sample4 Sample5 Sample6 Sample7 Sample8
-## OTU1       84      67      12       6      86      53      28      74
-## OTU2       18      85      16      51      12      78      26      82
-## OTU3       31      34       5      64      56      78      62      56
-## OTU4       26      26      45      64      22      33      72      56
-## OTU5       28      85      98      80      66      31      14      30
-## OTU6      100       5      93      60      95      16      36      61
-## OTU7       84      98      61       7      76      86      98      41
-## OTU8       51      61      89      96      55      23     100      15
-## OTU9       53      83      41      67      17      22      37      51
-## OTU10      92      71      93      58      75      54       3      99
+## OTU1       96      50      36      35      59      80      83      63
+## OTU2       52      67      39      39      37      57      20      15
+## OTU3       94      18      15      11      14      75       1      12
+## OTU4       27      88      98     100      59      27      30      30
+## OTU5       26      66      93      85      41      30     100      41
+## OTU6       17      16      97      86      18      25      94      31
+## OTU7       63      19      16      43      89      25      17      63
+## OTU8       31      92      22      14      58       1      45       2
+## OTU9      100      33      19      77      43       1      14      69
+## OTU10      13      35      80      43      34      45      24      47
 ##       Sample9 Sample10
-## OTU1       78       72
-## OTU2       72       81
-## OTU3       10       28
-## OTU4        4       81
-## OTU5        9       77
-## OTU6       83       95
-## OTU7       91       63
-## OTU8       97       83
-## OTU9       69       97
-## OTU10      19       83</code></pre>
+## OTU1       38       35
+## OTU2       64       94
+## OTU3       42       58
+## OTU4       94       78
+## OTU5       92      100
+## OTU6       62       37
+## OTU7       15       82
+## OTU8       25       35
+## OTU9       42       18
+## OTU10      71       72</code></pre>
 <p>Now we need a pretend taxonomy table</p>
 <pre class="r"><code>taxmat = matrix(sample(letters, 70, replace = TRUE), nrow = nrow(otumat), ncol = 7)
 rownames(taxmat) &lt;- rownames(otumat)
 colnames(taxmat) &lt;- c(&quot;Domain&quot;, &quot;Phylum&quot;, &quot;Class&quot;, &quot;Order&quot;, &quot;Family&quot;, &quot;Genus&quot;, &quot;Species&quot;)
 taxmat</code></pre>
 <pre><code>##       Domain Phylum Class Order Family Genus Species
-## OTU1  &quot;b&quot;    &quot;b&quot;    &quot;v&quot;   &quot;v&quot;   &quot;l&quot;    &quot;n&quot;   &quot;j&quot;    
-## OTU2  &quot;l&quot;    &quot;m&quot;    &quot;w&quot;   &quot;b&quot;   &quot;f&quot;    &quot;y&quot;   &quot;s&quot;    
-## OTU3  &quot;h&quot;    &quot;w&quot;    &quot;n&quot;   &quot;y&quot;   &quot;k&quot;    &quot;f&quot;   &quot;c&quot;    
-## OTU4  &quot;u&quot;    &quot;m&quot;    &quot;p&quot;   &quot;n&quot;   &quot;t&quot;    &quot;l&quot;   &quot;p&quot;    
-## OTU5  &quot;o&quot;    &quot;b&quot;    &quot;q&quot;   &quot;w&quot;   &quot;a&quot;    &quot;s&quot;   &quot;e&quot;    
-## OTU6  &quot;s&quot;    &quot;j&quot;    &quot;l&quot;   &quot;d&quot;   &quot;i&quot;    &quot;d&quot;   &quot;t&quot;    
-## OTU7  &quot;v&quot;    &quot;y&quot;    &quot;t&quot;   &quot;p&quot;   &quot;s&quot;    &quot;v&quot;   &quot;e&quot;    
-## OTU8  &quot;b&quot;    &quot;r&quot;    &quot;k&quot;   &quot;d&quot;   &quot;q&quot;    &quot;c&quot;   &quot;q&quot;    
-## OTU9  &quot;k&quot;    &quot;h&quot;    &quot;b&quot;   &quot;w&quot;   &quot;h&quot;    &quot;x&quot;   &quot;o&quot;    
-## OTU10 &quot;o&quot;    &quot;p&quot;    &quot;b&quot;   &quot;n&quot;   &quot;k&quot;    &quot;d&quot;   &quot;q&quot;</code></pre>
+## OTU1  &quot;x&quot;    &quot;d&quot;    &quot;q&quot;   &quot;v&quot;   &quot;l&quot;    &quot;k&quot;   &quot;i&quot;    
+## OTU2  &quot;a&quot;    &quot;d&quot;    &quot;x&quot;   &quot;a&quot;   &quot;k&quot;    &quot;o&quot;   &quot;r&quot;    
+## OTU3  &quot;h&quot;    &quot;a&quot;    &quot;h&quot;   &quot;c&quot;   &quot;d&quot;    &quot;j&quot;   &quot;k&quot;    
+## OTU4  &quot;t&quot;    &quot;f&quot;    &quot;j&quot;   &quot;e&quot;   &quot;n&quot;    &quot;y&quot;   &quot;o&quot;    
+## OTU5  &quot;o&quot;    &quot;q&quot;    &quot;s&quot;   &quot;w&quot;   &quot;d&quot;    &quot;y&quot;   &quot;j&quot;    
+## OTU6  &quot;e&quot;    &quot;r&quot;    &quot;p&quot;   &quot;k&quot;   &quot;b&quot;    &quot;v&quot;   &quot;t&quot;    
+## OTU7  &quot;m&quot;    &quot;l&quot;    &quot;y&quot;   &quot;u&quot;   &quot;b&quot;    &quot;y&quot;   &quot;q&quot;    
+## OTU8  &quot;d&quot;    &quot;o&quot;    &quot;w&quot;   &quot;g&quot;   &quot;p&quot;    &quot;w&quot;   &quot;v&quot;    
+## OTU9  &quot;f&quot;    &quot;o&quot;    &quot;a&quot;   &quot;n&quot;   &quot;l&quot;    &quot;u&quot;   &quot;e&quot;    
+## OTU10 &quot;h&quot;    &quot;r&quot;    &quot;d&quot;   &quot;j&quot;   &quot;u&quot;    &quot;f&quot;   &quot;a&quot;</code></pre>
 <pre class="r"><code>class(otumat)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>class(taxmat)</code></pre>
@@ -521,40 +596,40 @@ OTU</code></pre>
 <pre><code>## OTU Table:          [10 taxa and 10 samples]
 ##                      taxa are rows
 ##       Sample1 Sample2 Sample3 Sample4 Sample5 Sample6 Sample7 Sample8
-## OTU1       84      67      12       6      86      53      28      74
-## OTU2       18      85      16      51      12      78      26      82
-## OTU3       31      34       5      64      56      78      62      56
-## OTU4       26      26      45      64      22      33      72      56
-## OTU5       28      85      98      80      66      31      14      30
-## OTU6      100       5      93      60      95      16      36      61
-## OTU7       84      98      61       7      76      86      98      41
-## OTU8       51      61      89      96      55      23     100      15
-## OTU9       53      83      41      67      17      22      37      51
-## OTU10      92      71      93      58      75      54       3      99
+## OTU1       96      50      36      35      59      80      83      63
+## OTU2       52      67      39      39      37      57      20      15
+## OTU3       94      18      15      11      14      75       1      12
+## OTU4       27      88      98     100      59      27      30      30
+## OTU5       26      66      93      85      41      30     100      41
+## OTU6       17      16      97      86      18      25      94      31
+## OTU7       63      19      16      43      89      25      17      63
+## OTU8       31      92      22      14      58       1      45       2
+## OTU9      100      33      19      77      43       1      14      69
+## OTU10      13      35      80      43      34      45      24      47
 ##       Sample9 Sample10
-## OTU1       78       72
-## OTU2       72       81
-## OTU3       10       28
-## OTU4        4       81
-## OTU5        9       77
-## OTU6       83       95
-## OTU7       91       63
-## OTU8       97       83
-## OTU9       69       97
-## OTU10      19       83</code></pre>
+## OTU1       38       35
+## OTU2       64       94
+## OTU3       42       58
+## OTU4       94       78
+## OTU5       92      100
+## OTU6       62       37
+## OTU7       15       82
+## OTU8       25       35
+## OTU9       42       18
+## OTU10      71       72</code></pre>
 <pre class="r"><code>TAX</code></pre>
 <pre><code>## Taxonomy Table:     [10 taxa by 7 taxonomic ranks]:
 ##       Domain Phylum Class Order Family Genus Species
-## OTU1  &quot;b&quot;    &quot;b&quot;    &quot;v&quot;   &quot;v&quot;   &quot;l&quot;    &quot;n&quot;   &quot;j&quot;    
-## OTU2  &quot;l&quot;    &quot;m&quot;    &quot;w&quot;   &quot;b&quot;   &quot;f&quot;    &quot;y&quot;   &quot;s&quot;    
-## OTU3  &quot;h&quot;    &quot;w&quot;    &quot;n&quot;   &quot;y&quot;   &quot;k&quot;    &quot;f&quot;   &quot;c&quot;    
-## OTU4  &quot;u&quot;    &quot;m&quot;    &quot;p&quot;   &quot;n&quot;   &quot;t&quot;    &quot;l&quot;   &quot;p&quot;    
-## OTU5  &quot;o&quot;    &quot;b&quot;    &quot;q&quot;   &quot;w&quot;   &quot;a&quot;    &quot;s&quot;   &quot;e&quot;    
-## OTU6  &quot;s&quot;    &quot;j&quot;    &quot;l&quot;   &quot;d&quot;   &quot;i&quot;    &quot;d&quot;   &quot;t&quot;    
-## OTU7  &quot;v&quot;    &quot;y&quot;    &quot;t&quot;   &quot;p&quot;   &quot;s&quot;    &quot;v&quot;   &quot;e&quot;    
-## OTU8  &quot;b&quot;    &quot;r&quot;    &quot;k&quot;   &quot;d&quot;   &quot;q&quot;    &quot;c&quot;   &quot;q&quot;    
-## OTU9  &quot;k&quot;    &quot;h&quot;    &quot;b&quot;   &quot;w&quot;   &quot;h&quot;    &quot;x&quot;   &quot;o&quot;    
-## OTU10 &quot;o&quot;    &quot;p&quot;    &quot;b&quot;   &quot;n&quot;   &quot;k&quot;    &quot;d&quot;   &quot;q&quot;</code></pre>
+## OTU1  &quot;x&quot;    &quot;d&quot;    &quot;q&quot;   &quot;v&quot;   &quot;l&quot;    &quot;k&quot;   &quot;i&quot;    
+## OTU2  &quot;a&quot;    &quot;d&quot;    &quot;x&quot;   &quot;a&quot;   &quot;k&quot;    &quot;o&quot;   &quot;r&quot;    
+## OTU3  &quot;h&quot;    &quot;a&quot;    &quot;h&quot;   &quot;c&quot;   &quot;d&quot;    &quot;j&quot;   &quot;k&quot;    
+## OTU4  &quot;t&quot;    &quot;f&quot;    &quot;j&quot;   &quot;e&quot;   &quot;n&quot;    &quot;y&quot;   &quot;o&quot;    
+## OTU5  &quot;o&quot;    &quot;q&quot;    &quot;s&quot;   &quot;w&quot;   &quot;d&quot;    &quot;y&quot;   &quot;j&quot;    
+## OTU6  &quot;e&quot;    &quot;r&quot;    &quot;p&quot;   &quot;k&quot;   &quot;b&quot;    &quot;v&quot;   &quot;t&quot;    
+## OTU7  &quot;m&quot;    &quot;l&quot;    &quot;y&quot;   &quot;u&quot;   &quot;b&quot;    &quot;y&quot;   &quot;q&quot;    
+## OTU8  &quot;d&quot;    &quot;o&quot;    &quot;w&quot;   &quot;g&quot;   &quot;p&quot;    &quot;w&quot;   &quot;v&quot;    
+## OTU9  &quot;f&quot;    &quot;o&quot;    &quot;a&quot;   &quot;n&quot;   &quot;l&quot;    &quot;u&quot;   &quot;e&quot;    
+## OTU10 &quot;h&quot;    &quot;r&quot;    &quot;d&quot;   &quot;j&quot;   &quot;u&quot;    &quot;f&quot;   &quot;a&quot;</code></pre>
 <pre class="r"><code>physeq = phyloseq(OTU, TAX)
 physeq</code></pre>
 <pre><code>## phyloseq-class experiment-level object
@@ -571,18 +646,17 @@ physeq</code></pre>
   stringsAsFactors=FALSE
 ))
 sampledata</code></pre>
-<pre><code>## Sample Data:        [10 samples by 2 sample variables]:
-##          Location Depth
-## Sample1         A   811
-## Sample2         A   424
-## Sample3         B   773
-## Sample4         D   556
-## Sample5         D   924
-## Sample6         C   383
-## Sample7         B   789
-## Sample8         A   899
-## Sample9         C   464
-## Sample10        B   552</code></pre>
+<pre><code>##          Location Depth
+## Sample1         D   337
+## Sample2         B    74
+## Sample3         D    68
+## Sample4         C   397
+## Sample5         B   142
+## Sample6         D   970
+## Sample7         D    69
+## Sample8         C   253
+## Sample9         A   497
+## Sample10        D   237</code></pre>
 <p>Now create a random phylogenetic tree with the ape package, and add it to your dataset. Make sure its tip labels match your <code>OTU_table</code>.</p>
 <pre class="r"><code>library(&quot;ape&quot;)
 random_tree = rtree(ntaxa(physeq), rooted=TRUE, tip.label=taxa_names(physeq))
@@ -720,7 +794,7 @@ qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)</code></pre>
 ## Defining OTU table... 
 ## Parsing taxonomy table...
 ## Processing phylogenetic tree...
-##  /Library/Frameworks/R.framework/Versions/3.3/Resources/library/phyloseq/extdata/GP_tree_rand_short.newick.gz ...
+##  /Library/Frameworks/R.framework/Versions/3.4/Resources/library/phyloseq/extdata/GP_tree_rand_short.newick.gz ...
 ## Processing Reference Sequences...</code></pre>
 <pre class="r"><code>qiimedata</code></pre>
 <pre><code>## phyloseq-class experiment-level object
@@ -731,8 +805,11 @@ qiimedata = import_qiime(otufile, mapfile, trefile, rs_file)</code></pre>
 ## refseq()      DNAStringSet:      [ 500 reference sequences ]</code></pre>
 <p>So it has Let’s try some quick graphics built from our newly-imported dataset, <code>qiimedata</code>.</p>
 <pre class="r"><code>plot_bar(qiimedata, x=&quot;SampleType&quot;, fill=&quot;Phylum&quot;)</code></pre>
+<pre><code>## Warning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set1 is 9
+## Returning the palette you asked for with that many colors</code></pre>
 <p><img src="import-data_files/figure-html/import-qiime-graphics-1.png" width="672" /></p>
 <pre class="r"><code>plot_heatmap(qiimedata, sample.label=&quot;SampleType&quot;, species.label=&quot;Phylum&quot;)</code></pre>
+<pre><code>## Warning: Transformation introduced infinite values in discrete y-axis</code></pre>
 <p><img src="import-data_files/figure-html/import-qiime-graphics-2.png" width="672" /></p>
 <hr />
 </div>
@@ -801,9 +878,13 @@ dim(OTU)</code></pre>
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
+
 
 </script>
 
@@ -812,7 +893,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
