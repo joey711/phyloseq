@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -23,8 +23,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/default.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
 
@@ -35,10 +35,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -477,7 +479,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Courses involving phyloseq</h1>
-<h4 class="date"><em>Thu Mar 9 10:53:11 2017</em></h4>
+<h4 class="date"><em>Mon Mar 12 11:18:49 2018</em></h4>
 
 </div>
 
@@ -485,11 +487,63 @@ div.tocify {
 <p><link rel="stylesheet" href="site_libs/academicons-1.7.0/css/academicons.css"/></p>
 <p> </p>
 <hr />
-<div id="open-and-upcoming" class="section level1">
-<h1>Open and Upcoming</h1>
 <p>There are a number of courses now including or featuring phyloseq. I will try and link here to the ones I know about.</p>
 <hr />
+<div id="section" class="section level1">
+<h1>2018</h1>
 <p> </p>
+<div id="asm-microbe-workshop" class="section level2">
+<h2><a href="https://www.asm.org/index.php/program-microbe-2018/courses-and-workshops">ASM Microbe Workshop</a></h2>
+<ul>
+<li><a href="http://www.abstractsonline.com/pp8/#!/4623/session/1159">006-WS: Microbe Analysis Using R</a></li>
+</ul>
+<p>Session Type: Full-Day</p>
+<p>Time: 8:00 a.m. – 4:00 p.m.</p>
+<p>The workshop will cover the use of a variety of R packages useful for the analysis of amplicon sequencing data (esp. 16S rRNA gene targets). These analysis are built around phyloseq data objects and extend on basic concepts in microbiome analysis such as alpha and beta diversity with inclusion of advanced material on differential abundance testing, feature selection and time-series analysis.</p>
+<p><a href="https://registration.experientevent.com/showasm181/Flow/ATT?&amp;_ga=2.234769822.1604892224.1520870826-1543952640.1510599824#/registrant//Dashboard/">REGISTER HERE</a></p>
+<p> </p>
+<p> </p>
+</div>
+<div id="sismid-2018" class="section level2">
+<h2><a href="http://www.biostat.washington.edu/suminst/sismid">SISMID 2018</a></h2>
+<ul>
+<li><p><a href="http://www.biostat.washington.edu/suminst/sismid2018/modules/MD1808">SISMID Module 8: Microbiome Data Analysis</a></p></li>
+<li><p>Session 3: Mon Jul 16 to Wed Jul 18</p></li>
+</ul>
+<p>Instructor(s):</p>
+<p>Alexander Alekseyenko and Paul McMurdie Module dates/times: - Monday, July 16; 8:30 a.m. - 5 p.m. - Tuesday, July 17, 8:30 a.m.-5 p.m. - Wednesday, July 18, 8:30 a.m.-Noon</p>
+<p>Prerequisites: Programming will be done in R and fluency at the level of the module on Introduction to R, though not necessarily from taking that module, will be expected. This module assumes knowledge of the material in Module 1: Probability and Statistical Inference, though not necessarily from taking that module.</p>
+<p>This course is concerned with multivariate statistical analysis of microbiome data. We will briefly cover foundational concepts in microbial ecology, molecular biology, bioinformatics, and DNA sequencing.</p>
+<p>The main focus of the course will be on developing an understanding of multivariate analysis of microbiome data. Practical skills to be developed in this course include managing high-dimensional and structured data in metagenomics, visualization and representation of high-dimensional data, normalization, filtering, and mixture-model noise modeling of count data, as well as clustering and predictive model building.</p>
+<p> </p>
+<p> </p>
+</div>
+<div id="stamps-2018" class="section level2">
+<h2><a href="http://www.mbl.edu/education/courses/stamps/">STAMPS 2018</a></h2>
+<ul>
+<li><p>Strategies and Techniques for Analyzing Microbial Population Structures (STAMPS) Course Information</p></li>
+<li>Course Dates: July 29 – August 8, 2018</li>
+<li><p>Registration Deadline: April 6, 2018 | <a href="https://ws2.mbl.edu/studentapp/studentapp.asp?courseID=STAMPS">Apply here</a></p></li>
+</ul>
+<p>Directors: Mihai Pop, University of Maryland; and Tracy Teal, Michigan State University</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<hr />
+</div>
+</div>
+<div id="section-1" class="section level1">
+<h1>2017</h1>
+<p> </p>
+<div id="workshop-on-genomics-2017" class="section level2">
+<h2>Workshop on Genomics, 2017</h2>
+<ul>
+<li><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, Český Krumlov, Czech Republic (2017 January)</a></li>
+</ul>
+<p>The Workshop on Genomics was developed in response to the increasing demand for training on how to effectively analyze and manage data generated by modern sequencing technologies. The Workshop curriculum includes extensive coverage of fundamental techniques required of all studies utilizing modern sequence data. This includes management and modification of modern sequence data files, using the Unix command-line and editors to manipulate sequence data files, assembly (both mapping and de novo) and best practices for sequence data generation. The second-half of the Workshop is devoted to specific sub-disciplines within the genomic sciences. While these topics may change from Workshop to Workshop, efforts are made to devote significant amounts of time to techniques being used widely in the field (e.g. transcriptomics, genome assembly, metagenomics).</p>
+<p>A majority of the schedule is dedicated to hands-on learning activities designed by faculty and the workshop team. This interactive experience provides Workshop participants with the practical experience required to meet the challenges presented by modern genomic sciences.</p>
+</div>
 <div id="sismid-2017" class="section level2">
 <h2><a href="http://www.biostat.washington.edu/suminst/sismid2017/modules/MD1706">SISMID, 2017</a></h2>
 <ul>
@@ -510,20 +564,13 @@ div.tocify {
 <p>My unofficial information on scheduling is:</p>
 <p>Evening of Sunday July 31 – morning on Wednesday Aug 9.</p>
 <p> </p>
-</div>
-<div id="workshop-on-genomics-2018" class="section level2">
-<h2><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, 2018</a></h2>
-<ul>
-<li><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, Český Krumlov, Czech Republic (2018 January)</a></li>
-</ul>
-<p>The Workshop on Genomics was developed in response to the increasing demand for training on how to effectively analyze and manage data generated by modern sequencing technologies. The Workshop curriculum includes extensive coverage of fundamental techniques required of all studies utilizing modern sequence data. This includes management and modification of modern sequence data files, using the Unix command-line and editors to manipulate sequence data files, assembly (both mapping and de novo) and best practices for sequence data generation. The second-half of the Workshop is devoted to specific sub-disciplines within the genomic sciences. While these topics may change from Workshop to Workshop, efforts are made to devote significant amounts of time to techniques being used widely in the field (e.g. transcriptomics, genome assembly, metagenomics).</p>
-<p>A majority of the schedule is dedicated to hands-on learning activities designed by faculty and the workshop team. This interactive experience provides Workshop participants with the practical experience required to meet the challenges presented by modern genomic sciences.</p>
+<p> </p>
 <p> </p>
 <hr />
 </div>
 </div>
-<div id="concluded" class="section level1">
-<h1>Concluded</h1>
+<div id="section-2" class="section level1">
+<h1>2016</h1>
 <p> </p>
 <div id="sismid-workshop-2016" class="section level2">
 <h2>SISMID Workshop, 2016</h2>
@@ -545,19 +592,6 @@ div.tocify {
 <p>Deadline: April 8, 2016 (Expired!)</p>
 <p><a href="https://stamps.mbl.edu/index.php/Main_Page">Course Website</a></p>
 <p><a href="https://stamps.mbl.edu/index.php/Schedule">Course Schedule</a></p>
-<p>Directors: Mitchell L. Sogin, MBL and David B. Mark Welch, MBL</p>
-<p>Deep DNA sequencing using massively-parallel, next-generation technology has enabled nearly comprehensive environmental surveys that can describe the different kinds of microbes in a community and their relative abundance. These descriptions of richness and evenness make possible estimates of microbial diversity, but the size of the required data sets pose enormous computational challenges. The rapidly expanding flow of information from next generation DNA sequencing platforms has fueled healthy debate about best practices for data analysis while at the same time building a user demand for tools that can address important ecological questions. The STAMPS course will promote dialogue and the exchange of ideas between experts in analysis of metagenomic data and offer interdisciplinary bioinformatic and statistical training to practitioners of molecular microbial ecology and genomics.</p>
-<p>Topics to be covered include but are not limited to acquisition and organization of next generation sequence data; principles of quality control of sequence data and data management; methods of taxonomic assignment and clustering of targeted gene data; assembly, functional classification and characterization of shotgun metagenomic data; statistical models for estimating microbial diversity; and microbial community comparison methodology and metrics. The workshop also includes an introduction to the Linux command-line and R statistical environments. The lectures will be augmented by a computer laboratory where students will have the opportunity to use state of the art facilities to test theoretical concepts described in the lectures series. Guided by authors of resources including CatchAll, LEfSe, mothur, Oligotyping, MetaPathways, MetaPhlAn, PhyloSeq, QIIME, USEARCH, Unifrac, and VAMPS, participants in the workshop will have the opportunity to compare different analysis techniques for molecular data, analyze their own data, and discuss their data and analyses with faculty.</p>
-<p>The course is designed for established investigators, postdoctoral fellows and advanced graduate students from diverse biological fields. The Workshop Participants will also be given priority for acceptance into the MBL’s Workshop in Molecular Evolution that will meet the preceding week. This option will provide an opportunity to develop a stronger conceptual framework for understanding the basis of analytical tools in the STAMPS workshop.</p>
-<p> </p>
-</div>
-<div id="workshop-on-genomics-2017" class="section level2">
-<h2>Workshop on Genomics, 2017</h2>
-<ul>
-<li><a href="http://evomics.org/workshops/workshop-on-genomics/">Workshop on Genomics, Český Krumlov, Czech Republic (2017 January)</a></li>
-</ul>
-<p>The Workshop on Genomics was developed in response to the increasing demand for training on how to effectively analyze and manage data generated by modern sequencing technologies. The Workshop curriculum includes extensive coverage of fundamental techniques required of all studies utilizing modern sequence data. This includes management and modification of modern sequence data files, using the Unix command-line and editors to manipulate sequence data files, assembly (both mapping and de novo) and best practices for sequence data generation. The second-half of the Workshop is devoted to specific sub-disciplines within the genomic sciences. While these topics may change from Workshop to Workshop, efforts are made to devote significant amounts of time to techniques being used widely in the field (e.g. transcriptomics, genome assembly, metagenomics).</p>
-<p>A majority of the schedule is dedicated to hands-on learning activities designed by faculty and the workshop team. This interactive experience provides Workshop participants with the practical experience required to meet the challenges presented by modern genomic sciences.</p>
 <p> </p>
 </div>
 <div id="workshop-on-genomics-2016" class="section level2">
@@ -566,10 +600,13 @@ div.tocify {
 <li><a href="http://evomics.org/workshops/workshop-on-genomics/2016-workshop-on-genomics-cesky-krumlov/">Workshop on Genomics, Cesky Krumlov, Czech Republic (2016 Jan 10 - 23)</a></li>
 </ul>
 <p> </p>
+<p> </p>
+<p> </p>
+<hr />
 </div>
 </div>
-<div id="concluded-for-2015" class="section level1">
-<h1>Concluded for 2015</h1>
+<div id="section-3" class="section level1">
+<h1>2015</h1>
 <div id="workshop-on-metagenomics-harvard" class="section level2">
 <h2>Workshop on Metagenomics (Harvard)</h2>
 <ul>
@@ -592,13 +629,8 @@ div.tocify {
 <ul>
 <li><a href="https://stamps.mbl.edu/index.php/Main_Page">Strategies and Techniques for Analyzing Microbial Population Structure (STAMPS)</a></li>
 </ul>
-<p>Directors:</p>
-<p>David Mark Welch Marine Biological Laboratory</p>
-<p>Mitch Sogin Marine Biological Laboratory</p>
 <p>Course Date: August 5 - August 15, 2015</p>
 <p>Twitter hash: #STAMPS15</p>
-<p>Deep DNA sequencing using massively-parallel, next-generation technology has enabled nearly comprehensive environmental surveys that can describe the different kinds of microbes in a community and their relative abundance. These descriptions of richness and evenness make possible estimates of microbial diversity, but the size of the required data sets pose enormous computational challenges. The rapidly expanding flow of information from next generation DNA sequencing platforms has fueled healthy debate about best practices for data analysis while at the same time building a user demand for tools that can address important ecological questions. The STAMPS course will promote dialogue and the exchange of ideas between experts in analysis of metagenomic data and offer interdisciplinary bioinformatic and statistical training to practitioners of molecular microbial ecology and genomics.</p>
-<p>Topics to be covered include but are not limited to next-generation strategies for analysis of microbial communities; acquisition and organization of next generation sequence data; principles of quality control of sequence data; the theory of cluster and rarefaction analyses; taxonomic assignments for high-throughput data; statistical models for estimating microbial diversity; microbial community comparison methodology and metrics; and analysis of shotgun metagenomic data. The lectures will be augmented by a computer laboratory where students will have the opportunity to use state of the art facilities to test theoretical concepts described in the lectures series.</p>
 </div>
 </div>
 
@@ -627,7 +659,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
