@@ -83,7 +83,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #'
 #' @usage plot_network(g, physeq=NULL, type="samples", 
 #' 	color=NULL, shape=NULL, point_size=4, alpha=1,
-#' 	label="value", hjust = 1.35, 
+#' 	label="value", hjust = 1.35, label_size=2,
 #' 	line_weight=0.5, line_color=color, line_alpha=0.4,
 #' 	layout.method=layout.fruchterman.reingold, title=NULL)
 #'
@@ -121,6 +121,9 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' 
 #' @param hjust (Optional). Default \code{1.35}.
 #'  The amount of horizontal justification to use for each label.
+#' 
+#' @param label_size (Optional). Default \code{"value"}.
+#'  The size of the label.
 #' 
 #' @param line_weight (Optional). Default \code{0.3}.
 #'  The line thickness to use to label graph edges.
@@ -186,7 +189,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' plot_network(ig, enterotype, color="SeqTech", shape="Enterotype", line_weight=0.3, label=NULL)
 plot_network <- function(g, physeq=NULL, type="samples", 
 	color=NULL, shape=NULL, point_size=4, alpha=1,
-	label="value", hjust = 1.35, 
+	label="value", hjust = 1.35, label_size=2,
 	line_weight=0.5, line_color=color, line_alpha=0.4,
 	layout.method=layout.fruchterman.reingold, title=NULL){
 
@@ -250,7 +253,7 @@ plot_network <- function(g, physeq=NULL, type="samples",
 
 	# Add the text labels
 	if( !is.null(label) ){
-		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust, na.rm=TRUE)
+		p <- p + geom_text(aes_string(label=label), size = label_size, hjust=hjust, na.rm=TRUE)
 	}
 	
 	# Add the edges:
