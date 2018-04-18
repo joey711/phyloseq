@@ -14,7 +14,7 @@ From [the clusGap documentation](http://stat.ethz.ch/R-manual/R-devel/library/cl
 The `clusGap` function from 
 [the cluster package](http://cran.r-project.org/web/packages/cluster/index.html) 
 calculates a *goodness of clustering* measure, 
-called [the “gap” statistic](www.stanford.edu/~hastie/Papers/gap.pdf). 
+called [the “gap” statistic](http://www.stanford.edu/~hastie/Papers/gap.pdf). 
 For each number of clusters `k`, 
 it compares \log(W(k)) with E^*[\log(W(k))] 
 where the latter is defined via bootstrapping, 
