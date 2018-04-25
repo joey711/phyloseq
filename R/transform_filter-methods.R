@@ -407,7 +407,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# if NArm is TRUE, remove the empty, white-space, NA values from 
 	if( NArm ){
 		keep_species <- names(tax)[ !(tax %in% bad_empty) ]
-		discard_species <- length(names(tax)[(tax %in% bad_empty)])
+		discard_species <- names(tax)[(tax %in% bad_empty)]
 		if(verbose){
 		  if(length(discard_species) > 0){ 
 		  message(c(length(discard_species), " of ", ntaxa(physeq), " OTUs were removed due to lack of taxonomic information"))}}
