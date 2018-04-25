@@ -326,7 +326,7 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #' for agglomeration will be replaced with \code{NA},
 #' because they should be meaningless following agglomeration.
 #'
-#' @usage tax_glom(physeq, taxrank=rank_names(physeq)[1], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+#' @usage tax_glom(physeq, taxrank=rank_names(physeq)[1], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"), verbose=TRUE)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} or \code{\link{otu_table}}.
 #'
@@ -355,6 +355,13 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #'  and therefore agglomeration will not combine taxa according to the presence
 #'  of these values in \code{tax}. Furthermore, the corresponding taxa can be
 #'  optionally pruned from the output if \code{NArm} is set to \code{TRUE}.
+#'  
+#'  @param verbose (Optional). Logical. Default is \code{TRUE}.
+#'  If \code{TRUE}, an extra non-warning, non-error message is printed
+#'  to standard out, describing OTUs removed. This can be useful the
+#'  first few times the function is executed, but can be set
+#'  to \code{FALSE} as-needed once behavior has been verified
+#'  as expected.  
 #' 
 #' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
 #' the class of \code{physeq}.
@@ -381,7 +388,7 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #' # ## print the available taxonomic ranks. Shows only 1 rank available, not useful for tax_glom
 #' # colnames(tax_table(enterotype))
 tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
-					NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
+					NArm=TRUE, bad_empty=c(NA, "", " ", "\t"), verbose=TRUE){
 
 	# Error if tax_table slot is empty
 	if( is.null(access(physeq, "tax_table")) ){
@@ -400,6 +407,10 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# if NArm is TRUE, remove the empty, white-space, NA values from 
 	if( NArm ){
 		keep_species <- names(tax)[ !(tax %in% bad_empty) ]
+		discard_species <- length(names(tax)[(tax %in% bad_empty)])
+		if(verbose){
+		  if(length(discard_species) > 0){ 
+		  message(c(length(discard_species), " of ", ntaxa(physeq), " OTUs were removed due to lack of taxonomic information"))}}
 		physeq <- prune_taxa(keep_species, physeq)
 	}
 
