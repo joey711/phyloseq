@@ -13,15 +13,16 @@ install_phyloseq = function(branch = "release",
     if(verbose){
       message("Installing the release version from BioC")
     }
-    source("http://bioconductor.org/biocLite.R")
-    biocLite("phyloseq", suppressUpdates=TRUE)
+    if (!requireNamespace("BiocManager", quietly=TRUE))
+        install.packages("BiocManager")
+    BiocManager::install("phyloseq", suppressUpdates=TRUE)
     return("phyloseq installed from BioC release branch (if no errors).")
   }
   if(branch == "devel"){
     if(verbose){
       message("\n\nInstalling phyloseq from the devel version from BioC...\n")
     }
-    biocLite("phyloseq", 
+    BiocManager::install("phyloseq", 
              siteRepos="http://bioconductor.org/packages/devel/bioc",
              suppressUpdates=TRUE,
              type="source")
