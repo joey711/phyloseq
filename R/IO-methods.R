@@ -1943,7 +1943,7 @@ parse_taxonomy_default = function(char.vec){
 #' @aliases parse_taxonomy_default
 #' @export
 parse_taxonomy_greengenes <- function(char.vec){
-	# Use default to assign names to elements in case problem with greengenes prefix
+	# Use default to assign names to elements in case problem with Greengenes prefix
 	char.vec = parse_taxonomy_default(char.vec)
 	# Define the meaning of each prefix according to GreenGenes taxonomy
 	Tranks = c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
@@ -1972,7 +1972,7 @@ parse_taxonomy_greengenes <- function(char.vec){
 #' @aliases parse_taxonomy_default
 #' @export
 parse_taxonomy_silva_128 <- function(char.vec){
-  # Use default to assign names to elements in case problem with greengenes prefix
+  # Use default to assign names to elements in case problem with Silva prefix
   char.vec = parse_taxonomy_default(char.vec)
   # Check for unassigned taxa
   if (char.vec["Rank1"] == "Unassigned") {
