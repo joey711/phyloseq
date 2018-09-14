@@ -1882,7 +1882,7 @@ import_biom <- function(BIOMfilename,
 #' to the appropriate taxonomic rank name used by greengenes
 #' (e.g. \code{"p__"} at the beginning of an element means that element is 
 #' the name of the phylum to which this OTU belongs).
-#' If you taxonomy data is based on SILVA, the \code{parse_taxonomy_silva} function
+#' If you taxonomy data is based on SILVA, the \code{parse_taxonomy_silva_128} function
 #' clips the first 5 characters that identify rank, and uses these to name the
 #' corresponding element according to the appropriate taxonomic rank name used
 #' by SILVA (e.g. \code{"D_1__"} at the beginning of an element means that element
@@ -1896,7 +1896,7 @@ import_biom <- function(BIOMfilename,
 #'
 #' @usage parse_taxonomy_default(char.vec)
 #' @usage parse_taxonomy_greengenes(char.vec)
-#' @usage parse_taxonomy_silva(char.vec)
+#' @usage parse_taxonomy_silva_128(char.vec)
 #' @usage parse_taxonomy_qiime(char.vec)
 #'
 #' @param char.vec (Required). A single character vector of taxonomic
@@ -1925,7 +1925,7 @@ import_biom <- function(BIOMfilename,
 #'  taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
 #'  parse_taxonomy_qiime(taxvec2)
 #' taxvec3 = c("D_0__Bacteria", "D_1__Firmicutes", "D_2__Bacilli", "D_3__Staphylococcaceae")
-#' parse_taxonomy_silva(taxvec3)
+#' parse_taxonomy_silva_128(taxvec3)
 parse_taxonomy_default = function(char.vec){
 	# Remove any leading empty space
 	char.vec = gsub("^[[:space:]]{1,}", "", char.vec)
