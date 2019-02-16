@@ -4,7 +4,6 @@
 \name{transform_sample_counts}
 \alias{transform_sample_counts}
 \alias{transformSampleCounts}
-\alias{transformSampleCounts}
 \title{Transform abundance data in an \code{otu_table}, sample-by-sample.}
 \usage{
 transform_sample_counts(physeq, fun, ...)

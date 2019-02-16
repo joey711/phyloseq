@@ -4,6 +4,20 @@
 
 [![Travis-CI Build Status](https://travis-ci.org/joey711/phyloseq.svg?branch=master)](https://travis-ci.org/joey711/phyloseq)
 
+## Quick Install
+
+In R terminal:
+
+```
+if(!requireNamespace("BiocManager")){
+  install.packages("BiocManager")
+}
+BiocManager::install("phyloseq")
+```
+
+See [the phyloseq installation page](http://joey711.github.io/phyloseq/install.html)
+for further details, examples.
+
 ## Article on Improved Microbiome Analysis
 
 McMurdie and Holmes (2014)

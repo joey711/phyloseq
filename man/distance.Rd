@@ -12,10 +12,11 @@ distance(physeq, method, type = "samples", ...)
 
 \S4method{distance}{phyloseq,ANY}(physeq, method)
 
-\S4method{distance}{otu_table,character}(physeq, method, type = "samples",
-  ...)
+\S4method{distance}{otu_table,character}(physeq, method,
+  type = "samples", ...)
 
-\S4method{distance}{phyloseq,character}(physeq, method, type = "samples", ...)
+\S4method{distance}{phyloseq,character}(physeq, method, type = "samples",
+  ...)
 }
 \arguments{
 \item{physeq}{(Required).  A \code{\link{phyloseq-class}} or

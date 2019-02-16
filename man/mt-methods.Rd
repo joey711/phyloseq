@@ -77,7 +77,7 @@ data(enterotype)
 # Filter samples that don't have Enterotype
 x <- subset_samples(enterotype, !is.na(Enterotype))
 # (the taxa are at the genera level in this dataset)
-res = mt(x, "Enterotype", method=c("fdr", "bonferroni"), test="f", B=300)
+res = mt(x, "Enterotype", method="fdr", test="f", B=300)
 head(res, 10)
 ## # Not surprisingly, Prevotella and Bacteroides top the list.
 ## # Different test, multiple-adjusted t-test, whether samples are ent-2 or not.

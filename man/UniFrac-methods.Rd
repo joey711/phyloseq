@@ -8,8 +8,8 @@
 \usage{
 UniFrac(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE)
 
-\S4method{UniFrac}{phyloseq}(physeq, weighted = FALSE, normalized = TRUE,
-  parallel = FALSE, fast = TRUE)
+\S4method{UniFrac}{phyloseq}(physeq, weighted = FALSE,
+  normalized = TRUE, parallel = FALSE, fast = TRUE)
 }
 \arguments{
 \item{physeq}{(Required). \code{\link{phyloseq-class}}, containing at minimum

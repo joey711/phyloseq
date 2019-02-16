@@ -4,10 +4,10 @@
 \alias{import_qiime}
 \title{Import function to read the now legacy-format QIIME OTU table.}
 \usage{
-import_qiime(otufilename = NULL, mapfilename = NULL, treefilename = NULL,
-  refseqfilename = NULL, refseqFunction = readDNAStringSet,
-  refseqArgs = NULL, parseFunction = parse_taxonomy_qiime, verbose = TRUE,
-  ...)
+import_qiime(otufilename = NULL, mapfilename = NULL,
+  treefilename = NULL, refseqfilename = NULL,
+  refseqFunction = readDNAStringSet, refseqArgs = NULL,
+  parseFunction = parse_taxonomy_qiime, verbose = TRUE, ...)
 }
 \arguments{
 \item{otufilename}{(Optional). A character string indicating 

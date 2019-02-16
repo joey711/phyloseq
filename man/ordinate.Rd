@@ -4,7 +4,8 @@
 \alias{ordinate}
 \title{Perform an ordination on phyloseq data}
 \usage{
-ordinate(physeq, method = "DCA", distance = "bray", formula = NULL, ...)
+ordinate(physeq, method = "DCA", distance = "bray", formula = NULL,
+  ...)
 }
 \arguments{
 \item{physeq}{(Required). Phylogenetic sequencing data

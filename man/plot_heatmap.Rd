@@ -7,8 +7,8 @@
 plot_heatmap(physeq, method = "NMDS", distance = "bray",
   sample.label = NULL, taxa.label = NULL, low = "#000033",
   high = "#66CCFF", na.value = "black", trans = log_trans(4),
-  max.label = 250, title = NULL, sample.order = NULL, taxa.order = NULL,
-  first.sample = NULL, first.taxa = NULL, ...)
+  max.label = 250, title = NULL, sample.order = NULL,
+  taxa.order = NULL, first.sample = NULL, first.taxa = NULL, ...)
 }
 \arguments{
 \item{physeq}{(Required). The data, in the form of an instance of the

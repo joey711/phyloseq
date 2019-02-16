@@ -9,8 +9,8 @@
 \usage{
 capscale.phyloseq(physeq, formula, distance, ...)
 
-\S4method{capscale.phyloseq}{phyloseq,formula,dist}(physeq, formula, distance,
-  ...)
+\S4method{capscale.phyloseq}{phyloseq,formula,dist}(physeq, formula,
+  distance, ...)
 
 \S4method{capscale.phyloseq}{phyloseq,formula,character}(physeq, formula,
   distance, ...)

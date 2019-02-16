@@ -3,9 +3,7 @@
 \name{parse_taxonomy_default}
 \alias{parse_taxonomy_default}
 \alias{parse_taxonomy_greengenes}
-\alias{parse_taxonomy_default}
 \alias{parse_taxonomy_qiime}
-\alias{parse_taxonomy_default}
 \title{Parse elements of a taxonomy vector}
 \usage{
 parse_taxonomy_default(char.vec)

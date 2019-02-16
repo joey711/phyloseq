@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.25.2
-Date: 2018-07-15
+Version: 1.27.2
+Date: 2019-02-16
 Title: Handling and analysis of high-throughput microbiome
     census data
 Description: phyloseq provides a set of classes and tools
@@ -73,4 +73,4 @@ Collate:
     'extend_DESeq2.R'
     'phylo-class.R'
     'extend_metagenomeSeq.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
