@@ -41,7 +41,7 @@ Suggests:
     testthat (>= 1.0.2)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.10)
-biocViews: Sequencing, Microbiome, Metagenomics,
+biocViews: ImmunoOncology, Sequencing, Microbiome, Metagenomics,
     Clustering, Classification, MultipleComparison,
     GeneticVariability
 URL: http://dx.plos.org/10.1371/journal.pone.0061217
