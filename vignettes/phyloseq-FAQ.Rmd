@@ -544,19 +544,48 @@ A Google search for "phyloseq differential abundance"
 will also likely turn up a number of useful, related resources.
 
 
+
 # - I need help analyzing my data. It has the following study design...
 
-I am currently a biostatistician at Second Genome, Inc., 
-which offers complete
-[end-to-end microbiome experiment solutions](http://www.secondgenome.com/solutions)
+## Please be more specific
+
+The biggest problem is often scope. 
+Your correspondence to open-source package authors 
+should be very specific features, bugs, or contributions;
+where the answer will benefit other users who can later 
+find the post in a search or benefit from the new feature/bugfix. 
+
+
+## Please respect my time (and other package authors)
+
+Package authors have finite time available to help.
+There is an unavoidable trade-off of time 
+between package features/maintenance
+and answering user correspondence.
+My full-time efforts are in understanding the role of the microbiome
+in human health and disease
+as Senior Staff Data Scientist at a biotech startup in San Francisco
+(a full-time job). 
+Meanwhile, there are thousands of monthly-downloads of phyloseq.
+**It is a mathematical fact that I do not have time to help you analyze your specific dataset.**
+What you post on the issue tracker might be answered by others, 
+but if it is sufficiently of the "help me analyze my data for me" variety of questions,
+I will eventually close the issue.
+
+
+## Pay for Help (not me)
+
+I believe there are now competing options to help you with your analysis 
+as a fee-for-service.
+I was previously a biostatistician and developer at one such company,
+Second Genome, Inc.
+which offered complete
+end-to-end microbiome experiment solutions
 as a fee-for-service.
 In some cases Second Genome clients already have their microbiome data
-and want to make use of our team of trained microbiome analysts 
-to get the most information from their expeirment.
+and want to make use of their team of trained microbiome analysts 
+to get the most information from their experiment.
 I recommend contacting one of the sales associates at the link above.
-
-My day-to-day efforts are in understanding the role of the microbiome
-in human health and disease.
 If you're looking for a collaboration on your microbiome
 data collection or data analysis,
-please contact [Second Genome Solutions](http://www.secondgenome.com/solutions).
+please contact [Second Genome's capable team](https://www.secondgenome.com/platform/microbiome-technologies/16s-sequencing-community-analysis).
