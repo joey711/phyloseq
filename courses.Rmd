@@ -19,6 +19,77 @@ There are a number of courses now including or featuring phyloseq. I will try an
 
 ---
 
+# 2019
+
+&nbsp;
+
+## [SISMID 2019](https://www.biostat.washington.edu/suminst/sismid)
+
+- [SISMID Module 8: Microbiome Data Analysis](https://www.biostat.washington.edu/suminst/sismid2019/modules/MD1908)
+
+- Session 3: 
+
+> Mon Jul 15 to Wed Jul 17
+
+Instructor(s):
+
+Alexander Alekseyenko and Paul McMurdie
+
+Module dates/times: 
+
+- Monday, July 15; 8:30 a.m. - 5 p.m. 
+- Tuesday, July 16, 8:30 a.m.-5 p.m. 
+- Wednesday, July 17, 8:30 a.m.-Noon
+
+Prerequisites: 
+
+Programming will be done in R and fluency at the level of the module on Introduction to R, though not necessarily from taking that module, will be expected. This module assumes knowledge of the material in Module 1: Probability and Statistical Inference, though not necessarily from taking that module.
+
+This course is concerned with multivariate statistical analysis of microbiome data. We will briefly cover foundational concepts in microbial ecology, molecular biology, bioinformatics, and DNA sequencing.
+
+The main focus of the course will be on developing an understanding of multivariate analysis of microbiome data. Practical skills to be developed in this course include managing high-dimensional and structured data in metagenomics, visualization and representation of high-dimensional data, normalization, filtering, and mixture-model noise modeling of count data, as well as clustering and predictive model building.
+
+&nbsp;
+
+&nbsp;
+
+
+## [ASM Microbe Workshop](https://www.abstractsonline.com/pp8/#!/7859/session/357)
+
+- [CS-003 - Microbial Ecology using R and Bioconductor: From Raw Reads to Statistical Testing](https://www.abstractsonline.com/pp8/#!/7859/session/357)
+
+Session Type: Full-Day
+
+> Mon 2019 June 20
+
+Time: 8:00 a.m. – 4:00 p.m. 
+
+>Current microbial ecology studies encounter the challenges of all modern biological data: high levels of heterogeneity, sub-optimal experimental design, and high dimensionality. In this course, instructors will introduce approaches to deal with these challenges with two commonly used computational tools: R and Bioconductor. Participants will receive an introduction to R and packages used for data manipulation and visualization (e.g., ggplot2). Other sessions and interactive labs will focus on the common practices involved in the processing amplicon sequence data to make ecological inference. 
+
+*Please Note: Attendees are required to bring their own laptops to participate in this course For R beginners. The Faculty of this Course recommend looking through a few of these links to get you a basic proficiency in order to maximize learning during the course: 
+
+- https://www.edx.org/course/statistics-r-harvardx-ph525-1x-1 
+- https://www.edx.org/course/r-basics
+- https://www.rstudio.com/online-learning/#r-programming 
+- https://support.rstudio.com/hc/en-us/articles/201141096-Getting-Started-with-R 
+- https://monashdatafluency.github.io/r-intro-2/ 
+- https://www.kdnuggets.com/2016/03/datacamp-r-learning-path-7-steps.html
+
+The workshop will cover the use of a variety of R packages 
+useful for the analysis of amplicon sequencing data (esp. 16S rRNA gene targets).
+These analyses will cover details of sequence data processing using 
+[DADA2](https://benjjneb.github.io/dada2/index.html), 
+creating a phyloseq data object, and extended concepts in microbiome analysis.
+
+&nbsp;
+
+&nbsp;
+
+
+
+
+---
+
 # 2018
 
 &nbsp;

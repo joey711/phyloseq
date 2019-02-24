@@ -25,7 +25,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 <link href="site_libs/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -95,8 +96,14 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -112,7 +119,6 @@ body {
   padding-top: 65px;
   margin-top: -65px;
 }
-
 .section h2 {
   padding-top: 65px;
   margin-top: -65px;
@@ -132,6 +138,43 @@ body {
 .section h6 {
   padding-top: 65px;
   margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -153,18 +196,77 @@ $(document).ready(function () {
 });
 </script>
 
-
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -485,7 +587,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Courses involving phyloseq</h1>
-<h4 class="date"><em>Mon Mar 12 15:04:34 2018</em></h4>
+<h4 class="date"><em>Sun Feb 24 14:54:33 2019</em></h4>
 
 </div>
 
@@ -496,9 +598,64 @@ div.tocify {
 <p>There are a number of courses now including or featuring phyloseq. I will try and link here to the ones I know about.</p>
 <hr />
 <div id="section" class="section level1">
+<h1>2019</h1>
+<p> </p>
+<div id="sismid-2019" class="section level2">
+<h2><a href="https://www.biostat.washington.edu/suminst/sismid">SISMID 2019</a></h2>
+<ul>
+<li><p><a href="https://www.biostat.washington.edu/suminst/sismid2019/modules/MD1908">SISMID Module 8: Microbiome Data Analysis</a></p></li>
+<li><p>Session 3:</p></li>
+</ul>
+<blockquote>
+<p>Mon Jul 15 to Wed Jul 17</p>
+</blockquote>
+<p>Instructor(s):</p>
+<p>Alexander Alekseyenko and Paul McMurdie</p>
+<p>Module dates/times:</p>
+<ul>
+<li>Monday, July 15; 8:30 a.m. - 5 p.m.</li>
+<li>Tuesday, July 16, 8:30 a.m.-5 p.m.</li>
+<li>Wednesday, July 17, 8:30 a.m.-Noon</li>
+</ul>
+<p>Prerequisites:</p>
+<p>Programming will be done in R and fluency at the level of the module on Introduction to R, though not necessarily from taking that module, will be expected. This module assumes knowledge of the material in Module 1: Probability and Statistical Inference, though not necessarily from taking that module.</p>
+<p>This course is concerned with multivariate statistical analysis of microbiome data. We will briefly cover foundational concepts in microbial ecology, molecular biology, bioinformatics, and DNA sequencing.</p>
+<p>The main focus of the course will be on developing an understanding of multivariate analysis of microbiome data. Practical skills to be developed in this course include managing high-dimensional and structured data in metagenomics, visualization and representation of high-dimensional data, normalization, filtering, and mixture-model noise modeling of count data, as well as clustering and predictive model building.</p>
+<p> </p>
+<p> </p>
+</div>
+<div id="asm-microbe-workshop" class="section level2">
+<h2><a href="https://www.abstractsonline.com/pp8/#!/7859/session/357">ASM Microbe Workshop</a></h2>
+<ul>
+<li><a href="https://www.abstractsonline.com/pp8/#!/7859/session/357">CS-003 - Microbial Ecology using R and Bioconductor: From Raw Reads to Statistical Testing</a></li>
+</ul>
+<p>Session Type: Full-Day</p>
+<blockquote>
+<p>Mon 2019 June 20</p>
+</blockquote>
+<p>Time: 8:00 a.m. – 4:00 p.m.</p>
+<blockquote>
+<p>Current microbial ecology studies encounter the challenges of all modern biological data: high levels of heterogeneity, sub-optimal experimental design, and high dimensionality. In this course, instructors will introduce approaches to deal with these challenges with two commonly used computational tools: R and Bioconductor. Participants will receive an introduction to R and packages used for data manipulation and visualization (e.g., ggplot2). Other sessions and interactive labs will focus on the common practices involved in the processing amplicon sequence data to make ecological inference.</p>
+</blockquote>
+<p>*Please Note: Attendees are required to bring their own laptops to participate in this course For R beginners. The Faculty of this Course recommend looking through a few of these links to get you a basic proficiency in order to maximize learning during the course:</p>
+<ul>
+<li><a href="https://www.edx.org/course/statistics-r-harvardx-ph525-1x-1" class="uri">https://www.edx.org/course/statistics-r-harvardx-ph525-1x-1</a></li>
+<li><a href="https://www.edx.org/course/r-basics" class="uri">https://www.edx.org/course/r-basics</a></li>
+<li><a href="https://www.rstudio.com/online-learning/#r-programming" class="uri">https://www.rstudio.com/online-learning/#r-programming</a></li>
+<li><a href="https://support.rstudio.com/hc/en-us/articles/201141096-Getting-Started-with-R" class="uri">https://support.rstudio.com/hc/en-us/articles/201141096-Getting-Started-with-R</a></li>
+<li><a href="https://monashdatafluency.github.io/r-intro-2/" class="uri">https://monashdatafluency.github.io/r-intro-2/</a></li>
+<li><a href="https://www.kdnuggets.com/2016/03/datacamp-r-learning-path-7-steps.html" class="uri">https://www.kdnuggets.com/2016/03/datacamp-r-learning-path-7-steps.html</a></li>
+</ul>
+<p>The workshop will cover the use of a variety of R packages useful for the analysis of amplicon sequencing data (esp. 16S rRNA gene targets). These analyses will cover details of sequence data processing using <a href="https://benjjneb.github.io/dada2/index.html">DADA2</a>, creating a phyloseq data object, and extended concepts in microbiome analysis.</p>
+<p> </p>
+<p> </p>
+<hr />
+</div>
+</div>
+<div id="section-1" class="section level1">
 <h1>2018</h1>
 <p> </p>
-<div id="asm-microbe-workshop" class="section level2">
+<div id="asm-microbe-workshop-1" class="section level2">
 <h2><a href="https://www.asm.org/index.php/program-microbe-2018/courses-and-workshops">ASM Microbe Workshop</a></h2>
 <ul>
 <li><a href="http://www.abstractsonline.com/pp8/#!/4623/session/1159">006-WS: Microbe Analysis Using R</a></li>
@@ -539,7 +696,7 @@ div.tocify {
 <hr />
 </div>
 </div>
-<div id="section-1" class="section level1">
+<div id="section-2" class="section level1">
 <h1>2017</h1>
 <p> </p>
 <div id="workshop-on-genomics-2017" class="section level2">
@@ -575,7 +732,7 @@ div.tocify {
 <hr />
 </div>
 </div>
-<div id="section-2" class="section level1">
+<div id="section-3" class="section level1">
 <h1>2016</h1>
 <p> </p>
 <div id="sismid-workshop-2016" class="section level2">
@@ -611,7 +768,7 @@ div.tocify {
 <hr />
 </div>
 </div>
-<div id="section-3" class="section level1">
+<div id="section-4" class="section level1">
 <h1>2015</h1>
 <div id="workshop-on-metagenomics-harvard" class="section level2">
 <h2>Workshop on Metagenomics (Harvard)</h2>
