@@ -6,7 +6,7 @@
 #'
 #' This is the suggested method
 #' for accessing
-#' the phylogenetic tree, (\code{\link[Biostrings]{XStringSet}}-class)
+#' the reference sequences, (\code{\link[Biostrings]{XStringSet}}-class)
 #' from a phyloseq data object (\code{\link{phyloseq-class}}).
 #' Like other accessors (see See Also, below), the default behavior of this method
 #' is to stop with an
@@ -16,8 +16,8 @@
 #' @usage refseq(physeq, errorIfNULL=TRUE)
 #' 
 #' @param physeq (Required). An instance of phyloseq-class
-#'  that contains a phylogenetic tree. If physeq is a phylogenetic
-#'  tree (a component data class), then it is returned as-is.
+#'  that contains reference sequences. If physeq is reference
+#'  sequences (a component data class), then it is returned as-is.
 #'
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
