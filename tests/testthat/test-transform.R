@@ -11,9 +11,9 @@ test_that("Can transform_sample_counts of an OTU table that is either orientatio
   OTU0 = otu_table(esophagus)
   OTU1 = transform_sample_counts(OTU0, rank)
   OTU2 = transform_sample_counts(t(OTU0), rank)
-  expect_that(identical(ntaxa(OTU0), ntaxa(OTU1)), is_true(),
+  expect_true(identical(ntaxa(OTU0), ntaxa(OTU1)),
               "ntaxa OTU1 doesn't match original after transformation.")
-  expect_that(identical(ntaxa(OTU0), ntaxa(OTU2)), is_true(),
+  expect_true(identical(ntaxa(OTU0), ntaxa(OTU2)),
               "ntaxa OTU2 doesn't match original after transformation.")
 })
 test_that("Can transform_sample_counts on phyloseq with either orientation", {

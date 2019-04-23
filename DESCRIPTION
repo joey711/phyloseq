@@ -1,6 +1,6 @@
 Package: phyloseq
-Version: 1.27.2
-Date: 2019-02-16
+Version: 1.27.6
+Date: 2019-04-23
 Title: Handling and analysis of high-throughput microbiome
     census data
 Description: phyloseq provides a set of classes and tools
@@ -36,6 +36,7 @@ Suggests:
     DESeq2 (>= 1.16.1),
     genefilter (>= 1.58),
     knitr (>= 1.16),
+    magrittr (>= 1.5),
     metagenomeSeq (>= 1.14),
     rmarkdown (>= 1.6),
     testthat (>= 1.0.2)

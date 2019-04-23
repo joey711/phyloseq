@@ -13,28 +13,30 @@ GP  <- GlobalPatterns
 mGP <- merge_samples(GlobalPatterns, "SampleType")
 
 test_that("Classes of merged phyloseq objects are as expected", {
-	expect_that(merge_samples(otu_table(GP), get_variable(GP, "SampleType")), is_a("otu_table"))
-	expect_that(merge_samples(sample_data(GP), "SampleType"), is_a("sample_data"))
-	expect_that(mGP, is_a("phyloseq"))
+	expect_is(merge_samples(otu_table(GP), get_variable(GP, "SampleType")), ("otu_table"))
+  expect_is(merge_samples(sample_data(GP), "SampleType"), ("sample_data"))
+  expect_is(mGP, ("phyloseq"))
 })
 
 test_that("Same sam_data result for separate and combined merge in merge_samples", {
-	expect_that(
+	expect_identical(
 		merge_samples(sample_data(GP), "SampleType"),
-		is_identical_to(sample_data(mGP))
+		(sample_data(mGP))
 	)
 })
 
 test_that("Same otu_table result for separate and combined merge in merge_samples", {
-	expect_that(
+  expect_identical(
 		merge_samples(otu_table(GP), get_variable(GP, "SampleType")),
-		is_identical_to(otu_table(mGP))
+		(otu_table(mGP))
 	)
 })
 
 test_that("Sample Names of merged object now same set as merging factor levels", {
 	sampleTypes = levels(data.frame(sample_data(GP))$SampleType)
-	expect_that(setdiff(sampleTypes, sample_names(mGP)), is_identical_to(character()))
+	expect_identical(
+	  setdiff(sampleTypes, sample_names(mGP)), 
+	  (character()))
 })
 
 test_that("Counts from merged-samples are summed...", {
@@ -44,7 +46,7 @@ test_that("Counts from merged-samples are summed...", {
 	# Loop to check the correct summation has occured for all OTUs.
 	for( i in OTUnames10 ){
 		isum = as(tapply(get_sample(GP10, i), get_variable(GP10, "SampleType"), sum), "numeric")
-		expect_that(isum, is_equivalent_to(get_sample(mGP10, i)))
+		expect_equivalent(isum, (get_sample(mGP10, i)))
 	}
 })
 
@@ -61,8 +63,8 @@ test_that("merge_phyloseq: Break apart GP based on human-association,
 
 	# The species order is fixed to the tree, 
 	# so should be the same between the original and merged
-	expect_that(taxa_names(GP), is_identical_to(taxa_names(GP1)))
-	expect_that(phy_tree(h1), is_identical_to(phy_tree(h0)))
+	expect_identical(taxa_names(GP), (taxa_names(GP1)))
+	expect_identical(phy_tree(h1), (phy_tree(h0)))
 
 	# However, the sample order has been shuffled by the split/merge. 
 	# Fix the sample order by re-ordering the otu_table, and reassigning
@@ -94,9 +96,9 @@ test_that("merge_phyloseq: Break apart GP based on human-association,
 	# Should be fixed now. Full object and components now identical
 	expect_equal(GP1, GP) 
 	expect_identical(GP1, GP)
-	expect_that(otu_table(GP1), is_identical_to(otu_table(GP)))
-	expect_that(tax_table(GP1), is_identical_to(tax_table(GP)))
-	expect_that(phy_tree(GP1), is_identical_to(phy_tree(GP)))
+	expect_identical(otu_table(GP1), (otu_table(GP)))
+	expect_identical(tax_table(GP1), (tax_table(GP)))
+	expect_identical(phy_tree(GP1), (phy_tree(GP)))
 	
 	## Check factor levels
 	# The set
@@ -128,23 +130,23 @@ test_that("merge_phyloseq: Break apart GP based on human-association,
 data("GlobalPatterns")
 GP.chl = subset_taxa(GlobalPatterns, Phylum == "Chlamydiae")
 test_that("the tax_table slot is identical whether tax_glom()ed by itself or as component", {
-	expect_that(tax_glom(tax_table(GP.chl), "Family"), is_a("taxonomyTable"))
-	expect_that(n1<-tax_glom(GP.chl, "Family"), is_a("phyloseq"))
-	expect_that(ntaxa(n1), equals(4L))
-	expect_that(
+	expect_is(tax_glom(tax_table(GP.chl), "Family"), ("taxonomyTable"))
+	expect_is(n1<-tax_glom(GP.chl, "Family"), ("phyloseq"))
+	expect_equal(ntaxa(n1), (4L))
+	expect_equivalent(
 		tax_glom(tax_table(GP.chl), taxrank="Family"),
-		is_equivalent_to(tax_table(tax_glom(GP.chl, taxrank="Family")))
+		tax_table(tax_glom(GP.chl, taxrank="Family"))
 	)
 	n1 = as(tax_glom(tax_table(GP.chl), taxrank="Family", NArm=FALSE), "matrix")[, "Family"]
 	n2 = tax_glom(GP.chl, taxrank="Family", NArm=FALSE)
   expect_true(setequal(n1, as(tax_table(n2), "matrix")[, "Family"]))
-	expect_that(ntaxa(n2), equals(5L))	
+	expect_equal(ntaxa(n2), (5L))	
 })
 test_that("tax_glom() handles clearly agglomeration to one taxa", {
-	expect_that(n1 <- tax_glom(GP.chl, "Phylum"), gives_warning())
-	expect_that(n1, is_a("phyloseq"))
-	expect_that(ntaxa(n1), equals(1L))
-	expect_that(access(n1, "phy_tree"), is_a("NULL"))
+	expect_warning(n1 <- tax_glom(GP.chl, "Phylum"))
+	expect_is(n1, ("phyloseq"))
+	expect_equal(ntaxa(n1), (1L))
+	expect_is(access(n1, "phy_tree"), ("NULL"))
 })
 test_that("tax_glom() can handle even the highest rank glom", {
   expect_warning(tax_glom(GP.chl, "Kingdom"))
@@ -158,35 +160,35 @@ test_that("tax_glom() can handle even the highest rank glom", {
 # Use the GP.chl dataset from previous testing block
 test_that("prune_taxa() handles clearly pruning to one taxa", {
 	# throws warning, and NULL-tre
-	expect_that(n1 <- prune_taxa(taxa_names(GP.chl)[1:1], GP.chl), gives_warning())
-	expect_that(ntaxa(n1), equals(1L))
-	expect_that(n1, is_a("phyloseq"))
-	expect_that(access(n1, "phy_tree"), is_a("NULL"))
-	expect_that(access(n1, "otu_table"), is_a("otu_table"))
+	expect_warning(n1 <- prune_taxa(taxa_names(GP.chl)[1:1], GP.chl))
+	expect_equal(ntaxa(n1), (1L))
+	expect_is(n1, ("phyloseq"))
+	expect_is(access(n1, "phy_tree"), ("NULL"))
+	expect_is(access(n1, "otu_table"), ("otu_table"))
 })
 test_that("prune_taxa() properly handles standard-cases", {
 	# throws warning, and NULL-tre
-	expect_that(n1 <- prune_taxa(taxa_names(GP.chl)[1:5], GP.chl), is_a("phyloseq"))
-	expect_that(ntaxa(n1), equals(5L))
-	expect_that(access(n1, "phy_tree"), is_a("phylo"))
-	expect_that(access(n1, "otu_table"), is_a("otu_table"))
-	expect_that(access(n1, "sam_data"), is_a("sample_data"))
-	expect_that(access(n1, "tax_table"), is_a("taxonomyTable"))
+  expect_is(n1 <- prune_taxa(taxa_names(GP.chl)[1:5], GP.chl), ("phyloseq"))
+	expect_equal(ntaxa(n1), (5L))
+	expect_is(access(n1, "phy_tree"), ("phylo"))
+	expect_is(access(n1, "otu_table"), ("otu_table"))
+	expect_is(access(n1, "sam_data"), ("sample_data"))
+	expect_is(access(n1, "tax_table"), ("taxonomyTable"))
 	# Use logical vector, and get same answer
 	L2 <- vector(length=ntaxa(GP.chl))
 	L2[1:5] <- TRUE
-	expect_that(n2 <- prune_taxa(L2, GP.chl), is_a("phyloseq"))
-	expect_that(n2, is_identical_to(n1))	
+	expect_is(n2 <- prune_taxa(L2, GP.chl), ("phyloseq"))
+	expect_identical(n2, (n1))	
 })
 ################################################################################
 # merge_taxa
 # Use the GP.chl dataset from previous testing block
 test_that("merge_taxa() properly handles standard-cases", {
-	expect_that(n1 <- merge_taxa(GP.chl, c("24341", "579085")), is_a("phyloseq"))
-	expect_that(ntaxa(n1), equals(20L))
+	expect_is(n1 <- merge_taxa(GP.chl, c("24341", "579085")), ("phyloseq"))
+	expect_equal(ntaxa(n1), (20L))
 	# The first name is kept, others removed
-	expect_that("579085" %in% taxa_names(n1), equals(FALSE))
-	expect_that("24341" %in% taxa_names(n1),  equals(TRUE))
+	expect_equal("579085" %in% taxa_names(n1), (FALSE))
+	expect_equal("24341" %in% taxa_names(n1), (TRUE))
 	# Try a 3-element merge, check that the largest-count remains.
   OTUIDs = c("579085", "24341", "547579")
 	biggestOTU = names(which.max(taxa_sums(GP.chl)[OTUIDs]))
@@ -205,7 +207,7 @@ test_that("merge_taxa() properly handles standard-cases", {
 	expect_true(OTUIDs[1] %in% taxa_names(n2b))
 	expect_true(!any(setdiff(OTUIDs, OTUIDs[1]) %in% taxa_names(n2b)))
 	# Merge again, but specify the retained OTU name as the 3rd one, rather than the default
-	expect_that(n3 <- merge_taxa(GP.chl, eqtaxa=OTUIDs, archetype=OTUIDs[3]), is_a("phyloseq"))
+	expect_is(n3 <- merge_taxa(GP.chl, eqtaxa=OTUIDs, archetype=OTUIDs[3]), ("phyloseq"))
 	# "547579" is kept, others removed
 	expect_true(OTUIDs[3] %in% taxa_names(n3))
 	expect_true(!any(setdiff(OTUIDs, OTUIDs[3]) %in% taxa_names(n3)))
@@ -245,7 +247,7 @@ test_that("merge_taxa() replaces disagreements in taxonomy with NA", {
 	biggestOTU = names(which.max(taxa_sums(GP20f)[OTUIDs]))  
   expect_is(n7 <- merge_taxa(GP20f, OTUIDs), "phyloseq")
 	# Should be all NA taxonomy
-	expect_that( all(is.na(as(tax_table(n7), "matrix")[biggestOTU, ])), equals(TRUE))
+	expect_equal( all(is.na(as(tax_table(n7), "matrix")[biggestOTU, ])), (TRUE))
 	# Test that it works for differences at the last rank
 	# First, make the first taxa the same as "951"
 	tax_table(GP20f)[1, ] <- tax_table(GP20f)["951", ]
@@ -266,10 +268,10 @@ test_that("merge_taxa() replaces disagreements in taxonomy with NA", {
 	n9   <- merge_taxa(GP20f, merge_these)
 	n9t1 <- as(tax_table(n9), "matrix")["549322", ]
 	# None should be NA
-	expect_that(any(is.na(n9t1)), equals(FALSE))
-	expect_that(length(n9t1), equals(7L))
+	expect_equal(any(is.na(n9t1)), (FALSE))
+	expect_equal(length(n9t1), (7L))
 	# Merge worked, "951" is gone.
-	expect_that("951" %in% taxa_names(n9), equals(FALSE))	
+	expect_equal("951" %in% taxa_names(n9), (FALSE))	
 })
 test_that("merge_taxa() properly handles different types and orders of taxa specified by the eqtaxa and archetype arguments, and also handles refseq data", {
   # Test merge_taxa on data with a reference sequence file.
@@ -288,18 +290,18 @@ test_that("merge_taxa() properly handles different types and orders of taxa spec
   expect_true(!identical(rs1, rs3))
   expect_equivalent(rs3, rs4)
   # double-check that components are all there
-  expect_that(length(getslots.phyloseq(rs1)), equals(5L))
-  expect_that(length(getslots.phyloseq(rs2)), equals(5L))
-  expect_that(length(getslots.phyloseq(rs3)), equals(5L))
-  expect_that(length(getslots.phyloseq(rs4)), equals(5L))
+  expect_equal(length(getslots.phyloseq(rs1)), (5L))
+  expect_equal(length(getslots.phyloseq(rs2)), (5L))
+  expect_equal(length(getslots.phyloseq(rs3)), (5L))
+  expect_equal(length(getslots.phyloseq(rs4)), (5L))
   # The number of taxa should be the same as the original less two
-  expect_that(ntaxa(rs1), equals(ntaxa(rs0)-2L))
-  expect_that(ntaxa(rs2), equals(ntaxa(rs0)-2L))
-  expect_that(ntaxa(rs3), equals(ntaxa(rs0)-2L))
-  expect_that(ntaxa(rs4), equals(ntaxa(rs0)-2L))	
+  expect_equal(ntaxa(rs1), (ntaxa(rs0)-2L))
+  expect_equal(ntaxa(rs2), (ntaxa(rs0)-2L))
+  expect_equal(ntaxa(rs3), (ntaxa(rs0)-2L))
+  expect_equal(ntaxa(rs4), (ntaxa(rs0)-2L))	
   # merge_taxa() errors when a bad archetype is provided
   # Throws error because keepIndex is NULL
-  expect_that(merge_taxa(rs0, c("71074", "10517", "8096"), "wtf"), throws_error())
+  expect_error(merge_taxa(rs0, c("71074", "10517", "8096"), "wtf"))
   # Throws error because keepIndex is not part of eqtaxa (logic error, invalid merge)
-  expect_that(merge_taxa(rs0, c("71074", "10517", "8096"), "13662"), throws_error())
+  expect_error(merge_taxa(rs0, c("71074", "10517", "8096"), "13662"))
 })

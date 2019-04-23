@@ -90,36 +90,38 @@ rs_file <- system.file("extdata", "qiime500-refseq.fasta", package="phyloseq")
 
 t0 <- import_qiime(otufile, mapfile, trefile, rs_file, verbose=FALSE)
 test_that("Class of import result is phyloseq-class", {
-	expect_that(t0, is_a("phyloseq"))
+	expect_is(t0, "phyloseq")
 })
 
 test_that("Classes of components are as expected", {
-	expect_that(otu_table(t0), is_a("otu_table"))
-	expect_that(tax_table(t0), is_a("taxonomyTable"))
-	expect_that(sample_data(t0), is_a("sample_data"))
-	expect_that(phy_tree(t0), is_a("phylo"))		
-	expect_that(refseq(t0), is_a("DNAStringSet"))
+	expect_is(otu_table(t0), ("otu_table"))
+	expect_is(tax_table(t0), ("taxonomyTable"))
+	expect_is(sample_data(t0), ("sample_data"))
+	expect_is(phy_tree(t0), ("phylo"))		
+	expect_is(refseq(t0), ("DNAStringSet"))
 })
 
 test_that("Features of the abundance data are consistent, match known values", {
-	expect_that(sum(taxa_sums(t0)), equals(1269671L))
-	expect_that(sum(taxa_sums(t0)==0), equals(5L))
-	expect_that(sum(taxa_sums(t0)>=100), equals(183L))
-	expect_that(sum(taxa_sums(t0)), equals(sum(sample_sums(t0))))
-	expect_that(sum(sample_sums(t0) > 10000L), equals(20L))
-	expect_that(nsamples(t0), equals(26L))
-	expect_that(ntaxa(t0), equals(500L))
-	expect_that(length(rank_names(t0)), equals(7L))
+	expect_equal(sum(taxa_sums(t0)), (1269671L))
+	expect_equal(sum(taxa_sums(t0)==0), (5L))
+	expect_equal(sum(taxa_sums(t0)>=100), (183L))
+	expect_equal(sum(taxa_sums(t0)), (sum(sample_sums(t0))))
+	expect_equal(sum(sample_sums(t0) > 10000L), (20L))
+	expect_equal(nsamples(t0), (26L))
+	expect_equal(ntaxa(t0), (500L))
+	expect_equal(length(rank_names(t0)), (7L))
 })
 
 test_that("Features of the taxonomy table match expected values", {
-	expect_that(length(rank_names(t0)), equals(7L))
+	expect_equal(length(rank_names(t0)), (7L))
 	expect_equal(rank_names(t0), 
                c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"))
 	tax53 = as(tax_table(t0), "matrix")[53, ]
-	expect_that(tax53, is_equivalent_to(c("Bacteria", "Proteobacteria", "Deltaproteobacteria",
-		"Desulfovibrionales", "Desulfomicrobiaceae", 
-    "Desulfomicrobium", "Desulfomicrobiumorale")))	
+	expect_equivalent(
+	  tax53, 
+	  c("Bacteria", "Proteobacteria", "Deltaproteobacteria",
+	    "Desulfovibrionales", "Desulfomicrobiaceae", 
+	    "Desulfomicrobium", "Desulfomicrobiumorale"))
 })
 ################################################################################
 # parse function tests - note, these are also used by import_biom
@@ -188,119 +190,119 @@ refseqfilename = system.file("extdata", "biom-refseq.fasta",  package="phyloseq"
 
 test_that("Importing biom files yield phyloseq objects", {
 	library("biomformat")
-	rdbiom = read_biom(rich_sparse_biom)
+	rdbiom = read_biom(rich_dense_biom)
 	rsbiom = read_biom(rich_sparse_biom)
 
 	rich_dense = import_biom(rdbiom)
 	rich_sparse = import_biom(rsbiom)
 
-	expect_that(rich_dense,  is_a("phyloseq"))
-	expect_that(rich_sparse, is_a("phyloseq"))
+	expect_is(rich_dense,  ("phyloseq"))
+	expect_is(rich_sparse, ("phyloseq"))
 	
-	expect_that(ntaxa(rich_dense), equals(5L))
-	expect_that(ntaxa(rich_sparse), equals(5L))
+	expect_equal(ntaxa(rich_dense), (5L))
+	expect_equal(ntaxa(rich_sparse), (5L))
 
 	# # Component classes
 	# sample_data
-	expect_that(access(rich_dense,  "sam_data"), is_a("sample_data"))
-	expect_that(access(rich_sparse, "sam_data"), is_a("sample_data"))
+	expect_is(access(rich_dense,  "sam_data"), ("sample_data"))
+	expect_is(access(rich_sparse, "sam_data"), ("sample_data"))
 
 	# taxonomyTable
-	expect_that(access(rich_dense,  "tax_table"), is_a("taxonomyTable"))
-	expect_that(access(rich_sparse, "tax_table"), is_a("taxonomyTable"))
+	expect_is(access(rich_dense,  "tax_table"), ("taxonomyTable"))
+	expect_is(access(rich_sparse, "tax_table"), ("taxonomyTable"))
 
 	# otu_table
-	expect_that(access(rich_dense,  "otu_table"), is_a("otu_table"))
-	expect_that(access(rich_sparse, "otu_table"), is_a("otu_table"))
+	expect_is(access(rich_dense,  "otu_table"), ("otu_table"))
+	expect_is(access(rich_sparse, "otu_table"), ("otu_table"))
 })
 
-test_that("The different types of biom files yield phyloseq objects",{
+test_that("The different types of biom files yield phyloseq objects", {
 	rich_dense = import_biom(rich_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	rich_sparse = import_biom(rich_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	min_dense = import_biom(min_dense_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	min_sparse = import_biom(min_sparse_biom, treefilename, refseqfilename, parseFunction=parse_taxonomy_greengenes)
 	
-	expect_that(rich_dense,  is_a("phyloseq"))
-	expect_that(rich_sparse, is_a("phyloseq"))
-	expect_that(min_dense,   is_a("phyloseq"))
-	expect_that(min_sparse,  is_a("phyloseq"))
+	expect_is(rich_dense,  ("phyloseq"))
+	expect_is(rich_sparse, ("phyloseq"))
+	expect_is(min_dense,   ("phyloseq"))
+	expect_is(min_sparse,  ("phyloseq"))
 
-	expect_that(ntaxa(rich_dense), equals(5L))
-	expect_that(ntaxa(rich_sparse), equals(5L))
-	expect_that(ntaxa(min_dense), equals(5L))
-	expect_that(ntaxa(min_sparse), equals(5L))			
+	expect_equal(ntaxa(rich_dense), (5L))
+	expect_equal(ntaxa(rich_sparse), (5L))
+	expect_equal(ntaxa(min_dense), (5L))
+	expect_equal(ntaxa(min_sparse), (5L))			
 
 	# # Component classes
 	# sample_data
-	expect_that(access(rich_dense,  "sam_data"), is_a("sample_data"))
-	expect_that(access(rich_sparse, "sam_data"), is_a("sample_data"))
-	expect_that(access(min_dense,   "sam_data"), is_a("NULL"))
-	expect_that(access(min_sparse,  "sam_data"), is_a("NULL"))
+	expect_is(access(rich_dense,  "sam_data"), ("sample_data"))
+	expect_is(access(rich_sparse, "sam_data"), ("sample_data"))
+	expect_is(access(min_dense,   "sam_data"), ("NULL"))
+	expect_is(access(min_sparse,  "sam_data"), ("NULL"))
 
 	# taxonomyTable
-	expect_that(access(rich_dense,  "tax_table"), is_a("taxonomyTable"))
-	expect_that(access(rich_sparse, "tax_table"), is_a("taxonomyTable"))
-	expect_that(access(min_dense,   "tax_table"), is_a("NULL"))
-	expect_that(access(min_sparse,  "tax_table"), is_a("NULL"))		
+	expect_is(access(rich_dense,  "tax_table"), ("taxonomyTable"))
+	expect_is(access(rich_sparse, "tax_table"), ("taxonomyTable"))
+	expect_is(access(min_dense,   "tax_table"), ("NULL"))
+	expect_is(access(min_sparse,  "tax_table"), ("NULL"))		
 	
 	# phylo tree
-	expect_that(access(rich_dense,  "phy_tree"), is_a("phylo"))
-	expect_that(access(rich_sparse, "phy_tree"), is_a("phylo"))
-	expect_that(access(min_dense,   "phy_tree"), is_a("phylo"))
-	expect_that(access(min_sparse,  "phy_tree"), is_a("phylo"))
+	expect_is(access(rich_dense,  "phy_tree"), ("phylo"))
+	expect_is(access(rich_sparse, "phy_tree"), ("phylo"))
+	expect_is(access(min_dense,   "phy_tree"), ("phylo"))
+	expect_is(access(min_sparse,  "phy_tree"), ("phylo"))
 
 	# reference sequences
-	expect_that(inherits(access(rich_dense,  "refseq"), "XStringSet"), is_true())
-	expect_that(inherits(access(rich_sparse,  "refseq"), "XStringSet"), is_true())
-	expect_that(inherits(access(min_dense,  "refseq"), "XStringSet"), is_true())
-	expect_that(inherits(access(min_sparse,  "refseq"), "XStringSet"), is_true())
-	expect_that(access(rich_dense,  "refseq"), is_a("DNAStringSet"))
-	expect_that(access(rich_sparse, "refseq"), is_a("DNAStringSet"))
-	expect_that(access(min_dense,   "refseq"), is_a("DNAStringSet"))
-	expect_that(access(min_sparse,  "refseq"), is_a("DNAStringSet"))	
+	expect_true(inherits(access(rich_dense,  "refseq"), "XStringSet"))
+	expect_true(inherits(access(rich_sparse,  "refseq"), "XStringSet"))
+	expect_true(inherits(access(min_dense,  "refseq"), "XStringSet"))
+	expect_true(inherits(access(min_sparse,  "refseq"), "XStringSet"))
+	expect_is(access(rich_dense,  "refseq"), ("DNAStringSet"))
+	expect_is(access(rich_sparse, "refseq"), ("DNAStringSet"))
+	expect_is(access(min_dense,   "refseq"), ("DNAStringSet"))
+	expect_is(access(min_sparse,  "refseq"), ("DNAStringSet"))	
 		
 	# otu_table		
-	expect_that(access(rich_dense,  "otu_table"), is_a("otu_table"))
-	expect_that(access(rich_sparse, "otu_table"), is_a("otu_table"))
-	expect_that(access(min_dense,   "otu_table"), is_a("otu_table"))
-	expect_that(access(min_sparse,  "otu_table"), is_a("otu_table"))
+	expect_is(access(rich_dense,  "otu_table"), ("otu_table"))
+	expect_is(access(rich_sparse, "otu_table"), ("otu_table"))
+	expect_is(access(min_dense,   "otu_table"), ("otu_table"))
+	expect_is(access(min_sparse,  "otu_table"), ("otu_table"))
 	
 	# Compare values in the otu_table. For some reason the otu_tables are not identical
 	# one position is plus-two, another is minus-two
 	combrich <- c(access(rich_dense, "otu_table"), access(rich_sparse, "otu_table"))
-	expect_that(sum(diff(combrich, length(access(rich_dense, "otu_table")))), is_equivalent_to(0))
-	expect_that(max(diff(combrich, length(access(rich_dense, "otu_table")))), is_equivalent_to(2))
-	expect_that(min(diff(combrich, length(access(rich_dense, "otu_table")))), is_equivalent_to(-2))
+	expect_equivalent(sum(diff(combrich, length(access(rich_dense, "otu_table")))), (0))
+	expect_equivalent(max(diff(combrich, length(access(rich_dense, "otu_table")))), (2))
+	expect_equivalent(min(diff(combrich, length(access(rich_dense, "otu_table")))), (-2))
 	combmin <- c(access(min_dense, "otu_table"), access(min_sparse, "otu_table"))
-	expect_that(sum(diff(combmin, length(access(min_dense, "otu_table")))), is_equivalent_to(0))
-	expect_that(max(diff(combmin, length(access(min_dense, "otu_table")))), is_equivalent_to(2))
-	expect_that(min(diff(combmin, length(access(min_dense, "otu_table")))), is_equivalent_to(-2))
+	expect_equivalent(sum(diff(combmin, length(access(min_dense, "otu_table")))), (0))
+	expect_equivalent(max(diff(combmin, length(access(min_dense, "otu_table")))), (2))
+	expect_equivalent(min(diff(combmin, length(access(min_dense, "otu_table")))), (-2))
 
-	expect_that(access(min_dense, "otu_table"),  is_equivalent_to(access(rich_dense, "otu_table")))
-	expect_that(access(min_sparse, "otu_table"), is_equivalent_to(access(rich_sparse, "otu_table")))
+	expect_equivalent(access(min_dense, "otu_table"), (access(rich_dense, "otu_table")))
+	expect_equivalent(access(min_sparse, "otu_table"), (access(rich_sparse, "otu_table")))
 
 	# Compare values in the sample_data
-	expect_that(access(rich_dense, "sam_data"), is_equivalent_to(access(rich_sparse, "sam_data")))
+	expect_equivalent(access(rich_dense, "sam_data"), (access(rich_sparse, "sam_data")))
 	
 	# Compare values in the taxonomyTable
-	expect_that(access(rich_dense, "tax_table"), is_equivalent_to(access(rich_sparse, "tax_table")))
+	expect_equivalent(access(rich_dense, "tax_table"), (access(rich_sparse, "tax_table")))
 
 })
 
 test_that("the import_biom and import(\"biom\", ) syntax give same result", {
 	x1 <- import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
 	x2 <- import("biom", BIOMfilename=rich_dense_biom, parseFunction=parse_taxonomy_greengenes)	
-	expect_that(x1, is_equivalent_to(x2))
+	expect_equivalent(x1, x2)
 })
 ################################################################################
 # read_tree tests
 test_that("The read_tree function works as expected:", {
 	GPNewick <- read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
 	expect_that(GPNewick, is_a("phylo"))
-	expect_that(ntaxa(GPNewick), equals(length(GPNewick$tip.label)))
-	expect_that(ntaxa(GPNewick), equals(500))
-	expect_that(GPNewick$Nnode, equals(499))
-	expect_that(taxa_names(GPNewick), is_equivalent_to(GPNewick$tip.label))	
+	expect_equal(ntaxa(GPNewick), length(GPNewick$tip.label))
+	expect_equal(ntaxa(GPNewick), 500L)
+	expect_equal(GPNewick$Nnode, 499L)
+	expect_equivalent(taxa_names(GPNewick), GPNewick$tip.label)
 	# Now read a nexus tree... 
 	# Some error-handling expectations
 	expect_that(read_tree("alskflsakjsfskfhas.akshfaksj"), gives_warning()) # file not exist
