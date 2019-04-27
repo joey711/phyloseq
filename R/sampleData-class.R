@@ -122,7 +122,7 @@ reconcile_categories <- function(DFSM){
 #'
 #' @return A subsetted object with the same class as \code{physeq}.
 #' 
-#' @seealso \code{\link{subset_species}}
+#' @seealso \code{\link{subset_taxa}}
 #'
 #' @export
 #' @rdname subset_samples-methods
