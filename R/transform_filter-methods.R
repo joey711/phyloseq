@@ -976,7 +976,7 @@ filterfun_sample = function(...){
 #' It takes as input a phyloseq object,
 #' and returns a logical vector
 #' indicating whether or not each OTU passed the criteria.
-#' Alternatively, if the \code{"prune"} option is set to \code{FALSE},
+#' Alternatively, if the \code{"prune"} option is set to \code{TRUE},
 #' it returns the already-trimmed version of the phyloseq object.
 #' 
 #' @usage filter_taxa(physeq, flist, prune=FALSE)
