@@ -47,7 +47,7 @@ phyloseq_to_metagenomeSeq = function(physeq, ...){
   # Create taxa annotation if possible
   if(!is.null(tax_table(physeq,FALSE))){
     TDF = AnnotatedDataFrame(data.frame(OTUname = taxa_names(physeq),
-          data.frame(tax_table(physeq)),row.names = taxa_names(physeq)))
+          data.frame(tax_table(physeq)@.Data),row.names = taxa_names(physeq)))
   } else {
     TDF = AnnotatedDataFrame(data.frame(OTUname = taxa_names(physeq),
           row.names = taxa_names(physeq)))
