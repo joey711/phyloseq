@@ -854,7 +854,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #'  Instead of returning a ggplot2-object, do you just want the relevant
 #'  \code{data.frame} that was used to build the plot? This is a
 #'  user-accessible option for obtaining the \code{data.frame},
-#'  in principal to make a custom plot that isn't possible with the
+#'  in principle to make a custom plot that isn't possible with the
 #'  available options in this function. For contributing new functions
 #'  (developers), the
 #'  \code{\link{phyloseq-package}} provides/uses an internal function
