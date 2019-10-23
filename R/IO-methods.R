@@ -493,7 +493,6 @@ read_tree_greengenes = function(treefile){
 #'  as a numeric matrix, while \code{$taxtab} contains a character matrix
 #'  of the taxonomy assignments.
 #'
-#' @importFrom data.table fread
 #' @importFrom plyr llply
 #'
 #' @seealso
@@ -525,18 +524,16 @@ import_qiime_otu_tax <- function(file, parseFunction=parse_taxonomy_qiime,
   skipLines = max(which(substr(x[1:25L], 1, 1)=="#"))-1L
   if(verbose){cat("Header is on line", (skipLines + 1L), " \n")}
   if(verbose){cat("Converting input file to a table...\n")}
-  x = fread(input=paste0(x, collapse="\n"), sep="\t", header=TRUE, skip=skipLines)
+  #x = fread(input=paste0(x, collapse="\n"), sep="\t", header=TRUE, skip=skipLines)
+  x <- read.table(text=x, sep="\t", header=TRUE, row.names=1, skip=skipLines, comment.char="", check.names=FALSE)
   if(verbose){cat("Defining OTU table... \n")}
-  taxstring = x$`Consensus Lineage`
-  # This pops the taxonomy (Consensus Lineage) column, in-place statement
-  x[, `Consensus Lineage`:=NULL]
-  # Store the OTU names, you will pop the column
-  OTUnames = x$`#OTU ID`
-  # This pops the OTUID column, in-place statement
-  x[, `#OTU ID`:=NULL]
-  x <- as(x, "matrix")
-  rownames(x) <- OTUnames
-  rm(OTUnames)
+  # This pops the taxonomy (Consensus Lineage) column, in-place statement.
+  # the columns name of taxonomy of otu table maybe "taxonomy" or "Consensus Lineage", 
+  # but the "taxonomy" is more common.
+  tmpname <- colnames(x)[!unlist(lapply(x,function(i)is.numeric(i)))]
+  taxstring <- as.vector(x[[tmpname]]) 
+  x <- x[, !colnames(x) %in% tmpname, drop=FALSE]
+  x <- as.matrix(x)
   if(verbose){cat("Parsing taxonomy table...\n")}
   # Split into "jagged" list (vectors of different lengths)
   taxlist = llply(taxstring, parseFunction, .parallel=parallel)
