@@ -350,7 +350,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
 read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 	# "phylo" object provided directly
-	if( class(treefile)[1] %in% c("phylo") ){ 
+	if( is(treefile, "phylo") ){ 
 		tree <- treefile
 	} else {
 	  # file path to tree file provided.
@@ -637,7 +637,7 @@ import_env_file <- function(envfilename, tree=NULL, sep="\t", ...){
 	# Convert to otu_table-class table (trivial table)
 	physeq <- envHash2otu_table(tipSampleTable)
 	# If tree is provided, combine it with the OTU Table
-	if( class(tree) == "phylo" ){
+	if( is(tree, "phylo") ){
 		# Create phyloseq-class with a tree and OTU Table (will perform any needed pruning)
 		physeq <- phyloseq(physeq, tree)
 	}
@@ -1472,8 +1472,8 @@ import_mothur_dist <- function(mothur_dist_file){
 #' myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
 #' export_mothur_dist(myDistObject)
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
-	if( class(x)== "matrix" ){ x <- as.dist(x) }
-	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }
+	if( is.matrix(x) ){ x <- as.dist(x) }
+	if( !is(x, "dist") ){ stop("x must be a dist object, or symm matrix") }
 
 	# While x is a dist-object, get the length of unique pairs
 	# to initialize the dist table.
@@ -1769,9 +1769,9 @@ import_biom <- function(BIOMfilename,
 	argumentlist <- list()
 	
 	# Read the data
-	if(class(BIOMfilename)=="character"){
+	if( is.character(BIOMfilename) ){
 		x = read_biom(biom_file=BIOMfilename)
-	} else if (class(BIOMfilename)=="biom"){
+	} else if (is(BIOMfilename, "biom")){
 		x = BIOMfilename
 	} else {
 		stop("import_biom requires a 'character' string to a biom file or a 'biom-class' object")
