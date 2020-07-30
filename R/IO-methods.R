@@ -1861,7 +1861,7 @@ import_biom <- function(BIOMfilename,
 #' These are provided as both example and default functions for
 #' parsing a character vector of taxonomic rank information for a single taxa.
 #' As default functions, these are intended for cases where the data adheres to
-#' the naming convention used by greengenes
+#' the naming convention used by greengenes and silva.
 #' (\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi})
 #' or where the convention is unknown, respectively.
 #' To work, these functions -- and any similar custom function you may want to
@@ -1882,6 +1882,12 @@ import_biom <- function(BIOMfilename,
 #' to the appropriate taxonomic rank name used by greengenes
 #' (e.g. \code{"p__"} at the beginning of an element means that element is 
 #' the name of the phylum to which this OTU belongs).
+#' If you taxonomy data is based on SILVA, the \code{parse_taxonomy_silva_128} function
+#' clips the first 5 characters that identify rank, and uses these to name the
+#' corresponding element according to the appropriate taxonomic rank name used
+#' by SILVA (e.g. \code{"D_1__"} at the beginning of an element means that element
+#' is the name of the phylum to which this OTU belongs.
+#' Alternatively you can create your own function to parse this data.
 #' Most importantly, the expectations for these functions described above
 #' make them compatible to use during data import,
 #' specifcally the \code{\link{import_biom}} function, but 
@@ -1890,6 +1896,7 @@ import_biom <- function(BIOMfilename,
 #'
 #' @usage parse_taxonomy_default(char.vec)
 #' @usage parse_taxonomy_greengenes(char.vec)
+#' @usage parse_taxonomy_silva_128(char.vec)
 #' @usage parse_taxonomy_qiime(char.vec)
 #'
 #' @param char.vec (Required). A single character vector of taxonomic
@@ -1917,6 +1924,8 @@ import_biom <- function(BIOMfilename,
 #'  parse_taxonomy_greengenes(taxvec1)
 #'  taxvec2 = c("Root;k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae")
 #'  parse_taxonomy_qiime(taxvec2)
+#' taxvec3 = c("D_0__Bacteria", "D_1__Firmicutes", "D_2__Bacilli", "D_3__Staphylococcaceae")
+#' parse_taxonomy_silva_128(taxvec3)
 parse_taxonomy_default = function(char.vec){
 	# Remove any leading empty space
 	char.vec = gsub("^[[:space:]]{1,}", "", char.vec)
@@ -1934,7 +1943,7 @@ parse_taxonomy_default = function(char.vec){
 #' @aliases parse_taxonomy_default
 #' @export
 parse_taxonomy_greengenes <- function(char.vec){
-	# Use default to assign names to elements in case problem with greengenes prefix
+	# Use default to assign names to elements in case problem with Greengenes prefix
 	char.vec = parse_taxonomy_default(char.vec)
 	# Define the meaning of each prefix according to GreenGenes taxonomy
 	Tranks = c(k="Kingdom", p="Phylum", c="Class", o="Order", f="Family", g="Genus", s="Species")
@@ -1958,6 +1967,51 @@ parse_taxonomy_greengenes <- function(char.vec){
 		names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
 	}
 	return(taxvec)
+}
+#' @rdname parseTaxonomy-functions
+#' @aliases parse_taxonomy_default
+#' @export
+parse_taxonomy_silva_128 <- function(char.vec){
+  # Use default to assign names to elements in case problem with Silva prefix
+  char.vec = parse_taxonomy_default(char.vec)
+  # Check for unassigned taxa
+  if (char.vec["Rank1"] == "Unassigned") {
+    char.vec <- c(Rank1="D_0__Unassigned", Rank2="D_1__Unassigned", Rank3="D_2__Unassigned", Rank4="D_3__Unassigned",
+                  Rank5="D_4__Unassigned", Rank6="D_5__Unassigned", Rank7="D_6__Unassigned")
+  }
+  # Define the meaning of each prefix according to SILVA taxonomy
+  Tranks = c(D_0="Kingdom", D_1="Phylum", D_2="Class", D_3="Order", D_4="Family", D_5="Genus", D_6="Species")
+  # Check for prefix using regexp, warn if there were none. trim indices, ti
+  ti = grep("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", char.vec)
+  if( length(ti) == 0L ){
+    warning(
+      "No silva prefixes were found. \n",
+      "Consider using parse_taxonomy_delfault() instead if true for all OTUs. \n",
+      "Dummy ranks may be included among taxonomic ranks now."
+    )
+    # Will want to return without further modifying char.vec
+    taxvec = char.vec
+    # Replace names of taxvec according to prefix, if any present...
+  } else {
+    # Format character vectors for Ambiguous taxa
+    if( length(ti) < 7 ){
+        for (key in names(char.vec)) {
+          if ( char.vec[key] == "Ambiguous_taxa" ) {
+            tax_no <- (as.numeric(substr(key, 5, 5)) - 1)
+            char.vec[key] = sprintf("D_%s__Ambiguous_taxa", tax_no)
+          }
+        }
+      # Reset the trimmed indicies if Ambiguous taxa
+      ti = grep("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", char.vec)
+    }
+    # Remove prefix using sub-"" regexp, call result taxvec
+    taxvec = gsub("[[:alpha:]]\\_[[:digit:]]{1}\\_\\_", "", char.vec)
+    # Define the ranks that will be replaced
+    repranks = Tranks[substr(char.vec[ti], 1, 3)]
+    # Replace, being sure to avoid prefixes notK present in Tranks
+    names(taxvec)[ti[!is.na(repranks)]] = repranks[!is.na(repranks)]
+  }
+  return(taxvec)
 }
 #' @rdname parseTaxonomy-functions
 #' @aliases parse_taxonomy_default

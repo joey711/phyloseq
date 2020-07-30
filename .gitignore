@@ -3,6 +3,9 @@
 *.Rproj
 *Rplots.pdf
 
+/.idea
+/.idea/**
+
 cache/*
 figure/*
 
