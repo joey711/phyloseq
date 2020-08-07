@@ -327,7 +327,7 @@ test_that("estimate_richness: test values, classes", {
   expect_is(erdf, "data.frame")
   expect_equivalent(nrow(erdf), 56)
   # Contains all expected measures 
-  expect_true(all(c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher") %in% colnames(erdf)))
+  expect_true(all(c("Observed", "Chao1", "ACE", "Shannon", "Pielou", "Simpson", "InvSimpson", "SimpsonE", "Fisher") %in% colnames(erdf)))
   # and certain standard errors:
   expect_true(all(c("se.chao1", "se.ACE") %in% colnames(erdf)))
   # Test some values. 
@@ -353,7 +353,7 @@ test_that("plot_richness: Standard plots work", {
   p = plot_richness(soilrep)
   expect_is(p, "ggplot")
   expect_equivalent(levels(p$data$variable),
-                    c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher"))
+                    c("Observed", "Chao1", "ACE", "Shannon", "Pielou", "Simpson", "InvSimpson", "SimpsonE", "Fisher"))
   expect_false(all(is.na(p$data$se)))
   expect_true(any(is.na(p$data$se)))
   p = plot_richness(soilrep, measures=c("Observed", "Chao1"))
