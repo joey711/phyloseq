@@ -814,7 +814,7 @@ setMethod("t", signature("phyloseq"), function(x){
 #' head(otu_table(x4), 10)
 transform_sample_counts <- function(physeq, fun, ...){
 	# Test the user-provided function returns a vector of the same length as input.
-	if( !identical(length(fun(1:10)), 10L) ){stop("`fun` not valid function.")}
+	if( !identical(length(fun(1:10, ...)), 10L) ){stop("`fun` not valid function.")}
 	# Check orientation, transpose if-needed to make apply work properly.
 	if( taxa_are_rows(physeq) ){
 		newphyseq = apply(as(otu_table(physeq), "matrix"), 2, fun, ...)
