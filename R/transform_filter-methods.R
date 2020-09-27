@@ -157,7 +157,7 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 		rmsamples = sample_names(physeq)[sample_sums(physeq) < sample.size]
     if(verbose){
       message(length(rmsamples), " samples removed",
-          "because they contained fewer reads than `sample.size`.")
+          " because they contained fewer reads than `sample.size`.")
       message("Up to first five removed samples are: \n")
       message(paste(rmsamples[1:min(5, length(rmsamples))], sep="\t"))
       message("...")
