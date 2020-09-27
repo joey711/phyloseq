@@ -157,9 +157,9 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 		rmsamples = sample_names(physeq)[sample_sums(physeq) < sample.size]
     if(verbose){
       message(length(rmsamples), " samples removed",
-          "because they contained fewer reads than `sample.size`.")
+          " because they contained fewer reads than `sample.size`.")
       message("Up to first five removed samples are: \n")
-      message(paste(rmsamples[1:min(5, length(rmsamples))], sep="\t"))
+      message(paste(rmsamples[1:min(5, length(rmsamples))], collapse="\t"))
       message("...")
     }
 		# Now done with notifying user of pruning, actually prune.
@@ -183,7 +183,8 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
     rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
     if( length(rmtaxa) > 0 ){
       if(verbose){
-        message(length(rmtaxa), "OTUs were removed because they are no longer \n",
+        message(length(rmtaxa),
+            " OTUs were removed because they are no longer \n",
             "present in any sample after random subsampling\n")
         message("...")
       }
