@@ -183,7 +183,7 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
     rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
     if( length(rmtaxa) > 0 ){
       if(verbose){
-        message(length(rmtaxa), "OTUs were removed because they are no longer \n",
+        message(length(rmtaxa), " OTUs were removed because they are no longer \n",
             "present in any sample after random subsampling\n")
         message("...")
       }
