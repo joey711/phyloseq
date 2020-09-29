@@ -92,6 +92,7 @@ setMethod("otu_table", "ANY", function(object, errorIfNULL=TRUE){
 #' @usage taxa_sums(x)
 #'
 #' @param x \code{\link{otu_table-class}}, or \code{\link{phyloseq-class}}.
+#' @param na.rm Ignore NA values in taking the sum. FALSE by default.
 #' 
 #' @return A \code{\link{numeric-class}} with length equal to the number of species
 #'  in the table, name indicated the taxa ID, and value equal to the sum of
@@ -104,12 +105,12 @@ setMethod("otu_table", "ANY", function(object, errorIfNULL=TRUE){
 #' taxa_sums(enterotype)
 #' data(esophagus)
 #' taxa_sums(esophagus)
-taxa_sums <- function(x){
+taxa_sums <- function(x, na.rm = FALSE){
 	x <- otu_table(x)
 	if( taxa_are_rows(x) ){
-		rowSums(x)
+		rowSums(x, na.rm = na.rm)
 	} else {
-		colSums(x)
+		colSums(x, na.rm = na.rm)
 	}
 }
 ################################################################################
