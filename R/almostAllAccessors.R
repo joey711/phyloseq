@@ -450,6 +450,27 @@ rank_names <- function(physeq, errorIfNULL=TRUE){
 	colnames(tax_table(physeq, errorIfNULL))	
 }
 ################################################################################
+#' Return the lowest classified rank in the taxonomy table
+#'
+#' @usage lowest_rank(physeq)
+#'
+#' @return Character vector. The name of the lowest rank in the taxonomy table.
+#'
+#' @seealso \code{\link{rank_names}}}
+#'
+#' @export
+#'
+#' @examples
+#' data(enterotype)
+#' lowest_rank(enterotype)
+lowest_rank <- function(physeq) {
+  rn <- tax_table(physeq)
+  cn <- colnames(rn[,colSums(is.na(rn)) != nrow(rn)])
+  tail(cn, 1)
+}
+
+
+################################################################################
 #' Get a unique vector of the observed taxa at a particular taxonomic rank
 #'
 #' This is a simple accessor function to make it more convenient to determine
