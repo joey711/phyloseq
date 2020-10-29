@@ -100,7 +100,7 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 
 	if( type %in% c("taxa", "species", "OTUs", "otus", "otu")){
     # Calculate or asign taxa-wise distance matrix
-	  if( class(distance) == "dist" ){ 
+	  if( is(distance,"dist") ){ 
 	    # If distance a distance object, use it rather than re-calculate
 	    obj.dist <- distance
 	    if( attributes(obj.dist)$Size != ntaxa(physeq) ){
@@ -109,7 +109,7 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 	    if( !setequal(attributes(obj.dist)$Labels, taxa_names(physeq)) ){
 	      stop("taxa_names does not exactly match dist-indices")
 	    }
-	  } else if( class(distance) == "character" ){ 
+	  } else if( is.character(distance) ){ 
 	    # If character string, pass on to distance(), assume supported
 	    obj.dist <- distance(physeq, method=distance, type=type, ...)
 	    # Else, assume a custom function and attempt to calculate.
@@ -127,7 +127,7 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 		CoMa <- TaDiMa < max.dist   
 	} else if( type == "samples" ){
     # Calculate or asign sample-wise distance matrix
-	  if( class(distance) == "dist" ){ # If argument is already a distance matrix.
+	  if( is(distance, "dist") ){ # If argument is already a distance matrix.
 	    # If distance a distance object, use it rather than re-calculate
 	    obj.dist <- distance
 	    if( attributes(obj.dist)$Size != nsamples(physeq) ){
@@ -137,7 +137,7 @@ make_network <- function(physeq, type="samples", distance="jaccard", max.dist = 
 	      stop("sample_names does not exactly match dist-indices")
 	    }
 	    # If character string, pass on to distance(), assume supported    	
-	  } else if( class(distance) == "character" ){
+	  } else if( is.character(distance) ){
 	    # Else, assume a custom function and attempt to calculate. 
 	    obj.dist <- distance(physeq, method=distance, type=type, ...)
 	  } else { 

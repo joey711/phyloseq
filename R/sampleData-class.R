@@ -138,7 +138,7 @@ subset_samples <- function(physeq, ...){
 	} else {
 		oldDF <- as(sample_data(physeq), "data.frame")
 		newDF <- subset(oldDF, ...)
-		if( class(physeq) == "sample_data" ){
+		if( is(physeq, "sample_data") ){
 			return(sample_data(newDF))
 		} else {
 			sample_data(physeq) <- sample_data(newDF)

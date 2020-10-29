@@ -215,7 +215,7 @@ ordinate = function(physeq, method="DCA", distance="bray", formula=NULL, ...){
 	# Define ps.dist. Check the class of distance argument is character or dist
 	if( inherits(distance, "dist") ){
 		ps.dist <- distance
-	} else if( class(distance) == "character" ){
+	} else if( is.character(distance) ){
 		# There are some special options for NMDS/metaMDS if distance-method
 		# is supported by vegdist, so check first. If not, just calculate distance	
 		vegdist_methods <- c("manhattan", "euclidean", "canberra", "bray", 
@@ -323,7 +323,7 @@ ordinate = function(physeq, method="DCA", distance="bray", formula=NULL, ...){
 #' plot_ordination(GP, GP.dpcoa, color="SampleType")
 DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 	# Check that physeq is a phyloseq-class
-	if(!class(physeq)=="phyloseq"){stop("physeq must be phyloseq-class")}
+	if(!is(physeq, "phyloseq")){stop("physeq must be phyloseq-class")}
 	
 	# Remove any OTUs that are absent from all the samples.
 	physeq <- prune_taxa((taxa_sums(physeq) > 0), physeq)

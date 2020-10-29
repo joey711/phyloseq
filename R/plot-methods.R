@@ -45,9 +45,9 @@ setGeneric("plot_phyloseq", function(physeq, ...){ standardGeneric("plot_phylose
 #' @aliases plot_phyloseq,phyloseq-method
 #' @rdname plot_phyloseq-methods
 setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
-	if( all(c("otu_table", "sample_data", "phy_tree") %in% getslots.phyloseq(physeq)) ){
+	if( all(c("otu_table", "sam_data", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
-	} else if( all(c("otu_table", "sample_data", "tax_table") %in% getslots.phyloseq(physeq) ) ){
+	} else if( all(c("otu_table", "sam_data", "tax_table") %in% getslots.phyloseq(physeq) ) ){
 		plot_bar(physeq, ...)
 	} else if( all(c("otu_table", "phy_tree") %in% getslots.phyloseq(physeq)) ){
 		plot_tree(esophagus, color="samples")	
@@ -1168,7 +1168,7 @@ rm.na.phyloseq <- function(DF, key.var){
 	# DF[!is.na(DF[, key.var]), ]
 	DF <- subset(DF, !is.na(eval(parse(text=key.var))))
 	# (2) Remove NA from the factor level, if a factor.
-	if( class(DF[, key.var]) == "factor" ){
+	if( is.factor(DF[, key.var]) ){
 		DF[, key.var] <- factor(as(DF[, key.var], "character"))
 	}
 	return(DF)
