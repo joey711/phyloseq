@@ -2225,11 +2225,13 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     if(justify=="jagged"){
       # Tip label aesthetic mapping.
       # Aesthetics can be NULL, and that aesthetic gets ignored.
-      labelMap <- aes_string(x="xright", y="y", label=label.tips, color=color)
+      labelSpacing <- labelDT$xright * base.spacing # default 0.02
+      labelMap <- aes_string(x="xright+labelSpacing", y="y", label=label.tips, color=color)
     } else {
       # The left-justified version of tip-labels.
       labelSpacing <- max(labelDT$xright, na.rm=TRUE) * base.spacing # default 0.02
-      labelMap <- aes_string(x="max(xright, na.rm=TRUE)+labelSpacing", y="y", label=label.tips, color=color)
+      labelMap <- aes_string(x="max(xright, na.rm=TRUE)+labelSpacing", y="y", 
+			     label=label.tips, color=color)
     }
     p <- p + geom_text(labelMap, data=labelDT, size=I(text.size), hjust=0, na.rm=TRUE)
   }
@@ -2336,13 +2338,16 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     }
     labelMap <- NULL
     if(justify=="jagged"){
-      labelMap <- aes_string(x="xfartiplab", y="y", label=label.tips, color=color)
+      labelSpacing <- tiplabDT$xfartiplab * base.spacing # default 0.02
+      labelMap <- aes_string(x="xfartiplab+labelSpacing", y="y", label=label.tips, color=color)
     } else {
       labelSpacing <- max(tiplabDT$xfartiplab, na.rm=TRUE) * base.spacing # default 0.02
-      labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)+labelSpacing", y="y", label=label.tips, color=color)
+      labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)+labelSpacing", y="y", 
+			     label=label.tips, color=color)
     }
     # Add labels layer to plotting object.
-    p <- p + geom_text(labelMap, data=tiplabDT, size=I(text.size), hjust=0, na.rm=TRUE)
+    p <- p + geom_text(labelMap, data=tiplabDT, size=I(text.size), hjust=0, na.rm=TRUE, 
+		       show.legend=FALSE)
   } 
   # Plot margins. 
   # Adjust the tree graphic plot margins.
