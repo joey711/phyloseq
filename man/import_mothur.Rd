@@ -4,10 +4,15 @@
 \alias{import_mothur}
 \title{General function for importing mothur data files into phyloseq.}
 \usage{
-import_mothur(mothur_list_file = NULL, mothur_group_file = NULL,
-  mothur_tree_file = NULL, cutoff = NULL, mothur_shared_file = NULL,
+import_mothur(
+  mothur_list_file = NULL,
+  mothur_group_file = NULL,
+  mothur_tree_file = NULL,
+  cutoff = NULL,
+  mothur_shared_file = NULL,
   mothur_constaxonomy_file = NULL,
-  parseFunction = parse_taxonomy_default)
+  parseFunction = parse_taxonomy_default
+)
 }
 \arguments{
 \item{mothur_list_file}{(Optional). The list file name / location produced by \emph{mothur}.}

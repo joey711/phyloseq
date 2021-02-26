@@ -11,6 +11,10 @@ parse_taxonomy_default(char.vec)
 parse_taxonomy_greengenes(char.vec)
 
 parse_taxonomy_qiime(char.vec)
+
+parse_taxonomy_greengenes(char.vec)
+
+parse_taxonomy_qiime(char.vec)
 }
 \arguments{
 \item{char.vec}{(Required). A single character vector of taxonomic

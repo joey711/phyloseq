@@ -4,8 +4,12 @@
 \alias{import_qiime_otu_tax}
 \title{Import now legacy-format QIIME OTU table as a list of two matrices.}
 \usage{
-import_qiime_otu_tax(file, parseFunction = parse_taxonomy_qiime,
-  verbose = TRUE, parallel = FALSE)
+import_qiime_otu_tax(
+  file,
+  parseFunction = parse_taxonomy_qiime,
+  verbose = TRUE,
+  parallel = FALSE
+)
 }
 \arguments{
 \item{file}{(Required). The path to the qiime-formatted file you want to
