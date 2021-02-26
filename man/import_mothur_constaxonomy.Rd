@@ -4,8 +4,10 @@
 \alias{import_mothur_constaxonomy}
 \title{Import mothur constaxonomy file and return a taxonomyTable}
 \usage{
-import_mothur_constaxonomy(mothur_constaxonomy_file,
-  parseFunction = parse_taxonomy_default)
+import_mothur_constaxonomy(
+  mothur_constaxonomy_file,
+  parseFunction = parse_taxonomy_default
+)
 }
 \arguments{
 \item{mothur_constaxonomy_file}{(Required). A 

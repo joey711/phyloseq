@@ -4,10 +4,21 @@
 \alias{plot_net}
 \title{Microbiome Network Plot using ggplot2}
 \usage{
-plot_net(physeq, distance = "bray", type = "samples", maxdist = 0.7,
-  laymeth = "fruchterman.reingold", color = NULL, shape = NULL,
-  rescale = FALSE, point_size = 5, point_alpha = 1,
-  point_label = NULL, hjust = 1.35, title = NULL)
+plot_net(
+  physeq,
+  distance = "bray",
+  type = "samples",
+  maxdist = 0.7,
+  laymeth = "fruchterman.reingold",
+  color = NULL,
+  shape = NULL,
+  rescale = FALSE,
+  point_size = 5,
+  point_alpha = 1,
+  point_label = NULL,
+  hjust = 1.35,
+  title = NULL
+)
 }
 \arguments{
 \item{physeq}{(Required). 

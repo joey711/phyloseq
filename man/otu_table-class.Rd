@@ -18,6 +18,6 @@ to the \code{otu_table} class, including square-bracket, \code{\link{t}}, etc.
 	A single logical specifying the orientation of the abundance table.
    }
 
-\item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
+   \item{.Data}{This slot is inherited from the \code{\link{matrix}} class.}
  }
 }

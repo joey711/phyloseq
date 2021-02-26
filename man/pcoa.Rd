@@ -4,7 +4,9 @@
 \name{pcoa}
 \alias{pcoa}
 \title{S3 class for ape-calculated MDS results}
-\format{An object of class \code{pcoa} of length 0.}
+\format{
+An object of class \code{pcoa} of length 0.
+}
 \usage{
 pcoa
 }

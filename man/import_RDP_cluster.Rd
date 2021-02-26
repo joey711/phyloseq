@@ -35,7 +35,7 @@ This import function assumes that the sequence names in the cluster file follow
 this convention, and that the sample name does not contain any \code{"_"}. It
 is unlikely to work if this is not the case. It is likely to work if you used
 the upstream steps in the RDP pipeline to process your raw (barcoded, untrimmed)
-fasta/fastq data.
+fasta/fastq data. 
 
 This function first loops through the \code{".clust"} file and collects all
 of the sample names that appear. It secondly loops through each OTU (\code{"cluster"};

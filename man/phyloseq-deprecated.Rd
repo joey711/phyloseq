@@ -43,7 +43,6 @@
 \alias{speciesAreRows<-}
 \alias{otuTable<-}
 \alias{taxTab<-}
-\alias{phyloseq-deprecated-package}
 \title{Depcrecated functions in the phyloseq package.}
 \usage{
 deprecated_phyloseq_function(x, value, ...)

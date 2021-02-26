@@ -4,8 +4,13 @@
 \alias{import_uparse}
 \title{Import \href{http://www.drive5.com/usearch/manual/opt_uparseout.html}{UPARSE file format}}
 \usage{
-import_uparse(upFile, omitChimeras = TRUE, countTable = TRUE,
-  OTUtable = TRUE, verbose = TRUE)
+import_uparse(
+  upFile,
+  omitChimeras = TRUE,
+  countTable = TRUE,
+  OTUtable = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{upFile}{(Required). A file location character string 

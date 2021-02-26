@@ -4,8 +4,13 @@
 \alias{import_usearch_uc}
 \title{Import usearch table format (\code{.uc}) to OTU table}
 \usage{
-import_usearch_uc(ucfile, colRead = 9, colOTU = 10,
-  readDelimiter = "_", verbose = TRUE)
+import_usearch_uc(
+  ucfile,
+  colRead = 9,
+  colOTU = 10,
+  readDelimiter = "_",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{ucfile}{(Required). A file location character string 

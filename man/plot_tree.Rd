@@ -4,11 +4,24 @@
 \alias{plot_tree}
 \title{Plot a phylogenetic tree with optional annotations}
 \usage{
-plot_tree(physeq, method = "sampledodge", nodelabf = NULL,
-  color = NULL, shape = NULL, size = NULL, min.abundance = Inf,
-  label.tips = NULL, text.size = NULL, sizebase = 5,
-  base.spacing = 0.02, ladderize = FALSE, plot.margin = 0.2,
-  title = NULL, treetheme = NULL, justify = "jagged")
+plot_tree(
+  physeq,
+  method = "sampledodge",
+  nodelabf = NULL,
+  color = NULL,
+  shape = NULL,
+  size = NULL,
+  min.abundance = Inf,
+  label.tips = NULL,
+  text.size = NULL,
+  sizebase = 5,
+  base.spacing = 0.02,
+  ladderize = FALSE,
+  plot.margin = 0.2,
+  title = NULL,
+  treetheme = NULL,
+  justify = "jagged"
+)
 }
 \arguments{
 \item{physeq}{(Required). The data about which you want to 

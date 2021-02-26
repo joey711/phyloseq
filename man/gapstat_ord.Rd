@@ -4,9 +4,14 @@
 \alias{gapstat_ord}
 \title{Estimate the gap statistic on an ordination result}
 \usage{
-gapstat_ord(ord, axes = c(1:2), type = "sites",
-  FUNcluster = function(x, k) {     list(cluster = pam(x, k, cluster.only
-  = TRUE)) }, K.max = 8, ...)
+gapstat_ord(
+  ord,
+  axes = c(1:2),
+  type = "sites",
+  FUNcluster = function(x, k) {     list(cluster = pam(x, k, cluster.only = TRUE)) },
+  K.max = 8,
+  ...
+)
 }
 \arguments{
 \item{ord}{(Required). An ordination object. The precise class can vary.

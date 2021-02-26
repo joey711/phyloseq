@@ -4,11 +4,24 @@
 \alias{plot_heatmap}
 \title{Create an ecologically-organized heatmap using ggplot2 graphics}
 \usage{
-plot_heatmap(physeq, method = "NMDS", distance = "bray",
-  sample.label = NULL, taxa.label = NULL, low = "#000033",
-  high = "#66CCFF", na.value = "black", trans = log_trans(4),
-  max.label = 250, title = NULL, sample.order = NULL,
-  taxa.order = NULL, first.sample = NULL, first.taxa = NULL, ...)
+plot_heatmap(
+  physeq,
+  method = "NMDS",
+  distance = "bray",
+  sample.label = NULL,
+  taxa.label = NULL,
+  low = "#000033",
+  high = "#66CCFF",
+  na.value = "black",
+  trans = log_trans(4),
+  max.label = 250,
+  title = NULL,
+  sample.order = NULL,
+  taxa.order = NULL,
+  first.sample = NULL,
+  first.taxa = NULL,
+  ...
+)
 }
 \arguments{
 \item{physeq}{(Required). The data, in the form of an instance of the

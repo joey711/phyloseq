@@ -28,7 +28,7 @@ imported from raw files supplied directly by the authors via personal communicat
 for the purposes of including as an example in the \code{\link{phyloseq-package}}. 
 As this data is sensitive to choices in OTU-clustering parameters, attempts to recreate
 the \code{otu_table} from the raw sequencing data may give slightly different results
-than the table provided here.
+than the table provided here. 
 
 abstract from research article (quoted):
 

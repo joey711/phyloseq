@@ -2148,6 +2148,7 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' 
 #' @importFrom data.table setkey
 #' @importFrom data.table setkeyv
+#' @importFrom data.table setorderv
 #' 
 #' @importFrom ggplot2 geom_segment
 #' @importFrom ggplot2 scale_x_continuous
@@ -2217,19 +2218,22 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     labelDT = treeSegs$edgeDT[!is.na(OTU), ]
     if(!is.null(tax_table(object=physeq, errorIfNULL=FALSE))){
       # If there is a taxonomy available, merge it with the label data.table
-      taxDT = data.table(tax_table(physeq), OTU=taxa_names(physeq), key="OTU")
+      taxDT = data.table(data.frame(tax_table(physeq)), OTU=taxa_names(physeq), key="OTU")
       # Merge with taxonomy.
       labelDT = merge(x=labelDT, y=taxDT, by="OTU")
     }
     if(justify=="jagged"){
       # Tip label aesthetic mapping.
       # Aesthetics can be NULL, and that aesthetic gets ignored.
-      labelMap <- aes_string(x="xright", y="y", label=label.tips, color=color)
+      labelSpacing <- labelDT$xright * base.spacing # default 0.02
+      labelMap <- aes_string(x="xright+labelSpacing", y="y", label=label.tips, color=color)
     } else {
       # The left-justified version of tip-labels.
-      labelMap <- aes_string(x="max(xright, na.rm=TRUE)", y="y", label=label.tips, color=color)
+      labelSpacing <- max(labelDT$xright, na.rm=TRUE) * base.spacing # default 0.02
+      labelMap <- aes_string(x="max(xright, na.rm=TRUE)+labelSpacing", y="y", 
+			     label=label.tips, color=color)
     }
-    p <- p + geom_text(labelMap, data=labelDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
+    p <- p + geom_text(labelMap, data=labelDT, size=I(text.size), hjust=0, na.rm=TRUE)
   }
   # Node label section.
   # 
@@ -2290,6 +2294,8 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     # Else, set key by OTU and sample name. 
     setkey(dodgeDT, OTU, Sample)
   }
+  # Order dodgeDT first by OTU (asc) then by Abundance (desc), to avoid unintended removal of OTU
+  setorderv(dodgeDT, c("OTU", "Abundance"), c(1, -1))
   # Add sample-dodge horizontal adjustment index. In-place data.table assignment
   dodgeDT[, h.adj.index := 1:length(xright), by=OTU]
   # `base.spacing` is a user-input parameter.
@@ -2332,12 +2338,16 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     }
     labelMap <- NULL
     if(justify=="jagged"){
-      labelMap <- aes_string(x="xfartiplab", y="y", label=label.tips, color=color)
+      labelSpacing <- tiplabDT$xfartiplab * base.spacing # default 0.02
+      labelMap <- aes_string(x="xfartiplab+labelSpacing", y="y", label=label.tips, color=color)
     } else {
-      labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)", y="y", label=label.tips, color=color)
+      labelSpacing <- max(tiplabDT$xfartiplab, na.rm=TRUE) * base.spacing # default 0.02
+      labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)+labelSpacing", y="y", 
+			     label=label.tips, color=color)
     }
     # Add labels layer to plotting object.
-    p <- p + geom_text(labelMap, tiplabDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
+    p <- p + geom_text(labelMap, data=tiplabDT, size=I(text.size), hjust=0, na.rm=TRUE, 
+		       show.legend=FALSE)
   } 
   # Plot margins. 
   # Adjust the tree graphic plot margins.
