@@ -38,5 +38,5 @@ somewhere in the expression.
  # subset_samples(GlobalPatterns, SampleType=="Ocean")
 }
 \seealso{
-\code{\link{subset_species}}
+\code{\link{subset_taxa}}
 }
