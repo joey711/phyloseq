@@ -242,7 +242,7 @@ Network representation of the relationship between microbiome samples in the "En
 
 For further details, see the [plot_ordination tutorial](http://joey711.github.io/phyloseq/plot_ordination-examples.html)
 
-Ordination methods can be a useful tool for exploring complex phylogenetic sequencing data, particularly when the hypothesized structure of the data is poorly defined (or there isn't a hypothesis). The phyloseq package provides some useful tools for performing ordinations and plotting their results, via the `ordinate() and `plot_ordination() functions, respectively. Although there are many options and methods supported, a first-step will probably look something like the following:
+Ordination methods can be a useful tool for exploring complex phylogenetic sequencing data, particularly when the hypothesized structure of the data is poorly defined (or there isn't a hypothesis). The phyloseq package provides some useful tools for performing ordinations and plotting their results, via the `ordinate()` and `plot_ordination()` functions, respectively. Although there are many options and methods supported, a first-step will probably look something like the following:
 
 ```{r eval=FALSE}
 my.physeq <- import("Biom", BIOMfilename="myBiomFile.biom")
@@ -298,7 +298,7 @@ Next, we will reproduce Figure 5 from the "Global Patterns" article([Caporaso 20
 
 ```{r GPfig5ax1213}
 (p12 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", color="SampleType") + 
-  geom_point(size=5) + geom_path() + scale_colour_hue(guide = FALSE) )
+  geom_point(size=5) + geom_path() + scale_colour_hue(guide = "none") )
 (p13 <- plot_ordination(GlobalPatterns, GloPa.pcoa, "samples", axes=c(1, 3),
   color="SampleType") + geom_line() + geom_point(size=5) )
 ```
@@ -368,7 +368,7 @@ We will now investigate further this top-level structure of the data, using an a
 ```{r GPCAspecplot0}
 p1  <- plot_ordination(GP, gpca, "species", color="Phylum")
 (p1 <- ggplot(p1$data, p1$mapping) + geom_point(size=5, alpha=0.5) + 
-  facet_wrap(~Phylum) +  scale_colour_hue(guide = FALSE) )
+  facet_wrap(~Phylum) +  scale_colour_hue(guide = "none") )
 ```
 
 Species plot of the "Global Patterns" correspondence analysis first two axes, with each phylum on a different panel ("facet"). Only the most abundant 5 phyla among the most abundant 200 taxa (cumulative, all samples) are included. Arbitrary reduction, for computational efficiency of example.
@@ -377,7 +377,7 @@ Let's try drawing the figure again, only this time summarizing the species point
 
 ```{r GPCAspecplotTopo0}
 (p3 <- ggplot(p1$data, p1$mapping) + geom_density2d() +
-  facet_wrap(~Phylum) +  scale_colour_hue(guide = FALSE) )
+  facet_wrap(~Phylum) +  scale_colour_hue(guide = "none") )
 ```
 Redrawn figure, which is severely overplotted, as a 2-dimensional species-density topographic map, faceted in the same way.
 
@@ -394,7 +394,7 @@ LF <- subset(mdf, variable=="CA2" & value < -1.0)
 p <- ggplot(mdf, aes(Phylum, value, color=Phylum)) + 
   geom_boxplot() + 
   facet_wrap(~variable, 2) + 
-  scale_colour_hue(guide = FALSE) +
+  scale_colour_hue(guide = "none") +
   theme_bw() + 
   theme( axis.text.x = element_text(angle = -90, vjust = 0.5) )
 # Add the text label layer, and render ggplot graphic
