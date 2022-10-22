@@ -1,15 +1,15 @@
 ################################################################################
-# Function to create subsampled dataset 
+# Function to create subsampled dataset
 # in which each sample has same number of total observations/counts/reads
 # Note that the subsampling is random, so some noise is introduced making the
 # relative abundances slightly different
 ################################################################################
 #' Resample an OTU table such that all samples have the same library size.
-#' 
+#'
 #' Please note that the authors of phyloseq do not advocate using this
 #' as a normalization procedure, despite its recent popularity.
 #' Our justifications for using alternative approaches to address
-#' disparities in library sizes have been made available as 
+#' disparities in library sizes have been made available as
 #' \href{http://dx.plos.org/10.1371/journal.pcbi.1003531}{an article in PLoS Computational Biology}.
 #' See \code{\link{phyloseq_to_deseq2}} for a recommended alternative to rarefying
 #' directly supported in the phyloseq package, as well as
@@ -17,19 +17,19 @@
 #' and \href{http://joey711.github.io/phyloseq-extensions}{the phyloseq extensions repository on GitHub}.
 #' Nevertheless, for comparison and demonstration, the rarefying procedure is implemented
 #' here in good faith and with options we hope are useful.
-#' This function uses the standard R \code{\link{sample}} function to 
-#' resample from the abundance values 
+#' This function uses the standard R \code{\link{sample}} function to
+#' resample from the abundance values
 #' in the \code{\link{otu_table}} component of the first argument,
 #' \code{physeq}.
-#' Often one of the major goals of this procedure is to achieve parity in 
+#' Often one of the major goals of this procedure is to achieve parity in
 #' total number of counts between samples, as an alternative to other formal
-#' normalization procedures, which is why a single value for the 
+#' normalization procedures, which is why a single value for the
 #' \code{sample.size} is expected.
 #' This kind of resampling can be performed with and without replacement,
 #' with replacement being the more computationally-efficient, default setting.
 #' See the \code{replace} parameter documentation for more details.
 #' We recommended that you explicitly select a random number generator seed
-#' before invoking this function, or, alternatively, that you 
+#' before invoking this function, or, alternatively, that you
 #' explicitly provide a single positive integer argument as \code{rngseed}.
 #'
 #' This approach is sometimes mistakenly called ``rarefaction'', which
@@ -38,15 +38,15 @@
 #' \href{http://en.wikipedia.org/wiki/Rarefaction_(ecology)}{repeated sampling procedure to assess species richness},
 #' first proposed in 1968 by Howard Sanders.
 #' In contrast, the procedure implemented here is used as an \emph{ad hoc} means to
-#' normalize microbiome counts that have 
+#' normalize microbiome counts that have
 #' resulted from libraries of widely-differing sizes.
 #' Here we have intentionally adopted an alternative
 #' name, \code{rarefy}, that has also been used recently
-#' to describe this process 
+#' to describe this process
 #' and, to our knowledge, not previously used in ecology.
 #'
 #' Make sure to use \code{\link{set.seed}} for exactly-reproducible results
-#' of the random subsampling. 
+#' of the random subsampling.
 #'
 #' @param physeq (Required). A \code{\link{phyloseq-class}} object that you
 #'  want to trim/filter.
@@ -54,16 +54,16 @@
 #' @param sample.size (Optional). A single integer value equal to the number
 #'  of reads being simulated, also known as the depth,
 #'  and also equal to each value returned by \code{\link{sample_sums}}
-#'  on the output. 
-#'  
-#' @param rngseed (Optional). A single integer value passed to 
+#'  on the output.
+#'
+#' @param rngseed (Optional). A single integer value passed to
 #'  \code{\link{set.seed}}, which is used to fix a seed for reproducibly
 #'  random number generation (in this case, reproducibly random subsampling).
-#'  The default value is \code{711}. 
+#'  The default value is \code{711}.
 #'  If set to \code{FALSE}, then no fiddling with the RNG seed is performed,
 #'  and it is up to the user to appropriately call \code{\link{set.seed}}
 #'  beforehand to achieve reproducible results.
-#'  
+#'
 #' @param replace (Optional). Logical. Whether to sample with replacement
 #'  (\code{TRUE}) or without replacement (\code{FALSE}).
 #'  The default is with replacement (\code{replace=TRUE}).
@@ -80,28 +80,28 @@
 #'  Note that this default behavior was selected for computational efficiency,
 #'  but differs from analogous functions in related packages
 #'  (e.g. subsampling in QIIME).
-#'  
+#'
 #' @param trimOTUs (Optional). \code{\link{logical}(1)}.
 #'   Whether to trim OTUs
 #'   from the dataset that are no longer observed in any sample
-#'   (have a count of zero in every sample). 
+#'   (have a count of zero in every sample).
 #'   The number of OTUs trimmed, if any, is printed to
 #'   standard out as a reminder.
-#'   
+#'
 #' @param verbose (Optional). Logical. Default is \code{TRUE}.
 #'  If \code{TRUE}, extra non-warning, non-error messages are printed
-#'  to standard out, describing steps in the rarefying process, 
+#'  to standard out, describing steps in the rarefying process,
 #'  the OTUs and samples removed, etc. This can be useful the
 #'  first few times the function is executed, but can be set
 #'  to \code{FALSE} as-needed once behavior has been verified
-#'  as expected.  
+#'  as expected.
 #'
-#' @return An object of class \code{phyloseq}. 
+#' @return An object of class \code{phyloseq}.
 #' Only the \code{otu_table} component is modified.
 #'
 #' @seealso
 #' \code{\link{sample}}
-#' 
+#'
 #' \code{\link{set.seed}}
 #'
 #' @export
@@ -119,131 +119,153 @@
 #' # GPrepT = rarefy_even_depth(GlobalPatterns, 1E5, replace=TRUE)
 #' ## Actually just this one is slow
 #' # system.time(GPrepF <- rarefy_even_depth(GlobalPatterns, 1E5, replace=FALSE))
-rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
-															rngseed=FALSE, replace=TRUE, trimOTUs=TRUE, verbose=TRUE){
-	
-	if( as(rngseed, "logical") ){
+rarefy_even_depth <-
+  function(physeq,
+           sample.size = min(sample_sums(physeq)),
+           rngseed = FALSE,
+           replace = TRUE,
+           trimOTUs = TRUE,
+           verbose = TRUE) {
+
+  if ( !(is.integer(rngseed) || is.numeric(rngseed)) || length(rngseed) > 1) {
+    stop("`rngseed` must be a single integer value or FALSE")
+  }
+
+	if ( !(is.logical(rngseed) && !rngseed) ) {
 		# Now call the set.seed using the value expected in phyloseq
 		set.seed(rngseed)
-    if(verbose){
+    if (verbose) {
       # Print to screen this value
-      message("`set.seed(", rngseed, ")` was used to initialize repeatable random subsampling.")
-      message("Please record this for your records so others can reproduce.")
-      message("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="")		
-      message("...")      
+      message(
+        "`set.seed(", rngseed, ")` was used to initialize repeatable random subsampling.\n",
+        "Please record this for your records so others can reproduce.\n",
+        "Try `set.seed(", rngseed, "); .Random.seed` for the full vector.\n",
+        "..."
+      )
     }
-	} else if(verbose){
-		message("You set `rngseed` to FALSE. Make sure you've set & recorded\n",
-				" the random seed of your session for reproducibility.\n",
-				"See `?set.seed`\n")
-		message("...")
+	} else if (verbose) {
+		message(
+		  "You set `rngseed` to FALSE. Make sure you've set & recorded\n",
+		  " the random seed of your session for reproducibility.\n",
+		  "See `?set.seed`\n",
+		  "..."
+	  )
 	}
-	
+
 	# Make sure sample.size is of length 1.
-	if( length(sample.size) > 1 ){
-		warning("`sample.size` had more than one value. ", 
+	if ( length(sample.size) > 1 ) {
+		warning("`sample.size` had more than one value. ",
             "Using only the first. \n ... \n")
-		sample.size <- sample.size[1]	
+		sample.size <- sample.size[1]
 	}
-	
-	if( sample.size <= 0 ){
-		stop("sample.size less than or equal to zero. ", 
+
+  if ( !(is.integer(sample.size) || is.numeric(sample.size)) ) {
+    stop("`sample.size` must be a single integer value")
+  } else
+	if ( sample.size <= 0 ) {
+		stop("sample.size less than or equal to zero. ",
          "Need positive sample size to work.")
 	}
-	
+
 	# Instead of warning, expected behavior now is to prune samples
 	# that have fewer reads than `sample.size`
-	if( min(sample_sums(physeq)) < sample.size ){
-		rmsamples = sample_names(physeq)[sample_sums(physeq) < sample.size]
-    if(verbose){
-      message(length(rmsamples), " samples removed",
+	if ( min(sample_sums(physeq)) < sample.size ) {
+		rmsamples = sample_sums(physeq) < sample.size
+    if (verbose) {
+      n.rmsamples <- sum(rmsamples)
+      message(n.rmsamples, " samples removed",
           "because they contained fewer reads than `sample.size`.")
       message("Up to first five removed samples are: \n")
-      message(paste(rmsamples[1:min(5, length(rmsamples))], sep="\t"))
+      message(paste(names(rmsamples[rmsamples])[1:min(5, n.rmsamples)], "\t"))
       message("...")
     }
 		# Now done with notifying user of pruning, actually prune.
-		physeq = prune_samples(setdiff(sample_names(physeq), rmsamples), physeq)
+		physeq = prune_samples(!rmsamples, physeq)
 	}
-	# initialize the subsamples phyloseq instance, newsub
-	newsub <- physeq
-	# enforce orientation as species-are-rows, for assignment
-	if(!taxa_are_rows(newsub)){newsub <- t(newsub)}
 	# apply through each sample, and replace
-	newotu <- apply(otu_table(newsub), 2, rarefaction_subsample,
-									sample.size=sample.size, replace=replace)
+  # instead of transposing the table :
+  # if taxa are rows use margin 2 (cols) else use margin 1 (rows)
+	newotu <- apply(physeq@otu_table, taxa_are_rows(physeq) + 1, rarefaction_subsample,
+									sample.size = sample.size, replace = replace)
 	# Add OTU names to the row indices
-	rownames(newotu) <- taxa_names(physeq)
-	# replace the otu_table.
-	otu_table(newsub) <- otu_table(newotu, TRUE)
-  if(trimOTUs){
+	dimnames(newotu) <- dimnames(physeq@otu_table)#.taxa_names
+	# replace the otu_table
+	physeq@otu_table <- otu_table(newotu, taxa_are_rows(physeq))
+  if (trimOTUs) {
     # Check for and remove empty OTUs
     # 1. Notify user of empty OTUs being cut.
     # 2. Cut empty OTUs
-    rmtaxa = taxa_names(newsub)[taxa_sums(newsub) <= 0]
-    if( length(rmtaxa) > 0 ){
-      if(verbose){
-        message(length(rmtaxa), "OTUs were removed because they are no longer \n",
+    rmtaxa = taxa_sums(physeq) <= 0
+    if ( sum(rmtaxa) > 0 ) {
+      if (verbose) {
+        message(sum(rmtaxa), "OTUs were removed because they are no longer \n",
             "present in any sample after random subsampling\n")
         message("...")
       }
-      newsub = prune_taxa(setdiff(taxa_names(newsub), rmtaxa), newsub)
+      physeq = prune_taxa(!rmtaxa, physeq)
     }
   }
-  # If the OTU table was transposed before rarefaction, transpose it
-  # back to the way it was in the original physeq object.
-  if(!taxa_are_rows(physeq)){newsub <- t(newsub)}
-	return(newsub)
+	return(physeq)
 }
 ################################################################################
 # rarefaction subsample function, one sample
 ################################################################################
 #' @keywords internal
-rarefaction_subsample <- function(x, sample.size, replace=FALSE){
-	# This is a test
-	# x = sample(10, 10)
-	# x = 1:10
-	# sample.size = 50
-	#system.time(obsvec <- foreach(OTUi=1:length(x), times=x, .combine=c) %do% {rep(OTUi, times)})
-	# data("GlobalPatterns")
-	# sample.size = sample_sums(GlobalPatterns)[which.min(sample_sums(GlobalPatterns))]
-	# x = get_taxa(GlobalPatterns, which.max(sample_sums(GlobalPatterns)))
-	# Create replacement species vector
-	rarvec <- numeric(length(x))	
-	# Perform the sub-sampling. Suppress warnings due to old R compat issue.
-	# Also, make sure to avoid errors from x summing to zero, 
+# ------------------------------------------------------------------------
+# This is a test
+# x = sample(10, 10)
+# x = 1:10
+# sample.size = 50
+#system.time(obsvec <- foreach(OTUi=1:length(x), times=x, .combine=c) %do% {rep(OTUi, times)})
+# data("GlobalPatterns")
+# sample.size = sample_sums(GlobalPatterns)[which.min(sample_sums(GlobalPatterns))]
+# x = get_taxa(GlobalPatterns, which.max(sample_sums(GlobalPatterns)))
+# ------------------------------------------------------------------------
+rarefaction_subsample <- function(x, sample.size, replace = FALSE) {
+  # Perform the sub-sampling. Suppress warnings due to old R compat issue.
+  # Also, make sure to avoid errors from x summing to zero,
   # and there are no observations to sample.
-	# The initialization of rarvec above is already sufficient.
-	if(sum(x) <= 0){
-		# Protect against, and quickly return an empty vector, 
-		# if x is already an empty count vector
-		return(rarvec)
-	}
-	if(replace){
-		# resample with replacement
-		suppressWarnings(subsample <- sample(1:length(x), sample.size, replace=TRUE, prob=x))
-	} else {
-		# resample without replacement
-		obsvec <- apply(data.frame(OTUi=1:length(x), times=x), 1, function(x){
-			rep_len(x["OTUi"], x["times"])
-		})
-		obsvec <- unlist(obsvec, use.names=FALSE)
-		# use `sample` for subsampling. Hope that obsvec doesn't overflow.
-		suppressWarnings(subsample <- sample(obsvec, sample.size, replace=FALSE))
-	}
-	# Tabulate the results (these are already named by the order in `x`)
-	sstab <- table(subsample)
-	# Assign the tabulated random subsample values to the species vector
-	rarvec[as(names(sstab), "integer")] <- sstab
-	# Return abundance vector. Let replacement happen elsewhere.
-	return(rarvec)
+  if (sum(x) > 0) {
+    # Protect against, and quickly return an empty vector,
+    # if x is already an empty count vector this part is skipped
+    subsample <- suppressWarnings(if (replace) {
+      # resample with replacement
+      sample(seq_along(x),
+             sample.size,
+             replace = TRUE,
+             prob = x)
+    } else {
+      # resample without replacement
+      # use `sample` for subsampling. Hope that obsvec doesn't overflow.
+      ## obsvec being longer than .Machine$integer.max doesn't break it
+      ## as long as there aren't more than .Machine$integer.max taxa,
+      ## it shouldn't be a problem (and if it is, tabulate throws an error)
+      ## could always add a check for length(x) < .Machine$integer.max
+
+      # Use seq_along to get the indexes of x,
+      # then rep.int to repeat each times its abundance
+      ## (int vectors use less memory than list/data.frame)
+      obsvec <- rep.int(seq_along(x), x)
+      sample(obsvec,
+             sample.size,
+             replace = FALSE)
+    })
+    # Tabulate the results (these are already named by the order in `x`)
+    ## `table` is a `tabulate` wrapper that remove the 0s we want,
+    ## so using tabulate directly
+    rarvec <- tabulate(subsample)
+    # there can be 0s missing at the end though so, need padding
+    rarvec <- c(rarvec, rep(0, length(x) - length(rarvec)))
+  }
+  # Return abundance vector. Let replacement happen elsewhere.
+  return(rarvec)
 }
-################################################################################
+###############################################################################
 #' Agglomerate closely-related taxa using single-linkage clustering.
-#' 
-#' All tips of the tree separated by a cophenetic distance smaller than 
+#'
+#' All tips of the tree separated by a cophenetic distance smaller than
 #' \code{h} will be agglomerated into one taxa using \code{\link{merge_taxa}}.
-#' 
+#'
 #' Can be used to create a non-trivial OTU Table, if a phylogenetic tree is available.
 #'
 #' For now, a simple, ``greedy'', single-linkage clustering is used. In future releases
@@ -252,25 +274,25 @@ rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 #' clustering applications.
 #'
 #' @param physeq (Required). A \code{\link{phyloseq-class}},
-#'  containing a phylogenetic tree. 
+#'  containing a phylogenetic tree.
 #'  Alternatively, a phylogenetic tree \code{\link[ape]{phylo}} will also work.
 #'
 #' @param h (Optional). Numeric scalar of the height where the tree should be cut.
 #' This refers to the tree resulting from hierarchical clustering
 #' of \code{\link[ape]{cophenetic.phylo}(phy_tree(physeq))},
 #' not necessarily the original phylogenetic tree, \code{phy_tree(physeq)}.
-#' Default value is \code{0.2}. 
+#' Default value is \code{0.2}.
 #' Note that this argument used to be named \code{speciationMinLength},
 #' before this function/method was rewritten.
-#' 
-#' @param hcfun (Optional). A function. 
+#'
+#' @param hcfun (Optional). A function.
 #'  The (agglomerative, hierarchical) clustering function to use.
 #'  Good examples are
 #'  \code{\link[cluster]{agnes}} and \code{\link[stats]{hclust}}.
 #'  The default is \code{\link[cluster]{agnes}}.
-#'  
+#'
 #' @param ... (Optional). Additional named arguments to pass
-#'  to \code{hcfun}. 
+#'  to \code{hcfun}.
 #'
 #' @return An instance of the \code{\link{phyloseq-class}}.
 #'  Or alternatively, a \code{\link{phylo}} object if the
@@ -278,25 +300,25 @@ rarefaction_subsample <- function(x, sample.size, replace=FALSE){
 #'  In the expected-use case, the number of OTUs will be fewer
 #'  (see \code{\link{ntaxa}}),
 #'  after merging OTUs that are related enough to be called
-#'  the same OTU. 
+#'  the same OTU.
 #'
-#' @seealso 
-#' 
+#' @seealso
+#'
 #' \code{\link{merge_taxa}}
-#' 
+#'
 #' \code{\link[cluster]{agnes}}
-#' 
+#'
 #' \code{\link[stats]{hclust}}
-#' 
+#'
 #' \code{\link[ape]{cophenetic.phylo}}
-#' 
+#'
 #' \code{\link[ape]{phylo}}
 #'
 #' @importFrom cluster agnes
 #'
 #' @export
 #'
-#' @examples 
+#' @examples
 #' data("esophagus")
 #' # for speed
 #' esophagus = prune_taxa(taxa_names(esophagus)[1:25], esophagus)
@@ -316,8 +338,8 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 ################################################################################
 #' Agglomerate taxa of the same type.
 #'
-#' This method merges species that have the same taxonomy at a certain 
-#' taxonomic rank. 
+#' This method merges species that have the same taxonomy at a certain
+#' taxonomic rank.
 #' Its approach is analogous to \code{\link{tip_glom}}, but uses categorical data
 #' instead of a tree. In principal, other categorical data known for all taxa
 #' could also be used in place of taxonomy,
@@ -341,31 +363,31 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #'  CAUTION. The decision to prune (or not) taxa for which you lack categorical
 #'  data could have a large effect on downstream analysis. You may want to
 #'  re-compute your analysis under both conditions, or at least think carefully
-#'  about what the effect might be and the reasons explaining the absence of 
-#'  information for certain taxa. In the case of taxonomy, it is often a result 
+#'  about what the effect might be and the reasons explaining the absence of
+#'  information for certain taxa. In the case of taxonomy, it is often a result
 #'  of imprecision in taxonomic designation based on short phylogenetic sequences
 #'  and a patchy system of nomenclature. If this seems to be an issue for your
 #'  analysis, think about also trying the nomenclature-agnostic \code{\link{tip_glom}}
 #'  method if you have a phylogenetic tree available.
 #'
 #' @param bad_empty (Optional). Character vector. Default: \code{c(NA, "", " ", "\t")}.
-#'  Defines the bad/empty values 
+#'  Defines the bad/empty values
 #'  that should be ignored and/or considered unknown. They will be removed
 #'  from the internal agglomeration vector derived from the argument to \code{tax},
 #'  and therefore agglomeration will not combine taxa according to the presence
 #'  of these values in \code{tax}. Furthermore, the corresponding taxa can be
 #'  optionally pruned from the output if \code{NArm} is set to \code{TRUE}.
-#' 
+#'
 #' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
 #' the class of \code{physeq}.
 #'
 #' @seealso
 #' \code{\link{tip_glom}}
-#' 
+#'
 #' \code{\link{prune_taxa}}
-#' 
+#'
 #' \code{\link{merge_taxa}}
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -387,17 +409,17 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	if( is.null(access(physeq, "tax_table")) ){
 		stop("The tax_glom() function requires that physeq contain a taxonomyTable")
 	}
-	
+
 	# Error if bad taxrank
 	if( !taxrank[1] %in% rank_names(physeq) ){
-		stop("Bad taxrank argument. Must be among the values of rank_names(physeq)")		
+		stop("Bad taxrank argument. Must be among the values of rank_names(physeq)")
 	}
 
 	# Make a vector from the taxonomic data.
 	CN  <- which( rank_names(physeq) %in% taxrank[1] )
 	tax <- as(access(physeq, "tax_table"), "matrix")[, CN]
-	
-	# if NArm is TRUE, remove the empty, white-space, NA values from 
+
+	# if NArm is TRUE, remove the empty, white-space, NA values from
 	if( NArm ){
 		keep_species <- names(tax)[ !(tax %in% bad_empty) ]
 		physeq <- prune_taxa(keep_species, physeq)
@@ -406,33 +428,32 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	# Concatenate data up to the taxrank column, use this for agglomeration
 	tax <- as(access(physeq, "tax_table"), "matrix")[, 1:CN, drop=FALSE]
 	tax <- apply(tax, 1, function(i){paste(i, sep=";_;", collapse=";_;")})
-	
+
 	# Remove NAs and useless from the vector/factor for looping.
 	# This does not remove the taxa that have an unknown (NA)
 	# taxonomic designation at this particular taxonomic rank.
 	tax <- tax[ !(tax %in% bad_empty) ]
-	
+
 	# Define the OTU cliques to loop through
 	spCliques <- tapply(names(tax), factor(tax), list)
-	
+
 	# Successively merge taxa in physeq.
 	for( i in names(spCliques)){
 		physeq <- merge_taxa(physeq, spCliques[[i]])
 	}
-	
+
 	# "Empty" the values to the right of the rank, using NA_character_.
 	if( CN < length(rank_names(physeq)) ){
-		badcolumns <- (CN+1):length(rank_names(physeq))
-		tax_table(physeq)[, badcolumns] <- NA_character_
+		tax_table(physeq)[, -(1:CN)] <- NA_character_
 	}
-	
+
 	# Return.
 	return(physeq)
 }
 ################################################################################
 ################################################################################
 #' Prune unwanted OTUs / taxa from a phylogenetic object.
-#' 
+#'
 #' An S4 Generic method for removing (pruning) unwanted OTUs/taxa from phylogenetic
 #' objects, including phylo-class trees, as well as native phyloseq package
 #' objects. This is particularly useful for pruning a phyloseq object that has
@@ -446,7 +467,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' keep -- OR alternatively -- a logical vector where the kept taxa are TRUE, and length
 #' is equal to the number of taxa in object x. If \code{taxa} is a named
 #' logical, the taxa retained are based on those names. Make sure they are
-#' compatible with the \code{taxa_names} of the object you are modifying (\code{x}). 
+#' compatible with the \code{taxa_names} of the object you are modifying (\code{x}).
 #'
 #' @param x (Required). A phylogenetic object, including \code{phylo} trees,
 #' as well as all phyloseq classes that represent taxa. If the function
@@ -457,7 +478,7 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' the class of the argument, \code{x}.
 #'
 #' @seealso
-#'  
+#'
 #'  \code{\link{prune_samples}}
 #'
 #'  \href{http://cran.at.r-project.org/web/packages/picante/index.html}{prune.sample}
@@ -468,8 +489,8 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 #' data("esophagus")
 #' esophagus
 #' plot(sort(taxa_sums(esophagus), TRUE), type="h", ylim=c(0, 50))
-#' x1 = prune_taxa(taxa_sums(esophagus) > 10, esophagus) 
-#' x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus) 
+#' x1 = prune_taxa(taxa_sums(esophagus) > 10, esophagus)
+#' x2 = prune_taxa(names(sort(taxa_sums(esophagus), TRUE))[1:9], esophagus)
 #' identical(x1, x2)
 setGeneric("prune_taxa", function(taxa, x) standardGeneric("prune_taxa"))
 #' @aliases prune_taxa,NULL,ANY-method
@@ -488,7 +509,7 @@ setMethod("prune_taxa", signature("logical", "ANY"), function(taxa, x){
 		stop("logical argument to taxa is wrong length. Should equal ntaxa(x)")
 	} else {
 		# Pass on to names-based prune_taxa method
-		return( prune_taxa(taxa_names(x)[taxa], x) )		
+		return( prune_taxa(taxa_names(x)[taxa], x) )
 	}
 })
 #' @importFrom ape drop.tip
@@ -502,7 +523,7 @@ setMethod("prune_taxa", signature("character", "phylo"), function(taxa, x){
 	} else if( setequal(taxa, taxa_names(x)) ){
 		return(x)
 	} else {
-		return( drop.tip(x, setdiff(taxa_names(x), taxa)) )		
+		return( drop.tip(x, setdiff(taxa_names(x), taxa)) )
 	}
 })
 #' @aliases prune_taxa,character,otu_table-method
@@ -541,7 +562,7 @@ setMethod("prune_taxa", signature("character", "phyloseq"), function(taxa, x){
 	}
 	if( !is.null(x@refseq) ){
 		x@refseq    = prune_taxa(taxa, refseq(x))
-	}	
+	}
 	# Force index order after pruning to be the same,
 	# according to the same rules as in the constructor, phyloseq()
 	x = index_reorder(x, index_type="taxa")
@@ -566,7 +587,7 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 		return(x)
 	} else if( length(intersect(taxa, taxa_names(x))) == 0 ){
 		# Informative error if intersection is zero.
-		stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")		
+		stop("prune_taxa,XStringSet: taxa and taxa_names(x) do not overlap.")
 	} else {
 		# Pop the OTUs that are not in `taxa`, without reordering.
 		return(x[-which(!taxa_names(x) %in% taxa)])
@@ -575,7 +596,7 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 ################################################################################
 ################################################################################
 #' Define a subset of samples to keep in a phyloseq object.
-#' 
+#'
 #' An S4 Generic method for pruning/filtering unwanted samples
 #' by defining those you want to keep.
 #'
@@ -585,7 +606,7 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 #' keep -- OR alternatively -- a logical vector where the kept samples are TRUE, and length
 #' is equal to the number of samples in object x. If \code{samples} is a named
 #' logical, the samples retained is based on those names. Make sure they are
-#' compatible with the \code{sample_names} of the object you are modifying (\code{x}). 
+#' compatible with the \code{sample_names} of the object you are modifying (\code{x}).
 #'
 #' @param x A phyloseq object.
 #'
@@ -593,7 +614,7 @@ setMethod("prune_taxa", signature("character", "XStringSet"), function(taxa, x){
 #' the class of the phyloseq object, \code{x}.
 #'
 #' @seealso \code{\link{subset_samples}}
-#' 
+#'
 #' @rdname prune_samples-methods
 #' @docType methods
 #' @export
@@ -627,7 +648,7 @@ setMethod("prune_samples", signature("character", "sample_data"), function(sampl
 		# If the sets of `samples` and sample_names are the same, return as-is.
 		return(x)
 	} else {
-		samples = intersect(samples, sample_names(x))	
+		samples = intersect(samples, sample_names(x))
 		return(x[samples, ])
 	}
 })
@@ -638,7 +659,7 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 	samples = intersect(intersect_samples(x), samples)
 	# Now prune each component.
 	# All phyloseq objects have an otu_table slot, no need to test for existence.
-	x@otu_table = prune_samples(samples, otu_table(x))	
+	x@otu_table = prune_samples(samples, otu_table(x))
 	if( !is.null(x@sam_data) ){
 		# protect missing sample_data component. Don't need to prune if empty
 		x@sam_data = prune_samples(samples, sample_data(x))
@@ -646,9 +667,9 @@ setMethod("prune_samples", signature("character", "phyloseq"), function(samples,
 	# Force sample index order after pruning to be the same,
 	# according to the same rules as in the constructor, phyloseq()
 	x = index_reorder(x, index_type="samples")
-	return(x)		
+	return(x)
 })
-# A logical should specify the samples to keep, or not. Have same length as nsamples(x) 
+# A logical should specify the samples to keep, or not. Have same length as nsamples(x)
 #' @aliases prune_samples,logical,ANY-method
 #' @rdname prune_samples-methods
 setMethod("prune_samples", signature("logical", "ANY"), function(samples, x){
@@ -657,28 +678,28 @@ setMethod("prune_samples", signature("logical", "ANY"), function(samples, x){
 		stop("logical argument to samples is wrong length. Should equal nsamples(x)")
 	} else {
 		# Pass on to names-based prune_samples method
-		return( prune_samples(sample_names(x)[samples], x) )		
+		return( prune_samples(sample_names(x)[samples], x) )
 	}
 })
 ################################################################################
 #' Thresholded rank transformation.
-#' 
+#'
 #' The lowest \code{thresh} values in \code{x} all get the value 'thresh'.
 #'
 #' @usage threshrank(x, thresh, keep0s=FALSE, ...)
 #'
 #' @param x (Required). Numeric vector to transform.
 #' @param thresh A single numeric value giving the threshold.
-#' @param keep0s A logical determining whether 0's in \code{x} should remain 
+#' @param keep0s A logical determining whether 0's in \code{x} should remain
 #'  a zero-value in the output. If FALSE, zeros are treated as any other value.
 #' @param ... Further arguments passes to the \code{\link{rank}} function.
-#' 
+#'
 #' @return A ranked, (optionally) thresholded numeric vector with length equal to
 #'  \code{x}. Default arguments to \code{rank} are used, unless provided as
-#'  additional arguments. 
+#'  additional arguments.
 #'
 #' @seealso \code{\link{transform_sample_counts}}, \code{\link{rank}}, \code{\link{threshrankfun}}
-#' @export 
+#' @export
 #' @examples #
 #' (a_vector <- sample(0:10, 100, TRUE))
 #' threshrank(a_vector, 5, keep0s=TRUE)
@@ -701,20 +722,20 @@ threshrank <- function(x, thresh, keep0s=FALSE, ...){
 ####################################################################################
 #' A closure version of the \code{threshrank} function.
 #'
-#' Takes the same arguments as \code{\link{threshrank}}, except for \code{x}, 
-#' because the output is a single-argument function rather than a rank-transformed numeric. 
+#' Takes the same arguments as \code{\link{threshrank}}, except for \code{x},
+#' because the output is a single-argument function rather than a rank-transformed numeric.
 #' This is useful for higher-order functions that require a single-argument function as input,
 #' like \code{\link{transform_sample_counts}}.
 #'
 #' @usage threshrankfun(thresh, keep0s=FALSE, ...)
-#' 
+#'
 #' @param thresh A single numeric value giving the threshold.
-#' @param keep0s A logical determining whether 0's in \code{x} should remain 
+#' @param keep0s A logical determining whether 0's in \code{x} should remain
 #'  a zero-value in the output. If FALSE, zeros are treated as any other value.
 #' @param ... Further arguments passes to the \code{\link{rank}} function.
-#' 
+#'
 #' @return A single-argument function with the options to \code{\link{threshrank}} set.
-#'  
+#'
 #' @seealso \code{\link{transform_sample_counts}}, \code{\link{threshrankfun}},
 #'  \code{\link{threshrank}}
 #' @export
@@ -768,28 +789,28 @@ setMethod("t", signature("phyloseq"), function(x){
 })
 ################################################################################
 #' Transform abundance data in an \code{otu_table}, sample-by-sample.
-#' 
+#'
 #' This function transforms the sample counts of a taxa
 #' abundance matrix according to a user-provided function.
-#' The counts of each sample will be transformed individually. No sample-sample 
-#' interaction/comparison is possible by this method. 
+#' The counts of each sample will be transformed individually. No sample-sample
+#' interaction/comparison is possible by this method.
 #'
 #' @usage transform_sample_counts(physeq, fun, ...)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} of \code{\link{otu_table-class}}.
 #'
 #' @param fun (Required). A single-argument function that will be applied
-#'  to the abundance counts of each sample. 
+#'  to the abundance counts of each sample.
 #'  Can be an anonymous \code{\link[base]{function}}.
-#'  
-#' @param ... (Optional). Additional, optionally-named, arguments passed to  
+#'
+#' @param ... (Optional). Additional, optionally-named, arguments passed to
 #'  \code{fun} during transformation of abundance data.
-#' 
+#'
 #' @return A transformed \code{otu_table} -- or \code{phyloseq} object with its
-#'  transformed \code{otu_table}. 
-#'  In general, trimming is not expected by this 
+#'  transformed \code{otu_table}.
+#'  In general, trimming is not expected by this
 #'  method, so it is suggested that the user provide only functions that return
-#'  a full-length vector. Filtering/trimming can follow, for which the 
+#'  a full-length vector. Filtering/trimming can follow, for which the
 #'  \code{\link{genefilter_sample}} and \code{\link{prune_taxa}} functions
 #'  are suggested.
 #'
@@ -847,7 +868,7 @@ transformSampleCounts <- transform_sample_counts
 ####################################################################################
 ############################################################
 #' Filter OTUs with arbitrary function, sample-wise.
-#' 
+#'
 #' A general OTU trimming function for selecting OTUs that satisfy
 #' some criteria within the distribution of each sample, and then
 #' also an additional criteria for number of samples that must pass.
@@ -855,11 +876,11 @@ transformSampleCounts <- transform_sample_counts
 #' criteria. The number of acceptable samples is used
 #' as the final criteria (set by the argument \code{A})
 #' to determine whether or not the taxa should
-#' be retained (\code{TRUE}) or not (\code{FALSE}). Just like with genefilter, a 
+#' be retained (\code{TRUE}) or not (\code{FALSE}). Just like with genefilter, a
 #' logical having length equal to nrow()/\code{\link{ntaxa}} is returned, indicating which
 #' should be kept. This output can be provided
 #' directly to OTU trimming function, \code{\link{prune_taxa}}.
-#' By contrast, \code{\link[genefilter]{genefilter}}, 
+#' By contrast, \code{\link[genefilter]{genefilter}},
 #' of the genefilter package in Bioconductor,
 #' works only on the rows of a matrix. Note that, because \code{\link{otu_table-class}}
 #' inherits directly from the \code{\link{matrix-class}}, an unmodified
@@ -895,7 +916,7 @@ transformSampleCounts <- transform_sample_counts
 #' ## wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' ## prune_taxa(wh1, testOTU)
 #' ## prune_taxa(wh2, testOTU)
-#' ## 
+#' ##
 #' ## tax_table1 <- tax_table(matrix("abc", 5, 5))
 #' ## prune_taxa(wh1, tax_table1)
 #' ## prune_taxa(wh2, tax_table1)
@@ -926,17 +947,17 @@ setMethod("genefilter_sample", signature("phyloseq"), function(X, flist, A=1){
 #'
 #' See the \code{\link[genefilter]{filterfun}}, from the Bioconductor repository,
 #' for a taxa-/gene-wise filter (and further examples).
-#' 
+#'
 #' @usage filterfun_sample(...)
 #'
 #' @param ... A comma-separated list of functions.
-#' 
-#' @return An enclosure (function) that itself will return a logical vector, 
+#'
+#' @return An enclosure (function) that itself will return a logical vector,
 #'  according to the
 #'  functions provided in the argument list, evaluated in order. The output of
-#'  filterfun_sample is appropriate for the `flist' argument to the 
+#'  filterfun_sample is appropriate for the `flist' argument to the
 #'  genefilter_sample method.
-#' 
+#'
 #' @export
 #' @seealso \code{\link[genefilter]{filterfun}}, \code{\link{genefilter_sample}}
 #' @examples
@@ -978,7 +999,7 @@ filterfun_sample = function(...){
 #' indicating whether or not each OTU passed the criteria.
 #' Alternatively, if the \code{"prune"} option is set to \code{TRUE},
 #' it returns the already-trimmed version of the phyloseq object.
-#' 
+#'
 #' @usage filter_taxa(physeq, flist, prune=FALSE)
 #'
 #' @param physeq (Required). A \code{\link{phyloseq-class}} object that you
@@ -991,25 +1012,25 @@ filterfun_sample = function(...){
 #' @param prune (Optional). A logical. Default \code{FALSE}. If \code{TRUE}, then
 #'  the function returns the pruned \code{\link{phyloseq-class}} object, rather
 #'  than the logical vector of taxa that passed the filter.
-#' 
+#'
 #' @return A logical vector equal to the number of taxa in \code{physeq}.
 #'  This can be provided directly to \code{\link{prune_taxa}} as first argument.
-#'  Alternatively, if \code{prune==TRUE}, the pruned \code{\link{phyloseq-class}} 
+#'  Alternatively, if \code{prune==TRUE}, the pruned \code{\link{phyloseq-class}}
 #'  object is returned instead.
-#' 
+#'
 #' @export
-#' @seealso 
+#' @seealso
 #' \code{\link[genefilter]{filterfun}},
 #' \code{\link{genefilter_sample}},
 #' \code{\link{filterfun_sample}}
-#' 
+#'
 #' @examples
 #'  data("enterotype")
 #'  require("genefilter")
 #'  flist    <- filterfun(kOverA(5, 2e-05))
 #'  ent.logi <- filter_taxa(enterotype, flist)
 #'  ent.trim <- filter_taxa(enterotype, flist, TRUE)
-#'  identical(ent.trim, prune_taxa(ent.logi, enterotype)) 
+#'  identical(ent.trim, prune_taxa(ent.logi, enterotype))
 #'  identical(sum(ent.logi), ntaxa(ent.trim))
 #'  filter_taxa(enterotype, flist, TRUE)
 filter_taxa <- function(physeq, flist, prune=FALSE){
@@ -1027,11 +1048,11 @@ filter_taxa <- function(physeq, flist, prune=FALSE){
 	if( ntaxa(physeq) != length(ans) ){
 		stop("Logic error in applying function(s). Logical result not same length as ntaxa(physeq)")
 	}
-	# Now return logical or pruned phyloseq-class instance.	
+	# Now return logical or pruned phyloseq-class instance.
 	if( prune ){
 		return( prune_taxa(ans, physeq) )
 	} else {
-		return( ans )		
+		return( ans )
 	}
 }
 ################################################################################
@@ -1050,7 +1071,7 @@ filter_taxa <- function(physeq, flist, prune=FALSE){
 #'  \code{\link{topp}}, \code{\link{rm_outlierf}}
 #'
 #' @export
-#' 
+#'
 #' @examples
 #' ## Use simulated abundance matrix
 #' set.seed(711)
@@ -1121,7 +1142,7 @@ topp <- function(p, na.rm=TRUE){
 #'  \code{\link{topp}}, \code{\link{rm_outlierf}}
 #'
 #' @export
-#' 
+#'
 #' @examples
 #' t1 <- 1:10; names(t1)<-paste("t", 1:10, sep="")
 #' topf(0.6)(t1)
@@ -1174,7 +1195,7 @@ topf <- function(f, na.rm=TRUE){
 #' (wh1 <- genefilter_sample(testOTU, f1, A=1))
 #' wh2 <- c(TRUE, TRUE, TRUE, FALSE, FALSE)
 #' prune_taxa(wh1, testOTU)
-#' prune_taxa(wh2, testOTU) 
+#' prune_taxa(wh2, testOTU)
 rm_outlierf <- function(f, na.rm=TRUE){
 	function(x){
 		if(na.rm){
