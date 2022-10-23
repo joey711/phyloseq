@@ -174,10 +174,10 @@ rarefy_even_depth <-
     if (verbose) {
       n.rmsamples <- sum(rmsamples)
       message(n.rmsamples, " samples removed",
-          "because they contained fewer reads than `sample.size`.")
-      message("Up to first five removed samples are: \n")
-      message(paste(names(rmsamples[rmsamples])[1:min(5, n.rmsamples)], "\t"))
-      message("...")
+              "because they contained fewer reads than `sample.size`.",
+              "Up to first five removed samples are: \n",
+              paste(names(rmsamples[rmsamples])[1:min(5, n.rmsamples)], "\t"),
+              "...")
     }
 		# Now done with notifying user of pruning, actually prune.
 		physeq = prune_samples(!rmsamples, physeq)
