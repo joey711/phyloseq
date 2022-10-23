@@ -182,15 +182,18 @@ rarefy_even_depth <-
 		# Now done with notifying user of pruning, actually prune.
 		physeq = prune_samples(!rmsamples, physeq)
 	}
-	# apply through each sample, and replace
-  # instead of transposing the table :
-  # if taxa are rows use margin 2 (cols) else use margin 1 (rows)
-	newotu <- apply(physeq@otu_table, taxa_are_rows(physeq) + 1, rarefaction_subsample,
-									sample.size = sample.size, replace = replace)
-	# Add OTU names to the row indices
-	taxa_names(newotu) <- taxa_names(physeq@otu_table)
-	# replace the otu_table
-	physeq@otu_table <- otu_table(newotu, taxa_are_rows(physeq))
+    # apply through each sample, and replace
+    # instead of transposing the table twice :
+    # if taxa are rows use margin 2 (cols) else use margin 1 (rows)
+    newotu <- apply(physeq@otu_table, taxa_are_rows(physeq) + 1, rarefaction_subsample,
+                    sample.size = sample.size, replace = replace)
+    newotu <- otu_table(newotu, TRUE)
+    # Add OTU names to the row indices
+    taxa_names(newotu) <- taxa_names(physeq@otu_table)
+    # transpose otu_table if taxa were columns
+    if(!taxa_are_rows(physeq)) newotu <- t(newotu)
+    # replace the otu_table
+    physeq@otu_table <- newotu
   if (trimOTUs) {
     # Check for and remove empty OTUs
     # 1. Notify user of empty OTUs being cut.
