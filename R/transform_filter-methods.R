@@ -188,7 +188,7 @@ rarefy_even_depth <-
 	newotu <- apply(physeq@otu_table, taxa_are_rows(physeq) + 1, rarefaction_subsample,
 									sample.size = sample.size, replace = replace)
 	# Add OTU names to the row indices
-	dimnames(newotu) <- dimnames(physeq@otu_table)#.taxa_names
+	taxa_names(newotu) <- taxa_names(physeq@otu_table)
 	# replace the otu_table
 	physeq@otu_table <- otu_table(newotu, taxa_are_rows(physeq))
   if (trimOTUs) {
