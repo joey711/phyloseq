@@ -127,9 +127,9 @@ rarefy_even_depth <-
            trimOTUs = TRUE,
            verbose = TRUE) {
 
-  if ( !(is.integer(rngseed) || is.numeric(rngseed)) || length(rngseed) > 1) {
-    stop("`rngseed` must be a single integer value or FALSE")
-  }
+    if ( !(is.integer(rngseed) || is.numeric(rngseed) || is.logical(rngseed)) || length(rngseed) > 1) {
+        stop("`rngseed` must be a single integer or logical value")
+    }
 
 	if ( !(is.logical(rngseed) && !rngseed) ) {
 		# Now call the set.seed using the value expected in phyloseq
