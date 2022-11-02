@@ -115,7 +115,7 @@ import <- function(pipelineName, ...){
 #' phylogenetic tree with a tip for each OTU, which can also be imported
 #' specified here or imported separately using \code{\link{read_tree}}.
 #' 
-#' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
+#' See \url{http://www.qiime.org} for details on using QIIME. While there are
 #' many complex dependencies, QIIME can be downloaded as a pre-installed 
 #' linux virtual machine that runs ``off the shelf''. 
 #'
