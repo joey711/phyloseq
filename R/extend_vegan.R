@@ -179,6 +179,7 @@ setMethod("vegdist", "phyloseq", function(x, method = "bray", binary = FALSE,
 #' @importFrom vegan estimateR
 #' @importFrom vegan diversity
 #' @importFrom vegan fisher.alpha
+#' @importFrom vegan specnumber
 #' @export
 #' @examples 
 #' ## There are many more interesting examples at the phyloseq online tutorials.
@@ -233,10 +234,13 @@ estimate_richness <- function(physeq, split=TRUE, measures=NULL){
   # Initialize to NULL
   outlist = vector("list")
 	# Some standard diversity indices
-  estimRmeas = c("Chao1", "Observed", "ACE")
-	if( any(estimRmeas %in% measures) ){ 
+  if( "Observed" %in% measures ){
+    outlist <- c(outlist, list(Observed = specnumber(OTU)))
+  }
+  estimRmeas = c("Chao1", "ACE")
+  if( any(estimRmeas %in% measures) ){ 
     outlist <- c(outlist, list(t(data.frame(estimateR(OTU)))))
-	}
+  }
 	if( "Shannon" %in% measures ){
     outlist <- c(outlist, list(shannon = diversity(OTU, index="shannon")))
 	}
