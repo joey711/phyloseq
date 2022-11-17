@@ -144,17 +144,25 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	# Even more terrible example, where leading or trailing space characters included
 	# (the exact weirdnes of chvec4, compounded by leading and/or trailing space characters)
 	chvec5 = c("  Root \n ", " k__Bacteria", "  Firmicutes", " c__Bacilli   ",
-		"o__Bacillales  ", "Staphylococcaceae ", "\t z__mistake \t\n")		
-
-	# This should give a warning because there were no greengenes prefixes
-	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
-	# And output from previous call, t1, should be identical to default
-	expect_that(parse_taxonomy_default(chvec1), is_equivalent_to(t1))
+		"o__Bacillales  ", "Staphylococcaceae ", "\t z__mistake \t\n")	
 	
-	# All the greengenes entries get trimmed by parse_taxonomy_greengenes
+  # Example of SILVA taxonomy strings
+	chvec6 = c("D_0__Bacteria", "D_1__Bacteroidetes", "D_2__Bacteroidia", "D_3__Bacteroidales", 
+	           "D_4__Prevotellaceae", "D_5__Prevotella 9", "D_6__uncultured bacterium")
+	
+	# This should give a warning because there were no greengenes/silva prefixes
+	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
+	expect_warning(t2 <- parse_taxonomy_silva_128(chvec1))
+	# And output from previous calls, t1 and t2, should be identical to default
+	expect_that(parse_taxonomy_default(chvec1), is_equivalent_to(t1))
+	expect_that(parse_taxonomy_default(chvec1), is_equivalent_to(t2))
+	
+	# All the greengenes/sivla entries get trimmed by parse_taxonomy_greengenes/silva
 	expect_that(all(sapply(chvec2, nchar) > sapply(parse_taxonomy_greengenes(chvec2), nchar)), is_true())
-	# None of the greengenes entries are trimmed by parse_taxonomy_default
+	expect_that(all(sapply(chvec6, nchar) > sapply(parse_taxonomy_silva_128(chvec6), nchar)), is_true())
+	# None of the greengenes/silva entries are trimmed by parse_taxonomy_default
 	expect_that(any(sapply(chvec2, nchar) > sapply(parse_taxonomy_default(chvec2), nchar)), is_false())
+	expect_that(any(sapply(chvec6, nchar) > sapply(parse_taxonomy_default(chvec6), nchar)), is_false())
 	
 	# Check that the "Root" element is not removed by parse_taxonomy_greengenes and parse_taxonomy_default.
 	expect_that("Root" %in% chvec3, is_true())
