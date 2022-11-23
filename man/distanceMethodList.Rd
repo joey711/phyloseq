@@ -4,7 +4,8 @@
 \name{distanceMethodList}
 \alias{distanceMethodList}
 \title{List of distance method keys supported in \code{\link[phyloseq]{distance}}}
-\format{A list of character vectors. 
+\format{
+A list of character vectors. 
 Every entry specifies a supported distance method.
 Names in the list indicate which downstream function
 is being utilized for further details.
@@ -57,7 +58,8 @@ Same functions are linked in the itemized list below.
   \item{\code{binary}}{\code{\link[stats]{dist}}}
   \item{\code{minkowski}}{\code{\link[stats]{dist}}}
   \item{\code{ANY}}{\code{\link[vegan]{designdist}}}
-}}
+}
+}
 \usage{
 distanceMethodList
 }

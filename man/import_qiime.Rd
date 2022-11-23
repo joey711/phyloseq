@@ -4,10 +4,17 @@
 \alias{import_qiime}
 \title{Import function to read the now legacy-format QIIME OTU table.}
 \usage{
-import_qiime(otufilename = NULL, mapfilename = NULL,
-  treefilename = NULL, refseqfilename = NULL,
-  refseqFunction = readDNAStringSet, refseqArgs = NULL,
-  parseFunction = parse_taxonomy_qiime, verbose = TRUE, ...)
+import_qiime(
+  otufilename = NULL,
+  mapfilename = NULL,
+  treefilename = NULL,
+  refseqfilename = NULL,
+  refseqFunction = readDNAStringSet,
+  refseqArgs = NULL,
+  parseFunction = parse_taxonomy_qiime,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{otufilename}{(Optional). A character string indicating 
@@ -119,7 +126,7 @@ specified here or imported separately using \code{\link{read_tree}}.
 
 See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
 many complex dependencies, QIIME can be downloaded as a pre-installed 
-linux virtual machine that runs ``off the shelf''.
+linux virtual machine that runs ``off the shelf''. 
 
 The different files useful for import to \emph{phyloseq} are not collocated in
 a typical run of the QIIME pipeline. See the main \emph{phyloseq} vignette for an 

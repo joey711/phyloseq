@@ -4,8 +4,12 @@
 \alias{microbio_me_qiime}
 \title{Import microbio.me/qiime (QIIME-DB) data package}
 \usage{
-microbio_me_qiime(zipftp, ext = ".zip",
-  parsef = parse_taxonomy_greengenes, ...)
+microbio_me_qiime(
+  zipftp,
+  ext = ".zip",
+  parsef = parse_taxonomy_greengenes,
+  ...
+)
 }
 \arguments{
 \item{zipftp}{(Required). A character string that is the full URL

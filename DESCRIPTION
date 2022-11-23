@@ -74,4 +74,4 @@ Collate:
     'extend_DESeq2.R'
     'phylo-class.R'
     'extend_metagenomeSeq.R'
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

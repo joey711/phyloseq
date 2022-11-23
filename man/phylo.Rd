@@ -4,7 +4,9 @@
 \name{phylo}
 \alias{phylo}
 \title{S3 class placeholder definition (list) for phylogenetic trees.}
-\format{An object of class \code{phylo} of length 0.}
+\format{
+An object of class \code{phylo} of length 0.
+}
 \usage{
 phylo
 }

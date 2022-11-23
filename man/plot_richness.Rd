@@ -4,9 +4,18 @@
 \alias{plot_richness}
 \title{Plot alpha diversity, flexibly with ggplot2}
 \usage{
-plot_richness(physeq, x = "samples", color = NULL, shape = NULL,
-  title = NULL, scales = "free_y", nrow = 1, shsi = NULL,
-  measures = NULL, sortby = NULL)
+plot_richness(
+  physeq,
+  x = "samples",
+  color = NULL,
+  shape = NULL,
+  title = NULL,
+  scales = "free_y",
+  nrow = 1,
+  shsi = NULL,
+  measures = NULL,
+  sortby = NULL
+)
 }
 \arguments{
 \item{physeq}{(Required). \code{\link{phyloseq-class}}, or alternatively, 
@@ -108,7 +117,7 @@ NOTE: Because this plotting function incorporates the output from
  plot might be kindof strange, and not the intended behavior of this function).
  The following are the names you will want to avoid using in \code{x} or \code{color}:
 
-\code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
+ \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
 }
 \examples{
 ## There are many more interesting examples at the phyloseq online tutorials.
