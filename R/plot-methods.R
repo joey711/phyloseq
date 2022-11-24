@@ -557,7 +557,8 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
 #'  plot might be kindof strange, and not the intended behavior of this function).
 #'  The following are the names you will want to avoid using in \code{x} or \code{color}:
 #'
-#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
+#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "Pielou",
+#'  "InvSimpson", "SimpsonE", "Fisher")}.
 #' 
 #' @param physeq (Required). \code{\link{phyloseq-class}}, or alternatively, 
 #'  an \code{\link{otu_table-class}}. The data about which you want to estimate.
@@ -624,7 +625,8 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
 #'  Alternatively, you can specify one or more measures
 #'  as a character vector of measure names.
 #'  Values must be among those supported:
-#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")}.
+#'  \code{c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "Pielou",
+#'  "InvSimpson", "SimpsonE", "Fisher")}.
 #'
 #' @param sortby (Optional). A character string subset of \code{measures} argument.
 #'  Sort x-indices by the mean of one or more \code{measures},
