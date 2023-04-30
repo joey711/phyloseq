@@ -16,8 +16,8 @@
 #' @usage refseq(physeq, errorIfNULL=TRUE)
 #' 
 #' @param physeq (Required). An instance of phyloseq-class
-#'  that contains a phylogenetic tree. If physeq is a phylogenetic
-#'  tree (a component data class), then it is returned as-is.
+#'  that contains reference sequences. If physeq is reference
+#'  sequences (a component data class), then it is returned as-is.
 #'
 #' @param errorIfNULL (Optional). Logical. Should the accessor stop with 
 #'  an error if the slot is empty (\code{NULL})? Default \code{TRUE}.
