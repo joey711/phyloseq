@@ -46,6 +46,15 @@ if counts are available, or to use \code{1}
 If \code{archetype} is not a valid index or index-name in \code{eqtaxa},
 the first will be used, and the value in archetype will be used 
 as the index-name for the new species.}
+
+\item{multi.fn}{(Optional). Function. Default=NULL. The default is
+to set merged taxa, those with multiple values (usually lower
+taxonomic ranks) to \code{NA}.  This argument allows to apply a
+function to them instead. This argument can help to control
+which or how many values (taxa) have been merged. Example functions
+could be \code{multi.fn=function(x) paste(x, collapse="|")} for
+a string of merged values or \code{length} for the number
+of merged taxa.}
 }
 \value{
 The object, \code{x}, in its original class, but with the specified
