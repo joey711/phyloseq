@@ -316,17 +316,20 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 ################################################################################
 #' Agglomerate taxa of the same type.
 #'
-#' This method merges species that have the same taxonomy at a certain 
-#' taxonomic rank. 
-#' Its approach is analogous to \code{\link{tip_glom}}, but uses categorical data
-#' instead of a tree. In principal, other categorical data known for all taxa
-#' could also be used in place of taxonomy,
-#' but for the moment, this must be stored in the \code{taxonomyTable}
-#' of the data. Also, columns/ranks to the right of the rank chosen to use
-#' for agglomeration will be replaced with \code{NA},
-#' because they should be meaningless following agglomeration.
+#' This method merges species that have the same taxonomy at a certain
+#' taxonomic rank.  Its approach is analogous to
+#' \code{\link{tip_glom}}, but uses categorical data instead of a
+#' tree. In principal, other categorical data known for all taxa could
+#' also be used in place of taxonomy, but for the moment, this must be
+#' stored in the \code{taxonomyTable} of the data. Also, columns/ranks
+#' to the right of the rank chosen to use for agglomeration will be
+#' replaced with \code{NA} (default), or collapsed (to a string of
+#' agglomerated taxon annotations). The latter allows control over
+#' collapsed taxa, which should be meaningless biologically following
+#' agglomeration.
 #'
-#' @usage tax_glom(physeq, taxrank=rank_names(physeq)[1], NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+#' @usage tax_glom(physeq, taxrank=rank_names(physeq)[1], NArm=TRUE,
+#' bad_empty=c(NA, "", " ", "\t"), multi.fn=NULL)
 #'
 #' @param physeq (Required). \code{\link{phyloseq-class}} or \code{\link{otu_table}}.
 #'
@@ -355,6 +358,17 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #'  and therefore agglomeration will not combine taxa according to the presence
 #'  of these values in \code{tax}. Furthermore, the corresponding taxa can be
 #'  optionally pruned from the output if \code{NArm} is set to \code{TRUE}.
+#'
+#' @param multi.fn (Optional). Function. Default=NULL. The default is
+#'   to set collapsed taxa, those with lower taxonomic rank than the
+#'   level at which you collapse, to NA. This argument allows to
+#'   apply a function to them instead. While the resulting collapsed
+#'   taxa should be meaningless biologically, this argument can help
+#'   to control which or how many taxa have been
+#'   agglomerated. Example functions could be
+#'   \code{multi.fn=function(x) paste(x, collapse="|")} for a string
+#'   of agglomerated taxa or \code{length} for the number of
+#'   agglomerated taxa.
 #' 
 #' @return A taxonomically-agglomerated, optionally-pruned, object with class matching
 #' the class of \code{physeq}.
@@ -381,7 +395,8 @@ tip_glom = function(physeq, h=0.2, hcfun=agnes, ...){
 #' # ## print the available taxonomic ranks. Shows only 1 rank available, not useful for tax_glom
 #' # colnames(tax_table(enterotype))
 tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
-					NArm=TRUE, bad_empty=c(NA, "", " ", "\t")){
+                     NArm=TRUE, bad_empty=c(NA, "", " ", "\t"),
+                     multi.fn=NULL){
 
 	# Error if tax_table slot is empty
 	if( is.null(access(physeq, "tax_table")) ){
@@ -417,11 +432,11 @@ tax_glom <- function(physeq, taxrank=rank_names(physeq)[1],
 	
 	# Successively merge taxa in physeq.
 	for( i in names(spCliques)){
-		physeq <- merge_taxa(physeq, spCliques[[i]])
+		physeq <- merge_taxa(physeq, spCliques[[i]], multi.fn=multi.fn)
 	}
 	
 	# "Empty" the values to the right of the rank, using NA_character_.
-	if( CN < length(rank_names(physeq)) ){
+	if( CN < length(rank_names(physeq)) & is.null(multi.fn) ){
 		badcolumns <- (CN+1):length(rank_names(physeq))
 		tax_table(physeq)[, badcolumns] <- NA_character_
 	}

@@ -286,6 +286,15 @@ setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function
 #'  the first will be used, and the value in archetype will be used 
 #'  as the index-name for the new species.
 #'
+#' @param multi.fn (Optional). Function. Default=NULL. The default is
+#'  to set merged taxa, those with multiple values (usually lower
+#'  taxonomic ranks) to \code{NA}.  This argument allows to apply a
+#'  function to them instead. This argument can help to control
+#'  which or how many values (taxa) have been merged. Example functions
+#'  could be \code{multi.fn=function(x) paste(x, collapse="|")} for
+#'  a string of merged values or \code{length} for the number
+#'  of merged taxa.
+#'
 #' @return The object, \code{x}, in its original class, but with the specified
 #'   species merged into one entry in all relevant components.
 #'
@@ -303,7 +312,7 @@ setMethod("merge_phyloseq_pair", signature("XStringSet", "XStringSet"), function
 #' # plot_tree(otutree0)
 #' otutree1 <- merge_taxa(otutree0, 1:8, 2)
 #' # plot_tree(esophagus, ladderize="left")
-setGeneric("merge_taxa", function(x, eqtaxa, archetype=1L) standardGeneric("merge_taxa"))
+setGeneric("merge_taxa", function(x, eqtaxa, archetype=1L, multi.fn=NULL) standardGeneric("merge_taxa"))
 ################################################################################
 #' @keywords internal
 merge_taxa.indices.internal = function(x, eqtaxa, archetype){
@@ -348,10 +357,10 @@ merge_taxa.indices.internal = function(x, eqtaxa, archetype){
 #' @aliases merge_taxa,phyloseq-method
 #' @rdname merge_taxa-methods
 setMethod("merge_taxa", "phyloseq", function(x, eqtaxa,
-    archetype=eqtaxa[which.max(taxa_sums(x)[eqtaxa])]){
+    archetype=eqtaxa[which.max(taxa_sums(x)[eqtaxa])], multi.fn=NULL){
   
 	comp_list   <- splat.phyloseq.objects(x)
-	merged_list <- lapply(comp_list, merge_taxa, eqtaxa, archetype)
+	merged_list <- lapply(comp_list, merge_taxa, eqtaxa, archetype, multi.fn)
 	# the element names can wreak havoc on do.call
 	names(merged_list) <- NULL
 	# Re-instantiate the combined object using the species-merged object.
@@ -436,7 +445,8 @@ setMethod("merge_taxa", "XStringSet", function(x, eqtaxa, archetype=1L){
 ################################################################################
 #' @aliases merge_taxa,taxonomyTable-method
 #' @rdname merge_taxa-methods
-setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L){
+setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L,
+                                                  multi.fn=NULL){
 	if( length(eqtaxa) < 2 ){
 		return(x)
 	}
@@ -452,7 +462,16 @@ setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L){
 		# The col indices of the bad ranks
 		bad_ranks <- min(which(bad_ranks)):length(bad_ranks)
 		# Replace bad taxonomy elements in the archetype only (others are pruned)
-		x[keepIndex, bad_ranks] <- NA_character_		
+               if(is.null(multi.fn)){
+                   x[keepIndex, bad_ranks] <- NA_character_
+               } else {
+                   if(is.function(multi.fn)){
+                       x[keepIndex, bad_ranks] <-
+                       apply(x[c(keepIndex, removeIndex), bad_ranks], 2, multi.fn)
+                   } else{
+                       stop("Either a function or NULL should be given as argument multi.fn")
+                   }
+               }
 	}
 	# Finally, remove the OTUs that have been merged into keepIndex
 	return( x[-removeIndex, , drop = FALSE] )
