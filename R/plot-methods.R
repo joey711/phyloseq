@@ -2337,7 +2337,7 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
       labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)", y="y", label=label.tips, color=color)
     }
     # Add labels layer to plotting object.
-    p <- p + geom_text(labelMap, tiplabDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
+    p <- p + geom_text(labelMap, tiplabDT, size=I(text.size), hjust=-0.1, na.rm=TRUE, show.legend=FALSE) #Added show.legend=FALSE so that the colored "a"s do not appear on legend.
   } 
   # Plot margins. 
   # Adjust the tree graphic plot margins.
