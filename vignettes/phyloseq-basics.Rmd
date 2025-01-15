@@ -168,11 +168,13 @@ One QIIME input file (sample map, tab-delimited),
 is recognized by the `import_qiime_sample_data()` function.
 
 ---
+
  Input File(s) | phyloseq function | Output
  --- | --- | ---
  `.biom`, `.tre`  | `import_biom()`  |  phyloseq object with OTU table, taxonomy table, and tree (if provided)
  `.tre`  |  `read_tree()` |  `phylo` object, representing phylogenetic tree.
  `map.txt` |  `import_qiime_sample_data()` |  A `sample_data` object
+
 ---
 
 The objects created by each of the import functions above 
@@ -317,6 +319,7 @@ Suppose you have already imported raw data from an experiment into `R`, and thei
  Table of component constructor functions for building component data objects <a id="table:build"></a>
 
 ---
+
  Function |  Input Class |  Output Description
  --- | --- | ---
  `otu_table`  |  numeric matrix  |  `otu_table` object storing OTU abundance 
@@ -326,15 +329,18 @@ Suppose you have already imported raw data from an experiment into `R`, and thei
  `tax_table`  |  data.frame  |  `taxonomyTable` object storing taxonomic identities 
  `read_tree` |  file path char  |  phylo-class tree, read from file 
  `read.table` |  table file path |  A matrix or data.frame (Std `R` core function) 
+
 ---
 
  phyloseq constructors: functions for building/merging *phyloseq* objects.
 
 ---
+
 Function | Input Class | Output Description
 --- | --- | ---
 `phyloseq` | Two or more component objects | phyloseq-class, *experiment-level* object
 `merge_phyloseq`| Two or more component or phyloseq-class objects | Combined instance of phyloseq-class
+
 ---
 
 The following example illustrates using the constructor methods for component data tables. 
@@ -382,6 +388,7 @@ Once you have a phyloseq object available, many accessor functions are available
 <a id="table:access"></a>
 
 ---
+
 Function | Returns
 --- | ---
  `[`  |  Standard extraction operator. Works on `otu_table`, `sample_data`, and `taxonomyTable`
@@ -403,6 +410,7 @@ Function | Returns
  `taxa_are_rows` |  `TRUE` if taxa are row indices in `otu_table` 
  `tax_table`  |  A taxonomy table
  `phy_tree` |  Access the tree contained in a phyloseq object
+
 ---
 
 
