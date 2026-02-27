@@ -4,7 +4,9 @@
 \name{metaMDS}
 \alias{metaMDS}
 \title{S3 class placeholder definition (list) for metaMDS}
-\format{An object of class \code{metaMDS} of length 0.}
+\format{
+An object of class \code{metaMDS} of length 0.
+}
 \usage{
 metaMDS
 }

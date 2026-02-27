@@ -13,13 +13,11 @@
 \usage{
 merge_taxa(x, eqtaxa, archetype=1)
 
-\S4method{merge_taxa}{phyloseq}(x, eqtaxa,
-  archetype = eqtaxa[which.max(taxa_sums(x)[eqtaxa])])
+\S4method{merge_taxa}{phyloseq}(x, eqtaxa, archetype = eqtaxa[which.max(taxa_sums(x)[eqtaxa])])
 
 \S4method{merge_taxa}{sample_data}(x, eqtaxa, archetype = 1L)
 
-\S4method{merge_taxa}{otu_table}(x, eqtaxa,
-  archetype = eqtaxa[which.max(taxa_sums(x)[eqtaxa])])
+\S4method{merge_taxa}{otu_table}(x, eqtaxa, archetype = eqtaxa[which.max(taxa_sums(x)[eqtaxa])])
 
 \S4method{merge_taxa}{phylo}(x, eqtaxa, archetype = 1L)
 

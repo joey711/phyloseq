@@ -68,3 +68,5 @@ This is the recommended location to post
 Search previous posts,
 and check [the phyloseq FAQ](https://www.bioconductor.org/packages/release/bioc/vignettes/phyloseq/inst/doc/phyloseq-FAQ.html)
 before posting a new issue.
+
+Thank you for your interest.

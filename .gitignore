@@ -22,3 +22,6 @@ inst/tests/.Rapp.history
 R/.Rapp.history
 
 
+/tests/testthat/_problems
+tests/testthat/testthat-problems.rds
+..Rcheck/00check.log

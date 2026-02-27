@@ -14,31 +14,31 @@ keepNames <- sample_names(GP)[5:7]
 
 test_that("Classes of pruned phyloseq and its components are as expected", {
 	GP3 <- prune_samples(keepNames, GP)
-	expect_that(nsamples(GP3), is_identical_to(3L))
-	expect_that(GP3, is_a("phyloseq"))
-	expect_that(access(GP3, "sam_data"),  is_a("sample_data"))
-	expect_that(access(GP3, "otu_table"), is_a("otu_table"))	
-	expect_that(access(GP3, "phy_tree"),      is_a("phylo"))	
-	expect_that(access(GP3, "tax_table"),   is_a("taxonomyTable"))		
+	expect_identical(nsamples(GP3), 3L)
+	expect_s4_class(GP3, "phyloseq")
+	expect_s4_class(access(GP3, "sam_data"), "sample_data")
+	expect_s4_class(access(GP3, "otu_table"), "otu_table")	
+	expect_s3_class(access(GP3, "phy_tree"), "phylo")	
+	expect_s4_class(access(GP3, "tax_table"), "taxonomyTable")		
 	# Now try on instance without sample data (empty slot)
 	GPnoSD  <- phyloseq(otu_table(GP), tax_table(GP))
 	GP3noSD <- prune_samples(keepNames, GPnoSD)
-	expect_that(nsamples(GP3noSD), is_identical_to(3L))	
-	expect_that(access(GP3noSD, "otu_table"), is_a("otu_table"))	
-	expect_that(access(GP3noSD, "sam_data"),  is_a("NULL"))
-	expect_that(access(GP3noSD, "phy_tree"),      is_a("NULL"))	
-	expect_that(access(GP3noSD, "tax_table"),   is_a("taxonomyTable"))	
+	expect_identical(nsamples(GP3noSD), 3L)	
+	expect_s4_class(access(GP3noSD, "otu_table"), "otu_table")	
+	expect_null(access(GP3noSD, "sam_data"))
+	expect_null(access(GP3noSD, "phy_tree"))	
+	expect_s4_class(access(GP3noSD, "tax_table"), "taxonomyTable")	
 })
 
 test_that("prune_samples works on sample_data-only and otu_table-only data", {
 	GPotu <- prune_samples(keepNames, access(GP, "otu_table", TRUE))
 	GPsd  <- prune_samples(keepNames, access(GP, "sam_data", TRUE))	
-	expect_that(nsamples(GPotu), is_identical_to(3L))	
-	expect_that(nsamples(GPsd), is_identical_to(3L))			
-	expect_that(GPotu, is_a("otu_table"))
-	expect_that(GPsd, is_a("sample_data"))
-	expect_that(dim(GPotu), is_identical_to(c(19216L, 3L)))
-	expect_that(dim(GPsd), is_identical_to(c(3L, 7L)))			
+	expect_identical(nsamples(GPotu), 3L)	
+	expect_identical(nsamples(GPsd), 3L)			
+	expect_s4_class(GPotu, "otu_table")
+	expect_s4_class(GPsd, "sample_data")
+	expect_identical(dim(GPotu), c(19216L, 3L))
+	expect_identical(dim(GPsd), c(3L, 7L))			
 })
 
 # Coerce orientation for apply
@@ -55,30 +55,30 @@ samobs = sort(samobs, TRUE)[1:50]
 samobs = sample(samobs, length(samobs), FALSE)
 
 test_that("Initial order before pruning check is different", {
-	expect_that(setequal(names(samobs), taxa_names(phy_tree(GP))[1:50]), is_false())
-	expect_that(setequal(names(samobs), taxa_names(GP)[1:50]), is_false())
-	expect_that(identical(names(samobs), taxa_names(GP)[1:50]), is_false())
+	expect_false(setequal(names(samobs), taxa_names(phy_tree(GP))[1:50]))
+	expect_false(setequal(names(samobs), taxa_names(GP)[1:50]))
+	expect_false(identical(names(samobs), taxa_names(GP)[1:50]))
 })
 
 # prune to just samobs OTUs
 pGP = prune_taxa(names(samobs), GP)
 
 test_that("The set of names should be the same after pruning, names(samobs)", {
-	expect_that(setequal(names(samobs), taxa_names(phy_tree(pGP))), is_true())	
-	expect_that(setequal(names(samobs), taxa_names(otu_table(pGP))), is_true())	
-	expect_that(setequal(names(samobs), taxa_names(tax_table(pGP))), is_true())	
+	expect_true(setequal(names(samobs), taxa_names(phy_tree(pGP))))	
+	expect_true(setequal(names(samobs), taxa_names(otu_table(pGP))))	
+	expect_true(setequal(names(samobs), taxa_names(tax_table(pGP))))	
 })
 
 test_that("The set/order of taxa names after pruning should be consistent", {
 	# set equal
-	expect_that(setequal(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
-	expect_that(setequal(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
-	expect_that(setequal(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
+	expect_true(setequal(taxa_names(pGP), taxa_names(phy_tree(pGP))))
+	expect_true(setequal(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))))
+	expect_true(setequal(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))))
 	# identical
-	expect_that(identical(taxa_names(pGP), taxa_names(phy_tree(pGP))), is_true())
-	expect_that(identical(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
-	expect_that(identical(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))), is_true())
-	expect_that(identical(names(samobs), taxa_names(phy_tree(pGP))), is_false())
+	expect_true(identical(taxa_names(pGP), taxa_names(phy_tree(pGP))))
+	expect_true(identical(taxa_names(otu_table(pGP)), taxa_names(phy_tree(pGP))))
+	expect_true(identical(taxa_names(tax_table(pGP)), taxa_names(phy_tree(pGP))))
+	expect_false(identical(names(samobs), taxa_names(phy_tree(pGP))))
 	# plot_tree(pGP, "sampledodge", nodeplotblank, label.tips="taxa_names", plot.margin=0.75)
 })
 

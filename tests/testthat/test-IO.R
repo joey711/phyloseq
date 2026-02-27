@@ -16,36 +16,36 @@ mothshared = system.file("extdata", "esophagus.fn.shared.gz", package="phyloseq"
 constaxonomy = system.file("extdata", "mothur_example.cons.taxonomy.gz", package="phyloseq")
 
 test_that("import_mothur: import of esophagus dataset from mothur files in extdata/ produces a phyloseq object", {
-	expect_that(esophman, is_a("phyloseq"))
+	expect_s4_class(esophman, "phyloseq")
 })
 
 test_that("import_mothur: The two phyloseq objects, example and just-imported, are identical", {
 	data("esophagus")
-	expect_that(esophagus, is_equivalent_to(esophman))
+	expect_equivalent(esophagus, esophman)
 })
 
 test_that("import_mothur: Test mothur file import on the (esophagus data).", {
 	smlc <- show_mothur_cutoffs(mothlist)
-	expect_that(smlc, is_equivalent_to(c("unique", "0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10")))	
+	expect_equivalent(smlc, c("unique", "0.00", "0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.10"))	
 })
 
 test_that("import_mothur: abundances can be manipulated mathematically", {
 	x1 <- as(otu_table(esophman), "matrix")
-	expect_that(2*x1-x1, is_equivalent_to(x1) )
+	expect_equivalent(2*x1-x1, x1)
 })
 
 test_that("import_mothur: empty stuff is NULL", {
-	expect_that(tax_table(esophman, FALSE), is_a("NULL"))
-	expect_that(sample_data(esophman, FALSE), is_a("NULL"))
+	expect_null(tax_table(esophman, FALSE))
+	expect_null(sample_data(esophman, FALSE))
 })
 
 test_that("import_mothur: Expected classes of non-empty components", {
-	expect_that(otu_table(esophman), is_a("otu_table"))
-	expect_that(phy_tree(esophman), is_a("phylo"))
+	expect_s4_class(otu_table(esophman), "otu_table")
+	expect_s3_class(phy_tree(esophman), "phylo")
 })
 
 test_that("import_mothur: imported files become S4 object", {
-	expect_that(isS4(esophman), is_true())
+	expect_true(isS4(esophman))
 })
 
 test_that("import_mothur: show method output tests", {
@@ -149,32 +149,32 @@ test_that("Taxonomy vector parsing functions behave as expected", {
 	# This should give a warning because there were no greengenes prefixes
 	expect_warning(t1 <- parse_taxonomy_greengenes(chvec1))
 	# And output from previous call, t1, should be identical to default
-	expect_that(parse_taxonomy_default(chvec1), is_equivalent_to(t1))
+	expect_equivalent(parse_taxonomy_default(chvec1), t1)
 	
 	# All the greengenes entries get trimmed by parse_taxonomy_greengenes
-	expect_that(all(sapply(chvec2, nchar) > sapply(parse_taxonomy_greengenes(chvec2), nchar)), is_true())
+	expect_true(all(sapply(chvec2, nchar) > sapply(parse_taxonomy_greengenes(chvec2), nchar)))
 	# None of the greengenes entries are trimmed by parse_taxonomy_default
-	expect_that(any(sapply(chvec2, nchar) > sapply(parse_taxonomy_default(chvec2), nchar)), is_false())
+	expect_false(any(sapply(chvec2, nchar) > sapply(parse_taxonomy_default(chvec2), nchar)))
 	
 	# Check that the "Root" element is not removed by parse_taxonomy_greengenes and parse_taxonomy_default.
-	expect_that("Root" %in% chvec3, is_true())
-	expect_that("Root" %in% parse_taxonomy_default(chvec3), is_true())
-	expect_that(length(parse_taxonomy_default(chvec3)) == length(chvec3), is_true())
+	expect_true("Root" %in% chvec3)
+	expect_true("Root" %in% parse_taxonomy_default(chvec3))
+	expect_true(length(parse_taxonomy_default(chvec3)) == length(chvec3))
 	
 	# Check that non-greengenes prefixes, and those w/o prefixes, are given dummy rank(s)
 	chvec4ranks = names(parse_taxonomy_greengenes(chvec4))
-	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(c(1, 3, 6, 7)))
+	expect_equivalent(grep("Rank", chvec4ranks, fixed=TRUE), c(1, 3, 6, 7))
 	# Check that everything given dummy rank in default parse.
 	chvec4ranks = names(parse_taxonomy_default(chvec4))
-	expect_that(grep("Rank", chvec4ranks, fixed=TRUE), is_equivalent_to(1:7))
+	expect_equivalent(grep("Rank", chvec4ranks, fixed=TRUE), 1:7)
 	
 	# chvec4 and chvec5 result in identical vectors.
-	expect_that(parse_taxonomy_default(chvec4), is_equivalent_to(parse_taxonomy_default(chvec5)))
-	expect_that(parse_taxonomy_greengenes(chvec4), is_equivalent_to(parse_taxonomy_greengenes(chvec5)))	
+	expect_equivalent(parse_taxonomy_default(chvec4), parse_taxonomy_default(chvec5))
+	expect_equivalent(parse_taxonomy_greengenes(chvec4), parse_taxonomy_greengenes(chvec5))	
 	
 	# The names of chvec5, greengenes parsed, should be...
 	correct5names = c("Rank1", "Kingdom", "Rank3", "Class", "Order", "Rank6", "Rank7")
-	expect_that(names(parse_taxonomy_greengenes(chvec5)), is_equivalent_to(correct5names))
+	expect_equivalent(names(parse_taxonomy_greengenes(chvec5)), correct5names)
 })
 
 ################################################################################
@@ -298,17 +298,17 @@ test_that("the import_biom and import(\"biom\", ) syntax give same result", {
 # read_tree tests
 test_that("The read_tree function works as expected:", {
 	GPNewick <- read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
-	expect_that(GPNewick, is_a("phylo"))
+	expect_s3_class(GPNewick, "phylo")
 	expect_equal(ntaxa(GPNewick), length(GPNewick$tip.label))
 	expect_equal(ntaxa(GPNewick), 500L)
 	expect_equal(GPNewick$Nnode, 499L)
 	expect_equivalent(taxa_names(GPNewick), GPNewick$tip.label)
 	# Now read a nexus tree... 
 	# Some error-handling expectations
-	expect_that(read_tree("alskflsakjsfskfhas.akshfaksj"), gives_warning()) # file not exist
+	expect_warning(read_tree("alskflsakjsfskfhas.akshfaksj")) # file not exist
 	not_tree <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
-	expect_that(read_tree(not_tree), is_a("NULL")) # file not a tree, gives NULL
-	expect_that(read_tree(not_tree, TRUE), throws_error()) # file not a tree, check turned on/TRUE
+	expect_null(read_tree(not_tree)) # file not a tree, gives NULL
+	expect_error(read_tree(not_tree, TRUE)) # file not a tree, check turned on/TRUE
 })
 # read_tree_greengenes
 test_that("The specialized read_tree_greengenes function works:", {

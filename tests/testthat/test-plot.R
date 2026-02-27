@@ -34,13 +34,13 @@ GP.ord <- ordinate(GP.otu, "DCA")
 test_that("plot_ordination: Naked otu_table results in warning, but no error", {
   expect_is(GP.ord, "decorana")
 	# samples-only
-	expect_that(plot_ordination(GP.otu, GP.ord, "samples"), gives_warning())
+	expect_warning(plot_ordination(GP.otu, GP.ord, "samples"))
 	# species. 
-	expect_that(plot_ordination(GP.otu, GP.ord, "species"), gives_warning())
+	expect_warning(plot_ordination(GP.otu, GP.ord, "species"))
 	# split
-	expect_that(plot_ordination(GP.otu, GP.ord, "split"), gives_warning())
+	expect_warning(plot_ordination(GP.otu, GP.ord, "split"))
 	# biplot
-	expect_that(plot_ordination(GP.otu, GP.ord, "biplot"), gives_warning())
+	expect_warning(plot_ordination(GP.otu, GP.ord, "biplot"))
 })
 
 # Create (merged) phyloseq-class GP, and run comparisons
@@ -62,17 +62,17 @@ test_that("all 4 plot_ordination type options result in valid ggplot2 object", {
 test_that("plot_ordination: The justDF=TRUE option returns a data.frame", {
   # Make GP a phyloseq object with only tree (no ordination co-variables to plot)
 	GP <- merge_phyloseq(GP.otu, GP.tr)
-	expect_that(df0 <- plot_ordination(GP, GP.ord, "species", justDF=TRUE), is_a("data.frame"))	
-	expect_that(df1 <- plot_ordination(GP, GP.ord, "samples", justDF=TRUE), is_a("data.frame"))	
-	expect_that(df2 <- plot_ordination(GP, GP.ord, "split", justDF=TRUE), is_a("data.frame"))		
-	expect_that(df3 <- plot_ordination(GP, GP.ord, "biplot", justDF=TRUE), is_a("data.frame"))	
+	expect_s3_class(df0 <- plot_ordination(GP, GP.ord, "species", justDF=TRUE), "data.frame")	
+	expect_s3_class(df1 <- plot_ordination(GP, GP.ord, "samples", justDF=TRUE), "data.frame")	
+	expect_s3_class(df2 <- plot_ordination(GP, GP.ord, "split", justDF=TRUE), "data.frame")		
+	expect_s3_class(df3 <- plot_ordination(GP, GP.ord, "biplot", justDF=TRUE), "data.frame")	
 	# split and biplot data.frames should be same.	
-	expect_that(df2, is_identical_to(df3))
+	expect_identical(df2, df3)
 })
 
 test_that("plot_ordination: When variables are present or not, color SampleType", {
 	p1 <- plot_ordination(GP, GP.ord, "samples", color="SampleType")	
-	expect_that(p2<-plot_ordination(GP, GP.ord, "species", color="SampleType"), gives_warning())
+	expect_warning(p2<-plot_ordination(GP, GP.ord, "species", color="SampleType"))
 	p3 <- plot_ordination(GP, GP.ord, "split", color="SampleType")	
 	p4 <- plot_ordination(GP, GP.ord, "biplot", color="SampleType")
 	# ggplot-class tests
@@ -135,9 +135,9 @@ test_that("plot_ordination: Continuous variables still mapped, uses added dummy 
   expect_error(print(p2))
   # A `label` can be mapped to continuous var. It is coerced to char and printed.
 	expect_is(p3 <- plot_ordination(GP, GP.ord, "samples", label="OMEGA3_FA_CONC"), "ggplot")
-	expect_that(print(p1), is_a("gg"))
-	#expect_that(print(p2), is_a("gg"))
-	expect_that(print(p3), is_a("gg"))			
+	expect_s3_class(print(p1), "gg")
+	#expect_s3_class(print(p2), "gg")
+	expect_s3_class(print(p3), "gg")			
 })
 
 test_that("plot_ordination: Some additional formats and warnings.", {
@@ -162,18 +162,18 @@ test_that("plot_ordination: Some additional formats and warnings.", {
                          label="X.SampleID", color="SampleType", title="p8"), "ggplot")
   expect_is(p9 <- plot_ordination(GP, GP.ord.cca, type=" sPlit __ ",
                          label="Phylum", color="SampleType", title="p8"), "ggplot")
-  expect_that(print(p1), is_a("gg"))
-  expect_that(print(p2), is_a("gg"))
-  expect_that(print(p3), is_a("gg"))
-  expect_that(print(p4), is_a("gg"))
-  expect_that(print(p5), is_a("gg"))
-  expect_that(print(p6), is_a("gg"))
-  expect_that(print(p7), is_a("gg"))
-  expect_that(print(p7b), is_a("gg"))
-  expect_that(print(p7c), is_a("gg"))
-  expect_that(print(p7d), is_a("gg"))
-  expect_that(print(p8), is_a("gg"))
-  expect_that(print(p9), is_a("gg"))
+  expect_s3_class(print(p1), "gg")
+  expect_s3_class(print(p2), "gg")
+  expect_s3_class(print(p3), "gg")
+  expect_s3_class(print(p4), "gg")
+  expect_s3_class(print(p5), "gg")
+  expect_s3_class(print(p6), "gg")
+  expect_s3_class(print(p7), "gg")
+  expect_s3_class(print(p7b), "gg")
+  expect_s3_class(print(p7c), "gg")
+  expect_s3_class(print(p7d), "gg")
+  expect_s3_class(print(p8), "gg")
+  expect_s3_class(print(p9), "gg")
   # A few more related to new `wascores` support as default backup coordinates
   xnames = tapply(taxa_sums(GlobalPatterns), tax_table(GlobalPatterns)[, "Phylum"], sum)
   xnames <- names(sort(xnames, decreasing = TRUE))[1:5]
@@ -239,15 +239,15 @@ test_that("plot_ordination: CAP method", {
                                   color="SampleType", title="p8"), "ggplot")
   expect_is(p9 <- plot_ordination(GP, GP.ord.cap, type=" sPlit __ ", label="Phylum",
                                   color="SampleType", title="p8"), "ggplot")
-  expect_that(print(p4), is_a("gg"))
-  expect_that(print(p5), is_a("gg"))
-  expect_that(print(p6), is_a("gg"))
-  expect_that(print(p7), is_a("gg"))
-  expect_that(print(p7b), is_a("gg"))
-  expect_that(print(p7c), is_a("gg"))
-  expect_that(print(p7d), is_a("gg"))
-  expect_that(print(p8), is_a("gg"))
-  expect_that(print(p9), is_a("gg"))
+  expect_s3_class(print(p4), "gg")
+  expect_s3_class(print(p5), "gg")
+  expect_s3_class(print(p6), "gg")
+  expect_s3_class(print(p7), "gg")
+  expect_s3_class(print(p7b), "gg")
+  expect_s3_class(print(p7c), "gg")
+  expect_s3_class(print(p7d), "gg")
+  expect_s3_class(print(p8), "gg")
+  expect_s3_class(print(p9), "gg")
 })
 
 # Constrained CCA / RDA
@@ -276,15 +276,15 @@ test_that("plot_ordination: CCA, RDA method", {
                                   color="SampleType", title="p8"), "ggplot")
   expect_is(p9 <- plot_ordination(GP, GP.ord.cca, type=" sPlit __ ", label="Phylum",
                                   color="SampleType", title="p8"), "ggplot")
-  expect_that(print(p4), is_a("gg"))
-  expect_that(print(p5), is_a("gg"))
-  expect_that(print(p6), is_a("gg"))
-  expect_that(print(p7), is_a("gg"))
-  expect_that(print(p7b), is_a("gg"))
-  expect_that(print(p7c), is_a("gg"))
-  expect_that(print(p7d), is_a("gg"))
-  expect_that(print(p8), is_a("gg"))
-  expect_that(print(p9), is_a("gg"))
+  expect_s3_class(print(p4), "gg")
+  expect_s3_class(print(p5), "gg")
+  expect_s3_class(print(p6), "gg")
+  expect_s3_class(print(p7), "gg")
+  expect_s3_class(print(p7b), "gg")
+  expect_s3_class(print(p7c), "gg")
+  expect_s3_class(print(p7d), "gg")
+  expect_s3_class(print(p8), "gg")
+  expect_s3_class(print(p9), "gg")
   # Repeat test-plotting RDA
   expect_is(p4 <- plot_ordination(GP, GP.ord.rda, type="TaXa",
                                   color="Phylum", title="p4"), "ggplot")
@@ -304,15 +304,15 @@ test_that("plot_ordination: CCA, RDA method", {
                                   color="SampleType", title="p8"), "ggplot")
   expect_is(p9 <- plot_ordination(GP, GP.ord.rda, type=" sPlit __ ", label="Phylum",
                                   color="SampleType", title="p8"), "ggplot")
-  expect_that(print(p4), is_a("gg"))
-  expect_that(print(p5), is_a("gg"))
-  expect_that(print(p6), is_a("gg"))
-  expect_that(print(p7), is_a("gg"))
-  expect_that(print(p7b), is_a("gg"))
-  expect_that(print(p7c), is_a("gg"))
-  expect_that(print(p7d), is_a("gg"))
-  expect_that(print(p8), is_a("gg"))
-  expect_that(print(p9), is_a("gg"))
+  expect_s3_class(print(p4), "gg")
+  expect_s3_class(print(p5), "gg")
+  expect_s3_class(print(p6), "gg")
+  expect_s3_class(print(p7), "gg")
+  expect_s3_class(print(p7b), "gg")
+  expect_s3_class(print(p7c), "gg")
+  expect_s3_class(print(p7d), "gg")
+  expect_s3_class(print(p8), "gg")
+  expect_s3_class(print(p9), "gg")
 })
 ################################################################################
 # Other plot function tests...
