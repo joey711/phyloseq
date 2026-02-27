@@ -17,8 +17,12 @@
 #' into a vector. See the documentation of \code{\link[base]{Extract}} for
 #' more information about the \code{drop} argument.
 #'
-#' @param j See \code{\link[base]{Extract}}
-#' 
+#' @param x The object to be subsetted. See \code{\link[base]{Extract}}
+#'
+#' @param i Row index. See \code{\link[base]{Extract}}
+#'
+#' @param j Column index. See \code{\link[base]{Extract}}
+#'
 #' @param ... See \code{\link[base]{Extract}}
 #'
 #' @seealso  \code{\link[base]{Extract}}

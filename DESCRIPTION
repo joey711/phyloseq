@@ -10,6 +10,7 @@ Maintainer: Paul J. McMurdie <joey711@gmail.com>
 Author: Paul J. McMurdie <joey711@gmail.com>,
     Susan Holmes <susan@stat.stanford.edu>, with
     contributions from Gregory Jordan and Scott Chamberlain
+Encoding: UTF-8
 License: AGPL-3
 Imports:
     ade4 (>= 1.7-4),

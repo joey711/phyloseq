@@ -16,7 +16,11 @@
 \S4method{[}{XStringSet,character,ANY,ANY}(x, i)
 }
 \arguments{
-\item{j}{See \code{\link[base]{Extract}}}
+\item{x}{The object to be subsetted. See \code{\link[base]{Extract}}}
+
+\item{i}{Row index. See \code{\link[base]{Extract}}}
+
+\item{j}{Column index. See \code{\link[base]{Extract}}}
 
 \item{...}{See \code{\link[base]{Extract}}}
 
