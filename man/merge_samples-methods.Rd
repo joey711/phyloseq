@@ -68,5 +68,5 @@ rowSums(otu_table(GP10)[, ocean_samples])
 otu_table(mGP10)["Ocean", ]
 }
 \seealso{
-\code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
+\code{\link{merge_taxa}}, \code{\link{merge_phyloseq}}
 }

@@ -8,8 +8,13 @@
 \usage{
 UniFrac(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE, fast=TRUE)
 
-\S4method{UniFrac}{phyloseq}(physeq, weighted = FALSE,
-  normalized = TRUE, parallel = FALSE, fast = TRUE)
+\S4method{UniFrac}{phyloseq}(
+  physeq,
+  weighted = FALSE,
+  normalized = TRUE,
+  parallel = FALSE,
+  fast = TRUE
+)
 }
 \arguments{
 \item{physeq}{(Required). \code{\link{phyloseq-class}}, containing at minimum
@@ -72,7 +77,7 @@ using the \code{\link{phyloseq}} function. For example, the following code
 \code{phyloseq(myotu_table, myTree)}
 
 returns a \code{phyloseq}-class object that has been pruned and comprises
-the minimum arguments necessary for \code{UniFrac()}.
+the minimum arguments necessary for \code{UniFrac()}. 
 
 Parallelization is possible for UniFrac calculated with the \code{\link{phyloseq-package}},
 and is encouraged in the instances of large trees, many samples, or both.
@@ -83,7 +88,7 @@ helper packages. One of the simplest seems to be the \emph{doParallel} package.
 
 For more information, see the following links on registering the ``backend'':
 
-\emph{foreach} package manual:
+\emph{foreach} package manual: 
 
 \url{http://cran.r-project.org/web/packages/foreach/index.html}
 

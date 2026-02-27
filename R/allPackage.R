@@ -15,6 +15,9 @@
 #' and native implementation of methods that are not available in other R packages.
 #'
 #' @import methods
+#' @importFrom graphics axis
+#' @importFrom stats aggregate as.dist as.formula as.hclust complete.cases cutree relevel
+#' @importFrom utils capture.output combn download.file head read.table tail untar unzip write.table
 #' @name phyloseq-package
 #' @author Paul J. McMurdie II \email{mcmurdie@@stanford.edu}
 #' @references \url{www.stanford.edu/~mcmurdie}

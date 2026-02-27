@@ -115,7 +115,7 @@ import <- function(pipelineName, ...){
 #' phylogenetic tree with a tip for each OTU, which can also be imported
 #' specified here or imported separately using \code{\link{read_tree}}.
 #' 
-#' See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
+#' See \url{http://www.qiime.org/} for details on using QIIME. While there are
 #' many complex dependencies, QIIME can be downloaded as a pre-installed 
 #' linux virtual machine that runs ``off the shelf''. 
 #'
@@ -154,7 +154,7 @@ import <- function(pipelineName, ...){
 #'  of every OTU in your abundance table.
 #'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
 #'  for cases where the tree has been --- or needs to be --- imported separately,
-#'  as in the case of the GreenGenes tree mentioned earlier (code{\link{read_tree_greengenes}}).
+#'  as in the case of the GreenGenes tree mentioned earlier (\code{\link{read_tree_greengenes}}).
 #'
 #' @param refseqfilename (Optional). Default \code{NULL}.
 #'  The file path of the biological sequence file that contains at a minimum
@@ -885,7 +885,7 @@ import_RDP_otu <- function(otufile){
 #' It is regrettable that this importer does not take the xls-file directly
 #' as input. However, because of the moving-target nature of spreadsheet
 #' file formats, there is limited support for direct import of these formats into
-#' \code{R}. Rather than add to the dependency requirements of emph{phyloseq}
+#' \code{R}. Rather than add to the dependency requirements of \emph{phyloseq}
 #' and the relative support of these xls-support packages, it seems more efficient
 #' to choose an arbitrary delimited text format, and focus on the data 
 #' structure in the PyroTagger output. This will be easier to support in the
@@ -1612,7 +1612,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #' @param BIOMfilename (Required). A character string indicating the 
 #'  file location of the BIOM formatted file. This is a JSON formatted file,
 #'  specific to biological datasets, as described in 
-#'  \url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the biom-format home page}.
+#'  \href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the biom-format home page}.
 #'  In principle, this file should include you OTU abundance data (OTU table),
 #'  your taxonomic classification data (taxonomy table), as well as your
 #'  sample data, for instance what might be in your ``sample map'' in QIIME.
@@ -1642,7 +1642,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  of every OTU in your abundance table.
 #'  Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
 #'  for cases where the tree has been --- or needs to be --- imported separately,
-#'  as in the case of the GreenGenes tree mentioned earlier (code{\link{read_tree_greengenes}}).
+#'  as in the case of the GreenGenes tree mentioned earlier (\code{\link{read_tree_greengenes}}).
 #'
 #' @param refseqfilename (Optional). Default \code{NULL}.
 #'  The file path of the biological sequence file that contains at a minimum
@@ -1689,7 +1689,7 @@ export_env_file <- function(physeq, file="", writeTree=TRUE, return=FALSE){
 #'  There are many variations on taxonomic nomenclature, and naming 
 #'  conventions used to store that information in various taxonomic 
 #'  databases and phylogenetic assignment algorithms. A popular database,
-#'  \url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
+#'  \href{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
 #'  has its own custom parsing function provided in the phyloseq package,
 #'  \code{\link{parse_taxonomy_greengenes}},
 #'  and more can be contributed or posted as code snippets as needed.

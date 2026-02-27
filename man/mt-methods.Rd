@@ -13,23 +13,17 @@
 \usage{
 mt(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 
-\S4method{mt}{phyloseq,ANY}(physeq, classlabel, minPmaxT = "minP",
-  method = "fdr", ...)
+\S4method{mt}{phyloseq,ANY}(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 
-\S4method{mt}{otu_table,integer}(physeq, classlabel, minPmaxT = "minP",
-  method = "fdr", ...)
+\S4method{mt}{otu_table,integer}(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 
-\S4method{mt}{otu_table,numeric}(physeq, classlabel, minPmaxT = "minP",
-  method = "fdr", ...)
+\S4method{mt}{otu_table,numeric}(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 
-\S4method{mt}{otu_table,logical}(physeq, classlabel, minPmaxT = "minP",
-  method = "fdr", ...)
+\S4method{mt}{otu_table,logical}(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 
-\S4method{mt}{otu_table,character}(physeq, classlabel, minPmaxT = "minP",
-  method = "fdr", ...)
+\S4method{mt}{otu_table,character}(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 
-\S4method{mt}{otu_table,factor}(physeq, classlabel, minPmaxT = "minP",
-  method = "fdr", ...)
+\S4method{mt}{otu_table,factor}(physeq, classlabel, minPmaxT = "minP", method = "fdr", ...)
 }
 \arguments{
 \item{physeq}{(Required). \code{\link{otu_table-class}} or \code{\link{phyloseq-class}}.

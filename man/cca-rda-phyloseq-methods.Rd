@@ -10,16 +10,13 @@
 \alias{cca.phyloseq,phyloseq,NULL-method}
 \title{Constrained Correspondence Analysis and Redundancy Analysis.}
 \usage{
-cca.phyloseq(physeq, formula = NULL, method = "CCA", ...)
+\method{cca}{phyloseq}(physeq, formula = NULL, method = "CCA", ...)
 
-\S4method{cca.phyloseq}{phyloseq,formula}(physeq, formula = NULL,
-  method = "CCA", ...)
+\S4method{cca.phyloseq}{phyloseq,formula}(physeq, formula = NULL, method = "CCA", ...)
 
-\S4method{cca.phyloseq}{otu_table,ANY}(physeq, formula = NULL,
-  method = "CCA", ...)
+\S4method{cca.phyloseq}{otu_table,ANY}(physeq, formula = NULL, method = "CCA", ...)
 
-\S4method{cca.phyloseq}{phyloseq,`NULL`}(physeq, formula = NULL,
-  method = "CCA", ...)
+\S4method{cca.phyloseq}{phyloseq,NULL}(physeq, formula = NULL, method = "CCA", ...)
 }
 \arguments{
 \item{physeq}{(Required). Phylogenetic sequencing data

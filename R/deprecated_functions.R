@@ -14,9 +14,8 @@
 #'  (object inside parenthesis).
 #' @param value For assignment operators, the value to replace with 
 #'  (the right side of the assignment).
-#' @param ... For functions other than assignment operators, 
+#' @param ... For functions other than assignment operators,
 #'  parameters to be passed to the modern version of the function (see table).
-#' @docType package
 #' @export plot_taxa_bar taxaplot taxtab taxTab sampleData samData sam_data speciesSums sampleSums nspecies species.names sampleNames sample.names getSamples getSpecies rank.names getTaxa sample.variables getVariable merge_species otuTable speciesarerows speciesAreRows plot_richness_estimates import_qiime_sampleData filterfunSample genefilterSample prune_species subset_species tipglom taxglom tre show_mothur_list_cutoffs sam_data<- sampleData<- tre<- speciesAreRows<- otuTable<- taxTab<-
 #' @aliases deprecated_phyloseq_function plot_taxa_bar taxaplot taxtab taxTab sampleData samData sam_data speciesSums sampleSums nspecies species.names sampleNames sample.names getSamples getSpecies rank.names getTaxa sample.variables getVariable merge_species otuTable speciesarerows speciesAreRows plot_richness_estimates import_qiime_sampleData filterfunSample genefilterSample prune_species subset_species tipglom taxglom tre show_mothur_list_cutoffs sam_data<- sampleData<- tre<- speciesAreRows<- otuTable<- taxTab<-
 #' @details

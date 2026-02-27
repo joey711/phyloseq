@@ -4,7 +4,9 @@
 \name{decorana}
 \alias{decorana}
 \title{S3 class placeholder definition (list) for decorana}
-\format{An object of class \code{decorana} of length 0.}
+\format{
+An object of class \code{decorana} of length 0.
+}
 \usage{
 decorana
 }

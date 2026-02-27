@@ -11,14 +11,14 @@ categories, variables (and so forth) that describe the samples.
 \details{
 \describe{
 
-\item{.Data}{data-frame data, inherited from the data.frame class.}
+   \item{.Data}{data-frame data, inherited from the data.frame class.}
 
-\item{row.names}{
+   \item{row.names}{
      Also inherited from the data.frame class;
       it should contain the sample names.
    }
 
-\item{names}{Inherited from the data.frame class.}
+   \item{names}{Inherited from the data.frame class.}
 
-}
+ }
 }

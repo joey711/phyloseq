@@ -4,8 +4,14 @@
 \alias{rarefy_even_depth}
 \title{Resample an OTU table such that all samples have the same library size.}
 \usage{
-rarefy_even_depth(physeq, sample.size = min(sample_sums(physeq)),
-  rngseed = FALSE, replace = TRUE, trimOTUs = TRUE, verbose = TRUE)
+rarefy_even_depth(
+  physeq,
+  sample.size = min(sample_sums(physeq)),
+  rngseed = FALSE,
+  replace = TRUE,
+  trimOTUs = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{physeq}{(Required). A \code{\link{phyloseq-class}} object that you

@@ -12,7 +12,7 @@ import_biom(BIOMfilename,
 \item{BIOMfilename}{(Required). A character string indicating the 
 file location of the BIOM formatted file. This is a JSON formatted file,
 specific to biological datasets, as described in 
-\url{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the biom-format home page}.
+\href{http://www.qiime.org/svn_documentation/documentation/biom_format.html}{the biom-format home page}.
 In principle, this file should include you OTU abundance data (OTU table),
 your taxonomic classification data (taxonomy table), as well as your
 sample data, for instance what might be in your ``sample map'' in QIIME.
@@ -42,7 +42,7 @@ or the complete reference database tree that contains the OTU identifiers
 of every OTU in your abundance table.
 Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
 for cases where the tree has been --- or needs to be --- imported separately,
-as in the case of the GreenGenes tree mentioned earlier (code{\link{read_tree_greengenes}}).}
+as in the case of the GreenGenes tree mentioned earlier (\code{\link{read_tree_greengenes}}).}
 
 \item{refseqfilename}{(Optional). Default \code{NULL}.
 The file path of the biological sequence file that contains at a minimum
@@ -89,7 +89,7 @@ in the documentation for \code{\link{parse_taxonomy_default}}.
 There are many variations on taxonomic nomenclature, and naming 
 conventions used to store that information in various taxonomic 
 databases and phylogenetic assignment algorithms. A popular database,
-\url{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
+\href{http://greengenes.lbl.gov/cgi-bin/nph-index.cgi}{greengenes},
 has its own custom parsing function provided in the phyloseq package,
 \code{\link{parse_taxonomy_greengenes}},
 and more can be contributed or posted as code snippets as needed.

@@ -43,16 +43,16 @@ tab-delimited text file. Deselect any options to encapsulate fields in quotes,
 as extra quotes around each cell's contents might cause problems during 
 file processing. These quotes will also inflate the file-size, so leave them out
 as much as possible, while also resisting any temptation to modify the xls-file
-``by hand''.
+``by hand''. 
 
 A highly-functional and free spreadsheet application can be obtained as part
 of the cross-platform \code{OpenOffice} suite. It works for the above 
-required conversion. Go to \code{"http://www.openoffice.org/"}.
+required conversion. Go to \code{"http://www.openoffice.org/"}. 
 
 It is regrettable that this importer does not take the xls-file directly
 as input. However, because of the moving-target nature of spreadsheet
 file formats, there is limited support for direct import of these formats into
-\code{R}. Rather than add to the dependency requirements of emph{phyloseq}
+\code{R}. Rather than add to the dependency requirements of \emph{phyloseq}
 and the relative support of these xls-support packages, it seems more efficient
 to choose an arbitrary delimited text format, and focus on the data 
 structure in the PyroTagger output. This will be easier to support in the

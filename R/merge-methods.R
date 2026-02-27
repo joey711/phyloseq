@@ -488,7 +488,7 @@ setMethod("merge_taxa", "taxonomyTable", function(x, eqtaxa, archetype=1L){
 #'  the factor indicated by the \code{group} argument. The output class
 #'  matches \code{x}.  
 #'
-#' @seealso \code{\link{merge_taxa}}, code{\link{merge_phyloseq}}
+#' @seealso \code{\link{merge_taxa}}, \code{\link{merge_phyloseq}}
 #'
 #' @rdname merge_samples-methods
 #' @docType methods

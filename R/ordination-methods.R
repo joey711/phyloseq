@@ -392,6 +392,7 @@ DPCoA <- function(physeq, correction=cailliez, scannf=FALSE, ...){
 #' @seealso \code{\link{plot_ordination}},
 #'  \code{\link[vegan]{rda}}, \code{\link[vegan]{cca}}
 #'
+#' @usage \method{cca}{phyloseq}(physeq, formula = NULL, method = "CCA", ...)
 #' @aliases cca.phyloseq rda.phyloseq
 #' @rdname cca-rda-phyloseq-methods
 #' @docType methods

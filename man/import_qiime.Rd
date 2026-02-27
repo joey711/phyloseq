@@ -4,10 +4,17 @@
 \alias{import_qiime}
 \title{Import function to read the now legacy-format QIIME OTU table.}
 \usage{
-import_qiime(otufilename = NULL, mapfilename = NULL,
-  treefilename = NULL, refseqfilename = NULL,
-  refseqFunction = readDNAStringSet, refseqArgs = NULL,
-  parseFunction = parse_taxonomy_qiime, verbose = TRUE, ...)
+import_qiime(
+  otufilename = NULL,
+  mapfilename = NULL,
+  treefilename = NULL,
+  refseqfilename = NULL,
+  refseqFunction = readDNAStringSet,
+  refseqArgs = NULL,
+  parseFunction = parse_taxonomy_qiime,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{otufilename}{(Optional). A character string indicating 
@@ -41,7 +48,7 @@ or the complete reference database tree that contains the OTU identifiers
 of every OTU in your abundance table.
 Note that this argument can be a tree object (\code{\link[ape]{phylo}}-class)
 for cases where the tree has been --- or needs to be --- imported separately,
-as in the case of the GreenGenes tree mentioned earlier (code{\link{read_tree_greengenes}}).}
+as in the case of the GreenGenes tree mentioned earlier (\code{\link{read_tree_greengenes}}).}
 
 \item{refseqfilename}{(Optional). Default \code{NULL}.
 The file path of the biological sequence file that contains at a minimum
@@ -117,9 +124,9 @@ QIIME may also produce a
 phylogenetic tree with a tip for each OTU, which can also be imported
 specified here or imported separately using \code{\link{read_tree}}.
 
-See \url{"http://www.qiime.org/"} for details on using QIIME. While there are
+See \url{http://www.qiime.org/} for details on using QIIME. While there are
 many complex dependencies, QIIME can be downloaded as a pre-installed 
-linux virtual machine that runs ``off the shelf''.
+linux virtual machine that runs ``off the shelf''. 
 
 The different files useful for import to \emph{phyloseq} are not collocated in
 a typical run of the QIIME pipeline. See the main \emph{phyloseq} vignette for an 

@@ -21,6 +21,14 @@ and native implementation of methods that are not available in other R packages.
 \references{
 \url{www.stanford.edu/~mcmurdie}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{http://dx.plos.org/10.1371/journal.pone.0061217}
+  \item Report bugs at \url{https://github.com/joey711/phyloseq/issues}
+}
+
+}
 \author{
 Paul J. McMurdie II \email{mcmurdie@stanford.edu}
 }
