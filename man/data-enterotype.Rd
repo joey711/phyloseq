@@ -5,6 +5,10 @@
 \alias{data-enterotype}
 \alias{enterotype}
 \title{(Data) Enterotypes of the human gut microbiome (2011)}
+\format{
+A \code{\link{phyloseq-class}} object containing an OTU table
+  with 553 taxa and 280 samples, and sample data.
+}
 \description{
 Published in Nature in early 2011, this work compared (among other things),
 the faecal microbial communities from 22

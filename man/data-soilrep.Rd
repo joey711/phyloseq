@@ -5,6 +5,10 @@
 \alias{data-soilrep}
 \alias{soilrep}
 \title{(Data) Reproducibility of soil microbiome data (2011)}
+\format{
+A \code{\link{phyloseq-class}} object containing an OTU table
+  with 16,825 taxa and 56 samples, and sample data.
+}
 \description{
 Published in early 2011,
 this work compared 24 separate soil microbial communities under four treatment

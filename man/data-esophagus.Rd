@@ -5,6 +5,10 @@
 \alias{data-esophagus}
 \alias{esophagus}
 \title{(Data) Small example dataset from a human esophageal community (2004)}
+\format{
+A \code{\link{phyloseq-class}} object containing an OTU table
+  with 58 taxa and 3 samples, and a phylogenetic tree.
+}
 \description{
 Includes just 3 samples, 1 each from 3 subjects. Although the research article mentions 4 subjects,
 only 3 are included in this dataset.

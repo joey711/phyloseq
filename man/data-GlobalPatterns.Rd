@@ -5,6 +5,11 @@
 \alias{data-GlobalPatterns}
 \alias{GlobalPatterns}
 \title{(Data) Global patterns of 16S rRNA diversity at a depth of millions of sequences per sample (2011)}
+\format{
+A \code{\link{phyloseq-class}} object containing an OTU table
+  with 19,216 taxa and 26 samples, sample data, a phylogenetic tree,
+  and taxonomy table.
+}
 \description{
 Published in PNAS in early 2011. This work compared the microbial 
 communities from 25 environmental samples and three known ``mock communities''
