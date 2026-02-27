@@ -25,6 +25,8 @@
 #' along with additional description, from the following URL:
 #' \url{http://www.mothur.org/wiki/Esophageal_community_analysis}
 #' 
+#' @format A \code{\link{phyloseq-class}} object containing an OTU table
+#'   with 58 taxa and 3 samples, and a phylogenetic tree.
 #' @name data-esophagus
 #' @aliases esophagus
 #' @docType data
@@ -74,6 +76,8 @@ NA
 #'
 #' \url{http://www.bork.embl.de/Docu/Arumugam_et_al_2011/downloads.html}
 #'
+#' @format A \code{\link{phyloseq-class}} object containing an OTU table
+#'   with 553 taxa and 280 samples, and sample data.
 #' @name data-enterotype
 #' @aliases enterotype
 #' @docType data
@@ -146,6 +150,8 @@ NA
 #'
 #' The article can be accessed online at \url{http://www.nature.com/ismej/journal/v5/n8/full/ismej201111a.html}
 #'
+#' @format A \code{\link{phyloseq-class}} object containing an OTU table
+#'   with 16,825 taxa and 56 samples, and sample data.
 #' @name data-soilrep
 #' @aliases soilrep
 #' @docType data
@@ -193,6 +199,9 @@ NA
 #' The primary article can be viewed/downloaded at:
 #' \url{http://www.pnas.org/content/108/suppl.1/4516.short}
 #'
+#' @format A \code{\link{phyloseq-class}} object containing an OTU table
+#'   with 19,216 taxa and 26 samples, sample data, a phylogenetic tree,
+#'   and taxonomy table.
 #' @name data-GlobalPatterns
 #' @aliases GlobalPatterns
 #' @docType data

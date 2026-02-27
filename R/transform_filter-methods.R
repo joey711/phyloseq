@@ -123,14 +123,16 @@ rarefy_even_depth <- function(physeq, sample.size=min(sample_sums(physeq)),
 															rngseed=FALSE, replace=TRUE, trimOTUs=TRUE, verbose=TRUE){
 	
 	if( as(rngseed, "logical") ){
-		# Now call the set.seed using the value expected in phyloseq
+		# Save current RNG state, set seed, restore on exit
+		old_seed <- .Random.seed
+		on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv), add = TRUE)
 		set.seed(rngseed)
     if(verbose){
       # Print to screen this value
       message("`set.seed(", rngseed, ")` was used to initialize repeatable random subsampling.")
       message("Please record this for your records so others can reproduce.")
-      message("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="")		
-      message("...")      
+      message("Try `set.seed(", rngseed,"); .Random.seed` for the full vector", sep="")
+      message("...")
     }
 	} else if(verbose){
 		message("You set `rngseed` to FALSE. Make sure you've set & recorded\n",

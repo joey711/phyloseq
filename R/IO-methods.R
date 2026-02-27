@@ -1472,8 +1472,8 @@ import_mothur_dist <- function(mothur_dist_file){
 #' myDistObject <- as.dist(ape::cophenetic.phylo(phy_tree(esophagus)))
 #' export_mothur_dist(myDistObject)
 export_mothur_dist <- function(x, out=NULL, makeTrivialNamesFile=NULL){
-	if( class(x)== "matrix" ){ x <- as.dist(x) }
-	if( class(x)!= "dist" ){ stop("x must be a dist object, or symm matrix") }
+	if( is(x, "matrix") ){ x <- as.dist(x) }
+	if( !is(x, "dist") ){ stop("x must be a dist object, or symm matrix") }
 
 	# While x is a dist-object, get the length of unique pairs
 	# to initialize the dist table.
@@ -1769,9 +1769,9 @@ import_biom <- function(BIOMfilename,
 	argumentlist <- list()
 	
 	# Read the data
-	if(class(BIOMfilename)=="character"){
+	if(is(BIOMfilename, "character")){
 		x = read_biom(biom_file=BIOMfilename)
-	} else if (class(BIOMfilename)=="biom"){
+	} else if (is(BIOMfilename, "biom")){
 		x = BIOMfilename
 	} else {
 		stop("import_biom requires a 'character' string to a biom file or a 'biom-class' object")

@@ -7,11 +7,11 @@ output:
     toc: yes
     toc_depth: 2
     number_sections: true
+vignette: >
+  %\VignetteIndexEntry{phyloseq basics vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-<!--
-%% \VignetteEngine{knitr::rmarkdown}
-%% \VignetteIndexEntry{phyloseq basics vignette}
--->
 
 `r library("knitr")`
 `r opts_chunk$set(cache=FALSE, fig.width=9, message=FALSE, warning=FALSE)`
