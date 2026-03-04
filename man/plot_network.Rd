@@ -46,6 +46,9 @@ labelling the vertex points.}
 \item{hjust}{(Optional). Default \code{1.35}.
 The amount of horizontal justification to use for each label.}
 
+\item{label_size}{(Optional). Default \code{2}.
+The size of the label.}
+
 \item{line_weight}{(Optional). Default \code{0.3}.
 The line thickness to use to label graph edges.}
 
