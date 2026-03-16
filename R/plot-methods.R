@@ -666,7 +666,7 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3)
 #' plot_richness(GlobalPatterns, x="SampleType", measures=c("Chao1", "ACE", "InvSimpson"), nrow=3, sortby = "Chao1")
 plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL,
-                          scales="free_y", nrow=1, shsi=NULL, measures=NULL, sortby=NULL){ 
+                          scales="free_y", nrow=1, shsi=NULL, measures=NULL, sortby=NULL, boxplot=FALSE){ 
   # Calculate the relevant alpha-diversity measures
   erDF = estimate_richness(physeq, split=TRUE, measures=measures)
   # Measures may have been renamed in `erDF`. Replace it with the name from erDF
@@ -772,6 +772,25 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 	if( !is.null(title) ){
 		p <- p + ggtitle(title)
 	}
+  if (boxplot == TRUE) {
+	  # Make the ggplot.
+	  p = ggplot(mdf, richness_map) + geom_boxplot(na.rm=TRUE)  
+	  # Add error bars if mdf$se is not all NA
+	  if( any(!is.na(mdf[, "se"])) ){
+	    p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.1) 
+	  }
+	  # Rotate horizontal axis labels, and adjust
+		p = p + theme(axis.text.x=element_text(angle=-90, vjust=0.5, hjust=0))
+		# Add y-label 
+		p = p + ylab('Alpha Diversity Measure') 
+	  # Facet wrap using user-options
+		p = p + facet_wrap(~variable, nrow=nrow, scales=scales)
+		# Optionally add a title to the plot
+		if( !is.null(title) ){
+			p <- p + ggtitle(title)
+		}
+	  }
+	
 	return(p)
 }
 ################################################################################
