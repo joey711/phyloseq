@@ -9,6 +9,8 @@ env:
  global:
    - CRAN: http://cran.rstudio.com
 
+after_failure: "cat /home/travis/build/joey711/phyloseq/phyloseq.Rcheck/00check.log"
+
 notifications:
   email:
     on_success: change
