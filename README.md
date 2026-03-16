@@ -1,10 +1,9 @@
 <link href="http://joey711.github.com/phyloseq/markdown.css" rel="stylesheet"></link>
 
-# [phyloseq](http://joey711.github.com/phyloseq/)
+# [phyloseq](http://joey711.github.com/phyloseq/) <a href="https://github.com/joey711/phyloseq/"><img src="inst/extdata/phyloseq.png" alt="phyloseq logo image" align="right" height="139"></a>
 
 [![Travis-CI Build Status](https://travis-ci.org/joey711/phyloseq.svg?branch=master)](https://travis-ci.org/joey711/phyloseq)
 
-![phyloseq](inst/extdata/phyloseq.png)
 
 ## Quick Install
 
