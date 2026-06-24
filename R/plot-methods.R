@@ -164,7 +164,6 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' @importFrom igraph get.vertex.attribute
 #' @importFrom igraph vcount
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 geom_text
@@ -172,6 +171,7 @@ setMethod("plot_phyloseq", "phyloseq", function(physeq, ...){
 #' @importFrom ggplot2 geom_path
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 labs
 #' @importFrom ggplot2 element_blank
 #' @importFrom ggplot2 ggtitle
 #' 
@@ -243,19 +243,23 @@ plot_network <- function(g, physeq=NULL, type="samples",
 				axis.title.y     = element_blank(),
 				axis.ticks       = element_blank(),
 				panel.border     = element_blank()
-			)
+			) +
+      labs(
+        color = color,
+        shape = shape
+      )
 
 	# Add the graph vertices as points
-	p <- p + geom_point(aes_string(color=color, shape=shape), size=point_size, na.rm=TRUE)
+	p <- p + geom_point(aes(color=if (!is.null(color)) .data[[color]], shape=if (!is.null(shape)) .data[[shape]]), size=point_size, na.rm=TRUE)
 
 	# Add the text labels
 	if( !is.null(label) ){
-		p <- p + geom_text(aes_string(label=label), size = 2, hjust=hjust, na.rm=TRUE)
+		p <- p + geom_text(aes(label=.data[[label]]), size = 2, hjust=hjust, na.rm=TRUE)
 	}
 	
 	# Add the edges:
-	p <- p + geom_line(aes_string(group="id", color=line_color), 
-				graphDF, size=line_weight, alpha=line_alpha, na.rm=TRUE)
+	p <- p + geom_line(aes(group=id, color=if (!is.null(line_color)) .data[[line_color]]), 
+				graphDF, linewidth=line_weight, alpha=line_alpha, na.rm=TRUE)
 				
 	# Optionally add a title to the plot
 	if( !is.null(title) ){
@@ -385,6 +389,8 @@ plot_network <- function(g, physeq=NULL, type="samples",
 #' @importFrom ggplot2 geom_segment
 #' @importFrom ggplot2 scale_alpha
 #' @importFrom ggplot2 scale_size
+#' @importFrom ggplot2 labs
+#' @importFrom rlang .data
 #' 
 #' @export
 #' @examples 
@@ -506,9 +512,9 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
                                yend = yend, 
                                size = Distance, 
                                alpha = Distance)) +
-    geom_point(mapping = aes_string(x="x", y="y", 
-                                    color = color, 
-                                    shape = shape), 
+    geom_point(mapping = aes(x = x, y = y,
+                             color = if (!is.null(color)) .data[[color]],
+                             shape = if (!is.null(shape)) .data[[shape]]),
                data = vertexDT,
                size = point_size,
                alpha = point_alpha,
@@ -517,7 +523,7 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
     scale_size(range = c(2, 0.25))
   # Add labels
   if(!is.null(point_label)){
-    p <- p + geom_text(aes_string(x="x", y="y", label=point_label),
+    p <- p + geom_text(aes(x=x, y=y, label=.data[[point_label]]),
                        data = vertexDT, size = 2, hjust = hjust, na.rm = TRUE)
   }
   # Add default theme
@@ -530,6 +536,10 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
     axis.title.y     = element_blank(),
     axis.ticks       = element_blank(),
     panel.border     = element_blank()
+  ) +
+  labs(
+    color = color,
+    shape = shape
   )
   p <- p + theme_bw() + net_theme
   return(p)
@@ -653,6 +663,8 @@ plot_net <- function(physeq, distance="bray", type="samples", maxdist = 0.7,
 #' @importFrom ggplot2 geom_errorbar
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 labs
+#' @importFrom rlang .data
 #' 
 #' @export
 #' @examples 
@@ -755,7 +767,7 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
     }
   }
   # Define variable mapping
-  richness_map = aes_string(x=x, y="value", colour=color, shape=shape)
+  richness_map = aes(x=.data[[x]], y=value, colour=if (!is.null(color)) .data[[color]], shape=if (!is.null(shape)) .data[[shape]])
   # Make the ggplot.
   p = ggplot(mdf, richness_map) + geom_point(na.rm=TRUE)  
   # Add error bars if mdf$se is not all NA
@@ -763,7 +775,13 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
     p = p + geom_errorbar(aes(ymax=value + se, ymin=value - se), width=0.1) 
   }
   # Rotate horizontal axis labels, and adjust
-	p = p + theme(axis.text.x=element_text(angle=-90, vjust=0.5, hjust=0))
+	p = p + theme(
+    axis.text.x=element_text(angle=-90, vjust=0.5, hjust=0)
+    ) +
+    labs(
+      color = color,
+      shape = shape
+    )
 	# Add y-label 
 	p = p + ylab('Alpha Diversity Measure') 
   # Facet wrap using user-options
@@ -879,6 +897,8 @@ plot_richness = function(physeq, x="samples", color=NULL, shape=NULL, title=NULL
 #' @importFrom ggplot2 scale_size_manual
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 labs
+#' @importFrom rlang .data
 #' 
 #' @export
 #' 
@@ -1101,16 +1121,12 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   if( ncol(DF) <= 2){
     # If there is nothing to map, enforce simple mapping.
     message("No available covariate data to map on the points for this plot `type`")
-    ord_map = aes_string(x=x, y=y)
+    ord_map = aes(x=.data[[x]], y=.data[[y]])
   } else if( type %in% c("sites", "species", "split") ){
-    ord_map = aes_string(x=x, y=y, color=color, shape=shape, na.rm=TRUE)
+    ord_map = aes(x=.data[[x]], y=.data[[y]], color=if (!is.null(color)) .data[[color]], shape=if (!is.null(shape)) .data[[shape]], na.rm=TRUE)
   } else if(type=="biplot"){
     # biplot, `id.type` should try to map to color and size. Only size if color specified.
-    if( is.null(color) ){
-      ord_map = aes_string(x=x, y=y, size="id.type", color="id.type", shape=shape, na.rm=TRUE)
-    } else {
-      ord_map = aes_string(x=x, y=y, size="id.type", color=color, shape=shape, na.rm=TRUE)
-    }
+    ord_map = aes(x=.data[[x]], y=.data[[y]], size=id.type, color=if (!is.null(color)) .data[[color]] else id.type, shape=if (!is.null(shape)) .data[[shape]], na.rm=TRUE)
   }
   # Plot-building section
   p <- ggplot(DF, ord_map) + geom_point(na.rm=TRUE)
@@ -1130,7 +1146,7 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
   }
   # Add text labels to points
   if( !is.null(label) ){
-    label_map <- aes_string(x=x, y=y, label=label)
+    label_map <- aes(x=.data[[x]], y=.data[[y]], label=.data[[label]])
     p = p + geom_text(label_map, data=rm.na.phyloseq(DF, label),
                       size=2, vjust=1.5, na.rm=TRUE)
   }
@@ -1155,6 +1171,11 @@ plot_ordination = function(physeq, ordination, type="samples", axes=1:2,
     # Update the x-label and y-label
     p = p + xlab(strivar[1]) + ylab(strivar[2])
   }
+  p = p +
+    labs(
+      color = color,
+      shape = shape
+    )
   # Return the ggplot object
   return(p)
 }
@@ -1611,10 +1632,12 @@ psmelt = function(physeq){
 #'  \code{\link{qplot}}
 #'
 #' 
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 facet_grid
 #' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 labs
+#' @importFrom rlang .data
 #' 
 #' @export
 #'
@@ -1633,14 +1656,17 @@ plot_bar = function(physeq, x="Sample", y="Abundance", fill=NULL,
 	mdf = psmelt(physeq)
 	
 	# Build the plot data structure
-	p = ggplot(mdf, aes_string(x=x, y=y, fill=fill))
+	p = ggplot(mdf, aes(x=.data[[x]], y=.data[[y]], fill=if (!is.null(fill)) .data[[fill]]))
 
 	# Add the bar geometric object. Creates a basic graphic. Basis for the rest.
 	# Test weather additional
 	p = p + geom_bar(stat="identity", position="stack", color="black")
 
 	# By default, rotate the x-axis labels (they might be long)
-	p = p + theme(axis.text.x=element_text(angle=-90, hjust=0))
+	p = p + theme(axis.text.x=element_text(angle=-90, hjust=0)) +
+      labs(
+        fill = fill,
+      )
 
 	# Add faceting, if given
 	if( !is.null(facet_grid) ){	
@@ -2159,6 +2185,8 @@ nodeplotdefault = function(size=2L, hjust=-0.2){
 #' @importFrom ggplot2 scale_x_continuous
 #' @importFrom ggplot2 scale_size_continuous
 #' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 labs
+#' @importFrom rlang .data
 #' 
 #' @export
 #' @examples
@@ -2230,10 +2258,10 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     if(justify=="jagged"){
       # Tip label aesthetic mapping.
       # Aesthetics can be NULL, and that aesthetic gets ignored.
-      labelMap <- aes_string(x="xright", y="y", label=label.tips, color=color)
+      labelMap <- aes(x=xright, y=y, label=if (!is.null(label.tips)) .data[[label.tips]], color=if (!is.null(color)) .data[[color]])
     } else {
       # The left-justified version of tip-labels.
-      labelMap <- aes_string(x="max(xright, na.rm=TRUE)", y="y", label=label.tips, color=color)
+      labelMap <- aes(x=max(xright,  na.rm=TRUE), y=y, label=if (!is.null(label.tips)) .data[[label.tips]], color=if (!is.null(color)) .data[[color]])
     }
     p <- p + geom_text(labelMap, data=labelDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
   }
@@ -2309,8 +2337,12 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     dodgeDT <- dodgeDT[Abundance > 0, ]
   }
   # The general tip-point map. Objects can be NULL, and that aesthetic gets ignored.
-  dodgeMap <- aes_string(x="xdodge", y="y", color=color, fill=color,
-                        shape=shape, size=size)
+  dodgeMap <- aes(x=xdodge, 
+                  y=y, 
+                  color=if (!is.null(color)) .data[[color]], 
+                  fill=if (!is.null(color)) .data[[color]], 
+                  shape=if (!is.null(shape)) .data[[shape]], 
+                  size=if (!is.null(size)) .data[[size]])
   p <- p + geom_point(dodgeMap, data=dodgeDT, na.rm=TRUE)
   # Adjust point size transform
   if( !is.null(size) ){
@@ -2338,9 +2370,9 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
     }
     labelMap <- NULL
     if(justify=="jagged"){
-      labelMap <- aes_string(x="xfartiplab", y="y", label=label.tips, color=color)
+      labelMap <- aes(x=xfartiplab, y=y, label=if (!is.null(label.tips)) .data[[label.tips]], color=if (!is.null(color)) .data[[color]])
     } else {
-      labelMap <- aes_string(x="max(xfartiplab, na.rm=TRUE)", y="y", label=label.tips, color=color)
+      labelMap <- aes(x=max(xfartiplab, na.rm=TRUE), y=y, label=if (!is.null(label.tips)) .data[[label.tips]], color=if (!is.null(color)) .data[[color]])
     }
     # Add labels layer to plotting object.
     p <- p + geom_text(labelMap, tiplabDT, size=I(text.size), hjust=-0.1, na.rm=TRUE)
@@ -2357,7 +2389,14 @@ plot_tree = function(physeq, method="sampledodge", nodelabf=NULL,
   if(plot.margin > 0){
     max.x <- max.x * (1.0 + plot.margin)
   } 
-  p <- p + scale_x_continuous(limits=c(min.x, max.x))  
+  p <- p + 
+  scale_x_continuous(limits=c(min.x, max.x)) +
+  labs(
+    color = color,
+    fill = color,
+    shape = shape,
+    size = size
+    )
   return(p)
 }
 ################################################################################

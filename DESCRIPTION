@@ -32,6 +32,7 @@ Imports:
     multtest (>= 2.28.0),
     plyr (>= 1.8.3),
     reshape2 (>= 1.4.1),
+    rlang (>= 1.0.0),
     scales (>= 0.4.0),
     vegan (>= 2.5)
 Depends:
