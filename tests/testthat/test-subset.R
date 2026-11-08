@@ -94,17 +94,23 @@ test_that("The set/order of taxa names after pruning should be consistent", {
 ################################################################################
 # test filter_taxa and other filter methods.
 ################################################################################
-library("genefilter")
 data("enterotype")
 
 test_that("filter_taxa gives correct, reliable logicals and pruning", {
-	flist    <- filterfun(kOverA(5, 2e-05))
+	flist    <- function(x) sum(x > 2e-05) >= 5L
 	ent.logi <- filter_taxa(enterotype, flist)
-	expect_is(ent.logi, ("logical"))
+	expect_type(ent.logi, "logical")
 	ent.trim <- filter_taxa(enterotype, flist, TRUE)
-	expect_is(ent.trim, ("phyloseq"))
+	expect_s4_class(ent.trim, "phyloseq")
 	expect_equal(sum(ent.logi), (ntaxa(ent.trim)))
 	expect_identical(prune_taxa(ent.logi, enterotype), (ent.trim)) 
 	expect_equal(ntaxa(ent.trim), (416L))
 	expect_equal(nsamples(ent.trim), (nsamples(enterotype)))	
+})
+
+test_that("filter_taxa integrates with optional genefilter functions", {
+  skip_if_not_installed("genefilter")
+  flist <- genefilter::filterfun(genefilter::kOverA(5, 2e-05))
+  expected <- filter_taxa(enterotype, function(x) sum(x > 2e-05) >= 5L)
+  expect_identical(filter_taxa(enterotype, flist), expected)
 })

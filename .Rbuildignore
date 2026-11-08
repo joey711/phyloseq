@@ -1,0 +1,4 @@
+^\.github$
+^\.travis\.yml$
+^DEVELOPMENT\.md$
+^docs$
