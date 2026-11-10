@@ -297,7 +297,7 @@ test_that("the import_biom and import(\"biom\", ) syntax give same result", {
 ################################################################################
 # read_tree tests
 test_that("The read_tree function works as expected:", {
-	GPNewick <- read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq"))
+	expect_warning(GPNewick <- read_tree(system.file("extdata", "GP_tree_rand_short.newick.gz", package="phyloseq")), NA)
 	expect_s3_class(GPNewick, "phylo")
 	expect_equal(ntaxa(GPNewick), length(GPNewick$tip.label))
 	expect_equal(ntaxa(GPNewick), 500L)
@@ -305,10 +305,28 @@ test_that("The read_tree function works as expected:", {
 	expect_equivalent(taxa_names(GPNewick), GPNewick$tip.label)
 	# Now read a nexus tree... 
 	# Some error-handling expectations
-	expect_warning(read_tree("alskflsakjsfskfhas.akshfaksj")) # file not exist
+	expect_warning(read_tree("alskflsakjsfskfhas.akshfaksj"), "cannot open") # file not exist
 	not_tree <- system.file("extdata", "esophagus.good.groups.gz", package="phyloseq")
-	expect_null(read_tree(not_tree)) # file not a tree, gives NULL
-	expect_error(read_tree(not_tree, TRUE)) # file not a tree, check turned on/TRUE
+	expect_warning(not_tree_result <- read_tree(not_tree), NA)
+	expect_null(not_tree_result) # an invalid format quietly returns NULL
+	expect_warning(expect_error(read_tree(not_tree, TRUE), "tree file could not be read"), NA)
+})
+
+test_that("read_tree handles Nexus and empty inputs without format-probe warnings", {
+  nexus_file <- tempfile(fileext=".nex")
+  empty_file <- tempfile()
+  on.exit(unlink(c(nexus_file, empty_file)))
+  expected <- ape::read.tree(text="(a:1,b:2);")
+  ape::write.nexus(expected, file=nexus_file)
+  file.create(empty_file)
+  expect_warning(actual <- read_tree(nexus_file), NA)
+  expect_equal(actual$tip.label, expected$tip.label)
+  expect_equal(actual$edge, expected$edge)
+  expect_equal(actual$edge.length, expected$edge.length)
+  expect_warning(empty <- read_tree(empty_file), NA)
+  expect_null(empty)
+  expect_warning(expect_error(read_tree(empty_file, TRUE), "tree file could not be read"), NA)
+  expect_identical(read_tree(expected), expected)
 })
 # read_tree_greengenes
 test_that("The specialized read_tree_greengenes function works:", {

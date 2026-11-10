@@ -309,8 +309,11 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' \code{\link[ape]{read.tree}} (Newick-format) and
 #' \code{\link[ape]{read.nexus}} (Nexus-format) importers provided by
 #' the \code{\link[ape]{ape-package}}. This function attempts to return a valid
-#' tree if possible using either format importer. If it fails, it silently 
-#' returns \code{NULL} by default, rather than throwing a show-stopping error.
+#' tree if possible using either format importer. If neither format matches,
+#' it returns \code{NULL} by default rather than throwing a show-stopping error.
+#' Expected Newick format-probe warnings for empty input or missing tree
+#' terminators are handled internally. File-access warnings and other parser
+#' diagnostics remain visible.
 #'
 #' @usage read_tree(treefile, errorIfNULL=FALSE, ...)
 #'
@@ -321,7 +324,7 @@ import_qiime <- function(otufilename=NULL, mapfilename=NULL,
 #' @param errorIfNULL (Optional). Logical. Should an error be thrown if no tree
 #'  can be extracted from the connection?
 #'  Default is \code{FALSE}, indicating that \code{NULL} will be 
-#'  SILENTLY returned, rather than an error. 
+#'  returned without an invalid-format warning, rather than an error.
 #'  Be cautious about this behavior. Useful for phyloseq internals, but might
 #'  be hard to track in your own code if you're not aware of this
 #'  ``no error by default'' setting. If this is a problem, change this value
@@ -358,9 +361,18 @@ read_tree <- function(treefile, errorIfNULL=FALSE, ...){
 		tree <- NULL
 		try(tree <- read.nexus(treefile, ...), TRUE)
 		# Try Newick if nexus didn't work.
-		if(is.null(tree)) try(tree <- read.tree(treefile, ...), TRUE)
+		if(is.null(tree)) {
+		  try(tree <- withCallingHandlers(read.tree(treefile, ...), warning=function(w) {
+		    # ape returns NULL after these warnings: a failed Newick probe is expected
+		    # here. Keep file-access warnings and all other parser diagnostics visible.
+		    if (conditionMessage(w) %in% c("no semicolon(s) [end(s) of tree] found",
+		                                  "empty character string.")) {
+		      invokeRestart("muffleWarning")
+		    }
+		  }), TRUE)
+		}
 	}
-	# If neither tree-import worked (still NULL), report warning
+	# If neither tree-import worked (still NULL), stop when requested.
 	if( errorIfNULL & is.null(tree) ){
 		stop("tree file could not be read.\nPlease retry with valid tree.")
 	}

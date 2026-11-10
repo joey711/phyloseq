@@ -14,7 +14,7 @@ Must be a Newick- or Nexus-formatted tree.}
 \item{errorIfNULL}{(Optional). Logical. Should an error be thrown if no tree
 can be extracted from the connection?
 Default is \code{FALSE}, indicating that \code{NULL} will be 
-SILENTLY returned, rather than an error. 
+returned without an invalid-format warning, rather than an error.
 Be cautious about this behavior. Useful for phyloseq internals, but might
 be hard to track in your own code if you're not aware of this
 ``no error by default'' setting. If this is a problem, change this value
@@ -32,8 +32,11 @@ This function is a convenience wrapper around the
 \code{\link[ape]{read.tree}} (Newick-format) and
 \code{\link[ape]{read.nexus}} (Nexus-format) importers provided by
 the \code{\link[ape]{ape-package}}. This function attempts to return a valid
-tree if possible using either format importer. If it fails, it silently 
-returns \code{NULL} by default, rather than throwing a show-stopping error.
+tree if possible using either format importer. If neither format matches,
+it returns \code{NULL} by default rather than throwing a show-stopping error.
+Expected Newick format-probe warnings for empty input or missing tree
+terminators are handled internally. File-access warnings and other parser
+diagnostics remain visible.
 }
 \examples{
 read_tree(system.file("extdata", "esophagus.tree.gz", package="phyloseq"))
