@@ -1,100 +1,117 @@
-################################################################################
-# Use testthat to test phyloseq transformation functions/methods
-################################################################################
-library("phyloseq"); library("testthat")
-# # # # TESTS!
-#set.seed(8888)
+transform_test_table <- function(n_taxa=3L, n_samples=2L, taxa_rows=TRUE) {
+  counts <- matrix(rep(c(0, 2, 6, 4, 0, 8), length.out=n_taxa * n_samples),
+                   nrow=n_taxa,
+                   dimnames=list(paste0("taxon", seq_len(n_taxa)),
+                                 paste0("sample", seq_len(n_samples))))
+  if (!taxa_rows) counts <- t(counts)
+  otu_table(counts, taxa_are_rows=taxa_rows)
+}
 
-################################################################################
-test_that("Can transform_sample_counts of an OTU table that is either orientation", {
-  data("esophagus")
-  OTU0 = otu_table(esophagus)
-  OTU1 = transform_sample_counts(OTU0, rank)
-  OTU2 = transform_sample_counts(t(OTU0), rank)
-  expect_true(identical(ntaxa(OTU0), ntaxa(OTU1)),
-              "ntaxa OTU1 doesn't match original after transformation.")
-  expect_true(identical(ntaxa(OTU0), ntaxa(OTU2)),
-              "ntaxa OTU2 doesn't match original after transformation.")
-})
-test_that("Can transform_sample_counts on phyloseq with either orientation", {
-  data("esophagus")
-  eso1 = eso2 = NULL
-  try(eso1 <- transform_sample_counts(esophagus, rank), TRUE)
-  try(eso2 <- transform_sample_counts(t(esophagus), rank), TRUE)
-  expect_false(is.null(eso1), "eso1 is NULL, valid phyloseq construction failed.")
-  expect_false(is.null(eso2), "eso2 is NULL, valid phyloseq construction failed.")
-  expect_is(eso1, "phyloseq", "class of eso1 is not phyloseq")
-  expect_is(eso2, "phyloseq", "class of eso2 is not phyloseq")
-  expect_equal(ntaxa(esophagus), ntaxa(eso1), info="ntaxa eso1 doesn't match original after transformation.")
-  expect_equal(ntaxa(esophagus), ntaxa(eso2), info="ntaxa eso2 doesn't match original after transformation.")
+test_that("sample transformations preserve orientation, names and singleton dimensions", {
+  for (taxa_rows in c(TRUE, FALSE)) {
+    for (n_taxa in c(1L, 3L)) {
+      for (n_samples in c(1L, 2L)) {
+        input <- transform_test_table(n_taxa, n_samples, taxa_rows)
+        original <- input
+        result <- transform_sample_counts(input, function(x) unname(log1p(x)))
+
+        expect_s4_class(result, "otu_table")
+        expect_identical(taxa_are_rows(result), taxa_rows)
+        expect_identical(dim(result), dim(input))
+        expect_identical(dimnames(result), dimnames(input))
+        expect_equal(as(result, "matrix"), log1p(as(input, "matrix")))
+        expect_identical(input, original)
+      }
+    }
+  }
 })
 
-test_that("Test transform_sample_counts edge-cases", {
-	data("esophagus")
-	# Randomly pick the OTU and sample names to use for subsetting
-	# (Will be different each time tests are run)
-	OTUname1 = sample(taxa_names(esophagus), 1)
-	samname1 = sample(sample_names(esophagus), 1)
-	# Test that a one-OTU dataset still works
-	# It throws a warning because the tree is being removed when it becomes just one tip.
-	#suppressWarnings(eso1otu <- prune_taxa(sample(taxa_names(esophagus), 1), esophagus))
-	expect_warning(try(eso1otu <- prune_taxa(OTUname1, esophagus), TRUE))
-	try(eso1sam <- prune_samples(samname1, esophagus), TRUE)
-	# Test eso1otu
-	expect_equal(ntaxa(eso1otu), 1L)
-	expect_equal(nsamples(eso1otu), 3L)
-	# Behavior strange when tree removed by necessity.
-	# In this case a "phyloseq" object with just an OTU table. 
-	# Really, this should just be considered an object of class "otu_table".
-	#expect_is(eso1otu, "phyloseq", "pruned-to-1-OTU esophagus not phyloseq")
-	eso1otu = otu_table(eso1otu)
-	expect_is(eso1otu, "otu_table")
-	expect_equal(dim(otu_table(eso1otu)), c(1L, nsamples(esophagus)))	
-	# Test eso1sam
-	expect_is(eso1sam, "phyloseq", "pruned-to-1-sample esophagus not phyloseq")
-	expect_is(otu_table(eso1sam), "otu_table",
-						"pruned-to-1-sample esophagus OTU table not otu_table")
-	expect_equal(nsamples(eso1sam), 1L)
-	expect_equal(dim(otu_table(eso1sam)), c(ntaxa(esophagus), 1L))
-	# Now test transform_sample_counts
-	eso1samrank = eso1oturank = NULL
-	try(eso1samrank  <- transform_sample_counts(eso1sam, rank), TRUE)
-	try(eso1samrankt <- transform_sample_counts(t(eso1sam), rank), TRUE)
-	try(eso1oturank  <- transform_sample_counts(eso1otu, rank), TRUE)
-	try(eso1oturankt <- transform_sample_counts(t(eso1otu), rank), TRUE)
-	expect_is(eso1samrank, "phyloseq")
-	expect_is(eso1samrankt, "phyloseq")
-	expect_is(eso1oturank, "otu_table")
-	expect_is(eso1oturankt, "otu_table")
-})
-test_that("Test transform_sample_counts numerical result accuracy", {
-	data("esophagus")
-  es = esophagus
-  # addition
-  es1 = transform_sample_counts(es, function(x) x + 1)
-  expect_equal(otu_table(es1), otu_table(es) + 1, tolerance=0.1, info="addition fail")
-  # multiplication
-	es1 = transform_sample_counts(es, function(x) x * 2.5)
-	expect_equal(otu_table(es1), otu_table(es) * 2.5, tolerance=0.1, info="multiplication fail")
-  # element-wise exponentiation
-	es1 = transform_sample_counts(es, function(x) x ^ 2.5)
-	expect_equal(otu_table(es1), otu_table(es) ^ 2.5, tolerance=0.1, info="exponentiation fail")
-  # logarithm
-	es1 = transform_sample_counts(es, function(x) log(x+10) )
-	expect_equal(otu_table(es1), log(otu_table(es) + 10), tolerance=0.1, info="logarithm fail")  
-  # Prune to a small subset. Need a test where "by-sample" matters. E.g. rank
-  es  = prune_taxa(taxa_names(es)[1:5], esophagus)
-	es1 = transform_sample_counts(es, rank)
-  ans = c(5, 2, 4, 2, 2, 5, 2.5, 4, 2.5, 1, 5, 1.5, 1.5, 3.5, 3.5)
-  ans = otu_table(matrix(ans, ntaxa(es), nsamples(es), FALSE,
-                         list(taxa_names(es), sample_names(es))), taxa_are_rows=TRUE)
-	expect_equal(otu_table(es1), ans, tolerance=0.1, info="rank fail")
-  # test where "by-sample" matters, after transpose
-	es  = prune_taxa(taxa_names(esophagus)[1:5], t(esophagus))
-	es1 = transform_sample_counts(es, rank)
-	ans = c(5, 2, 4, 2, 2, 5, 2.5, 4, 2.5, 1, 5, 1.5, 1.5, 3.5, 3.5)
-	ans = otu_table(matrix(ans, nsamples(es), ntaxa(es), TRUE,
-	                       list(sample_names(es), taxa_names(es))), taxa_are_rows=FALSE)
-	expect_equal(otu_table(es1), ans, tolerance=0.1, info="rank fail")
+test_that("extra arguments reach the transformation function", {
+  for (taxa_rows in c(TRUE, FALSE)) {
+    input <- transform_test_table(taxa_rows=taxa_rows)
+    result <- transform_sample_counts(input, function(x, offset) x + offset, offset=7)
+    expect_equal(as(result, "matrix"), as(input, "matrix") + 7)
+  }
 })
 
+test_that("callbacks run once per actual sample with the original taxon names", {
+  for (taxa_rows in c(TRUE, FALSE)) {
+    input <- transform_test_table(taxa_rows=taxa_rows)
+    seen <- list()
+    result <- transform_sample_counts(input, function(x) {
+      seen[[length(seen) + 1L]] <<- x
+      x / sum(x)
+    })
+
+    expect_length(seen, nsamples(input))
+    counts <- as(if (taxa_rows) input else t(input), "matrix")
+    for (i in seq_len(nsamples(input))) {
+      expect_identical(seen[[i]], counts[, i])
+    }
+    expect_equal(unname(sample_sums(result)), rep(1, nsamples(input)))
+  }
+})
+
+test_that("transformations preserve every other phyloseq component", {
+  counts <- transform_test_table()
+  samples <- sample_data(data.frame(group=c("control", "case"),
+                                    row.names=sample_names(counts)))
+  taxonomy <- tax_table(matrix(c("A", "B", "C"), ncol=1,
+                               dimnames=list(taxa_names(counts), "Genus")))
+  tree <- ape::read.tree(text="(taxon1:1,(taxon2:1,taxon3:1):1);")
+  sequences <- Biostrings::DNAStringSet(setNames(c("AAA", "CCC", "GGG"),
+                                               taxa_names(counts)))
+  input <- phyloseq(counts, samples, taxonomy, tree, sequences)
+
+  for (taxa_rows in c(TRUE, FALSE)) {
+    current <- if (taxa_rows) input else t(input)
+    original <- current
+    result <- transform_sample_counts(current, log1p)
+
+    expect_s4_class(result, "phyloseq")
+    expect_identical(taxa_are_rows(result), taxa_rows)
+    expect_equal(as(otu_table(result), "matrix"), log1p(as(otu_table(current), "matrix")))
+    expect_identical(sample_data(result), sample_data(current))
+    expect_identical(tax_table(result), tax_table(current))
+    expect_identical(phy_tree(result), phy_tree(current))
+    expect_identical(refseq(result), refseq(current))
+    expect_identical(current, original)
+  }
+})
+
+test_that("integer and double transformations are both supported", {
+  input <- transform_test_table()
+  for (fun in list(rank, function(x) as.integer(x > 0))) {
+    result <- transform_sample_counts(input, fun)
+    expected <- apply(as(input, "matrix"), 2, fun)
+    dimnames(expected) <- dimnames(input)
+    expect_identical(as(result, "matrix"), expected)
+  }
+})
+
+test_that("invalid callback results fail before replacing the OTU table", {
+  input <- transform_test_table()
+  original <- input
+  for (fun in list(sum, function(x) x[-1], function(x) as.character(x),
+                   as.list, function(x) matrix(x, ncol=1),
+                   function(x) if (x[1] == 0) x else x[-1])) {
+    expect_error(transform_sample_counts(input, fun), "numeric vector.*same length")
+    expect_identical(input, original)
+  }
+  expect_error(transform_sample_counts(input, 1), "`fun` must be a function")
+})
+
+test_that("the legacy transformation alias has the same behavior", {
+  input <- transform_test_table()
+  expect_identical(transformSampleCounts(input, log1p),
+                   transform_sample_counts(input, log1p))
+})
+
+test_that("threshold rank closures honor zero handling and rank arguments", {
+  x <- c(0, 5, 2, 0)
+  expect_equal(threshrankfun(2, keep0s=TRUE, ties.method="min")(x), c(0, 4, 3, 0))
+  for (keep_zeros in c(TRUE, FALSE)) {
+    expect_identical(threshrankfun(2, keep0s=keep_zeros, ties.method="min")(x),
+                     threshrank(x, 2, keep0s=keep_zeros, ties.method="min"))
+  }
+})
