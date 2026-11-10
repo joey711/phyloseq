@@ -25,6 +25,7 @@ Imports:
     Biostrings (>= 2.40.0),
     cluster (>= 2.0.4),
     data.table (>= 1.10.4),
+    digest (>= 0.6.25),
     foreach (>= 1.4.3),
     ggplot2 (>= 2.1.0),
     igraph (>= 1.0.1),
@@ -38,13 +39,17 @@ Depends:
     R (>= 3.3.0)
 Suggests:
     BiocStyle (>= 2.4),
+    compositions (>= 2.0),
     DESeq2 (>= 1.16.1),
     genefilter (>= 1.58),
     knitr (>= 1.16),
     magrittr (>= 1.5),
     metagenomeSeq (>= 1.14),
     rmarkdown (>= 1.6),
-    testthat (>= 1.0.2)
+    S4Vectors (>= 0.23.18),
+    SummarizedExperiment (>= 1.16),
+    testthat (>= 1.0.2),
+    TreeSummarizedExperiment (>= 2.14.0)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.10)
 biocViews: ImmunoOncology, Sequencing, Microbiome, Metagenomics,
@@ -69,6 +74,8 @@ Collate:
     'multtest-wrapper.R'
     'ordination-methods.R'
     'transform-methods.R'
+    'composition-methods.R'
+    'plot-composition.R'
     'transform_filter-methods.R'
     'validity-methods.R'
     'assignment-methods.R'

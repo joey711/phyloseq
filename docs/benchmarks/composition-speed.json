@@ -1,0 +1,233 @@
+{
+  "benchmark": "composition optimization",
+  "date": "2026-11-03",
+  "R": "R version 4.4.3 (2025-02-28)",
+  "platform": "aarch64-apple-darwin24.2.0",
+  "baseline_md5": "94dbae318bf140b3bed6f10649753fab",
+  "current_md5": "898972f16abe1545b75dac09e70a3e06",
+  "repetitions": 5,
+  "allocation": "Total bytes allocated per call; not peak resident memory",
+  "correctness": "Assays, IDs, diagnostic reports and scientific parameters compared before timing",
+  "packages": {
+    "SummarizedExperiment": "1.36.0",
+    "digest": "0.6.39"
+  },
+  "results": [
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "check_counts",
+      "implementation": "before",
+      "median_seconds": 0.043,
+      "elapsed_seconds": [0.044, 0.044, 0.043, 0.043, 0.042],
+      "allocated_bytes": 137090504
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "check_counts",
+      "implementation": "after",
+      "median_seconds": 0.026,
+      "elapsed_seconds": [0.026, 0.026, 0.027, 0.027, 0.026],
+      "allocated_bytes": 64772112
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "relative",
+      "implementation": "before",
+      "median_seconds": 0.258,
+      "elapsed_seconds": [0.259, 0.254, 0.253, 0.258, 0.259],
+      "allocated_bytes": 440714384
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "relative",
+      "implementation": "after",
+      "median_seconds": 0.13,
+      "elapsed_seconds": [0.133, 0.13, 0.129, 0.13, 0.127],
+      "allocated_bytes": 314610392
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "hellinger",
+      "implementation": "before",
+      "median_seconds": 0.259,
+      "elapsed_seconds": [0.257, 0.259, 0.258, 0.282, 0.279],
+      "allocated_bytes": 456714432
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "hellinger",
+      "implementation": "after",
+      "median_seconds": 0.135,
+      "elapsed_seconds": [0.13, 0.128, 0.135, 0.139, 0.139],
+      "allocated_bytes": 330610440
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "clr",
+      "implementation": "before",
+      "median_seconds": 0.258,
+      "elapsed_seconds": [0.258, 0.261, 0.268, 0.258, 0.254],
+      "allocated_bytes": 400697488
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "clr",
+      "implementation": "after",
+      "median_seconds": 0.125,
+      "elapsed_seconds": [0.121, 0.126, 0.125, 0.124, 0.125],
+      "allocated_bytes": 274593496
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "check_clr",
+      "implementation": "before",
+      "median_seconds": 0.216,
+      "elapsed_seconds": [0.218, 0.215, 0.219, 0.216, 0.215],
+      "allocated_bytes": 339672960
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "check_clr",
+      "implementation": "after",
+      "median_seconds": 0.086,
+      "elapsed_seconds": [0.084, 0.087, 0.086, 0.086, 0.08],
+      "allocated_bytes": 179921512
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "clr_from_relative",
+      "implementation": "before",
+      "median_seconds": 0.424,
+      "elapsed_seconds": [0.424, 0.421, 0.426, 0.424, 0.427],
+      "allocated_bytes": 603283528
+    },
+    {
+      "taxa": 20000,
+      "samples": 100,
+      "operation": "clr_from_relative",
+      "implementation": "after",
+      "median_seconds": 0.179,
+      "elapsed_seconds": [0.179, 0.184, 0.173, 0.175, 0.18],
+      "allocated_bytes": 389746480
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "check_counts",
+      "implementation": "before",
+      "median_seconds": 0.041,
+      "elapsed_seconds": [0.041, 0.04, 0.04, 0.041, 0.041],
+      "allocated_bytes": 136304648
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "check_counts",
+      "implementation": "after",
+      "median_seconds": 0.027,
+      "elapsed_seconds": [0.027, 0.026, 0.026, 0.027, 0.027],
+      "allocated_bytes": 64250256
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "relative",
+      "implementation": "before",
+      "median_seconds": 0.267,
+      "elapsed_seconds": [0.264, 0.272, 0.267, 0.265, 0.272],
+      "allocated_bytes": 444387728
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "relative",
+      "implementation": "after",
+      "median_seconds": 0.137,
+      "elapsed_seconds": [0.137, 0.149, 0.139, 0.137, 0.132],
+      "allocated_bytes": 321405336
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "hellinger",
+      "implementation": "before",
+      "median_seconds": 0.279,
+      "elapsed_seconds": [0.268, 0.279, 0.285, 0.279, 0.277],
+      "allocated_bytes": 460387776
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "hellinger",
+      "implementation": "after",
+      "median_seconds": 0.139,
+      "elapsed_seconds": [0.136, 0.136, 0.14, 0.142, 0.139],
+      "allocated_bytes": 337405384
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "clr",
+      "implementation": "before",
+      "median_seconds": 0.26,
+      "elapsed_seconds": [0.264, 0.262, 0.259, 0.259, 0.26],
+      "allocated_bytes": 404303632
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "clr",
+      "implementation": "after",
+      "median_seconds": 0.127,
+      "elapsed_seconds": [0.128, 0.146, 0.127, 0.126, 0.126],
+      "allocated_bytes": 281321240
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "check_clr",
+      "implementation": "before",
+      "median_seconds": 0.231,
+      "elapsed_seconds": [0.247, 0.231, 0.231, 0.231, 0.234],
+      "allocated_bytes": 340871744
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "check_clr",
+      "implementation": "after",
+      "median_seconds": 0.09,
+      "elapsed_seconds": [0.09, 0.089, 0.09, 0.09, 0.089],
+      "allocated_bytes": 185587048
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "clr_from_relative",
+      "implementation": "before",
+      "median_seconds": 0.45,
+      "elapsed_seconds": [0.45, 0.45, 0.455, 0.45, 0.451],
+      "allocated_bytes": 608887112
+    },
+    {
+      "taxa": 4000,
+      "samples": 500,
+      "operation": "clr_from_relative",
+      "implementation": "after",
+      "median_seconds": 0.188,
+      "elapsed_seconds": [0.187, 0.188, 0.193, 0.188, 0.189],
+      "allocated_bytes": 402674416
+    }
+  ]
+}
