@@ -45,10 +45,13 @@ Suggests:
     knitr (>= 1.16),
     magrittr (>= 1.5),
     metagenomeSeq (>= 1.14),
+    microViz (>= 0.12.6),
+    pheatmap (>= 1.0.12),
     rmarkdown (>= 1.6),
     S4Vectors (>= 0.23.18),
     SummarizedExperiment (>= 1.16),
     testthat (>= 1.0.2),
+    tidyplots (>= 0.4.0),
     TreeSummarizedExperiment (>= 2.14.0)
 VignetteBuilder: knitr
 Enhances: doParallel (>= 1.0.10)
@@ -57,6 +60,7 @@ biocViews: ImmunoOncology, Sequencing, Microbiome, Metagenomics,
     GeneticVariability
 URL: http://dx.plos.org/10.1371/journal.pone.0061217
 BugReports: https://github.com/joey711/phyloseq/issues
+Additional_repositories: https://david-barnett.r-universe.dev
 Collate:
     'allClasses.R'
     'allPackage.R'
@@ -77,6 +81,7 @@ Collate:
     'composition-methods.R'
     'filter-prevalence.R'
     'plot-composition.R'
+    'plot-integrations.R'
     'transform_filter-methods.R'
     'validity-methods.R'
     'assignment-methods.R'
