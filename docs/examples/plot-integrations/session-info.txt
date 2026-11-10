@@ -1,0 +1,72 @@
+R version 4.4.3 (2025-02-28)
+Platform: aarch64-apple-darwin24.2.0
+Running under: macOS 26.3.1
+
+Matrix products: default
+BLAS:   /opt/homebrew/Cellar/openblas/0.3.31_1/lib/libopenblasp-r0.3.31.dylib
+LAPACK: /opt/homebrew/Cellar/r/4.4.3_1/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Berlin
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+other attached packages:
+[1] phyloseq_1.55.2 testthat_3.3.2
+
+loaded via a namespace (and not attached):
+  [1] ade4_1.7-24                     tidyselect_1.2.1
+  [3] dplyr_1.2.1                     farver_2.1.2
+  [5] Biostrings_2.74.1               S7_0.2.2
+  [7] lazyeval_0.2.3                  SingleCellExperiment_1.28.1
+  [9] digest_0.6.39                   lifecycle_1.0.5
+ [11] cluster_2.1.8.3                 survival_3.8-12
+ [13] tidytree_0.4.8                  magrittr_2.0.5
+ [15] compiler_4.4.3                  rlang_1.3.0
+ [17] tools_4.4.3                     igraph_2.3.4
+ [19] data.table_1.18.6.1             labeling_0.4.3
+ [21] tidyplots_0.4.0                 S4Arrays_1.6.0
+ [23] pkgbuild_1.4.8                  DelayedArray_0.32.0
+ [25] plyr_1.8.9                      RColorBrewer_1.1-3
+ [27] BiocParallel_1.40.2             pkgload_1.5.3
+ [29] TreeSummarizedExperiment_2.14.0 abind_1.4-8
+ [31] Rtsne_0.17                      withr_3.0.3
+ [33] purrr_1.2.2                     BiocGenerics_0.52.0
+ [35] desc_1.4.3                      grid_4.4.3
+ [37] stats4_4.4.3                    multtest_2.62.0
+ [39] biomformat_1.34.0               colorspace_2.1-4
+ [41] Rhdf5lib_1.28.0                 ggplot2_4.0.3
+ [43] scales_1.4.0                    iterators_1.0.14
+ [45] MASS_7.3-66                     dichromat_2.0-1
+ [47] SummarizedExperiment_1.36.0     cli_3.6.6
+ [49] vegan_2.7-6                     crayon_1.5.3
+ [51] ragg_1.5.2                      treeio_1.37.1
+ [53] generics_0.1.4                  otel_0.2.0
+ [55] microbiome_1.28.0               httr_1.4.9
+ [57] reshape2_1.4.5                  ape_5.8-1
+ [59] rhdf5_2.50.2                    stringr_1.6.0
+ [61] zlibbioc_1.52.0                 splines_4.4.3
+ [63] parallel_4.4.3                  microViz_0.12.6
+ [65] XVector_0.46.0                  yulab.utils_0.2.5
+ [67] matrixStats_1.5.0               vctrs_0.7.3
+ [69] Matrix_1.7-6                    jsonlite_2.0.0
+ [71] IRanges_2.40.1                  S4Vectors_0.44.0
+ [73] systemfonts_1.3.2               foreach_1.5.2
+ [75] tidyr_1.3.2                     glue_1.8.1
+ [77] codetools_0.2-20                stringi_1.8.9
+ [79] gtable_0.3.6                    GenomeInfoDb_1.42.3
+ [81] GenomicRanges_1.58.0            UCSC.utils_1.2.0
+ [83] tibble_3.3.1                    pillar_1.11.1
+ [85] rappdirs_0.3.4                  brio_1.1.5
+ [87] rhdf5filters_1.18.1             GenomeInfoDbData_1.2.13
+ [89] R6_2.6.1                        textshaping_1.0.5
+ [91] rprojroot_2.1.1                 lattice_0.23-1
+ [93] Biobase_2.66.0                  pheatmap_1.0.13
+ [95] Rcpp_1.1.2                      SparseArray_1.6.2
+ [97] nlme_3.1-171                    permute_0.9-10
+ [99] mgcv_1.9-4                      fs_2.1.0
+[101] MatrixGenerics_1.18.1           pkgconfig_2.0.3

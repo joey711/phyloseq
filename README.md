@@ -2,7 +2,25 @@
 
 # [phyloseq](http://joey711.github.com/phyloseq/)
 
-[![Travis-CI Build Status](https://travis-ci.org/joey711/phyloseq.svg?branch=master)](https://travis-ci.org/joey711/phyloseq)
+This is **phyloseqV2**, a development fork of phyloseq. The R package is still
+named `phyloseq`. See [DEVELOPMENT.md](DEVELOPMENT.md) for the source layout,
+local test commands and the roadmap for transformations, normalization and
+contaminant handling. The installation instructions below refer to the upstream
+Bioconductor release.
+
+The fork now includes a [compositional workflow](docs/compositional-workflow.md)
+with prevalence filtering, TreeSummarizedExperiment conversion, explicit zero
+handling, relative/Hellinger/CLR assays, validation, Aitchison distances and
+QC/ordination plots.
+Optional [microViz, tidyplots and pheatmap integrations](docs/plot-integrations.md)
+add editable stacked bars, annotated clustered heatmaps and a microViz adapter.
+The [targeted 16S ASV/SILVA workflow](docs/asv-silva-workflow.md) adds sequence
+selection, versioned bacterial/archaeal reference QC and joint ML trees with
+observed fragments. Backbone placement remains a planned extension.
+The [change list and performance measurements](docs/changes-and-performance.md)
+summarize the local refactoring, additions and measured optimizations.
+
+[![R tests](https://github.com/l-gallucci/phyloseqV2/actions/workflows/tests.yaml/badge.svg)](https://github.com/l-gallucci/phyloseqV2/actions/workflows/tests.yaml)
 
 ![phyloseq](inst/extdata/phyloseq.png)
 

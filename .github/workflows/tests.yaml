@@ -1,0 +1,41 @@
+name: R tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'
+          extra-packages: |
+            any::pkgload
+            any::testthat
+            bioc::genefilter
+            bioc::TreeSummarizedExperiment
+            bioc::DECIPHER
+            any::phangorn
+            any::compositions
+            any::pheatmap
+            any::tidyplots
+            david-barnett/microViz
+          install-pandoc: false
+
+      - name: Run all tests against the working tree
+        shell: Rscript {0}
+        run: |
+          testthat::test_local(".", reporter = "summary", stop_on_failure = TRUE)
