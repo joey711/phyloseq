@@ -22,9 +22,14 @@
 #' component type -- several otu_table objects, for example -- then a single merged object
 #' of that component type is returned.
 #' 
-#' @usage merge_phyloseq(...)
+#' @usage merge_phyloseq(..., refseq_policy=c("error", "drop"))
 #'
 #' @param ... a comma-separated list of phyloseq objects. 
+#' @param refseq_policy Policy when merged reference sequences do not cover all
+#'   taxa in the merged count table. The default "error" prevents silent taxon
+#'   loss. "drop" explicitly discards the incomplete reference-sequence component
+#'   with a warning, retaining counts subject to the usual reconciliation with
+#'   any other components. Missing sequences are never fabricated.
 #'
 #' @return Merges are performed by first separating higher-order objects into
 #' a list of their component objects; then, merging any component objects of the same class
@@ -57,7 +62,8 @@
 #' ## y <- tax_table(exam1)
 #' ## merge_phyloseq(x, y)
 #' ## merge_phyloseq(y, y, y, y)
-merge_phyloseq <- function(...){
+merge_phyloseq <- function(..., refseq_policy=c("error", "drop")){
+	refseq_policy <- match.arg(refseq_policy)
 	arguments <- list(...)
 	# create list of all components of all objects
 	comp.list <- list()
@@ -81,6 +87,21 @@ merge_phyloseq <- function(...){
 			names(x1)   <- i
 			merged.list <- c(merged.list, x1)			
 		}
+	}
+	# Do not let the constructor's component intersection silently discard taxa
+	# just because only some inputs supplied reference sequences.
+	if (all(c("otu_table", "refseq") %in% names(merged.list))) {
+	  missing <- setdiff(taxa_names(merged.list[["otu_table"]]),
+	                     taxa_names(merged.list[["refseq"]]))
+	  if (length(missing)) {
+	    message <- paste0("Merged reference sequences are missing for ", length(missing),
+	                      " taxa (", paste(utils::head(missing, 5L), collapse=", "), ").")
+	    if (refseq_policy == "error") {
+	      stop(message, " Supply complete sequences or explicitly use refseq_policy=\"drop\".")
+	    }
+	    warning(message, " Dropping the incomplete refseq component.")
+	    merged.list[["refseq"]] <- NULL
+	  }
 	}
 	# Remove names to avoid any conflicts with phyloseq(), which does not need named-arguments
 	names(merged.list) <- NULL

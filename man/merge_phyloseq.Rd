@@ -4,10 +4,16 @@
 \alias{merge_phyloseq}
 \title{Merge arguments into one phyloseq object.}
 \usage{
-merge_phyloseq(...)
+merge_phyloseq(..., refseq_policy=c("error", "drop"))
 }
 \arguments{
 \item{...}{a comma-separated list of phyloseq objects.}
+
+\item{refseq_policy}{Policy when merged reference sequences do not cover all
+taxa in the merged count table. The default "error" prevents silent taxon
+loss. "drop" explicitly discards the incomplete reference-sequence component
+with a warning, retaining counts subject to the usual reconciliation with
+any other components. Missing sequences are never fabricated.}
 }
 \value{
 Merges are performed by first separating higher-order objects into

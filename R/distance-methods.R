@@ -599,9 +599,6 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	# Create a list of descendants, starting from the first internal node (root)
 	ntip <- length(tree$tip.label)
 	if(ntip != ntaxa(physeq)) stop("Incompatible tree and OTU table!")
-	# Create a matrix that maps each internal node to its 2 descendants
-	# This matrix doesn't include the tips, so must use node#-ntip to index into it
-	node.desc <- matrix(tree$edge[order(tree$edge[,1]),][,2],byrow=TRUE,ncol=2)
 	# Define the edge_array object
 	# Right now this is a node_array object, each row is a node (including tips)
 	# It will be subset and ordered to match tree$edge later
@@ -609,16 +606,17 @@ fastUniFrac <- function(physeq, weighted=FALSE, normalized=TRUE, parallel=FALSE)
 	                     dimnames=list(NULL, sample_names=sample_names(physeq)))
 	# Load the tip counts in directly
 	edge_array[1:ntip,] <- OTU
-	# Get a list of internal nodes ordered by increasing depth
-	ord.node <- order(node.depth(tree))[(ntip+1):(ntip+tree$Nnode)]
-	# Loop over internal nodes, summing their descendants to get that nodes count
-	for(i in ord.node){
-	  edge_array[i,] <- colSums(edge_array[node.desc[i-ntip,], , drop=FALSE], na.rm = TRUE)
+	# Accumulate child mass along postorder edges: all descendants are ready before
+	# their edge is visited. This supports any node degree, including unary nodes,
+	# without inventing a binary resolution or changing branch lengths.
+	postorder_edges <- reorder.phylo(tree, order="postorder")$edge
+	for(i in seq_len(nrow(postorder_edges))){
+	  parent <- postorder_edges[i, 1]
+	  child <- postorder_edges[i, 2]
+	  edge_array[parent, ] <- edge_array[parent, ] + edge_array[child, ]
 	}
 	# Keep only those with a parental edge (drops root) and order to match tree$edge
-	edge_array <- edge_array[tree$edge[,2],]
-	# Remove unneeded variables.
-	rm(node.desc)
+	edge_array <- edge_array[tree$edge[,2], , drop=FALSE]
 	# If unweighted-UniFrac, coerce to a presence-absence contingency, occ
 	if(!weighted){
 		# For unweighted UniFrac, convert the edge_array to an occurrence (presence/absence binary) array
