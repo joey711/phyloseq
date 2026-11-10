@@ -75,6 +75,7 @@ Collate:
     'ordination-methods.R'
     'transform-methods.R'
     'composition-methods.R'
+    'filter-prevalence.R'
     'plot-composition.R'
     'transform_filter-methods.R'
     'validity-methods.R'
